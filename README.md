@@ -1,0 +1,2 @@
+# scholzmx
+My personal website
