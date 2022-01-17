@@ -41,7 +41,7 @@ projects: [Linespots]
 publication: '*Software Testing, Verification and Reliability*'
 publication_short: "STVR"
 publication_types:
-- "2"
+- "7"
 publishDate: "2019-08-01"
 
 slides: ''
