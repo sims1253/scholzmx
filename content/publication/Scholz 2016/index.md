@@ -48,7 +48,7 @@ tags:
 - Past Faults
 - Bugspots
 
-url_code: https://gitlab.com/sims1253/Linespots
+url_code: https://github.com/sims1253/linespots-analysis/
 url_dataset:
 url_pdf: "pdf/scholz16.pdf"
 url_poster: ""
