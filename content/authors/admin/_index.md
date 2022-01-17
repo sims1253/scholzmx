@@ -30,7 +30,7 @@ interests:
 organizations:
 - name: University of Stuttgart - Cluster of Excellence SimTech
   url: https://www.simtech.uni-stuttgart.de/exc/research/pn/pn6/pn-6-7/
-role: PhD Researcher
+role: PhD candidate
 
 social:
 #- icon: envelope
@@ -57,5 +57,5 @@ superuser: true
 title: Maximilian Scholz
 ---
 
-I am a PhD student, currently working to improve the lives of practitioners of Bayesian statistics. I have a background in computational science and Engineering and software engineering.
+I am a PhD candidate, currently working to improve the lives of practitioners of Bayesian statistics. I have a background in computational science and Engineering and software engineering.
 

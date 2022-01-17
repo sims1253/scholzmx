@@ -26,7 +26,6 @@ as the methodology of using a pseudo future for evaluation."
 
 authors:
 - admin
-- Richard Torkar
 
 date: "2019-08-01"
 doi: ""
@@ -38,8 +37,8 @@ image:
 
 projects: [Linespots]
 
-publication: '*Software Testing, Verification and Reliability*'
-publication_short: "STVR"
+publication: 'Chalmers University of Technology'
+publication_short: ""
 publication_types:
 - "7"
 publishDate: "2019-08-01"
