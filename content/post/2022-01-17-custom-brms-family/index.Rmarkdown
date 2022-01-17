@@ -1,0 +1,37 @@
+---
+draft: true
+title: Custom brms Family
+author: ''
+date: '2022-01-17'
+slug: custom-brms-family
+categories: []
+tags: []
+subtitle: ''
+summary: ''
+authors: [admin]
+lastmod: '2022-01-17T15:49:04+01:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+Well Hello there
+
+```{r}
+summary(Orange)
+```
+
+```{r echo=FALSE}
+library(ggplot2)
+oplot <- ggplot(Orange, aes(x = age, 
+                   y = circumference, 
+                   colour = Tree)) +
+  geom_point() +
+  geom_line() +
+  guides(colour = "none") +
+  theme_bw()
+oplot
+```

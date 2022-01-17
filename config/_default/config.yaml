@@ -4,9 +4,9 @@ theme: "starter-hugo-academic"
 # Hugo Documentation: https://gohugo.io/getting-started/configuration/#all-configuration-settings
 # This file is formatted using YAML syntax - learn more at https://learnxinyminutes.com/docs/yaml/
 
-title: Academic # Website name
+title: Maximilian Scholz # Website name
 baseurl: 'https://elegant-mcnulty-b01798.netlify.app' # Website URL
-copyright: '' # Footer text, e.g. '© {year} Me'
+copyright: '© Maximilian Scholz (2022)' # Footer text, e.g. '© {year} Me'
 
 ############################
 ## LANGUAGE
@@ -59,6 +59,15 @@ taxonomies:
   author: authors
 markup:
   _merge: deep
+  defaultMarkdownHandler: goldmark
+  goldmark:
+    renderer:
+      unsafe: true
+  highlight:
+    codeFences: false
+  tableOfContents:
+    startLevel: 2
+    endLevel: 3
 related:
   threshold: 80
   includeNewer: true
