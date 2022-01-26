@@ -203,7 +203,7 @@ plot(dkumaraswamy(x, md, p))
 median(y) - (1-0.5^(1/q))^(1/p)
 ```
 
-    ## [1] -0.002445333
+    ## [1] 0.002851408
 
 ## stan setup
 
@@ -284,12 +284,12 @@ summary(fit1)
     ## 
     ## Population-Level Effects: 
     ##           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-    ## Intercept     0.22      0.02     0.18     0.26 1.00     2515     2529
-    ## a             0.52      0.02     0.49     0.56 1.00     2710     2561
+    ## Intercept     0.19      0.02     0.15     0.23 1.00     2837     2694
+    ## a             0.51      0.02     0.48     0.54 1.00     2458     2547
     ## 
     ## Family Specific Parameters: 
     ##   Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-    ## p     3.99      0.12     3.76     4.22 1.00     2736     2677
+    ## p     3.92      0.12     3.69     4.15 1.00     2481     2545
     ## 
     ## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
     ## and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -332,12 +332,12 @@ summary(fit2)
     ## 
     ## Population-Level Effects: 
     ##           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-    ## Intercept     0.19      0.02     0.15     0.22 1.00     4115     2912
-    ## a             0.48      0.02     0.44     0.52 1.00     3964     2861
+    ## Intercept     0.16      0.02     0.12     0.19 1.00     4107     3109
+    ## a             0.48      0.02     0.44     0.52 1.00     3585     2804
     ## 
     ## Family Specific Parameters: 
     ##     Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-    ## phi    10.03      0.42     9.22    10.88 1.00     3500     2422
+    ## phi    10.44      0.46     9.58    11.37 1.00     3966     3315
     ## 
     ## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
     ## and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -388,7 +388,7 @@ loo_compare(loo(fit1), loo(fit2))
 
     ##      elpd_diff se_diff
     ## fit1   0.0       0.0  
-    ## fit2 -53.0       9.7
+    ## fit2 -45.1       9.1
 
 The last step of post processing that is part of the custom family vignette is
 the check of the conditional effects.
