@@ -45,7 +45,7 @@ $$
 E(X) = qB(1 + \frac{1}{p}, q)
 $$
 
-where `\(B\)` is the beta function, which can not be inverted to solve for p or q.
+where $B$ is the beta function, which can not be inverted to solve for p or q.
 However, the quantile function is available in closed-form:
 
 $$
@@ -117,8 +117,8 @@ While writing my own proper density function, I have to keep in mind, that stan
 uses the log-pdf as it is a lot more numerically robust, so I shall do the same
 for the R version of my code.
 
-To make this work well, I can’t just wrap the density function in a `log()` function.
-Instead, I have to use the rules for logarithms like `\(log(x^r) = rlog(x)\)` and
+To make this work well, I can’t just wrap the density function in a `log`.
+Instead, I have to use the rules for logarithms like $(log(x^r) = rlog(x)$ and
 composite functions like `log1p` to get the most out of the transformation.
 In case I’d want the density on the natural scale, I just throw an `exp()` on the
 result.
