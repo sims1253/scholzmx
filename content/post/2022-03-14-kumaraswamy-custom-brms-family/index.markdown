@@ -34,24 +34,34 @@ about the Kumaraswamy distribution. I took these from Mitnik ([2013](#ref-mitnik
 
 The probability density function for the unit interval is given as:
 
-`$$f_x(x) = pqx^{(p-1)}(1-x^p)^{(q-1)}, 0<x<1, p > 0, q > 0$$`
+$$
+f_x(x) = pqx^{(p-1)}(1-x^p)^{(q-1)}, 0<x<1, p > 0, q > 0
+$$
 
 Now in brms I would like to have a mean parametrization for that density. Sadly,
 the mean is given by:
 
-`$$E(X) = qB(1 + \frac{1}{p}, q)$$`
+$$
+E(X) = qB(1 + \frac{1}{p}, q)
+$$
 
 where `\(B\)` is the beta function, which can not be inverted to solve for p or q.
 However, the quantile function is available in closed-form:
 
-`$$x = [1-(1-u)^{\frac{1}{q}}]^\frac{1}{p}, 0<u<1$$`
+$$
+x = [1-(1-u)^{\frac{1}{q}}]^\frac{1}{p}, 0<u<1
+$$
 
 The median can be derived from the quantile function and results in a
 formula that can be solved for q:
 
-`$$md(X) = w = (1-0.5^\frac{1}{q})^\frac{1}{p}$$`
+$$
+md(X) = w = (1-0.5^\frac{1}{q})^\frac{1}{p}
+$$
 
-`$$q = -\frac{log(2)}{log(1-w^p)}$$`
+$$
+q = -\frac{log(2)}{log(1-w^p)}
+$$
 
 ## Median Parametrization
 
@@ -333,12 +343,12 @@ summary(fit1)
     ## 
     ## Population-Level Effects: 
     ##           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-    ## Intercept     0.21      0.02     0.17     0.25 1.00     2303     2585
-    ## a             0.51      0.02     0.48     0.55 1.00     2621     2946
+    ## Intercept     0.19      0.02     0.15     0.23 1.00     2619     2697
+    ## a             0.51      0.02     0.48     0.55 1.00     2654     2738
     ## 
     ## Family Specific Parameters: 
     ##   Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-    ## p     3.96      0.12     3.73     4.19 1.00     2380     2550
+    ## p     3.96      0.11     3.75     4.19 1.00     2832     3002
     ## 
     ## Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
     ## and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -384,9 +394,9 @@ loo_kumaraswamy
     ## Computed from 4000 by 1000 log-likelihood matrix
     ## 
     ##          Estimate   SE
-    ## elpd_loo    586.7 20.0
-    ## p_loo         2.9  0.3
-    ## looic     -1173.3 40.1
+    ## elpd_loo    601.4 21.6
+    ## p_loo         3.2  0.4
+    ## looic     -1202.9 43.2
     ## ------
     ## Monte Carlo SE of elpd_loo is 0.0.
     ## 
@@ -408,7 +418,7 @@ loo::loo_compare(loo_kumaraswamy, loo(fit2))
 
     ##      elpd_diff se_diff
     ## fit1   0.0       0.0  
-    ## fit2 -53.1      10.3
+    ## fit2 -40.3      10.9
 
 Nice. To nobodies surprise, the kumaraswamy fit had better predictive performance
 than the beta fit hehe.

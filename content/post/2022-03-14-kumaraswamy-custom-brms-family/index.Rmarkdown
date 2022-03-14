@@ -35,24 +35,34 @@ about the Kumaraswamy distribution. I took these from @mitnikNewPropertiesKumara
 
 The probability density function for the unit interval is given as:
 
-$$f_x(x) = pqx^{(p-1)}(1-x^p)^{(q-1)}, 0<x<1, p > 0, q > 0$$
+$$
+f_x(x) = pqx^{(p-1)}(1-x^p)^{(q-1)}, 0<x<1, p > 0, q > 0
+$$
 
 Now in brms I would like to have a mean parametrization for that density. Sadly,
 the mean is given by:
 
-$$E(X) = qB(1 + \frac{1}{p}, q)$$
+$$
+E(X) = qB(1 + \frac{1}{p}, q)
+$$
 
 where $B$ is the beta function, which can not be inverted to solve for p or q.
 However, the quantile function is available in closed-form:
 
-$$x = [1-(1-u)^{\frac{1}{q}}]^\frac{1}{p}, 0<u<1$$
+$$
+x = [1-(1-u)^{\frac{1}{q}}]^\frac{1}{p}, 0<u<1
+$$
 
 The median can be derived from the quantile function and results in a
 formula that can be solved for q:
 
-$$md(X) = w = (1-0.5^\frac{1}{q})^\frac{1}{p}$$
+$$
+md(X) = w = (1-0.5^\frac{1}{q})^\frac{1}{p}
+$$
 
-$$q = -\frac{log(2)}{log(1-w^p)}$$
+$$
+q = -\frac{log(2)}{log(1-w^p)}
+$$
 
 ```{r, setup, message=FALSE, echo=FALSE}
 library(brms)
