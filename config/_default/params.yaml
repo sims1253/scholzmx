@@ -80,8 +80,8 @@ highlight_languages:
   - r
   - python
   - latex
-math: false
-diagram: true
+math: true
+diagram: false
 privacy_pack: false
 edit_page:
   repo_url: ''
