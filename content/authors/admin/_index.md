@@ -9,10 +9,10 @@ education:
   - course: PhD in Bayesian Statistics
     institution: University of Stuttgart - Cluster of Excellence SimTech
     year: WIP
-  - course: MA in Software Engineering
+  - course: M.Sc. in Software Engineering
     institution: Chalmers University of Technology
     year: 2019
-  - course: BA in Computational Science and Engineering
+  - course: B.Sc. in Computational Science and Engineering
     institution: Hamburg University of Technology
     year: 2017
 
