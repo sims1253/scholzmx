@@ -30,7 +30,7 @@ interests:
 organizations:
 - name: University of Stuttgart - Cluster of Excellence SimTech
   url: https://www.simtech.uni-stuttgart.de/exc/research/pn/pn6/pn-6-7/
-role: PhD candidate
+role: PhD Researcher
 
 social:
 #- icon: envelope
