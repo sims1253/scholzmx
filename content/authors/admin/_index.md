@@ -24,12 +24,11 @@ interests:
 - Bayesian Statistics
 - Causality
 - Decision Making
-- Soft-Infrastructure
-- Open Source Software
+- Software-Infrastructure
 
 organizations:
 - name: University of Stuttgart - Cluster of Excellence SimTech
-  url: https://www.simtech.uni-stuttgart.de/exc/research/pn/pn6/pn-6-7/
+  url: https://www.simtech.uni-stuttgart.de/exc/people/Scholz-00007/
 role: PhD Researcher
 
 social:
@@ -57,5 +56,5 @@ superuser: true
 title: Maximilian Scholz
 ---
 
-I am a PhD candidate, currently working to improve the lives of practitioners of Bayesian statistics. I have a background in computational science and Engineering and software engineering.
+I am a PhD researcher, currently working to improve the lives of practitioners of Bayesian statistics. I have a background in computational science and engineering as well as software engineering and am prone to build infrastructure wherever I go, be it technical or social. 
 
