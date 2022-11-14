@@ -19,7 +19,7 @@ bibliography: references.bib
 link-citations: yes
 ---
 
-*Update:* We finally published [bayesim](https://github.com/sims1253/bayesfam),
+*Update:* We finally published [bayesfam](https://github.com/sims1253/bayesfam),
 a package that contains a bunch of custom families for brms.
 
 
