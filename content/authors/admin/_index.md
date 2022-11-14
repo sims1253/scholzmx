@@ -36,9 +36,9 @@ social:
 #  icon_pack: fas
 #  link: /#contact
 
-- icon: twitter
+- icon: mastodon
   icon_pack: fab
-  link: https://twitter.com/scholzmx
+  link: https://fediscience.org/@scholzmx
 
 - icon: google-scholar
   icon_pack: ai
@@ -51,6 +51,11 @@ social:
 - icon: gitlab
   icon_pack: fab
   link: https://gitlab.com/sims1253
+  
+- icon: twitter
+  icon_pack: fab
+  link: https://twitter.com/scholzmx
+
   
 superuser: true
 title: Maximilian Scholz
