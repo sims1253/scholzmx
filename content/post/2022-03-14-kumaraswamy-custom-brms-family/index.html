@@ -19,9 +19,10 @@ bibliography: references.bib
 link-citations: yes
 ---
 
-<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
 
 
+<p><em>Update:</em> We finally published <a href="https://github.com/sims1253/bayesfam">bayesim</a>,
+a package that contains a bunch of custom families for brms.</p>
 <p>I am currently working with different unit interval distributions and one of the
 more common ones to be mentioned in the literature is the Kumaraswamy distribution
 <span class="citation">Kumaraswamy (<a href="#ref-kumaraswamyGeneralizedProbabilityDensity1980" role="doc-biblioref">1980</a>)</span>.
@@ -274,12 +275,12 @@ hist(data$y)</code></pre>
 ## 
 ## Population-Level Effects: 
 ##           Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## Intercept     0.20      0.02     0.16     0.24 1.00     2620     2521
-## a             0.49      0.02     0.46     0.53 1.00     2948     2612
+## Intercept     0.19      0.02     0.15     0.23 1.00     2747     2841
+## a             0.49      0.02     0.46     0.53 1.00     2268     2601
 ## 
 ## Family Specific Parameters: 
 ##   Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## p     3.90      0.12     3.68     4.13 1.00     2753     2719
+## p     3.96      0.12     3.72     4.19 1.00     2688     2648
 ## 
 ## Draws were sampled using sample(hmc). For each parameter, Bulk_ESS
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential
@@ -291,7 +292,6 @@ There are also no sampling problems to see in the Rhat, ESS and trace plot.
 Wonderfull.
 So how about a posterior predictive check anyone? Wouldn’t that be something?</p>
 <pre class="r"><code>brms::pp_check(fit1)</code></pre>
-<pre><code>## Using 10 posterior draws for ppc type &#39;dens_overlay&#39; by default.</code></pre>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/pp-check-1.png" width="672" /></p>
 <p>I would say that looks quite fine. But how about those conditional effects?</p>
 <pre class="r"><code>brms::conditional_effects(fit1)</code></pre>
@@ -305,9 +305,9 @@ loo_kumaraswamy</code></pre>
 ## Computed from 4000 by 1000 log-likelihood matrix
 ## 
 ##          Estimate   SE
-## elpd_loo    567.6 20.6
-## p_loo         3.2  0.3
-## looic     -1135.3 41.2
+## elpd_loo    575.2 20.0
+## p_loo         2.7  0.2
+## looic     -1150.4 40.1
 ## ------
 ## Monte Carlo SE of elpd_loo is 0.0.
 ## 
@@ -322,7 +322,7 @@ loo_kumaraswamy</code></pre>
 <pre class="r"><code>loo::loo_compare(loo_kumaraswamy, loo(fit2))</code></pre>
 <pre><code>##      elpd_diff se_diff
 ## fit1   0.0       0.0  
-## fit2 -37.6       9.1</code></pre>
+## fit2 -47.1       8.6</code></pre>
 <p>Nice. To nobodies surprise, the kumaraswamy fit had better predictive performance
 than the beta fit hehe.</p>
 <p>And that’s it. At this point the custom family is ready to use and supports

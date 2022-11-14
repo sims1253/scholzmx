@@ -8,7 +8,7 @@ tags: ["brms", "Bayes", "tutorial"]
 subtitle: ''
 summary: I show my process of building a brms custom family.
 authors: [admin]
-lastmod: '2022-03-14'
+lastmod: '2022-11-14'
 featured: no
 image:
   caption: ''
@@ -18,6 +18,9 @@ projects: []
 bibliography: references.bib
 link-citations: yes
 ---
+
+*Update:* We finally published [bayesim](https://github.com/sims1253/bayesfam),
+a package that contains a bunch of custom families for brms.
 
 
 I am currently working with different unit interval distributions and one of the
@@ -156,7 +159,7 @@ again and can see that the differences are on the float resolution scale, which
 is what I would expect as the difference between just wrapping in `log()`
 and further optimizing the code.
 
-```{r, log-density-test}
+```{r, log-density-test, warning=FALSE}
 layout(matrix(1:3, ncol = 3))
 
 md = 0.5
@@ -311,7 +314,7 @@ So here is a quick example where I generate a dataset, fit a kumaraswamy model
 to it and run some of the post processing I prepared for:
 
 
-```{r, brms-kumaraswamy}
+```{r, brms-kumaraswamy, warning=FALSE}
 a = rnorm(1000)
 data = list(a = a, y = rkumaraswamy(1000, inv_logit_scaled(0.2 + 0.5 * a), 4))
 hist(data$y)
@@ -336,13 +339,13 @@ There are also no sampling problems to see in the Rhat, ESS and trace plot.
 Wonderfull.
 So how about a posterior predictive check anyone? Wouldn't that be something?
 
-```{r, pp-check}
+```{r, pp-check, warning=FALSE, message=FALSE}
 brms::pp_check(fit1)
 ```
 
 I would say that looks quite fine. But how about those conditional effects?
 
-```{r, conditional-effects}
+```{r, conditional-effects, warning=FALSE}
 brms::conditional_effects(fit1)
 ```
 
@@ -350,7 +353,7 @@ That also looks like I would expect it to.
 
 Finally, lets calculate the loo-elpd for the fit and compare it to one using a
 beta likelihood:
-```{r, loo-compare-1}
+```{r, loo-compare-1, warning=FALSE}
 loo_kumaraswamy <- loo::loo(fit1)
 loo_kumaraswamy
 ```
@@ -364,7 +367,7 @@ fit2 <- brm(
 )
 ```
 
-```{r, loo-compare-3}
+```{r, loo-compare-3, warning=FALSE}
 
 loo::loo_compare(loo_kumaraswamy, loo(fit2))
 ```
