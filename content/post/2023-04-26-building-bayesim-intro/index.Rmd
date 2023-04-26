@@ -1,0 +1,238 @@
+---
+title: 'Building bayesim: The journey begins'
+author: Maximilian Scholz
+date: '2023-04-26'
+slug: building-bayesim-intro
+categories: ["Development"]
+tags: ["tutorial", "R", "simulations"]
+subtitle: ''
+summary: 'I share my process of working on bayesim, a framework for Bayesian
+          simulation studies.'
+authors: [admin]
+lastmod: '2023-04-26T09:47:33+02:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: ["bayesim"]
+bibliography: references.bib
+link-citations: yes
+---
+
+Imagine a group of adventurers gathered in a medieval tavern. As they share tales
+of their past deeds and toast to future adventures, the bargoblin approaches with
+a cryptic message, directing them to a shadowy figure lurking in a dim corner.
+Intrigued, the band of heroes walks over to meet the mysterious individual.
+This bald, enigmatic figure, prone to bouts of mischievous giggling, presents
+them with a formidable challenge: to embark on a simulation study involving
+"ONE MILLION MODELS", whereupon it bursts into manic laughter and lifts its pinkie
+to the corner of their mouth.
+May their computational prowess be as mighty as their sword arms!
+
+
+In this series (or what I imagine to become a series) I invite you to follow along
+while I develope [bayesim](https://github.com/sims1253/bayesim).
+
+Sure, there is a repo and we even used a past version (prototype number 2 I think?)
+for [a paper](https://arxiv.org/abs/2210.06927) but I have a tendency to try to
+engineer things to the point I am happy with them. Which, you might have guessed
+from bayesim being on version  0.35 on my dev branch and I am planning another
+rewrite, can take a while.    
+At this point I feel like I have encountered most of the engineering problems I
+would like to solve. Famous last words, I know...
+I also know a few people who'd be interested in using it for their own studies
+and could give me input on their use cases.
+Which makes this the *perfect* moment to essentially start work on a plan for
+a beta release and get the api somewhat stable.  
+My aim with this and upcoming posts is to document my development process
+to help myself think it through and open it up to feedback at the same time.
+So if at any point you feel the urge to shout "Duh! You obviously should do this!"
+or "Why are you not including my important use case!?!" in my general direction,
+feel invited to contact me so we can have a chat about that.
+
+So, what exactly are we talking about again?
+
+
+# Simulation studies
+
+From the perspective of implementation the important parts of a simulation study
+are data, models (at least in an abstract sense), and metrics (I am leaning on
+@morris2019using and @kelter2023bayesian a little here if you want a deeper dive).
+I don't aim to help with the whole planning part of a simulation study but rather
+build engineering tooling to make running one easier.  
+A simplified version of a simulation study flow is shown below. However this
+is by no means the only way to look at it. Datasets could be based on models
+itself and models could be iteratively adapted to both outcome metrics or datasets.
+But for now, lets Imagine a scenario where we would like to simulate datasets,
+fit Bayesian models on them and collect metrics for the outcome metrics.
+
+![](/img/basic_model_flow.svg)
+
+So what do I want bayesim to be and what do I explicitly not want to be?
+
+## Scope
+
+As this entire project grew from my own simulation study, I obviously want to keep
+supporting my own research.
+This mainly means I need support for arbitrary data simulation functions that
+feed of a simple configuration `data.frame`, I need to fit brms models on these
+datasets that have arbitrary formulas, likelihoods, links and priors. Finally, I
+have to calculate metrics on these models that need information about the data-generating process,
+collect all of the metrics, data about model fitting and data generation and save
+it in a parseable format.
+Ideally the entire thing is parallelized so I can run it in under a week, does
+not suffer from unforeseen problems such as cmdstanr model files vanishing from
+your tmp folder after a day or two and doesn't eat my RAM for breakfast,
+just because it can.
+Another big thing is that the current system is full factorial in that all models
+are fit on each dataset and all metrics are calculate for each model.
+While I currently don't have a good idea for how to define what should be combined
+in what way, it is at least something I would like to think about in the future,
+as Bayesian simulation studies can take a long time to run (I guess non-Bayesian ones can as well).
+If we don't need every combination to be calculated, it saves a bunch of time
+to not calculate them in the first place.
+And while we had `loo_compare` support in one iteration of bayesim, we removed
+it as it was not a great solution and, at least in our case, we would have needed
+very precise grouping of models that were to be compared. If I can come up with
+a good solution, this is also something that I would like to add back.
+Oh, and the entire thing should be [reproducible](/post/how-to-make-your-simulation-study-reproducible/).
+
+Additional things I would like to support is arbitrary functions for model fitting,
+so bayesim can be independent from brms, and metric calculation, so that it is
+easier for others to calculate metrics that bayesim doesn't currently support.
+
+But then comes the question, what is bayesim even doing if you have to generate
+your own configuration file, write your own data-generation function, write your
+own model-fitting function and even have to write your own metric-calculating
+function? Even if you were to go custom for all three, ideally there would still
+be some glue code in bayesim that could help you. And if not, the defined interfaces
+might at least make it easier for you than my first attempts of this.
+And, that is the beauty of open source software, you can always fork bayesim and
+hack whatever you need in there directly.
+
+So what do I explicitly not want, at least for now?
+For one, I don't plan on supporting model iterations for now. We had some cases
+of convergence problems during our study and thought about ways to eg. increase
+`adapt_delta` until convergence and then record how far we had to go. But at least
+in our case it was acceptable to just note that the models failed to converge.
+It should be trivial to implement with your own model-fitting function anyway,
+if you needed it (just loop the fitting until whatever you want is reached).
+Similarly, at least for now, I don't plan on explicitly supporting multi-round
+simulations where the output of one round is used as the input for the second
+round.  
+And there probably are more things I don't want that I haven't thought about yet.
+
+
+But lets use this as a starting point and dream up a system that ideally does
+everything we want it to.
+
+# Tests, documentation and other essentials
+
+I know, I know. Ain't nobody got time for that. Also, nobody reats the manual
+anyways right? But I'll try my best. So one aspect that will be new for me during
+this series is writing tests and more than the bare minimum documentation for
+the parts we go over. New in the sense, that for some of the parts of bayesim, I
+am not sure how to test them at all. But That is a problem of future me (:wave:,
+love you). Similarly, if I want bayesim to be useful to others I need to write
+documentation that helps potential users with the whole usening thing. It probably
+is a lot easier to use something if you not only built it but it's past three versions.
+One aspect that I want to look into a little more is that our tools are always
+educational in the sense that they shape our behavior based on the things they
+support.
+The whole "if all you have is a hammer, all problems look like nails" thing. 
+(if you use SPSS for example, you probably think modeling and creating figures
+are a rusty axe stuck in your leg, fair).
+So I might want to spend some time reading up on the best practice papers I
+mentioned earlier to see if if bayesim can at least avoid some obvious pitfalls.
+
+But ultimately, I want tests and CI for all things where I can
+make it work and documentation for everything users might find helpful.
+Long way to go but what else should I do with my time right? (If this is my last
+post you know that my supervisor reads my blog.)
+
+# Architecture
+
+Going back to the basic depiction of a simulation study flow from above, in code
+this could look something like the following, where we would just need
+to feed each function additional parameters about their respective jobs:
+
+```{r, eval=FALSE}
+for (data_conf in data_conf_list) {
+  dataset_list <- gen_dataset(data_conf)
+  for (dataset in dataset_list) {
+    for (model_conf in model_conf_list) {
+      fit <- fit_model(dataset, model_conf)
+      metrics <- calculate_metrics(fit, metric_list)
+    }
+  }
+}
+```
+
+which is basically the current architecture of bayesim. With some fun sparkles
+on top to shave of some runtime here and there, like parallelization or reusing
+compiled model files.
+I have written multiple versions of the functions I drafted above and we will
+look at them in more detail throughout this series. For now, lets just
+keep this basic structure in mind (or please poke me if there is a better way).
+One drawback of the nested nature is that it not realy helping composability.
+Imagine instead something like this:
+
+```{r, eval=FALSE}
+simulate_dataset(...) %>%
+fit_model(...) %>%
+calculate_metrics(...)
+```
+
+which would make it much easier to replace individual parts of
+the pipeline or rearrange them, eg using the calculated metrics as input for another
+round of dataset generation.
+One problem that I encountered when thinking about this version was that it made
+parallelization harder. In the first version you can parallelize one of the loops
+and all sub-loops are automatically running in parallel that way.
+In the second version, functions can only be parallelized individually.
+In addition, the second version requires that all results from one functions are
+handed over to the next function at the same time. This can increase memory usage
+fast (ask me why I feel like 64GB of RAM is not enough).
+So while I would like this kind of composability, I don't see how to make this
+happen in a usefull manner.
+
+So the loopy version it is for now.
+
+I'd rather keep this intro post short and not dive into the technicalities of
+individual parts as well so I will leave you with a [gist](https://gist.github.com/sims1253/5469c7fbf923cd9c38df64cf1df9708e)
+of how we built the configuration for our simulation study that fits around one
+million models (there is a second one for the other half of equql length).
+Sure, it took time to build bayesim and get all the parts right but oh my is it
+satisfying if you build a few data.frames with 250 lines of R code and a week
+later you have 250MB .rds file of results in your inbox :)
+
+Until next time, cheers.
+
+
+# References
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

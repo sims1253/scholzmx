@@ -6,7 +6,7 @@ theme: "starter-hugo-academic"
 
 title: Maximilian Scholz # Website name
 baseurl: 'https://elegant-mcnulty-b01798.netlify.app' # Website URL
-copyright: '© Maximilian Scholz (2022)' # Footer text, e.g. '© {year} Me'
+copyright: '© Maximilian Scholz (2023)' # Footer text, e.g. '© {year} Me'
 
 ############################
 ## LANGUAGE
@@ -38,6 +38,7 @@ enableRobotsTXT: true
 footnotereturnlinkcontents: <sup>^</sup>
 ignoreFiles: [\.ipynb$, .ipynb_checkpoints$, \.Rmd$, \.Rmarkdown$, _cache$]
 permalinks:
+  blog: '/post/:slug/'
   event: '/talk/:slug/'
   authors: '/author/:slug/'
   tags: '/tag/:slug/'
