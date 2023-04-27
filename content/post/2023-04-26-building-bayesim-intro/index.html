@@ -54,7 +54,7 @@ feel invited to contact me so we can have a chat about that.</p>
 <h1>Simulation studies</h1>
 <p>From the perspective of implementation the important parts of a simulation study
 are data, models (at least in an abstract sense), and metrics (I am leaning on
-<span class="citation">Morris, White, and Crowther (<a href="#ref-morris2019using" role="doc-biblioref">2019</a>)</span> and <span class="citation">Kelter (<a href="#ref-kelter2023bayesian" role="doc-biblioref">2023</a>)</span> a little here if you want a deeper dive).
+<span class="citation">Morris, White, and Crowther (<a href="#ref-morris2019using">2019</a>)</span> and <span class="citation">Kelter (<a href="#ref-kelter2023bayesian">2023</a>)</span> a little here if you want a deeper dive).
 I don’t aim to help with the whole planning part of a simulation study but rather
 build engineering tooling to make running one easier.<br />
 A simplified version of a simulation study flow is shown below. However this
@@ -64,8 +64,9 @@ But for now, lets Imagine a scenario where we would like to simulate datasets,
 fit Bayesian models on them and collect metrics for the outcome metrics.</p>
 <p><img src="/img/basic_model_flow.svg" /></p>
 <p>So what do I want bayesim to be and what do I explicitly not want to be?</p>
-<div id="scope" class="section level2">
-<h2>Scope</h2>
+</div>
+<div id="scope" class="section level1">
+<h1>Scope</h1>
 <p>As this entire project grew from my own simulation study, I obviously want to keep
 supporting my own research.
 This mainly means I need support for arbitrary data simulation functions that
@@ -114,7 +115,6 @@ round.<br />
 And there probably are more things I don’t want that I haven’t thought about yet.</p>
 <p>But lets use this as a starting point and dream up a system that ideally does
 everything we want it to.</p>
-</div>
 </div>
 <div id="tests-documentation-and-other-essentials" class="section level1">
 <h1>Tests, documentation and other essentials</h1>

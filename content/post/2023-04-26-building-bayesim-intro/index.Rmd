@@ -71,7 +71,7 @@ fit Bayesian models on them and collect metrics for the outcome metrics.
 
 So what do I want bayesim to be and what do I explicitly not want to be?
 
-## Scope
+# Scope
 
 As this entire project grew from my own simulation study, I obviously want to keep
 supporting my own research.
