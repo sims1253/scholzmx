@@ -1,0 +1,114 @@
+project:
+  type: website
+  output-dir: docs
+  
+  preview: 
+    port: 5555
+    browser: true
+    watch-inputs: true
+    navigate: true
+    
+  render:
+    - "*.qmd"
+    - "*.md"
+    - "!etc/"
+  
+  resources:
+    - "img/**"
+    - "assets/**"
+    - "sitemap.xml"
+    - "_redirects"
+    
+freeze: true
+
+pagetitle: "{{< meta title >}} | Maximilian Scholz"
+description-meta: "Software Engineer & Bayesian Statistician"
+author-meta: "Maximilian Scholz"
+
+website:
+  title: "Maximilian Scholz"
+  description: "{{< meta description-meta >}}"
+  image: img/my_image.jpg
+  favicon: img/favicon.png
+  site-url: https://www.scholzmx.com
+  repo-url: "https://github.com/sims1253/scholzmx"
+  
+  twitter-card: 
+    image: "/files/profiles/twitter-card-large.png"
+    description: "{{< meta description-meta >}}"
+    card-style: summary_large_image
+    creator: "@scholzmx"
+    site: "@scholzmx"
+
+  open-graph: 
+    image: "/files/profiles/twitter-card-large.png"
+    description: "{{< meta description-meta >}}"
+    locale: en_US
+  
+  navbar:
+    pinned: true
+    logo: /img/logo.png
+    
+    left:
+      - text: "About"
+        href: "index.qmd"
+      - text: "CV"
+        href: "cv/index.qmd"
+      - text: "Blog"
+        file: blog/index.qmd
+      - text: "Research"
+        file: research/index.qmd
+
+    right:
+      - text: "{{< ai google-scholar >}}"
+        aria-label: Google Scholar
+        href: https://scholar.google.com/citations?user=JhwHgX4AAAAJ
+        rel: me
+      - icon: mastodon
+        aria-label: mastodon
+        href: https://fediscience.org/@scholzmx
+        rel: me
+      - icon: github
+        aria-label: Github
+        href: https://github.com/sims1253
+        rel: me
+      - text: "{{< fa brands gitlab >}}"
+        aria-label: Gitlab
+        href: https://gitlab.com/sims1253
+        rel: me
+      - icon: twitter
+        aria-label: Twitter
+        href: https://twitter.com/scholzmx
+        rel: me
+      - icon: linkedin
+        aria-label: Linkedin 
+        href: https://www.linkedin.com/in/scholzmx
+        rel: me
+      - icon: envelope
+        aria-label: email
+        href: "mailto:scholzmxb@gmail.com"
+        
+  page-footer: 
+    left: |
+      <span class="faux-block">{{< fa brands creative-commons >}} {{< var years >}} Maximilian Scholz</span>
+      <span class="faux-block">All content licensed under<br>[{{< fa brands creative-commons >}} {{< fa brands creative-commons-by >}} {{< fa brands creative-commons-sa >}} Creative Commons CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)</span>
+    center: |
+      <span class="faux-block">{{< fa brands orcid >}} <strong>ORCID</strong> [{{< var orcid >}}](https://orcid.org/{{< var orcid >}})</span>
+      <span class="faux-block">{{< fa key >}} [PGP public key]({{< var pgp.key >}}) &emsp; {{< fa fingerprint >}} Fingerprint:</strong><br><span class="fingerprint">{{< var pgp.fingerprint >}}</span></span>
+    right: |
+      <span class="faux-block">Made with {{< fa brands r-project >}} and [Quarto](https://quarto.org/)</span>
+      <span class="faux-block">[View the source at {{< fa brands github >}} GitHub]({{< var github-url >}})</span>
+
+format:
+  html:
+    fontsize: 1.1em
+    theme: 
+      - pulse
+      - html/styles.scss
+    toc: false
+    code-link: true
+    anchor-sections: true
+    fig-cap-location: margin
+    reference-location: margin
+    footnotes-hover: true
+    highlight-style: solarized
