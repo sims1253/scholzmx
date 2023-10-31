@@ -1,0 +1,32 @@
+---
+title: "Blog"
+author: ""
+description-meta: "Something something my blog. Welcome."
+
+listing:
+  - id: posts_2017
+    contents: "2017/**/index.md"
+    sort: "date desc"
+    template: ../html/blog/listing.ejs
+    categories: true
+page-layout: full
+toc-title: Year
+toc-location: right
+date-format: "YYYY-MM-DD"
+code-tools: false
+comments: false
+---
+
+Blog text intro goes here.
+
+## 2022
+
+:::{#posts_2022}
+:::
+
+## 2017
+
+:::{#posts_2017}
+:::
+
+The blog post listing is based on the website source of [Andrew Heiss](https://www.andrewheiss.com/), who has put together an incredible listing template under CC-BY-SA 4.0 license. Thank you!

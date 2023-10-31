@@ -1,5 +1,47 @@
 [
   {
+    "objectID": "blog/index.html",
+    "href": "blog/index.html",
+    "title": "Blog",
+    "section": "",
+    "text": "Blog text intro goes here."
+  },
+  {
+    "objectID": "blog/index.html#section",
+    "href": "blog/index.html#section",
+    "title": "Blog",
+    "section": "2022",
+    "text": "2022"
+  },
+  {
+    "objectID": "blog/index.html#section-1",
+    "href": "blog/index.html#section-1",
+    "title": "Blog",
+    "section": "2017",
+    "text": "2017\n\n\n    \n                  \n            \n        \n        \n            \n            \n        \n    \n    \n                  \n            2017-04-19\n        \n        \n            April Community Team Update\n            \n                \n                    coala\n                \n                \n                    community\n                \n            \n            \n        \n    \n    \n                  \n            2017-04-15\n        \n        \n            coala's Call for Chefs\n            \n                \n                    coala\n                \n                \n                    community\n                \n            \n            A story about building community through food.\n        \n    \n    \n                  \n            2017-01-30\n        \n        \n            The Birth of a coala\n            \n                \n                    coala\n                \n                \n                    community\n                \n            \n            My first entry on the coala blog.\n        \n    \n\n\nNo matching items\n\n\nThe blog post listing is based on the website source of Andrew Heiss, who has put together an incredible listing template under CC-BY-SA 4.0 license. Thank you!"
+  },
+  {
+    "objectID": "cv/index.html",
+    "href": "cv/index.html",
+    "title": "Curriculum vitae",
+    "section": "",
+    "text": "Download current CV\n  \n\n\n  \n\n\nView the tutorial for this template (+ download link)"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Hello there!",
+    "section": "",
+    "text": "Welcome to my website!\nI am Gandalf the White, a renowned wizard and scholar of Middle-earth. Over the centuries, I have dedicated my life to studying the history, languages, and cultures of the peoples of Middle-earth. On this website, I offer a glimpse into my vast body of knowledge, ongoing research, and publications.\nMy research interests span the entirety of Middle-earth, from the distant past to the present day. I am particularly passionate about the languages and mythologies of the Elves, Dwarves, and Men, and I have made significant contributions to the understanding of these subjects. My studies of the natural world have also been extensive, and I am an expert in the flora and fauna of Middle-earth. Additionally, I have been involved in many important historical events and offer valuable first-hand accounts and insights on the past.\nNot only am I a scholar, but I am also a mentor and teacher. Over the centuries, I have had the honor of working with many young wizards, passing on my knowledge and experience to the next generation. I have a particular interest in the education of hobbits, whom I see as having great potential despite their small size and simple lifestyle. My teaching style is engaging and accessible, and I encourage my students to think critically and creatively.\nOn this website, you will find a selection of my published works, including scholarly articles, monographs, and translations. You will also find news and updates on my current research projects, as well as information on upcoming events and conferences where I will be speaking. I invite you to explore my website and learn more about my life’s work as one of Middle-earth’s greatest scholars and thinkers. Please feel free to contact me if you have any questions or would like to discuss potential projects.\n\nView the tutorial for this template (+ download link)"
+  },
+  {
+    "objectID": "photography/index.html",
+    "href": "photography/index.html",
+    "title": "Photography",
+    "section": "",
+    "text": "As a wizard and scholar of Middle-earth, I have been studying the magic of the natural world for centuries. Through my self-portraits, I aim to capture the essence of my own being and reflect on my own journey through time. Each photograph is a reflection of my own experiences and emotions. Through my photography, I hope to offer a glimpse into my life as a scholar and adventurer, and inspire others to reflect on their own journeys through the world.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nView the tutorial for this template (+ download link)"
+  },
+  {
     "objectID": "projects/index.html",
     "href": "projects/index.html",
     "title": "Projects",
@@ -21,24 +63,94 @@
     "text": "The History of the War of the Ring\n\narXiv Preprint | Code\nI am creating a comprehensive and detailed history of the conflict that goes beyond the surface-level events. By gathering information from a variety of sources, including my own memories, written accounts, and oral histories, I hope to shed new light on this important period in Middle-earth’s history and provide valuable insights into the motivations and actions of the various players involved.\n\nView the tutorial for this template (+ download link)"
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Hello there!",
+    "objectID": "blog/2017/01/30/birth-of-coala/index.html",
+    "href": "blog/2017/01/30/birth-of-coala/index.html",
+    "title": "The Birth of a coala",
     "section": "",
-    "text": "Welcome to my website!\nI am Gandalf the White, a renowned wizard and scholar of Middle-earth. Over the centuries, I have dedicated my life to studying the history, languages, and cultures of the peoples of Middle-earth. On this website, I offer a glimpse into my vast body of knowledge, ongoing research, and publications.\nMy research interests span the entirety of Middle-earth, from the distant past to the present day. I am particularly passionate about the languages and mythologies of the Elves, Dwarves, and Men, and I have made significant contributions to the understanding of these subjects. My studies of the natural world have also been extensive, and I am an expert in the flora and fauna of Middle-earth. Additionally, I have been involved in many important historical events and offer valuable first-hand accounts and insights on the past.\nNot only am I a scholar, but I am also a mentor and teacher. Over the centuries, I have had the honor of working with many young wizards, passing on my knowledge and experience to the next generation. I have a particular interest in the education of hobbits, whom I see as having great potential despite their small size and simple lifestyle. My teaching style is engaging and accessible, and I encourage my students to think critically and creatively.\nOn this website, you will find a selection of my published works, including scholarly articles, monographs, and translations. You will also find news and updates on my current research projects, as well as information on upcoming events and conferences where I will be speaking. I invite you to explore my website and learn more about my life’s work as one of Middle-earth’s greatest scholars and thinkers. Please feel free to contact me if you have any questions or would like to discuss potential projects.\n\nView the tutorial for this template (+ download link)"
+    "text": "This is my first entry on the coala blog. Welcome everyone. My name is Maximilian and I am the community team leader for coala since December. In this post I want to talk about the teams in coala and especially about the community team, its members and our work so far."
   },
   {
-    "objectID": "cv/index.html",
-    "href": "cv/index.html",
-    "title": "Curriculum vitae",
-    "section": "",
-    "text": "Download current CV\n  \n\n\n  \n\n\nView the tutorial for this template (+ download link)"
+    "objectID": "blog/2017/01/30/birth-of-coala/index.html#teams-in-coala",
+    "href": "blog/2017/01/30/birth-of-coala/index.html#teams-in-coala",
+    "title": "The Birth of a coala",
+    "section": "Teams in coala",
+    "text": "Teams in coala\nI had the idea for the teams around EuroPython 2016 as a way to take part of the organisatory burden from Lasse. At that time he was making almost all the meaningful decisions in coala, not because he wanted to, but because everyone asked him. This meant that Lasse had almost no time to do anything besides organization and management stuff. Considering that he is one of our more experienced developers that sounds like a waste of potential. Not to say that he wasn’t doing an awesome job managing everything, but maybe someone else could take on the management role and free some of Lasse’s time up for developing again. Thus the teams idea was born. Having team leaders that take over parts of the management burden associated with their team’s scope would leave Lasse more free time, add more voices and brains to decisions and diversify our “leadership rank”. In the end Monolythic management can only get you so far. If you want to read more about the structure of teams in coala you can take a look at the teams cEP"
   },
   {
-    "objectID": "photography/index.html",
-    "href": "photography/index.html",
-    "title": "Photography",
+    "objectID": "blog/2017/01/30/birth-of-coala/index.html#meet-the-community-team",
+    "href": "blog/2017/01/30/birth-of-coala/index.html#meet-the-community-team",
+    "title": "The Birth of a coala",
+    "section": "Meet the community Team",
+    "text": "Meet the community Team\nI started recruiting members right after the election was over and found a number of like-minded coalians that were interested in community work in the broader sense. We have Lasse, who has his fingers everywhere but especially wanted to help with the GSoC again. Mariatta, yeay an imdb star!, who is interested in the wellbeing of the community and the newcomer experience, Hemang, our frontend guru, Kaisar the backend equivalent and Udayan who will work on administering RGSoC (besides being the Research team leader, awesome!).\nTogether we have many ideas on how to improve and grow a healthy community. Creating a welcoming environment where everyone feels welcome, a place where we can teach and learn from each other, a place where we can exchange mutual interests, a place to grow as professionals and humans."
+  },
+  {
+    "objectID": "blog/2017/01/30/birth-of-coala/index.html#what-we-achieved-so-far",
+    "href": "blog/2017/01/30/birth-of-coala/index.html#what-we-achieved-so-far",
+    "title": "The Birth of a coala",
+    "section": "What we achieved so far",
+    "text": "What we achieved so far\nThis section is part of a activity report we wanted to implement for all teams. Partly to create a mechanism of control for the rest of the coala community but mainly to give the teams a place and platform to talk about the awesome stuff they create and work on.\nThe first thing that I would claim for the community team would be the creation of the teams cEP, election for team leaders and all together the creation of the coala teams. While the cEP was written by me I had great reviewers. I wanted to list them here but looking at the PRs, that would be too many names. We had 7 leader applications for 6 teams and recently we added the review team with another Max as leader.\nAfter that Mariatta added the Code of Conduct which was lacking until then. This enabled Udayan to apply coala for the RGSoC, which just got accepted. YEAY!\nAfter that we finally got our call for participation out so all the coalians who want to become team members knew it was possible. We got a lot of applications and so far it looks promising.\nAnd finally Hemang and Kaisar wove their web-dev magic (dark arts if you ask me) and created not only a new landing page but also this awesome projects page. Although evil tongues claim the landing page was not only a community team effort I claim that all your page are belong to us.\nYou should definitely check out all the cool stuff created and give some love to the members of this awesome team."
+  },
+  {
+    "objectID": "blog/2017/01/30/birth-of-coala/index.html#whats-coming-up-next",
+    "href": "blog/2017/01/30/birth-of-coala/index.html#whats-coming-up-next",
+    "title": "The Birth of a coala",
+    "section": "What’s coming up next",
+    "text": "What’s coming up next\nWe are in the process of finalizing our GSoC application but there will be a blog post about that in the future I guess. Let’s just say that the new projects page will hopefully help us a lot (and everyone else who decides to use it. Open source baby!) and we have some exciting projects and collaborations in the pipeline.\nBesides the huge GSoC effort, I am in the process of rewriting the members cEP, which includes some major changes to our newcomer guide and we are working on improving the communication for maintainers. Hopefully this will be the done until our next post.\nIf you have ideas, questions, comments or other input, visit us in our gitter channel or drop us an email under community at coala.io.\nUntil next time,\nYour Community Team"
+  },
+  {
+    "objectID": "blog/2017/04/15/coala-call-for-chefs/index.html",
+    "href": "blog/2017/04/15/coala-call-for-chefs/index.html",
+    "title": "coala’s Call for Chefs",
     "section": "",
-    "text": "As a wizard and scholar of Middle-earth, I have been studying the magic of the natural world for centuries. Through my self-portraits, I aim to capture the essence of my own being and reflect on my own journey through time. Each photograph is a reflection of my own experiences and emotions. Through my photography, I hope to offer a glimpse into my life as a scholar and adventurer, and inspire others to reflect on their own journeys through the world.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nView the tutorial for this template (+ download link)"
+    "text": "A story I like to tell to showcase the welcoming atmosphere at coala is one about ramen. Some time last year I was talking with Asnel about how to improve a bowl of instant ramen until you get a healthy (and also very tasty) meal.  Because it was a rather quiet evening we did so in our main channel, when suddenly a wild newcomer appeared (I sadly don’t remember the name). While we helped him get started, we also continued our discussion on how adding some vegetables and a soft-boiled egg could make all the difference between a cheap snack and a fulfilling meal.\nLater that evening, the newcomer just found their way into our offtopic channel, they voiced their amazement about how we, “the gods of programming, the wise elders of this awesome open source project” could discuss such profanities as upgrading your ramen game. Surely we had more important, ground breaking, work to do. I am pretty sure those weren’t the exact words but the idea was the same. Even more amazing, the newcomer was able to participate (who has never eaten a bowl of instant ramen?) and contribute. The newcomer loved the casual atmosphere and being included, who would have guessed.\nThis taught me some things.\nIt was the last realization that made me embrace the “Secretary of Offtopic” title (which I gave to myself to be honest). Offtopic interaction seems to be something people love and it can connect complete strangers over something all sides know about.\nIn comes:"
+  },
+  {
+    "objectID": "blog/2017/04/15/coala-call-for-chefs/index.html#call-for-chefs",
+    "href": "blog/2017/04/15/coala-call-for-chefs/index.html#call-for-chefs",
+    "title": "coala’s Call for Chefs",
+    "section": "Call for Chefs",
+    "text": "Call for Chefs\nRight. In an attempt to get more offtopic fun going and to get more people to cook real food, we will start a cooking competition. Probably with more focus on the cooking and less focus on the competition. The goal after all lies on the fun of experimenting in the kitchen, trying out new meals and get becoming your own chef.\n\nThe Format\nAt this point I am not entirely sure how the format will go. We probably will do a 2 week run, where everyone can enter with a dish they cooked themselves and the recipe and then there will be a vote. I guess we’d invite the winner(s) to showcase their dish on the coala blog (maybe we can get our own category so we don’t spam it too hard) and maybe we can find someone crazy enough to get some form of prizes, who knows. As long as there are no real prizes involved, I don’t think any real rules will be written as the whole thing is just for fun and giggles.\n\n\nAny Timeline?\nJust to get rolling, the first round will start now and end in two weeks (April 29.). If you want to participate, just cook something, make nice pictures of the result (maybe also during the cooking part), write a blog post and get it onto the coala blog.\nUpdate: Create a PR to coala/recipes with your entry as a .md file and blog post format.\nThe first round will mostly be an idea finding time to figure out how we can organize this and how it is supposed to work. :)\nFinally, have fun cooking!"
+  },
+  {
+    "objectID": "blog/2017/04/19/april-community-update/index.html",
+    "href": "blog/2017/04/19/april-community-update/index.html",
+    "title": "April Community Team Update",
+    "section": "",
+    "text": "The last time you heard something from the community team was almost 3 month ago. Long long time ago…\nSo what have we been up to? And where were all those monthly updates?"
+  },
+  {
+    "objectID": "blog/2017/04/19/april-community-update/index.html#gsoc-2017",
+    "href": "blog/2017/04/19/april-community-update/index.html#gsoc-2017",
+    "title": "April Community Team Update",
+    "section": "GSoC 2017",
+    "text": "GSoC 2017\nSo yea. coala is in. We are our own organization and might even serve as an umbrella for some smaller projects.\nHow awesome is that!?!\nWe received 54 applications and the average quality is very high compared to what other orgs get. At least that is what I hear from admins and mentors. We have 22 Mentors and three admins, two of whom would also be willing to mentor students.\n79 people who would like to GSoC at coala. Wow!\nI won’t mentor anyone as we feel like a designated admin with no student ties might be a good idea if any conflict come up. This also keeps me available as a backup mentor if everything else fails and generally let’s me keep eyes on the hoard with less distraction.\n\nProjects Page\nSo I talked about the project page in the first post. Go visit projects.coala.io and see for yourself. It is absolutely gorgeous. Again designed by Hemang and deployed by Kaisar (our dev - ops dream team, praise be, praise be).\nAfter it was done, we had to fill it with projects. There was an old wiki page with rough idea outlines and as a starter, we mainly just copy-pasted the ideas over onto the new page. At FOSDEM we met Stephanie from Google and she really liked the page but told us, that the descriptions were meh for some projects. This lead to us rewriting ~20 project descriptions over two weeks. A lot of students that were already preparing for their applications helped with the new descriptions and reviews which probably helped them a lot with understanding the projects better.\nAlthough we received a lot of positive feedback for the projects page, we might not do it as in depth the next time. Although it helped students to understand the projects better, we feel like it also makes it harder for them to distinguish themselves in through the applications. It is hard to come up with your own solutions if you have a set path laid out in front of you. This is something for us to keep in mind and I bet that there will be a lot more of these ideas in the resume post of GSoC that surely will come."
+  },
+  {
+    "objectID": "blog/2017/04/19/april-community-update/index.html#members-cep-and-updates-to-the-newcomer-guide",
+    "href": "blog/2017/04/19/april-community-update/index.html#members-cep-and-updates-to-the-newcomer-guide",
+    "title": "April Community Team Update",
+    "section": "Members cEP and Updates to the Newcomer Guide",
+    "text": "Members cEP and Updates to the Newcomer Guide\nThe rewrite is essentially done but blocked by the additions to the newcomer guide that need to happen. The main additions are rules about how to remove ranks/rights from members of the community. This is mainly needed due to the high number of inactive maintainers from our early days. I also clarified some of the thoughts and ideas behind the rights tied to the ranks, for example the idea that non code contributors could become maintainers.\nThe part that blocks the PR are the rules for becoming a developer. The newcomer guide is supposed to guide everyone to the point, where we consider them a part of our developing community no longer in the learning phase of basics. To make things easier, I combined this with a lot of changes I wanted to do to the guide and so the PR is now huge and will probably take another few weeks to get merged."
+  },
+  {
+    "objectID": "blog/2017/04/19/april-community-update/index.html#why-the-silence",
+    "href": "blog/2017/04/19/april-community-update/index.html#why-the-silence",
+    "title": "April Community Team Update",
+    "section": "Why the silence?",
+    "text": "Why the silence?\nBasically GSoC happened.\nI totally underestimated the amount of time the GSoC preparation would ask from me. Not only in a productive “I have to review 20 PRs a day to get the project descriptions right” way, but also in the “Are we missing anything? Could we do something better” mind hogging kind of way. The preparation of GSoC just took all of my awareness hostage and so it almost became the sole thing I did over the last months.\nThis also led to most people from the community team being entangled in the preparation. Hemang and Kaisar basically were on standby 24/7 just waiting for us to ask for the next addition or fix we desperately needed before some deadline, Lasse was part of the never sleeping admin team, Mariatta is now a python core dev and Udayan is working and researching. Basically we were all either working on GSoC or something outside of coala. I feel like I should add, that they all worked on coala a lot more than I did during the last few month. Probably.\nEssentially we all got eaten by GSoC and now that I have some breathing room again, I try to collect everyone to get rolling again."
+  },
+  {
+    "objectID": "blog/2017/04/19/april-community-update/index.html#outlook",
+    "href": "blog/2017/04/19/april-community-update/index.html#outlook",
+    "title": "April Community Team Update",
+    "section": "Outlook",
+    "text": "Outlook\nSo what is coming up?\n\nThere will be a lot of GSoC work for sure.\nI just wrote the intro for our Call for Chefs cooking competition, that essentially was born over a ramen pep talk with Asnel half a year ago.\nI am updating our ideas page and will try to get more stuff into the works\nWe held our first maintainer meeting today. The idea is quite old but we never came around doing it. I might write something about it as we want them to be public anyway but maybe I can get someone else to do it :).\nI will kick everyone to write more blog posts although I feel like we are improving on the consistency of our blog entries.\n\nAnd I think that’s it from the top of my head."
+  },
+  {
+    "objectID": "blog/2017/11/02/gsoc-2017-postmortem-part-1-overview/index.html",
+    "href": "blog/2017/11/02/gsoc-2017-postmortem-part-1-overview/index.html",
+    "title": "",
+    "section": "",
+    "text": "Code"
   }
 ]

@@ -1,0 +1,35 @@
+# Metadata stuff
+description-meta: "{{< meta description >}}"
+
+# Date format
+date-format: "YYYY-MM-DD"
+
+# Enable banner style title blocks
+#title-block-banner: "#1e87d2"
+
+# Add blog-post class to the banner header area
+format: 
+  html:
+    code-tools: true
+    quarto-template-params:
+      banner-header-class: "blog-post"
+
+# Default for table of contents
+toc: true
+toc-title: Contents
+toc-location: left
+
+# Default knitr options
+execute:
+  echo: true
+  message: true
+  warning: true
+
+# Default author
+author:
+  - name: Maximilian Scholz
+    url: https://www.scholzmx.com/
+    orcid: 0000-0002-4486-1393
+    
+# Freeze computational output
+freeze: true

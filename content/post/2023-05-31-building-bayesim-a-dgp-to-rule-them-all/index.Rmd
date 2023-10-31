@@ -1,0 +1,112 @@
+---
+title: 'Building bayesim: A DGP to rule them all'
+author: "Maximilian Scholz"
+date: "2023-05-31"
+slug: "building-bayesim-a-dgp-to-rule-them-all"
+categories: Development
+tags: ["tutorial", "R", "simulations", "testing"]
+subtitle: ''
+summary: Simulated data is the foundation for any simulation study. In this post I
+  share some thoughts about how I went about supporting arbitrary data generating
+  functions in bayesim.
+authors: [admin]
+lastmod: "2023-05-31T09:26:19+02:00"
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: ["bayesim"]
+---
+
+3 figures, two clad in black band t-shirts, the third more formal, stand in 
+between rows of server racks. The formal figure asks "So, besides uncapped 
+job run time, what do you need?". The t-shirt warriors pull down their sunglasses,
+share a sinister look and answer "Data. Lots of data."
+
+The foundation for any simulation study are data. I guess technically the data don't
+have to be observations of some data-generating process (DGP) similar to what I have
+been using in [bayesim](https://github.com/sims1253/bayesim) so far. They could be
+any kind of artifact you'd like to simulate and do something with afterwards.
+But in a more general sense, even if you were to run a simulation study on
+images, sound or functions themselves, each individual instance would represent
+one data point.
+
+Writing a data-generating function itself is rather easy, maybe all you need is
+a simple `rnorm()` and you are done. The complicated part is to build an interface
+that supports all the extra wishes we might have in the context of our simulation
+study. Maybe we want a training and a testing data set. Maybe some parameters
+of the DGP are randomly drawn during the function call but we need them as reference
+values for later when we calculate the estimation bias for the metrics and so on.
+To allow others to write their own DGPs, I had to define some arguments and an
+output format that bayesim would expect while just asking the user to hand over
+the function as simply another argument.
+
+My solution to this was to write a check function that not only tests a user`s
+function but also gives feedback if things are missing and how to fix them.
+
+# Input arguments
+
+Besides the arguments that any data-generating function might need for itself,
+there are some optional arguments that depend on the kind of metric you might
+want to calculate on your models later on.
+Following along the currently supported metrics in the [metric_lookup](https://github.com/sims1253/bayesim/blob/2d64c950248e8e1eb6f13814b989aa48e2014f27/R/metric_lookup.R#L41) the first thing dependent on the DGP are reference
+values for some of the variable base metrics like bias and rmse.
+Luckily we already have the `vars_of_interest` argument that we plan to use during
+metric calculation that we can simply reuse as we would need reference values for
+all variables of interest anyway.
+For some of the predictive metrics we need test datasets, that the model hasn't
+seen during fitting. While data generation will be a lot quicker than model
+fitting, I think it is good courtesy not to require additional testing data sets
+when they are not needed. A simple `testing_data` flag should be all that we
+need for this.
+Finally we need to be able to pass an rng `seed` to [make the DGP reproducible](/post/how-to-make-your-simulation-study-reproducible/).
+
+In R, you can use the `formals()` function to get a list of the *formal arguments*
+of a function. Using this it is rather easy to test if a function accepts the
+arguments we just defined:
+
+```{r}
+missing_dgp_args <- function(fun){
+  required_args <- c(
+    "vars_of_interest",
+    "testing_data",
+    "seed"
+  )
+  return(
+    required_args[
+      !(
+        required_args %in% names(formals(fun))
+      )
+    ]
+  )
+}
+
+good_dpg <- function(n, vars_of_interest, testing_data, seed) {
+  rep(1, n)
+}
+
+bad_dgp <- function(n, vars_of_interest, testing_data) {
+  rep(1, n)
+}
+
+missing_dgp_args(good_dpg)
+missing_dgp_args(bad_dgp)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
