@@ -2,21 +2,9 @@
 title: 'Building bayesim: A DGP to rule them all'
 author: "Maximilian Scholz"
 date: "2023-05-31"
-slug: "building-bayesim-a-dgp-to-rule-them-all"
-categories: Development
+categories: [Development]
 tags: ["tutorial", "R", "simulations", "testing"]
-subtitle: ''
-summary: Simulated data is the foundation for any simulation study. In this post I
-  share some thoughts about how I went about supporting arbitrary data generating
-  functions in bayesim.
-authors: [admin]
-lastmod: "2023-05-31T09:26:19+02:00"
-featured: no
-image:
-  caption: ''
-  focal_point: ''
-  preview_only: no
-projects: ["bayesim"]
+description: "Simulated data is the foundation for any simulation study. In this post I share some thoughts about how I went about supporting arbitrary data generating functions in bayesim."
 ---
 
 3 figures, two clad in black band t-shirts, the third more formal, stand in 

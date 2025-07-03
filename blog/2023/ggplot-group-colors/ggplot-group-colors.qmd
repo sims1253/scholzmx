@@ -1,3 +1,12 @@
+---
+title: "Custom Color Grouping in ggplot2"
+author: "Maximilian Scholz"
+date: "2023-06-01"
+categories: [R, ggplot2, visualization]
+tags: ["ggplot2", "R", "colors", "visualization"]
+description: "How to use custom color grouping in ggplot2 with meta-groups and custom color mapping."
+---
+
 I have a model fitted on data from 5 groups and want to plot the conditional effects for them. However, I don't want one color per group but instead want to color them according to meta-groups. If I use the meta-group as an argument for the color and fill, I get the zigzag lines. group_by(group) also doesn't help here.
 Instead we have to fiddle with the legend and the color map.
 Arrange the colors in the order we want them to be and, and this is the final trick needed, name the colors with their corresponding group. You also need a labeler to overwrite the actual groups in the legend later, but only for the things that will be in the breaks vector.
