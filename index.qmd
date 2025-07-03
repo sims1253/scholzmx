@@ -4,6 +4,10 @@ about:
   template: jolla
   id: about-block
   image: "img/my_image.jpg"
+format:
+  html:
+    include-after-body: sunlit-script.js
+    page-layout: full
 # links:
 #    - icon: twitter
 #      text: Twitter
@@ -19,23 +23,91 @@ about:
 #      href: "mailto:mail.marvinschmitt@gmail.com"  
 ---
 
-::: {#about-block}
-:::
-
-# Welcome to my website!
-
-I am Gandalf the White, a renowned wizard and scholar of Middle-earth. Over the centuries, I have dedicated my life to studying the history, languages, and cultures of the peoples of Middle-earth. On this website, I offer a glimpse into my vast body of knowledge, ongoing research, and publications.
-
-My research interests span the entirety of Middle-earth, from the distant past to the present day. I am particularly passionate about the languages and mythologies of the Elves, Dwarves, and Men, and I have made significant contributions to the understanding of these subjects. My studies of the natural world have also been extensive, and I am an expert in the flora and fauna of Middle-earth. Additionally, I have been involved in many important historical events and offer valuable first-hand accounts and insights on the past.
-
-Not only am I a scholar, but I am also a mentor and teacher. Over the centuries, I have had the honor of working with many young wizards, passing on my knowledge and experience to the next generation. I have a particular interest in the education of hobbits, whom I see as having great potential despite their small size and simple lifestyle. My teaching style is engaging and accessible, and I encourage my students to think critically and creatively.
-
-On this website, you will find a selection of my published works, including scholarly articles, monographs, and translations. You will also find news and updates on my current research projects, as well as information on upcoming events and conferences where I will be speaking. I invite you to explore my website and learn more about my life's work as one of Middle-earth's greatest scholars and thinkers.
-Please feel free to [contact me](mailto:mail.marvinschmitt@gmail.com) if you have any questions or would like to discuss potential projects.
-
-```{=html}
-<div  style="margin: 30px; text-align: center;">
-<a class="btn btn-primary" href="https://www.marvinschmitt.com/blog/website-tutorial-quarto/" role="button" target="_blank" style="padding: 15px 30px;">View the tutorial for this template (+ download link)</a>
+<!-- Sunlit visual effects layer -->
+<div id="dappled-light">
+  <div id="glow"></div>
+  <div id="glow-bounce"></div>
+  <div class="perspective">
+    <div id="leaves">
+      <svg style="width: 0; height: 0; position: absolute;">
+        <defs>
+          <filter id="wind" x="-20%" y="-20%" width="140%" height="140%">
+            <feTurbulence type="fractalNoise" numOctaves="2" seed="1">
+              <animate attributeName="baseFrequency" dur="16s" keyTimes="0;0.33;0.66;1"
+                values="0.005 0.003;0.01 0.009;0.008 0.004;0.005 0.003" repeatCount="indefinite" />
+            </feTurbulence>
+            <feDisplacementMap in="SourceGraphic">
+              <animate attributeName="scale" dur="20s" keyTimes="0;0.25;0.5;0.75;1" values="45;55;75;55;45"
+                repeatCount="indefinite" />
+            </feDisplacementMap>
+          </filter>
+        </defs>
+      </svg>
+    </div>
+    <div id="blinds">
+      <div class="shutters">
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+      </div>
+      <div class="vertical">
+        <div class="bar"></div>
+        <div class="bar"></div>
+      </div>
+    </div>
+  </div>
+  <div id="progressive-blur">
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
 </div>
-```
 
+<!-- Main content area -->
+<article class="sunlit-content">
+  ::: {#about-block}
+  :::
+
+  # Welcome to my website!
+
+  I am Gandalf the White, a renowned wizard and scholar of Middle-earth. Over the centuries, I have dedicated my life to studying the history, languages, and cultures of the peoples of Middle-earth. On this website, I offer a glimpse into my vast body of knowledge, ongoing research, and publications.
+
+  My research interests span the entirety of Middle-earth, from the distant past to the present day. I am particularly passionate about the languages and mythologies of the Elves, Dwarves, and Men, and I have made significant contributions to the understanding of these subjects. My studies of the natural world have also been extensive, and I am an expert in the flora and fauna of Middle-earth. Additionally, I have been involved in many important historical events and offer valuable first-hand accounts and insights on the past.
+
+  Not only am I a scholar, but I am also a mentor and teacher. Over the centuries, I have had the honor of working with many young wizards, passing on my knowledge and experience to the next generation. I have a particular interest in the education of hobbits, whom I see as having great potential despite their small size and simple lifestyle. My teaching style is engaging and accessible, and I encourage my students to think critically and creatively.
+
+  On this website, you will find a selection of my published works, including scholarly articles, monographs, and translations. You will also find news and updates on my current research projects, as well as information on upcoming events and conferences where I will be speaking. I invite you to explore my website and learn more about my life's work as one of Middle-earth's greatest scholars and thinkers.
+
+  Please feel free to [contact me](mailto:mail.marvinschmitt@gmail.com) if you have any questions or would like to discuss potential projects.
+
+  <div class="sunlit-toggle-hint">
+    <small><em>[press <code>space</code> or click anywhere to toggle the sun]</em></small>
+  </div>
+
+  ```{=html}
+  <div  style="margin: 30px; text-align: center;">
+  <a class="btn btn-primary" href="https://www.marvinschmitt.com/blog/website-tutorial-quarto/" role="button" target="_blank" style="padding: 15px 30px;">View the tutorial for this template (+ download link)</a>
+  </div>
+  ```
+</article>

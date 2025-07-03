@@ -1,6 +1,6 @@
-/* Core theme styles for integration with sunlit aesthetic */
+/* Integrated sunlit and paper-y theme styles */
 
-/* CSS Custom Properties for future sunlit integration */
+/* CSS Custom Properties */
 :root {
   /* Paper-y color palette */
   --paper-white: #fdfbf6;
@@ -8,7 +8,7 @@
   --text-dark: #333333;
   --accent-terracotta: #8a3b3b;
   
-  /* Future sunlit color palette (ready for integration) */
+  /* Sunlit color palette */
   --day: #fffdfa;
   --evening: #fccc83;
   --dusk: #db7a2a;
@@ -16,15 +16,254 @@
   --dawn: #16132b;
   --morning: #9fb3bf;
   
-  /* Animation timing for future sunlit effects */
+  /* Unified light/dark variables */
+  --light: var(--day);
+  --dark: var(--night);
+  --shadow: #1a1917;
+  --bounce-light: #f5d7a6;
+  
+  /* Animation timing */
   --timing-fn: cubic-bezier(0.455, 0.190, 0.000, 0.985);
 }
 
-/* Enhanced body styling for paper-y feel */
+/* Enhanced body styling with sunlit integration */
 body {
-  background-color: var(--paper-white);
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  background-color: var(--light);
   color: var(--text-dark);
-  transition: background-color 1s var(--timing-fn);
+  
+  /* Animation setup */
+  animation-duration: 0s;
+  animation-fill-mode: forwards;
+  animation-timing-function: linear;
+}
+
+body.animation-ready {
+  animation-play-state: running;
+  animation-duration: 1s;
+  animation-name: sunrise;
+}
+
+body.animation-ready.dark {
+  animation-duration: 1.7s;
+  animation-name: sunset;
+}
+
+body.dark {
+  --light: var(--night);
+  --dark: var(--day);
+  --shadow: #030307;
+  --bounce-light: #1b293f;
+  color: var(--day);
+}
+
+/* Animation keyframes for day/night transitions */
+@keyframes sunrise {
+  0% {
+    background-color: var(--night);
+  }
+  10% {
+    background-color: var(--dawn);
+  }
+  35% {
+    background-color: var(--morning);
+  }
+  100% {
+    background-color: var(--day);
+  }
+}
+
+@keyframes sunset {
+  0% {
+    background-color: var(--day);
+  }
+  30% {
+    background-color: var(--evening);
+  }
+  60% {
+    background-color: var(--dusk);
+  }
+  90% {
+    background-color: var(--dawn);
+  }
+  100% {
+    background-color: var(--night);
+  }
+}
+
+/* Sunlit effects layer */
+#dappled-light {
+  pointer-events: none;
+  position: fixed;
+  height: 100vh;
+  width: 100vw;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+
+#progressive-blur {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+
+#progressive-blur>div {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  inset: 0;
+  backdrop-filter: blur(var(--blur-amount));
+  mask-image: linear-gradient(252deg, transparent, transparent var(--stop1), black var(--stop2), black);
+}
+
+#progressive-blur>div:nth-child(1) {
+  --blur-amount: 6px;
+  --stop1: 0%;
+  --stop2: 0%;
+}
+
+#progressive-blur>div:nth-child(2) {
+  --blur-amount: 12px;
+  --stop1: 40%;
+  --stop2: 80%;
+}
+
+#progressive-blur>div:nth-child(3) {
+  --blur-amount: 48px;
+  --stop1: 40%;
+  --stop2: 70%;
+}
+
+#progressive-blur>div:nth-child(4) {
+  --blur-amount: 96px;
+  --stop1: 70%;
+  --stop2: 80%;
+}
+
+#glow {
+  position: absolute;
+  background: linear-gradient(309deg, var(--bounce-light), var(--bounce-light) 20%, transparent);
+  transition: background 1.0s var(--timing-fn);
+  height: 100%;
+  width: 100%;
+  opacity: 0.5;
+}
+
+#glow-bounce {
+  content: "";
+  position: absolute;
+  background: linear-gradient(355deg, var(--bounce-light) 0%, transparent 30%, transparent 100%);
+  transition: background 1.0s var(--timing-fn);
+  opacity: 0.5;
+  height: 100%;
+  width: 100%;
+  bottom: 0;
+}
+
+.perspective {
+  position: absolute;
+  transition: transform 1.7s var(--timing-fn), opacity 4s ease;
+  top: -30vh;
+  right: 0;
+  width: 80vw;
+  height: 130vh;
+  opacity: 0.07;
+  background-blend-mode: darken;
+  transform-origin: top right;
+  transform-style: preserve-3d;
+  transform: matrix3d(0.7500, -0.0625, 0.0000, 0.0008,
+      0.0000, 1.0000, 0.0000, 0.0000,
+      0.0000, 0.0000, 1.0000, 0.0000,
+      0.0000, 0.0000, 0.0000, 1.0000);
+}
+
+.dark .perspective {
+  opacity: 0.3;
+  transform: matrix3d(0.8333, 0.0833, 0.0000, 0.0003,
+      0.0000, 1.0000, 0.0000, 0.0000,
+      0.0000, 0.0000, 1.0000, 0.0000,
+      0.0000, 0.0000, 0.0000, 1.0000);
+}
+
+#leaves {
+  position: absolute;
+  background-size: cover;
+  background-repeat: no-repeat;
+  bottom: -20px;
+  right: -700px;
+  width: 1600px;
+  height: 1400px;
+  background-image: url("./leaves.png");
+  filter: url(#wind);
+  animation: billow 8s ease-in-out infinite;
+}
+
+#blinds {
+  position: relative;
+  width: 100%;
+}
+
+#blinds .shutter,
+#blinds .bar {
+  background-color: var(--shadow);
+}
+
+#blinds>.shutters {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  gap: 60px;
+  transition: gap 1.0s var(--timing-fn);
+}
+
+.dark #blinds>.shutters {
+  gap: 20px;
+}
+
+#blinds>.vertical {
+  top: 0;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+}
+
+.vertical>.bar {
+  width: 5px;
+  height: 100%;
+}
+
+.shutter {
+  width: 100%;
+  height: 40px;
+  transition: height 1.0s var(--timing-fn);
+}
+
+.dark .shutter {
+  height: 80px;
+}
+
+@keyframes billow {
+  0% {
+    transform: perspective(400px) rotateX(0deg) rotateY(0deg) scale(1);
+  }
+  25% {
+    transform: perspective(400px) rotateX(1deg) rotateY(2deg) scale(1.02);
+  }
+  50% {
+    transform: perspective(400px) rotateX(-4deg) rotateY(-2deg) scale(0.97);
+  }
+  75% {
+    transform: perspective(400px) rotateX(1deg) rotateY(-1deg) scale(1.04);
+  }
+  100% {
+    transform: perspective(400px) rotateX(0deg) rotateY(0deg) scale(1);
+  }
 }
 
 /* Content container for maximum readability */
@@ -33,9 +272,19 @@ article {
   max-width: 800px;
   margin: 0 auto;
   padding: 2rem 1rem;
+  position: relative;
+  z-index: 1;
 }
 
-/* Link styling with accent color */
+/* Sunlit content styling */
+article.sunlit-content {
+  color: var(--dark);
+  isolation: isolate;
+  padding: 40vh 2rem 2rem;
+  transition: color 1s var(--timing-fn);
+}
+
+/* Link styling with accent color and dark mode support */
 a {
   color: var(--accent-terracotta);
   text-decoration: none;
@@ -45,6 +294,15 @@ a {
 
 a:hover {
   border-bottom-color: var(--accent-terracotta);
+}
+
+article.sunlit-content a {
+  color: var(--dark);
+  transition: color 1s var(--timing-fn);
+}
+
+article.sunlit-content a:hover {
+  border-bottom-color: var(--dark);
 }
 
 /* Navigation styling */
@@ -69,22 +327,16 @@ a:hover {
   color: var(--text-dark);
 }
 
-/* Prepare structure for future sunlit effects */
-#sunlit-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  pointer-events: none;
-  z-index: -1;
-  opacity: 0;
-  transition: opacity 2s ease;
+/* Sunlit toggle hint styling */
+.sunlit-toggle-hint {
+  text-align: center;
+  margin: 2rem 0;
+  opacity: 0.7;
+  transition: opacity 1s var(--timing-fn);
 }
 
-/* Future-ready class for sunlit activation */
-body.sunlit-ready #sunlit-container {
-  opacity: 1;
+.dark .sunlit-toggle-hint {
+  opacity: 0.8;
 }
 
 /* Responsive design */
@@ -92,5 +344,18 @@ body.sunlit-ready #sunlit-container {
   .quarto-body-content,
   article {
     padding: 1rem 0.75rem;
+  }
+  
+  article.sunlit-content {
+    padding: 30vh 1rem 1rem;
+  }
+  
+  .perspective {
+    width: 90vw;
+  }
+  
+  #leaves {
+    right: -500px;
+    width: 1200px;
   }
 }
