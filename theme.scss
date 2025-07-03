@@ -1,0 +1,20 @@
+/*-- scss:defaults --*/
+// Fonts (Privacy-focused from Bunny Fonts)
+@import url('https://fonts.bunny.net/css?family=lora:400,700|source-sans-pro:400,700');
+$font-family-sans-serif: "Source Sans Pro", sans-serif;
+$font-family-serif: "Lora", serif;
+$font-family-base: $font-family-serif;
+
+// Colors
+$body-bg: #fdfbf6;
+$body-color: #333333;
+$link-color: #8a3b3b; // A muted terracotta/red
+
+/*-- scss:rules --*/
+// Layout
+body {
+  line-height: 1.7;
+}
+.navbar {
+  font-family: $font-family-sans-serif;
+}

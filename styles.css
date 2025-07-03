@@ -1,0 +1,96 @@
+/* Core theme styles for integration with sunlit aesthetic */
+
+/* CSS Custom Properties for future sunlit integration */
+:root {
+  /* Paper-y color palette */
+  --paper-white: #fdfbf6;
+  --paper-shadow: #f0ede5;
+  --text-dark: #333333;
+  --accent-terracotta: #8a3b3b;
+  
+  /* Future sunlit color palette (ready for integration) */
+  --day: #fffdfa;
+  --evening: #fccc83;
+  --dusk: #db7a2a;
+  --night: #0f131c;
+  --dawn: #16132b;
+  --morning: #9fb3bf;
+  
+  /* Animation timing for future sunlit effects */
+  --timing-fn: cubic-bezier(0.455, 0.190, 0.000, 0.985);
+}
+
+/* Enhanced body styling for paper-y feel */
+body {
+  background-color: var(--paper-white);
+  color: var(--text-dark);
+  transition: background-color 1s var(--timing-fn);
+}
+
+/* Content container for maximum readability */
+.quarto-body-content,
+article {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* Link styling with accent color */
+a {
+  color: var(--accent-terracotta);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-bottom-color 0.3s ease;
+}
+
+a:hover {
+  border-bottom-color: var(--accent-terracotta);
+}
+
+/* Navigation styling */
+.navbar {
+  background-color: var(--paper-white);
+  border-bottom: 1px solid var(--paper-shadow);
+}
+
+/* Content spacing for better readability */
+.quarto-body-content p {
+  margin-bottom: 1.2em;
+}
+
+.quarto-body-content h1,
+.quarto-body-content h2,
+.quarto-body-content h3,
+.quarto-body-content h4,
+.quarto-body-content h5,
+.quarto-body-content h6 {
+  margin-top: 2em;
+  margin-bottom: 0.8em;
+  color: var(--text-dark);
+}
+
+/* Prepare structure for future sunlit effects */
+#sunlit-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 2s ease;
+}
+
+/* Future-ready class for sunlit activation */
+body.sunlit-ready #sunlit-container {
+  opacity: 1;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .quarto-body-content,
+  article {
+    padding: 1rem 0.75rem;
+  }
+}
