@@ -728,6 +728,24 @@ article.sunlit-content a:hover {
   background: var(--night) url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEWFhYWDg4N3d3dtbW17e3t1dXVדהדחZWVldXV2MjIyRkZGNjY1WVlZQUFBXV1dDQ0NBQUFERERGRkZGQkJBQUF6enp4eHhycnJra2tGRkY6OjoBAAAA6gJ4AAAAHUlEQVR42u3OMQEAAAgDAIgP4f81jCRy5gAAAAAAAAAAAPsDAnAAATgAAZwAAgAAAABJRU5ErkJggg==');
 }
 
+.footer::after {
+  content: '';
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  width: 50px;
+  height: 50px;
+  background-image: url('/img/botanical-flourish.svg');
+  background-repeat: no-repeat;
+  background-size: contain;
+  opacity: 0.3;
+  filter: invert(15%) sepia(13%) saturate(3011%) hue-rotate(315deg) brightness(94%) contrast(86%);
+}
+
+.dark .footer::after {
+    filter: invert(99%) sepia(5%) saturate(436%) hue-rotate(299deg) brightness(115%) contrast(89%);
+}
+
 .footer p,
 .footer .nav-link {
   color: var(--text-dark);
