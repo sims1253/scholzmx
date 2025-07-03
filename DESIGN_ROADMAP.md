@@ -29,24 +29,54 @@ The new site will be built using Quarto, leveraging its powerful code-rendering 
 
 ### 4.1. Inspirations
 
-- **`simonsarris.com`:** Model for the minimalist, single-column layout, clean header navigation, and overall focus on readable content.
-- **`gwern.net` / `turntrout.com`:** Inspiration for future-state advanced hosting (caching, archival) and deep, interconnected content.
-- **`putanumonit.com` / `mailchi.mp/btiscience/ferns`:** Inspiration for the "paper-y" feel, warm color palettes, and classic typography.
+- **`simonsarris.com`:** Model for the minimalist, single-column layout, clean header navigation, and overall focus on readable content. Particularly inspired by the landscape scribbles in the background and small illustrations at the bottom of pages.
+- **`gwern.net` / `turntrout.com`:** Inspiration for future-state advanced hosting (caching, archival) and deep, interconnected content. Turntrout's fish with vine leaves, large illustrated initials, nice typography, and pixel art animations exemplify the handcrafted aesthetic we're aiming for.
+- **`putanumonit.com` / `mailchi.mp/btiscience/ferns`:** Inspiration for the "paper-y" feel, warm color palettes, and classic typography. The fern botanical illustrations represent the organic, handcrafted aesthetic we want to achieve.
 - **Edward Tufte:** The work of Edward Tufte will inform the site's commitment to data visualization, clarity, and information density.
 
-### 4.2. Layout
+### 4.2. Game UI Aesthetic Philosophy
+
+**Core Principle: UI as Part of the World**
+The website should feel like a cozy, discoverable world rather than a sterile corporate interface. This means:
+
+- **Embedded Interface Elements:** Instead of generic floating buttons and menus, interface elements should feel integrated into the world (like Settlers 4's stone wall framing, or a scroll for navigation menus).
+- **Hidden Discoveries:** Following the Peterson & Findus and Löwenzahn PC games philosophy, there should be small, delightful elements that users can discover by exploring - hidden animations, easter eggs, or subtle interactive details.
+- **Handcrafted Materials:** Embrace organic textures, botanical illustrations, manuscript illuminations, and aged paper aesthetics over clean geometric shapes.
+- **Cozy Adventure Feel:** The site should evoke the warmth of a point-and-click adventure game rather than the sterility of a modern corporate website.
+
+**Visual References:**
+- Century botanical illustrations: detailed, handcrafted, aged paper feel
+- Manuscript illuminations: ornate initial letters, organic decorative elements
+- Forest textures: moss, ferns, natural materials over stark minimalism
+- Game world integration: interface elements that feel like natural parts of the environment
+
+**Anti-Patterns to Avoid:**
+- Generic "Unity UI" sterile modern look
+- Floating buttons and menus that feel disconnected from the content
+- Overly clean, geometric designs that lack soul and personality
+- Corporate website aesthetics that prioritize "professional" over "personal"
+
+**Achieving a "Haptic" Feel without Skeuomorphism:**
+The goal is to make elements feel tangible and part of the world, but we must avoid the pitfalls of dated, overly literal skeuomorphism (e.g., a literal stone texture that looks like a 2000s video game UI). The approach should be subtle and focus on texture, depth, and material feel.
+
+- **Texture over Graphics:** Instead of applying a repeating `stone.jpg` as a background, we can use subtle noise, paper-like textures, and layered CSS gradients to create a sense of depth and material.
+- **Shadow and Light:** Use soft, complex shadows to lift elements off the page or give them an "embossed" or "impressed" feel, rather than hard, unrealistic drop-shadows.
+- **Organic Borders & Edges:** Instead of sharp, geometric borders, we can use slightly irregular, organic-feeling borders or layered elements to soften the digital feel.
+- **Subtle Animations:** Animations should reinforce the material feel. For example, a button press could have a subtle "squish" effect, as if pressing into a soft surface.
+
+### 4.3. Layout
 
 - **Main Layout:** A single, centered content column with generous whitespace. Max width of `800px`.
 - **Header:** Simple header with "Max Scholz" on the left and navigation links (`Blog`, `Research`, `About`, `CV`) on the right.
 - **Footer:** Minimal footer with copyright, CC license, and social/professional links.
 
-### 4.3. Color Palette
+### 4.4. Color Palette
 
 - **Background:** Warm, off-white, paper-like color (e.g., `#fdfbf6`).
 - **Text:** Dark, soft gray/black (e.g., `#333333`).
 - **Accent Color:** Muted, earthy tone for links (e.g., a deep green or terracotta).
 
-### 4.4. Typography (Privacy-Focused)
+### 4.5. Typography (Privacy-Focused)
 
 - **Font Source:** [Bunny Fonts](https://fonts.bunny.net/) (GDPR-compliant Google Fonts alternative).
 - **Body Text:** A classic, readable serif font (e.g., "Lora" or "Source Serif Pro").
@@ -55,7 +85,20 @@ The new site will be built using Quarto, leveraging its powerful code-rendering 
 
 ## 5. Feature Specifications
 
-(Content is unchanged from previous version)
+This section details the specific features to be implemented, derived from the project's goals and design principles.
+
+- **Homepage:** A welcoming landing page that introduces the author and provides clear navigation to other sections.
+- **Blog:** A reverse-chronological listing of blog posts with support for categories. The design will prioritize readability.
+- **Research Page:** A dedicated section to list academic publications, pre-prints, and ongoing research projects.
+- **About Page:** A personal page containing a biography and contact information. It will feature a unique, interactive element like a flipping profile image.
+- **Art Showcase:** A non-intrusive, desktop-only element that showcases personal artwork (e.g., paintings by the author's mother). This element will rotate through a series of images.
+- **Custom Theme:** A completely custom visual theme with a "paper-y" aesthetic, warm color palette, and carefully selected typography.
+- **Responsive Design:** The website will be fully responsive and functional on all screen sizes, from mobile to desktop.
+- **Interactive Elements:**
+  - **Flipping Profile Image:** A CSS-only interactive element on the About page.
+  - **Rotating Art & Phrases:** JavaScript-powered elements to add a dynamic, personal touch.
+  - **Stylized Drop Caps:** A decorative CSS element to enhance the manuscript feel of the text.
+- **Deployment:** A fully automated deployment process using GitHub Actions to build and deploy the site to GitHub Pages.
 
 ## 6. Implementation Roadmap: Atomic Commits
 
