@@ -5,6 +5,9 @@ project:
 website:
   title: "Max Scholz"
   site-url: "https://scholzmx.com"
+  search:
+    location: navbar
+    type: overlay
   navbar:
     background: primary
     right:
