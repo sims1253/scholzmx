@@ -23,6 +23,7 @@ format:
 #      href: "mailto:mail.marvinschmitt@gmail.com"  
 ---
 
+```{=html}
 <!-- Sunlit visual effects layer -->
 <div id="dappled-light">
   <div id="glow"></div>
@@ -83,7 +84,9 @@ format:
     <div></div>
   </div>
 </div>
+```
 
+```{=html}
 <!-- Art Showcase - Fixed position for wide screens -->
 <div class="art-showcase" id="art-showcase">
   <div class="artwork active">
@@ -102,6 +105,7 @@ format:
     Mother's Artwork Collection
   </div>
 </div>
+```
 
 <!-- Main content area -->
 <article class="sunlit-content">
