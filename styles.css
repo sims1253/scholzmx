@@ -129,19 +129,19 @@ body.dark {
 #progressive-blur>div:nth-child(2) {
   --blur-amount: 4px;
   --stop1: 60%;
-  --stop2: 90%;
+  --stop2: 75%;
 }
 
 #progressive-blur>div:nth-child(3) {
   --blur-amount: 8px;
   --stop1: 70%;
-  --stop2: 90%;
+  --stop2: 80%;
 }
 
 #progressive-blur>div:nth-child(4) {
   --blur-amount: 12px;
   --stop1: 80%;
-  --stop2: 95%;
+  --stop2: 85%;
 }
 
 #glow {
@@ -535,6 +535,240 @@ article.sunlit-content a:hover {
   text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.1);
 }
 
+/* Footer styling - ensure clear text readability */
+.footer {
+  position: relative;
+  z-index: 100;
+  background-color: var(--paper-white);
+  border-top: 1px solid var(--paper-shadow);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.dark .footer {
+  background-color: var(--night);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer p,
+.footer .nav-link {
+  color: var(--text-dark);
+  text-shadow: none;
+  filter: none;
+}
+
+.dark .footer p,
+.dark .footer .nav-link {
+  color: var(--day);
+}
+
+.footer .nav-link:hover {
+  color: var(--accent-terracotta);
+}
+
+.footer .bi {
+  filter: none;
+  opacity: 1;
+}
+
+/* Organic UI Elements - Manuscript/Botanical Style */
+.manuscript-header {
+  display: flex;
+  align-items: center;
+  margin: 2rem 0 3rem 0;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, var(--paper-white), var(--paper-shadow));
+  border-radius: 12px;
+  border: 2px solid var(--paper-shadow);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.dark .manuscript-header {
+  background: linear-gradient(135deg, var(--night), var(--dawn));
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.illuminated-initial {
+  font-size: 4rem;
+  font-weight: bold;
+  color: var(--accent-terracotta);
+  font-family: Georgia, 'Times New Roman', serif;
+  margin-right: 1rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  line-height: 1;
+  background: linear-gradient(45deg, var(--accent-terracotta), #b84a4a);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: relative;
+}
+
+.illuminated-initial::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background: radial-gradient(circle, rgba(138, 59, 59, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  z-index: -1;
+}
+
+.manuscript-title {
+  font-size: 2.5rem;
+  font-weight: 300;
+  color: var(--text-dark);
+  font-family: Georgia, 'Times New Roman', serif;
+  letter-spacing: 0.5px;
+}
+
+.dark .manuscript-title {
+  color: var(--day);
+}
+
+/* Project Showcase Cards */
+.project-showcase {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 2rem;
+  margin: 2rem 0;
+  padding: 2rem;
+  background: var(--paper-white);
+  border-radius: 16px;
+  border: 1px solid var(--paper-shadow);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+}
+
+.dark .project-showcase {
+  background: var(--night);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.project-showcase:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+}
+
+.dark .project-showcase:hover {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+}
+
+.project-banner {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--paper-shadow);
+}
+
+.project-banner img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.project-showcase:hover .project-banner img {
+  transform: scale(1.05);
+}
+
+.project-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.project-details h2 {
+  margin-top: 0;
+  color: var(--text-dark);
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.dark .project-details h2 {
+  color: var(--day);
+}
+
+.project-details p {
+  line-height: 1.6;
+  color: var(--text-dark);
+}
+
+.dark .project-details p {
+  color: var(--day);
+}
+
+/* Organic decorative elements */
+.manuscript-header::after {
+  content: '';
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 30px;
+  height: 30px;
+  background: radial-gradient(circle, var(--accent-terracotta) 30%, transparent 31%);
+  border-radius: 50%;
+  opacity: 0.6;
+}
+
+.project-showcase::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  width: 8px;
+  height: 8px;
+  background: var(--accent-terracotta);
+  border-radius: 50%;
+  opacity: 0.4;
+}
+
+.project-showcase::after {
+  content: '';
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+  width: 12px;
+  height: 12px;
+  background: linear-gradient(45deg, var(--accent-terracotta), transparent);
+  border-radius: 50%;
+  opacity: 0.3;
+}
+
+/* Enhanced link styling for organic feel */
+.project-details a {
+  color: var(--accent-terracotta);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: all 0.3s ease;
+  position: relative;
+  padding: 0.2rem 0;
+}
+
+.project-details a:hover {
+  border-bottom-color: var(--accent-terracotta);
+  transform: translateY(-1px);
+}
+
+.project-details a::before {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-terracotta), transparent);
+  transition: width 0.3s ease;
+}
+
+.project-details a:hover::before {
+  width: 100%;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .quarto-body-content,
@@ -567,5 +801,32 @@ article.sunlit-content a:hover {
   .quarto-body-content h3 + p::first-letter {
     font-size: 3.5rem;
     line-height: 2.8rem;
+  }
+  
+  /* Responsive organic elements */
+  .manuscript-header {
+    flex-direction: column;
+    text-align: center;
+    padding: 1rem;
+  }
+  
+  .illuminated-initial {
+    font-size: 3rem;
+    margin-right: 0;
+    margin-bottom: 0.5rem;
+  }
+  
+  .manuscript-title {
+    font-size: 1.8rem;
+  }
+  
+  .project-showcase {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 1.5rem;
+  }
+  
+  .project-banner img {
+    height: 150px;
   }
 }
