@@ -309,8 +309,36 @@ article.sunlit-content a:hover {
 
 /* Navigation styling */
 .navbar {
-  background-color: var(--paper-white);
+  position: relative; /* Needed for pseudo-element positioning */
   border-bottom: 1px solid var(--paper-shadow);
+  background: var(--paper-white) url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEWFhYWDg4N3d3dtbW17e3t1dXVדהדחZWVldXV2MjIyRkZGNjY1WVlZQUFBXV1dDQ0NBQUFERERGRkZGQkJBQUF6enp4eHhycnJra2tGRkY6OjoBAAAA6gJ4AAAAHUlEQVR42u3OMQEAAAgDAIgP4f81jCRy5gAAAAAAAAAAAPsDAnAAATgAAZwAAgAAAABJRU5ErkJggg==');
+}
+
+.navbar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEWFhYWDg4N3d3dtbW17e3t1dXVדהדחZWVldXV2MjIyRkZGNjY1WVlZQUFBXV1dDQ0NBQUFERERGRkZGQkJBQUF6enp4eHhycnJra2tGRkY6OjoBAAAA6gJ4AAAAHUlEQVR42u3OMQEAAAgDAIgP4f81jCRy5gAAAAAAAAAAAPsDAnAAATgAAZwAAgAAAABJRU5ErkJggg==');
+  opacity: 0.05;
+  z-index: 0;
+}
+
+/* Ensure navbar content is above the texture */
+.navbar-brand, .navbar-nav {
+  position: relative;
+  z-index: 1;
+}
+
+.navbar-nav .nav-link {
+  transition: all 0.2s ease-in-out;
+}
+
+.navbar-nav .nav-link:hover {
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.1);
+  transform: translateY(1px);
 }
 
 /* Search field styling - Make search field visible and styled */
