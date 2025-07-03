@@ -740,10 +740,33 @@ article.sunlit-content a:hover {
   background-size: contain;
   opacity: 0.3;
   filter: invert(15%) sepia(13%) saturate(3011%) hue-rotate(315deg) brightness(94%) contrast(86%);
+  transition: all 0.3s ease-in-out;
+}
+
+.footer:hover::after {
+  opacity: 0.5;
+  transform: scale(1.05);
 }
 
 .dark .footer::after {
     filter: invert(99%) sepia(5%) saturate(436%) hue-rotate(299deg) brightness(115%) contrast(89%);
+}
+
+@keyframes fadeIn-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  main {
+    animation: fadeIn-up 0.8s ease-out;
+  }
 }
 
 .footer p,
