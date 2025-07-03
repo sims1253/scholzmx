@@ -2,22 +2,98 @@
 title: Projects
 ---
 
-## Bayesian Methods for Computational Science
+```{=html}
+<div class="manuscript-header">
+  <div class="illuminated-initial">P</div>
+  <div class="manuscript-title">Projects & Software</div>
+</div>
+```
 
-<img src="project_1_banner.png" style="height: 100%; width: 100%; object-fit: contain"/>
+## huerd: Perceptually Optimized Color Palettes
 
-<a href="https://github.com/scholzmx" target="_blank">GitHub</a><br>
+```{=html}
+<div class="project-showcase">
+  <div class="project-banner">
+    <img src="project_1_banner.png" alt="huerd Color Palette Generator"/>
+  </div>
+  <div class="project-details">
+```
 
-I am developing novel Bayesian statistical methods for complex computational problems in scientific computing. This research focuses on uncertainty quantification, model selection, and robust inference in high-dimensional parameter spaces. My work aims to provide researchers with practical tools for making reliable decisions under uncertainty, particularly in simulation-based sciences where traditional statistical approaches may fall short.
+**A discrete color palette generator with support for fixed colors optimized for both normal and color vision deficient viewers.**
+
+[{{< fa-solid fa-code >}} GitHub](https://github.com/sims1253/huerd) | [{{< fa-solid fa-book >}} Documentation](https://github.com/sims1253/huerd#readme) | [{{< fa-solid fa-download >}} Install](https://github.com/sims1253/huerd#installation)
+
+The huerd package (short for "Herding hues") provides sophisticated tools for creating perceptually distinct color palettes optimized for accessibility and visual appeal. Unlike standard color palette generators, huerd works in the perceptually uniform OKLAB color space and includes comprehensive support for color vision deficiency analysis.
+
+**Key Features:**
+- Generate palettes of any size with customizable parameters
+- Include specific "fixed" colors during palette generation
+- Comprehensive diagnostic tools for palette quality analysis
+- Color vision deficiency (CVD) accessibility checks and simulations
+- Perceptual color distance optimization
+
+**Technical Approach:**
+The package uses constrained optimization in the OKLAB color space to maximize perceptual distinctness while maintaining aesthetic coherence. It includes built-in CVD simulation using the colorspace package and provides detailed quality metrics for each generated palette.
+
+```{=html}
+  </div>
+</div>
+```
+
+----
+
+## BayeSim: Bayesian Simulation Framework
+
+```{=html}
+<div class="project-showcase">
+  <div class="project-banner">
+    <img src="project_2_banner.png" alt="BayeSim Framework"/>
+  </div>
+  <div class="project-details">
+```
+
+**A comprehensive framework for Bayesian statistical modeling with focus on making advanced statistical methods accessible to researchers across different domains.**
+
+[{{< fa-solid fa-code >}} GitHub](https://github.com/scholzmx) | [{{< fa-solid fa-flask >}} Research](../research.qmd)
+
+BayeSim is an ongoing research project developing novel Bayesian statistical methods for complex computational problems in scientific computing. The framework focuses on uncertainty quantification, model selection, and robust inference in high-dimensional parameter spaces.
+
+**Current Development:**
+- Automated model selection algorithms
+- Causal inference tools for observational data
+- Scalable MCMC implementations
+- Integration with popular scientific computing workflows
+
+**Research Goals:**
+Provide researchers with practical tools for making reliable decisions under uncertainty, particularly in simulation-based sciences where traditional statistical approaches may fall short. The framework emphasizes reproducibility, accessibility, and robust statistical inference.
+
+```{=html}
+  </div>
+</div>
+```
 
 ----
 
 ## Software Infrastructure for Scientific Computing
 
-<img src="project_2_banner.png" style="height: 100%; width: 100%; object-fit: contain"/>
+```{=html}
+<div class="project-showcase">
+  <div class="project-details">
+```
 
-<a href="https://github.com/scholzmx" target="_blank">GitHub</a><br>
+**Developing robust software infrastructure that supports reproducible scientific research.**
 
-I am working on developing robust software infrastructure that supports reproducible scientific research. This includes creating tools for workflow management, data validation, and automated testing in computational science applications. My goal is to make scientific computing more reliable, accessible, and maintainable for researchers across different domains.
+[{{< fa-solid fa-code >}} GitHub](https://github.com/scholzmx)
 
+This ongoing work focuses on creating tools for workflow management, data validation, and automated testing in computational science applications. The goal is to make scientific computing more reliable, accessible, and maintainable for researchers across different domains.
 
+**Focus Areas:**
+- Reproducible research workflows
+- Data validation and quality assurance
+- Automated testing for scientific code
+- Documentation and maintenance best practices
+
+```{=html}
+  </div>
+</div>
+```
