@@ -6,6 +6,7 @@ website:
   title: "Max Scholz"
   site-url: "https://scholzmx.github.io" # Replace with your actual URL
   navbar:
+    background: primary
     right:
       - href: index.qmd
         text: Home
