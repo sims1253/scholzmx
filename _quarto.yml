@@ -4,7 +4,7 @@ project:
 
 website:
   title: "Max Scholz"
-  site-url: "https://scholzmx.github.io" # Replace with your actual URL
+  site-url: "https://scholzmx.com"
   navbar:
     background: primary
     right:
@@ -20,9 +20,9 @@ website:
     left: "© Max Scholz, 2025. Content licensed under CC BY-SA 4.0."
     right:
       - icon: github
-        href: https://github.com/scholzmx
+        href: https://github.com/sims1253
       - icon: twitter
-        href: https://twitter.com/scholz_mx
+        href: https://twitter.com/scholzmx
 
 format:
   html:
