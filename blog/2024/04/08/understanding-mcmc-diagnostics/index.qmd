@@ -1,0 +1,317 @@
+---
+title: "Understanding MCMC Diagnostics: A Practical Guide"
+date: "2024-04-08"
+categories: [Tutorial, Bayesian Statistics, MCMC]
+tags: ["MCMC", "diagnostics", "Stan", "convergence", "R-hat"]
+description: "A comprehensive guide to diagnosing MCMC convergence issues and what to do when things go wrong."
+---
+
+Markov Chain Monte Carlo (MCMC) methods are powerful tools for Bayesian inference, but they come with a catch: you need to verify that your chains have converged to the target distribution. In this tutorial, I'll walk you through the essential diagnostics and what to do when things go wrong.
+
+## Why MCMC Diagnostics Matter
+
+MCMC algorithms generate samples from complex posterior distributions, but there's no guarantee that your samples actually represent the distribution you're interested in. Poor convergence can lead to:
+
+- Biased parameter estimates
+- Incorrect uncertainty quantification
+- Invalid inferences and predictions
+
+Think of MCMC diagnostics as your early warning system—they tell you when your results might be unreliable.
+
+## Essential Diagnostics
+
+### 1. R-hat (Potential Scale Reduction Factor)
+
+R-hat compares the between-chain variance to the within-chain variance. Values close to 1.0 indicate good convergence.
+
+```{r}
+#| eval: false
+library(rstan)
+library(bayesplot)
+
+# Fit a simple model
+model_code <- "
+  data {
+    int<lower=0> N;
+    vector[N] y;
+  }
+  parameters {
+    real mu;
+    real<lower=0> sigma;
+  }
+  model {
+    mu ~ normal(0, 10);
+    sigma ~ exponential(1);
+    y ~ normal(mu, sigma);
+  }
+"
+
+# Simulate some data
+set.seed(123)
+y <- rnorm(100, 5, 2)
+
+# Fit the model
+fit <- stan(model_code = model_code, 
+            data = list(N = length(y), y = y),
+            chains = 4, iter = 2000)
+
+# Check R-hat
+print(fit, pars = c("mu", "sigma"))
+```
+
+**Interpretation:**
+- R-hat < 1.01: Excellent convergence
+- 1.01 < R-hat < 1.05: Good convergence
+- R-hat > 1.05: Potential convergence issues
+
+### 2. Effective Sample Size (ESS)
+
+ESS tells you how many independent samples your chains provide after accounting for autocorrelation.
+
+```{r}
+#| eval: false
+# Extract samples and calculate ESS
+samples <- extract(fit, permuted = FALSE)
+ess <- summary(fit)$summary[, "n_eff"]
+print(ess)
+
+# Rule of thumb: ESS > 100 per chain for reliable inference
+# ESS > 400 total for tail quantiles
+```
+
+### 3. Trace Plots
+
+Visual inspection of trace plots shows whether chains are mixing well.
+
+```{r}
+#| eval: false
+library(bayesplot)
+
+# Extract posterior samples
+posterior <- as.array(fit)
+
+# Create trace plots
+mcmc_trace(posterior, pars = c("mu", "sigma"))
+```
+
+**Good trace plots look like:**
+- "Fuzzy caterpillars" - chains exploring the parameter space
+- Multiple chains overlapping completely
+- No systematic trends or patterns
+
+**Bad trace plots show:**
+- Chains stuck in different regions
+- Systematic trends or drift
+- Clear separation between chains
+
+### 4. Autocorrelation
+
+High autocorrelation reduces the effective sample size.
+
+```{r}
+#| eval: false
+# Plot autocorrelation
+mcmc_acf(posterior, pars = c("mu", "sigma"))
+
+# Check autocorrelation at different lags
+acf_values <- summary(fit)$summary[, "Rhat"]
+```
+
+### 5. Divergent Transitions (Stan-specific)
+
+Divergent transitions indicate that the sampler couldn't accurately explore the posterior.
+
+```{r}
+#| eval: false
+# Check for divergent transitions
+divergent <- get_divergent_iterations(fit)
+print(paste("Number of divergent transitions:", sum(divergent)))
+
+# Plot divergent transitions
+mcmc_parcoord(posterior, np = nuts_params(fit))
+```
+
+## Common Problems and Solutions
+
+### Problem 1: High R-hat Values
+
+**Symptoms:**
+- R-hat > 1.05
+- Chains haven't converged to same distribution
+
+**Solutions:**
+1. **Run more iterations**:
+```{r}
+#| eval: false
+fit <- stan(model_code = model_code, 
+            data = data_list,
+            chains = 4, iter = 4000, warmup = 2000)
+```
+
+2. **Check for multimodality**:
+```{r}
+#| eval: false
+# Look for multiple modes in marginal distributions
+mcmc_hist(posterior, pars = c("mu", "sigma"))
+```
+
+3. **Improve parameterization**:
+```{r}
+#| eval: false
+# Instead of estimating sigma directly, estimate log(sigma)
+# This often improves sampling efficiency
+```
+
+### Problem 2: Low Effective Sample Size
+
+**Symptoms:**
+- ESS < 100 per chain
+- High autocorrelation
+
+**Solutions:**
+1. **Increase adapt_delta**:
+```{r}
+#| eval: false
+fit <- stan(model_code = model_code, 
+            data = data_list,
+            control = list(adapt_delta = 0.95))
+```
+
+2. **Reparameterize the model**:
+```{r}
+#| eval: false
+# Use non-centered parameterization for hierarchical models
+# Instead of: theta ~ normal(mu, sigma)
+# Use: theta_raw ~ normal(0, 1); theta = mu + sigma * theta_raw
+```
+
+### Problem 3: Divergent Transitions
+
+**Symptoms:**
+- Warning messages about divergent transitions
+- Biased estimates in problematic regions
+
+**Solutions:**
+1. **Increase adapt_delta**:
+```{r}
+#| eval: false
+fit <- stan(model_code = model_code, 
+            data = data_list,
+            control = list(adapt_delta = 0.99))
+```
+
+2. **Increase max_treedepth**:
+```{r}
+#| eval: false
+fit <- stan(model_code = model_code, 
+            data = data_list,
+            control = list(max_treedepth = 12))
+```
+
+3. **Reparameterize problematic parts**:
+```{r}
+#| eval: false
+# Use stronger priors to regularize the model
+# Transform parameters to unconstrained space
+```
+
+## A Systematic Diagnostic Workflow
+
+Here's my recommended workflow for checking MCMC diagnostics:
+
+```{r}
+#| eval: false
+# 1. Basic convergence check
+check_convergence <- function(fit) {
+  summary_stats <- summary(fit)$summary
+  
+  # Check R-hat
+  max_rhat <- max(summary_stats[, "Rhat"], na.rm = TRUE)
+  cat("Maximum R-hat:", max_rhat, "\n")
+  
+  # Check effective sample size
+  min_ess <- min(summary_stats[, "n_eff"], na.rm = TRUE)
+  cat("Minimum ESS:", min_ess, "\n")
+  
+  # Check divergent transitions
+  divergent <- get_divergent_iterations(fit)
+  cat("Divergent transitions:", sum(divergent), "\n")
+  
+  # Overall assessment
+  if (max_rhat < 1.01 & min_ess > 100 & sum(divergent) == 0) {
+    cat("✓ Diagnostics look good!\n")
+  } else {
+    cat("⚠ Potential issues detected\n")
+  }
+}
+
+# 2. Visual diagnostics
+plot_diagnostics <- function(fit, pars) {
+  posterior <- as.array(fit)
+  
+  # Trace plots
+  p1 <- mcmc_trace(posterior, pars = pars)
+  
+  # Autocorrelation
+  p2 <- mcmc_acf(posterior, pars = pars)
+  
+  # Marginal distributions
+  p3 <- mcmc_hist(posterior, pars = pars)
+  
+  # Pairs plot for correlations
+  p4 <- mcmc_pairs(posterior, pars = pars)
+  
+  return(list(trace = p1, acf = p2, hist = p3, pairs = p4))
+}
+
+# Use the functions
+check_convergence(fit)
+plots <- plot_diagnostics(fit, c("mu", "sigma"))
+```
+
+## Advanced Diagnostics
+
+### Energy Diagnostics
+
+For Hamiltonian Monte Carlo (like Stan's NUTS):
+
+```{r}
+#| eval: false
+# Check energy diagnostics
+mcmc_nuts_energy(nuts_params(fit))
+```
+
+### Rank Plots
+
+A newer diagnostic that's robust to many issues:
+
+```{r}
+#| eval: false
+# Rank plots
+mcmc_rank_overlay(posterior, pars = c("mu", "sigma"))
+```
+
+## When All Else Fails
+
+If diagnostics continue to indicate problems:
+
+1. **Simplify the model**: Remove complexity until you achieve convergence
+2. **Simulate fake data**: Test your model on data where you know the true parameters
+3. **Try different software**: Sometimes a different sampler works better
+4. **Consult the literature**: Look for similar models and their parameterizations
+
+## Conclusion
+
+MCMC diagnostics are your friend—they prevent you from making inferences based on unreliable samples. The key principles are:
+
+1. **Always check diagnostics** before interpreting results
+2. **Use multiple diagnostics** together, not just one
+3. **Understand what each diagnostic tells you** about potential problems
+4. **Don't ignore warnings** from your MCMC software
+5. **When in doubt, run longer** (but fix underlying issues first)
+
+Remember: it's better to have a simple model that converges than a complex model that doesn't.
+
+---
+
+*Have you encountered tricky MCMC convergence issues? What diagnostic tools have you found most helpful? I'd love to hear about your experiences with challenging models.*
