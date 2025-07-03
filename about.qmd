@@ -1,0 +1,13 @@
+---
+title: "About Me"
+---
+
+This is the about page. The flipping image will go here.
+
+## Bio
+
+*Coming soon...*
+
+## Contact
+
+*Coming soon...*

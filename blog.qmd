@@ -1,0 +1,18 @@
+---
+title: "Blog"
+listing:
+  contents: 
+    - "blog/**/*.qmd"
+    - "blog/**/*.md"
+    - "content/post/**/*.qmd" 
+    - "content/post/**/*.Rmd"
+  sort: "date desc"
+  type: default
+  categories: true
+  sort-ui: false
+  filter-ui: false
+page-layout: full
+title-block-banner: false
+---
+
+Welcome to my blog, where I share thoughts on statistics, data science, and the occasional random musings.
