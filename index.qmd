@@ -1,5 +1,5 @@
 ---
-title: "Hello there!"
+title: "Maximilian Scholz"
 about:
   template: jolla
   id: about-block
@@ -11,16 +11,16 @@ format:
 # links:
 #    - icon: twitter
 #      text: Twitter
-#      href: https://twitter.com/MarvinSchmittML
+#      href: https://twitter.com/scholz_mx
 #    - icon: github
 #      text: Github
-#      href: https://github.com/marvinschmitt
+#      href: https://github.com/scholzmx
 #    - icon: linkedin
 #      text: LinkedIn
-#      href: https://www.linkedin.com/in/marvin-schmitt-a85b321a2/
+#      href: https://www.linkedin.com/in/maximilianscholz/
 #    - icon: envelope
 #      text: Email
-#      href: "mailto:mail.marvinschmitt@gmail.com"  
+#      href: "mailto:scholzmxb@gmail.com"  
 ---
 
 ```{=html}
@@ -90,19 +90,19 @@ format:
 <!-- Art Showcase - Fixed position for wide screens -->
 <div class="art-showcase" id="art-showcase">
   <div class="artwork active">
-    <img src="/photography/gandalf_image_1.jpg" alt="Artwork 1">
+    <img src="/photography/scholz_image_1.jpg" alt="Research Photo 1">
   </div>
   <div class="artwork">
-    <img src="/photography/gandalf_image_2.jpg" alt="Artwork 2">
+    <img src="/photography/scholz_image_2.jpg" alt="Research Photo 2">
   </div>
   <div class="artwork">
-    <img src="/photography/gandalf_image_3.jpg" alt="Artwork 3">
+    <img src="/photography/scholz_image_3.jpg" alt="Research Photo 3">
   </div>
   <div class="artwork">
-    <img src="/photography/gandalf_image_4.jpg" alt="Artwork 4">
+    <img src="/photography/scholz_image_4.jpg" alt="Research Photo 4">
   </div>
   <div class="art-showcase-caption">
-    Mother's Artwork Collection
+    Research & Academic Life
   </div>
 </div>
 ```
@@ -114,23 +114,20 @@ format:
 
   # Welcome to my website!
 
-  I am Gandalf the White, a renowned wizard and scholar of Middle-earth. Over the centuries, I have dedicated my life to studying the history, languages, and cultures of the peoples of Middle-earth. On this website, I offer a glimpse into my vast body of knowledge, ongoing research, and publications.
+  I am a PhD researcher at the University of Stuttgart, Cluster of Excellence SimTech, where I work at the intersection of Bayesian statistics, computational science, and software engineering. My research focuses on developing robust statistical methods and computational tools for complex scientific problems.
 
-  My research interests span the entirety of Middle-earth, from the distant past to the present day. I am particularly passionate about the languages and mythologies of the Elves, Dwarves, and Men, and I have made significant contributions to the understanding of these subjects. My studies of the natural world have also been extensive, and I am an expert in the flora and fauna of Middle-earth. Additionally, I have been involved in many important historical events and offer valuable first-hand accounts and insights on the past.
+  My academic journey began with a Bachelor's degree in Computational Science from Hamburg University of Technology, followed by a Master's degree in Software Engineering from Chalmers University of Technology. This interdisciplinary background allows me to bridge the gap between theoretical statistical concepts and practical software implementation.
 
-  Not only am I a scholar, but I am also a mentor and teacher. Over the centuries, I have had the honor of working with many young wizards, passing on my knowledge and experience to the next generation. I have a particular interest in the education of hobbits, whom I see as having great potential despite their small size and simple lifestyle. My teaching style is engaging and accessible, and I encourage my students to think critically and creatively.
+  My research interests include Bayesian statistics, causality, decision-making under uncertainty, and the development of software infrastructure for scientific computing. I am particularly interested in how we can make statistical methods more accessible and reliable for researchers across different domains.
 
-  On this website, you will find a selection of my published works, including scholarly articles, monographs, and translations. You will also find news and updates on my current research projects, as well as information on upcoming events and conferences where I will be speaking. I invite you to explore my website and learn more about my life's work as one of Middle-earth's greatest scholars and thinkers.
+  On this website, you will find information about my research projects, publications, and ongoing work. I also share insights about statistical computing, software engineering best practices, and the intersection of technology and scientific research. I believe in open science and reproducible research, and I try to make my work accessible to both technical and non-technical audiences.
 
-  Please feel free to [contact me](mailto:mail.marvinschmitt@gmail.com) if you have any questions or would like to discuss potential projects.
+  Please feel free to [contact me](mailto:scholzmxb@gmail.com) if you have any questions or would like to discuss potential projects.
 
   <div class="sunlit-toggle-hint">
     <small><em>[press <code>space</code> or click anywhere to toggle the sun]</em></small>
   </div>
 
   ```{=html}
-  <div  style="margin: 30px; text-align: center;">
-  <a class="btn btn-primary" href="https://www.marvinschmitt.com/blog/website-tutorial-quarto/" role="button" target="_blank" style="padding: 15px 30px;">View the tutorial for this template (+ download link)</a>
-  </div>
   ```
 </article>
