@@ -121,27 +121,27 @@ body.dark {
 }
 
 #progressive-blur>div:nth-child(1) {
-  --blur-amount: 6px;
+  --blur-amount: 2px;
   --stop1: 0%;
   --stop2: 0%;
 }
 
 #progressive-blur>div:nth-child(2) {
-  --blur-amount: 12px;
-  --stop1: 40%;
-  --stop2: 80%;
+  --blur-amount: 4px;
+  --stop1: 60%;
+  --stop2: 90%;
 }
 
 #progressive-blur>div:nth-child(3) {
-  --blur-amount: 48px;
-  --stop1: 40%;
-  --stop2: 70%;
+  --blur-amount: 8px;
+  --stop1: 70%;
+  --stop2: 90%;
 }
 
 #progressive-blur>div:nth-child(4) {
-  --blur-amount: 96px;
-  --stop1: 70%;
-  --stop2: 80%;
+  --blur-amount: 12px;
+  --stop1: 80%;
+  --stop2: 95%;
 }
 
 #glow {
@@ -280,7 +280,7 @@ article {
 article.sunlit-content {
   color: var(--dark);
   isolation: isolate;
-  padding: 40vh 2rem 2rem;
+  padding: 20vh 2rem 2rem;
   transition: color 1s var(--timing-fn);
 }
 
@@ -522,7 +522,7 @@ article.sunlit-content a:hover {
   }
   
   article.sunlit-content {
-    padding: 30vh 1rem 1rem;
+    padding: 15vh 1rem 1rem;
   }
   
   .perspective {

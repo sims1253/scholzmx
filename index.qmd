@@ -6,7 +6,6 @@ about:
   image: "img/my_image.jpg"
 format:
   html:
-    include-after-body: sunlit-script.js
     page-layout: full
 # links:
 #    - icon: twitter
@@ -90,16 +89,16 @@ format:
 <!-- Art Showcase - Fixed position for wide screens -->
 <div class="art-showcase" id="art-showcase">
   <div class="artwork active">
-    <img src="/photography/scholz_image_1.jpg" alt="Research Photo 1">
+    <img src="/photography/gandalf_image_1.jpg" alt="Research Photo 1">
   </div>
   <div class="artwork">
-    <img src="/photography/scholz_image_2.jpg" alt="Research Photo 2">
+    <img src="/photography/gandalf_image_2.jpg" alt="Research Photo 2">
   </div>
   <div class="artwork">
-    <img src="/photography/scholz_image_3.jpg" alt="Research Photo 3">
+    <img src="/photography/gandalf_image_3.jpg" alt="Research Photo 3">
   </div>
   <div class="artwork">
-    <img src="/photography/scholz_image_4.jpg" alt="Research Photo 4">
+    <img src="/photography/gandalf_image_4.jpg" alt="Research Photo 4">
   </div>
   <div class="art-showcase-caption">
     Research & Academic Life
@@ -110,24 +109,22 @@ format:
 <!-- Main content area -->
 <article class="sunlit-content">
   ::: {#about-block}
-  :::
 
-  # Welcome to my website!
+# Welcome to my website!
 
-  I am a PhD researcher at the University of Stuttgart, Cluster of Excellence SimTech, where I work at the intersection of Bayesian statistics, computational science, and software engineering. My research focuses on developing robust statistical methods and computational tools for complex scientific problems.
+I am a PhD researcher at the University of Stuttgart, Cluster of Excellence SimTech, where I work at the intersection of Bayesian statistics, computational science, and software engineering. My research focuses on developing robust statistical methods and computational tools for complex scientific problems.
 
-  My academic journey began with a Bachelor's degree in Computational Science from Hamburg University of Technology, followed by a Master's degree in Software Engineering from Chalmers University of Technology. This interdisciplinary background allows me to bridge the gap between theoretical statistical concepts and practical software implementation.
+My academic journey began with a Bachelor's degree in Computational Science from Hamburg University of Technology, followed by a Master's degree in Software Engineering from Chalmers University of Technology. This interdisciplinary background allows me to bridge the gap between theoretical statistical concepts and practical software implementation.
 
-  My research interests include Bayesian statistics, causality, decision-making under uncertainty, and the development of software infrastructure for scientific computing. I am particularly interested in how we can make statistical methods more accessible and reliable for researchers across different domains.
+My research interests include Bayesian statistics, causality, decision-making under uncertainty, and the development of software infrastructure for scientific computing. I am particularly interested in how we can make statistical methods more accessible and reliable for researchers across different domains.
 
-  On this website, you will find information about my research projects, publications, and ongoing work. I also share insights about statistical computing, software engineering best practices, and the intersection of technology and scientific research. I believe in open science and reproducible research, and I try to make my work accessible to both technical and non-technical audiences.
+On this website, you will find information about my research projects, publications, and ongoing work. I also share insights about statistical computing, software engineering best practices, and the intersection of technology and scientific research. I believe in open science and reproducible research, and I try to make my work accessible to both technical and non-technical audiences.
 
-  Please feel free to [contact me](mailto:scholzmxb@gmail.com) if you have any questions or would like to discuss potential projects.
+Please feel free to [contact me](mailto:scholzmxb@gmail.com) if you have any questions or would like to discuss potential projects.
 
-  <div class="sunlit-toggle-hint">
-    <small><em>[press <code>space</code> or click anywhere to toggle the sun]</em></small>
-  </div>
+<div class="sunlit-toggle-hint">
+  <small><em>[press <code>space</code> or click anywhere to toggle the sun]</em></small>
+</div>
 
-  ```{=html}
-  ```
+:::
 </article>

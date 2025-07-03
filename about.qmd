@@ -2,19 +2,20 @@
 title: "About Me"
 ---
 
+```{=html}
 <!-- Art Showcase - Fixed position for wide screens -->
 <div class="art-showcase" id="art-showcase">
   <div class="artwork active">
-    <img src="/photography/scholz_image_1.jpg" alt="Research Photo 1">
+    <img src="/photography/gandalf_image_1.jpg" alt="Research Photo 1">
   </div>
   <div class="artwork">
-    <img src="/photography/scholz_image_2.jpg" alt="Research Photo 2">
+    <img src="/photography/gandalf_image_2.jpg" alt="Research Photo 2">
   </div>
   <div class="artwork">
-    <img src="/photography/scholz_image_3.jpg" alt="Research Photo 3">
+    <img src="/photography/gandalf_image_3.jpg" alt="Research Photo 3">
   </div>
   <div class="artwork">
-    <img src="/photography/scholz_image_4.jpg" alt="Research Photo 4">
+    <img src="/photography/gandalf_image_4.jpg" alt="Research Photo 4">
   </div>
   <div class="art-showcase-caption">
     Research & Academic Life
@@ -32,6 +33,7 @@ title: "About Me"
     </div>
   </label>
 </div>
+```
 
 ## Bio
 
