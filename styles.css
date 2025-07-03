@@ -700,15 +700,16 @@ article.sunlit-content a:hover {
 .footer {
   position: relative;
   z-index: 100;
-  background-color: var(--paper-white);
   border-top: 1px solid var(--paper-shadow);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
+  background: var(--paper-white) url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEWFhYWDg4N3d3dtbW17e3t1dXVדהדחZWVldXV2MjIyRkZGNjY1WVlZQUFBXV1dDQ0NBQUFERERGRkZGQkJBQUF6enp4eHhycnJra2tGRkY6OjoBAAAA6gJ4AAAAHUlEQVR42u3OMQEAAAgDAIgP4f81jCRy5gAAAAAAAAAAAPsDAnAAATgAAZwAAgAAAABJRU5ErkJggg==');
 }
 
 .dark .footer {
   background-color: var(--night);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--night) url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEWFhYWDg4N3d3dtbW17e3t1dXVדהדחZWVldXV2MjIyRkZGNjY1WVlZQUFBXV1dDQ0NBQUFERERGRkZGQkJBQUF6enp4eHhycnJra2tGRkY6OjoBAAAA6gJ4AAAAHUlEQVR42u3OMQEAAAgDAIgP4f81jCRy5gAAAAAAAAAAAPsDAnAAATgAAZwAAgAAAABJRU5ErkJggg==');
 }
 
 .footer p,
