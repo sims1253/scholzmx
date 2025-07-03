@@ -7,6 +7,7 @@ about:
 format:
   html:
     page-layout: full
+    toc: false
 # links:
 #    - icon: twitter
 #      text: Twitter
@@ -110,21 +111,15 @@ format:
 <article class="sunlit-content">
   ::: {#about-block}
 
-# Welcome to my website!
+# Welcome!
 
-I am a PhD researcher at the University of Stuttgart, Cluster of Excellence SimTech, where I work at the intersection of Bayesian statistics, computational science, and software engineering. My research focuses on developing robust statistical methods and computational tools for complex scientific problems.
+I am a PhD researcher at the University of Stuttgart, Cluster of Excellence SimTech, working at the intersection of Bayesian statistics, computational science, and software engineering.
 
-My academic journey began with a Bachelor's degree in Computational Science from Hamburg University of Technology, followed by a Master's degree in Software Engineering from Chalmers University of Technology. This interdisciplinary background allows me to bridge the gap between theoretical statistical concepts and practical software implementation.
+My research focuses on developing robust statistical methods and computational tools for complex scientific problems. I'm particularly interested in making statistical methods more accessible and reliable for researchers across different domains.
 
-My research interests include Bayesian statistics, causality, decision-making under uncertainty, and the development of software infrastructure for scientific computing. I am particularly interested in how we can make statistical methods more accessible and reliable for researchers across different domains.
+My academic background includes a Bachelor's in Computational Science from Hamburg University of Technology and a Master's in Software Engineering from Chalmers University of Technology.
 
-On this website, you will find information about my research projects, publications, and ongoing work. I also share insights about statistical computing, software engineering best practices, and the intersection of technology and scientific research. I believe in open science and reproducible research, and I try to make my work accessible to both technical and non-technical audiences.
-
-Please feel free to [contact me](mailto:scholzmxb@gmail.com) if you have any questions or would like to discuss potential projects.
-
-<div class="sunlit-toggle-hint">
-  <small><em>[press <code>space</code> or click anywhere to toggle the sun]</em></small>
-</div>
+Please feel free to [contact me](mailto:scholzmxb@gmail.com) if you have questions or would like to discuss potential projects.
 
 :::
 </article>

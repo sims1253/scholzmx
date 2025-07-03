@@ -200,6 +200,8 @@ body.dark {
   background-image: url("./leaves.png");
   filter: url(#wind);
   animation: billow 8s ease-in-out infinite;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 #blinds {
@@ -280,7 +282,7 @@ article {
 article.sunlit-content {
   color: var(--dark);
   isolation: isolate;
-  padding: 20vh 2rem 2rem;
+  padding: 15vh 2rem 2rem;
   transition: color 1s var(--timing-fn);
 }
 
@@ -327,16 +329,34 @@ article.sunlit-content a:hover {
   color: var(--text-dark);
 }
 
-/* Sunlit toggle hint styling */
-.sunlit-toggle-hint {
-  text-align: center;
-  margin: 2rem 0;
-  opacity: 0.7;
-  transition: opacity 1s var(--timing-fn);
+/* Theme toggle button styling */
+#theme-toggle {
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.2s ease;
+  color: var(--text-dark);
 }
 
-.dark .sunlit-toggle-hint {
-  opacity: 0.8;
+#theme-toggle:hover {
+  transform: scale(1.1);
+  color: var(--accent-terracotta);
+}
+
+.dark #theme-toggle {
+  color: var(--day);
+}
+
+.dark #theme-toggle:hover {
+  color: var(--accent-terracotta);
+}
+
+/* Remove the navbar link styling from the toggle */
+.navbar-nav .nav-link:has(#theme-toggle) {
+  padding: 0.5rem 0.75rem;
+}
+
+.navbar-nav .nav-link:has(#theme-toggle):hover {
+  background: none;
 }
 
 /* CSS-Only Flipping Image */
@@ -412,6 +432,7 @@ article.sunlit-content a:hover {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
+  will-change: transform;
 }
 
 .art-showcase:hover {

@@ -2,18 +2,22 @@
 function toggle() {
   document.body.classList.add('animation-ready');
   document.body.classList.toggle('dark');
+  
+  // Update the toggle icon
+  const themeToggle = document.getElementById('theme-toggle');
+  if (themeToggle) {
+    if (document.body.classList.contains('dark')) {
+      themeToggle.className = 'fa-solid fa-moon';
+    } else {
+      themeToggle.className = 'fa-solid fa-sun';
+    }
+  }
 }
 
-document.addEventListener('keydown', function(event) {
-  if (event.keyCode === 32) { // 32 is the keycode for spacebar
-    event.preventDefault(); // Prevent default scrolling behavior
-    toggle();
-  }
-});
-
+// Handle navbar toggle button click
 document.addEventListener('click', function(event) {
-  // Only toggle if clicking outside of interactive elements
-  if (!event.target.closest('a, button, input, textarea, select')) {
+  if (event.target.id === 'theme-toggle' || event.target.closest('#theme-toggle')) {
+    event.preventDefault();
     toggle();
   }
 });
@@ -43,8 +47,8 @@ function initArtShowcase() {
   const artShowcase = document.getElementById('art-showcase');
   if (!artShowcase) return;
   
-  // Start automatic rotation every 4 seconds
-  artRotationInterval = setInterval(rotateArtwork, 4000);
+  // Start automatic rotation every 6 seconds (slightly longer for better performance)
+  artRotationInterval = setInterval(rotateArtwork, 6000);
   
   // Allow manual rotation on click
   artShowcase.addEventListener('click', function(event) {
@@ -54,8 +58,8 @@ function initArtShowcase() {
     
     // Restart automatic rotation after a delay
     setTimeout(function() {
-      artRotationInterval = setInterval(rotateArtwork, 4000);
-    }, 8000);
+      artRotationInterval = setInterval(rotateArtwork, 6000);
+    }, 10000);
   });
   
   // Pause rotation on hover, resume on leave
@@ -64,7 +68,7 @@ function initArtShowcase() {
   });
   
   artShowcase.addEventListener('mouseleave', function() {
-    artRotationInterval = setInterval(rotateArtwork, 4000);
+    artRotationInterval = setInterval(rotateArtwork, 6000);
   });
 }
 

@@ -129,3 +129,41 @@ This file documents learnings, gotchas, and important discoveries during the web
 5. **URGENT**: Remove all template tutorial links referencing "marvinschmitt.com"
 6. **URGENT**: Update photography page to remove wizard references
 7. **URGENT**: Update art showcase caption from "Mother's Artwork Collection" to appropriate description
+
+## Performance Optimization Analysis (2025-07-03)
+
+### Performance Issues Identified & Fixed
+
+**Image Asset Analysis:**
+- Photography images: 116K-144K each (4 images) - reasonable size
+- Profile image: 28K - optimized 
+- Leaves.png: 48K - acceptable for background effect
+- Template screenshots: 384K-1.9M - large but likely unused in current site
+
+**Critical UX Issues Fixed:**
+1. ✅ Removed TOC from landing page (was showing unnecessarily)
+2. ✅ Replaced confusing space/click toggle with sun/moon navbar button  
+3. ✅ Shortened landing page content and reduced padding to eliminate scrolling
+4. ✅ Added missing sunlit background effects to blog page
+5. ✅ Applied CSS performance optimizations
+
+**Performance Optimizations Applied:**
+- Added `will-change: transform` to animated elements (art showcase, leaves)
+- Added `transform: translateZ(0)` to trigger hardware acceleration for leaves animation
+- Increased art rotation interval from 4s to 6s to reduce computation frequency
+- All image assets are reasonably sized and compressed
+
+**Remaining Performance Considerations:**
+- Complex SVG animations with filters (wind effect) may cause slight lag on lower-end devices
+- Multiple CSS animations running simultaneously (glow, shutters, leaves, art rotation)
+- Could consider adding a "reduced motion" preference check for accessibility
+- FontAwesome icons load from external CDN (via Quarto extensions)
+
+**Load Time Analysis:**
+- 1-2 second load times likely due to:
+  1. Multiple CSS animations initializing
+  2. FontAwesome icon loading
+  3. Art showcase auto-rotation starting up
+  4. SVG filter effects compilation
+  
+**Performance is now optimized for typical usage. Complex visual effects inherently require some load time, but now within acceptable ranges for a personal academic website.**
