@@ -18,10 +18,61 @@ document.addEventListener('click', function(event) {
   }
 });
 
+// Art Showcase Rotation Functionality
+let currentArtworkIndex = 0;
+let artRotationInterval;
+
+function rotateArtwork() {
+  const artShowcase = document.getElementById('art-showcase');
+  if (!artShowcase) return;
+  
+  const artworks = artShowcase.querySelectorAll('.artwork');
+  if (artworks.length === 0) return;
+  
+  // Remove active class from current artwork
+  artworks[currentArtworkIndex].classList.remove('active');
+  
+  // Move to next artwork (loop back to 0 if at end)
+  currentArtworkIndex = (currentArtworkIndex + 1) % artworks.length;
+  
+  // Add active class to new artwork
+  artworks[currentArtworkIndex].classList.add('active');
+}
+
+function initArtShowcase() {
+  const artShowcase = document.getElementById('art-showcase');
+  if (!artShowcase) return;
+  
+  // Start automatic rotation every 4 seconds
+  artRotationInterval = setInterval(rotateArtwork, 4000);
+  
+  // Allow manual rotation on click
+  artShowcase.addEventListener('click', function(event) {
+    event.stopPropagation(); // Prevent the sunlit toggle
+    clearInterval(artRotationInterval); // Stop automatic rotation temporarily
+    rotateArtwork();
+    
+    // Restart automatic rotation after a delay
+    setTimeout(function() {
+      artRotationInterval = setInterval(rotateArtwork, 4000);
+    }, 8000);
+  });
+  
+  // Pause rotation on hover, resume on leave
+  artShowcase.addEventListener('mouseenter', function() {
+    clearInterval(artRotationInterval);
+  });
+  
+  artShowcase.addEventListener('mouseleave', function() {
+    artRotationInterval = setInterval(rotateArtwork, 4000);
+  });
+}
+
 // Initialize the page with proper styling
 document.addEventListener('DOMContentLoaded', function() {
   // Add a small delay to ensure all styles are loaded
   setTimeout(function() {
     document.body.classList.add('sunlit-ready');
+    initArtShowcase(); // Initialize art showcase functionality
   }, 100);
 });

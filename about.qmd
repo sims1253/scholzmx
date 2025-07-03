@@ -2,12 +2,47 @@
 title: "About Me"
 ---
 
-This is the about page. The flipping image will go here.
+<!-- Art Showcase - Fixed position for wide screens -->
+<div class="art-showcase" id="art-showcase">
+  <div class="artwork active">
+    <img src="/photography/gandalf_image_1.jpg" alt="Artwork 1">
+  </div>
+  <div class="artwork">
+    <img src="/photography/gandalf_image_2.jpg" alt="Artwork 2">
+  </div>
+  <div class="artwork">
+    <img src="/photography/gandalf_image_3.jpg" alt="Artwork 3">
+  </div>
+  <div class="artwork">
+    <img src="/photography/gandalf_image_4.jpg" alt="Artwork 4">
+  </div>
+  <div class="art-showcase-caption">
+    Mother's Artwork Collection
+  </div>
+</div>
+
+<div class="flip-container">
+  <input type="checkbox" id="flipper" aria-hidden="true">
+  <label for="flipper" class="flip-card" role="button" tabindex="0" aria-label="Click to flip profile image">
+    <div class="card-front">
+      <img src="/img/my_image.jpg" alt="Professional headshot of Max Scholz">
+    </div>
+    <div class="card-back">
+      <img src="/img/my_image.jpg" alt="Casual photo of Max Scholz">
+    </div>
+  </label>
+</div>
 
 ## Bio
 
-*Coming soon...*
+Welcome to my corner of the internet. I'm a researcher and developer passionate about data science, statistical computing, and the intersection of technology and human understanding.
+
+When I'm not diving deep into code or exploring new methodologies, you might find me contemplating the slow web movement, appreciating thoughtful design, or working on projects that prioritize clarity and longevity over fleeting trends.
+
+This site serves as my digital garden - a space for sharing research, thoughts, and the occasional personal reflection. It's built with intentionality, embracing principles of accessibility, privacy, and sustainable web practices.
 
 ## Contact
 
-*Coming soon...*
+Feel free to reach out if you'd like to discuss research collaborations, interesting problems, or just want to chat about the craft of creating meaningful digital experiences.
+
+*Professional contact information and social links can be found in the site navigation.*

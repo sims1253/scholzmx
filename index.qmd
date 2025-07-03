@@ -84,6 +84,25 @@ format:
   </div>
 </div>
 
+<!-- Art Showcase - Fixed position for wide screens -->
+<div class="art-showcase" id="art-showcase">
+  <div class="artwork active">
+    <img src="/photography/gandalf_image_1.jpg" alt="Artwork 1">
+  </div>
+  <div class="artwork">
+    <img src="/photography/gandalf_image_2.jpg" alt="Artwork 2">
+  </div>
+  <div class="artwork">
+    <img src="/photography/gandalf_image_3.jpg" alt="Artwork 3">
+  </div>
+  <div class="artwork">
+    <img src="/photography/gandalf_image_4.jpg" alt="Artwork 4">
+  </div>
+  <div class="art-showcase-caption">
+    Mother's Artwork Collection
+  </div>
+</div>
+
 <!-- Main content area -->
 <article class="sunlit-content">
   ::: {#about-block}
