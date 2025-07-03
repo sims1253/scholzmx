@@ -7,5 +7,17 @@
       "/blog/2017/04/15/coala-call-for-chefs/index.html",
       "/blog/2017/01/30/birth-of-coala/index.html"
     ]
+  },
+  {
+    "listing": "/blog.html",
+    "items": [
+      "/blog/index.html",
+      "/blog/2017/11/02/gsoc-2017-postmortem-part-1-overview/index.html",
+      "/blog/2023/ggplot-group-colors/ggplot-group-colors.html",
+      "/content/post/2023-05-31-building-bayesim-a-dgp-to-rule-them-all/index.html",
+      "/blog/2017/04/19/april-community-update/index.html",
+      "/blog/2017/04/15/coala-call-for-chefs/index.html",
+      "/blog/2017/01/30/birth-of-coala/index.html"
+    ]
   }
 ]

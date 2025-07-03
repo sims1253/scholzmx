@@ -1,35 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://www.scholzmx.com/blog/index.html</loc>
-    <lastmod>2023-09-27T07:16:52.777Z</lastmod>
+    <loc>https://scholzmx.com/sunlit-quarto-minimal/index.html</loc>
+    <lastmod>2025-07-02T22:34:45.646Z</lastmod>
   </url>
   <url>
-    <loc>https://www.scholzmx.com/cv/index.html</loc>
-    <lastmod>2023-09-27T07:16:53.364Z</lastmod>
+    <loc>https://scholzmx.com/research.html</loc>
+    <lastmod>2025-07-03T00:16:17.148Z</lastmod>
   </url>
   <url>
-    <loc>https://www.scholzmx.com/index.html</loc>
-    <lastmod>2023-09-27T07:17:46.857Z</lastmod>
+    <loc>https://scholzmx.com/photography/index.html</loc>
+    <lastmod>2025-07-03T05:35:32.051Z</lastmod>
   </url>
   <url>
-    <loc>https://www.scholzmx.com/photography/index.html</loc>
-    <lastmod>2023-09-27T07:16:53.884Z</lastmod>
+    <loc>https://scholzmx.com/DESIGN_ROADMAP.html</loc>
+    <lastmod>2025-07-03T05:48:49.885Z</lastmod>
   </url>
   <url>
-    <loc>https://www.scholzmx.com/projects/index.html</loc>
-    <lastmod>2023-09-27T07:16:54.147Z</lastmod>
+    <loc>https://scholzmx.com/content/post/2023-05-31-building-bayesim-a-dgp-to-rule-them-all/index.html</loc>
+    <lastmod>2025-07-03T10:35:37.944Z</lastmod>
   </url>
   <url>
-    <loc>https://www.scholzmx.com/blog/2017/01/30/birth-of-coala/index.html</loc>
-    <lastmod>2023-09-27T07:16:54.721Z</lastmod>
+    <loc>https://scholzmx.com/blog/index.html</loc>
+    <lastmod>2025-07-02T23:50:01.905Z</lastmod>
   </url>
   <url>
-    <loc>https://www.scholzmx.com/blog/2017/04/15/coala-call-for-chefs/index.html</loc>
-    <lastmod>2023-09-27T07:16:55.157Z</lastmod>
+    <loc>https://scholzmx.com/blog/2017/04/15/coala-call-for-chefs/index.html</loc>
+    <lastmod>2025-07-02T23:50:01.839Z</lastmod>
   </url>
   <url>
-    <loc>https://www.scholzmx.com/blog/2017/04/19/april-community-update/index.html</loc>
-    <lastmod>2023-09-27T07:16:55.694Z</lastmod>
+    <loc>https://scholzmx.com/about.html</loc>
+    <lastmod>2025-07-03T11:09:55.687Z</lastmod>
+  </url>
+  <url>
+    <loc>https://scholzmx.com/blog/2017/01/30/birth-of-coala/index.html</loc>
+    <lastmod>2025-07-02T23:50:01.813Z</lastmod>
+  </url>
+  <url>
+    <loc>https://scholzmx.com/blog/2017/04/19/april-community-update/index.html</loc>
+    <lastmod>2025-07-02T23:50:01.859Z</lastmod>
+  </url>
+  <url>
+    <loc>https://scholzmx.com/blog/2023/ggplot-group-colors/ggplot-group-colors.html</loc>
+    <lastmod>2025-07-03T10:35:47.649Z</lastmod>
+  </url>
+  <url>
+    <loc>https://scholzmx.com/blog.html</loc>
+    <lastmod>2025-07-03T00:16:49.275Z</lastmod>
+  </url>
+  <url>
+    <loc>https://scholzmx.com/cv/index.html</loc>
+    <lastmod>2025-07-03T05:35:48.022Z</lastmod>
+  </url>
+  <url>
+    <loc>https://scholzmx.com/index.html</loc>
+    <lastmod>2025-07-03T11:10:47.041Z</lastmod>
+  </url>
+  <url>
+    <loc>https://scholzmx.com/projects/index.html</loc>
+    <lastmod>2025-07-03T05:35:18.362Z</lastmod>
+  </url>
+  <url>
+    <loc>https://scholzmx.com/scratchpad.html</loc>
+    <lastmod>2025-07-03T05:32:20.761Z</lastmod>
   </url>
 </urlset>

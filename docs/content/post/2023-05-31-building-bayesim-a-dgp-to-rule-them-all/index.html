@@ -6,10 +6,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="">
-<meta name="description" content="Something something my blog. Welcome.">
+<meta name="author" content="Maximilian Scholz">
+<meta name="dcterms.date" content="2023-05-31">
+<meta name="description" content="Simulated data is the foundation for any simulation study. In this post I share some thoughts about how I went about supporting arbitrary data generating functions in bayesim.">
 
-<title>Blog – Max Scholz</title>
+<title>Building bayesim: A DGP to rule them all – Max Scholz</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -22,28 +23,61 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="../site_libs/quarto-nav/headroom.min.js"></script>
-<script src="../site_libs/clipboard/clipboard.min.js"></script>
-<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="../site_libs/quarto-search/fuse.min.js"></script>
-<script src="../site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="../">
-<script src="../site_libs/quarto-listing/list.min.js"></script>
-<script src="../site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="../site_libs/quarto-html/popper.min.js"></script>
-<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="../site_libs/quarto-html/anchor.min.js"></script>
-<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-642936fc12d853a82993902ef1d1e75a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-642936fc12d853a82993902ef1d1e75a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -71,67 +105,9 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
 
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-posts_2017 .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
 
-    const options = {
-      valueNames: ['listing-project','listing-website','listing-format','listing-_quarto-vars','listing-language','listing-description-meta','listing-date-format','listing-toc','listing-toc-title','listing-toc-location','listing-execute','listing-author','listing-freeze','listing-title','listing-date','listing-description','listing-categories','listing-draft','listing-path','listing-outputHref','listing-date-modified','listing-filename','listing-file-modified','listing-reading-time','listing-word-count',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-date-modified-sort'] },{ data: ['listing-file-modified-sort'] },{ data: ['listing-reading-time-sort'] },{ data: ['listing-word-count-sort'] }],
-      
-      searchColumns: ["listing-project","listing-website","listing-format","listing-_quarto-vars","listing-language","listing-description-meta","listing-date-format","listing-toc","listing-toc-title","listing-toc-location","listing-execute","listing-author","listing-freeze","listing-title","listing-date","listing-description","listing-categories","listing-draft","listing-path","listing-outputHref","listing-date-modified","listing-filename","listing-file-modified","listing-reading-time","listing-word-count"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-posts_2017'] = new List('listing-posts_2017', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
-
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
-
-<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="../../../styles.css">
 </head>
 
 <body class="nav-fixed quarto-light">
@@ -141,7 +117,7 @@ window.Quarto = {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="../index.html">
+    <a class="navbar-brand" href="../../../index.html">
     <span class="navbar-title">Max Scholz</span>
     </a>
   </div>
@@ -152,19 +128,19 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../index.html"> 
+    <a class="nav-link" href="../../../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../blog.html"> 
+    <a class="nav-link" href="../../../blog.html"> 
 <span class="menu-text">Blog</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../research.html"> 
+    <a class="nav-link" href="../../../research.html"> 
 <span class="menu-text">Research</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../about.html"> 
+    <a class="nav-link" href="../../../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
 </ul>
@@ -175,32 +151,51 @@ window.Quarto = {
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Year</h2>
+    <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#section" id="toc-section" class="nav-link active" data-scroll-target="#section">2022</a></li>
-  <li><a href="#section-1" id="toc-section-1" class="nav-link" data-scroll-target="#section-1">2017</a></li>
+  <li><a href="#input-arguments" id="toc-input-arguments" class="nav-link active" data-scroll-target="#input-arguments">Input arguments</a></li>
   </ul>
 </nav>
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(4)</span></div><div class="category" data-category="Y29hbGE=">coala <span class="quarto-category-count">(3)</span></div><div class="category" data-category="Y29tbXVuaXR5">community <span class="quarto-category-count">(3)</span></div></div></div>
+    </div>
 <!-- main -->
-<main class="content column-page-left" id="quarto-document-content">
+<main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Blog</h1>
+<h1 class="title">Building bayesim: A DGP to rule them all</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">Development</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    Simulated data is the foundation for any simulation study. In this post I share some thoughts about how I went about supporting arbitrary data generating functions in bayesim.
+  </div>
 </div>
 
 
+<div class="quarto-title-meta">
 
-<div class="quarto-title-meta column-page-left">
-
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Maximilian Scholz </p>
+          </div>
+  </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">May 31, 2023</p>
+    </div>
+  </div>
   
     
   </div>
@@ -210,123 +205,47 @@ window.Quarto = {
 </header>
 
 
-<p>Blog text intro goes here.</p>
-<section id="section" class="level2">
-<h2 class="anchored" data-anchor-id="section">2022</h2>
-<div id="posts_2022">
-
+<p>3 figures, two clad in black band t-shirts, the third more formal, stand in between rows of server racks. The formal figure asks “So, besides uncapped job run time, what do you need?”. The t-shirt warriors pull down their sunglasses, share a sinister look and answer “Data. Lots of data.”</p>
+<p>The foundation for any simulation study are data. I guess technically the data don’t have to be observations of some data-generating process (DGP) similar to what I have been using in <a href="https://github.com/sims1253/bayesim">bayesim</a> so far. They could be any kind of artifact you’d like to simulate and do something with afterwards. But in a more general sense, even if you were to run a simulation study on images, sound or functions themselves, each individual instance would represent one data point.</p>
+<p>Writing a data-generating function itself is rather easy, maybe all you need is a simple <code>rnorm()</code> and you are done. The complicated part is to build an interface that supports all the extra wishes we might have in the context of our simulation study. Maybe we want a training and a testing data set. Maybe some parameters of the DGP are randomly drawn during the function call but we need them as reference values for later when we calculate the estimation bias for the metrics and so on. To allow others to write their own DGPs, I had to define some arguments and an output format that bayesim would expect while just asking the user to hand over the function as simply another argument.</p>
+<p>My solution to this was to write a check function that not only tests a user`s function but also gives feedback if things are missing and how to fix them.</p>
+<section id="input-arguments" class="level1">
+<h1>Input arguments</h1>
+<p>Besides the arguments that any data-generating function might need for itself, there are some optional arguments that depend on the kind of metric you might want to calculate on your models later on. Following along the currently supported metrics in the <a href="https://github.com/sims1253/bayesim/blob/2d64c950248e8e1eb6f13814b989aa48e2014f27/R/metric_lookup.R#L41">metric_lookup</a> the first thing dependent on the DGP are reference values for some of the variable base metrics like bias and rmse. Luckily we already have the <code>vars_of_interest</code> argument that we plan to use during metric calculation that we can simply reuse as we would need reference values for all variables of interest anyway. For some of the predictive metrics we need test datasets, that the model hasn’t seen during fitting. While data generation will be a lot quicker than model fitting, I think it is good courtesy not to require additional testing data sets when they are not needed. A simple <code>testing_data</code> flag should be all that we need for this. Finally we need to be able to pass an rng <code>seed</code> to <a href="../../../post/how-to-make-your-simulation-study-reproducible/">make the DGP reproducible</a>.</p>
+<p>In R, you can use the <code>formals()</code> function to get a list of the <em>formal arguments</em> of a function. Using this it is rather easy to test if a function accepts the arguments we just defined:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>missing_dgp_args <span class="ot">&lt;-</span> <span class="cf">function</span>(fun){</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  required_args <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"vars_of_interest"</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"testing_data"</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"seed"</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    required_args[</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>      <span class="sc">!</span>(</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        required_args <span class="sc">%in%</span> <span class="fu">names</span>(<span class="fu">formals</span>(fun))</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>good_dpg <span class="ot">&lt;-</span> <span class="cf">function</span>(n, vars_of_interest, testing_data, seed) {</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rep</span>(<span class="dv">1</span>, n)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>bad_dgp <span class="ot">&lt;-</span> <span class="cf">function</span>(n, vars_of_interest, testing_data) {</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rep</span>(<span class="dv">1</span>, n)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="fu">missing_dgp_args</span>(good_dpg)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>character(0)</code></pre>
 </div>
-</section>
-<section id="section-1" class="level2">
-<h2 class="anchored" data-anchor-id="section-1">2017</h2>
-<div id="listing-posts_2017" class="quarto-listing quarto-listing-container-custom">
-<div class="list blog">
-    
-    <div class="blog-entry" data-index="0" data-listing-file-modified-sort="1751500201883">
-        <div class="metadata">          
-            <p class="date listing-date"></p>
-        </div>
-        <div class="body">
-            <p class="title listing-title"><a href="../blog/2017/11/02/gsoc-2017-postmortem-part-1-overview/index.html"></a></p>
-
-            
-
-            <p class="description listing-description"><div class="quarto-title-tools-only"><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></p>
-            
-            
-        </div>
-        
-    </div>
-    
-    <div class="blog-entry" data-index="1" data-categories="Y29hbGElMkNjb21tdW5pdHk=" data-listing-date-sort="1492552800000" data-listing-file-modified-sort="1751500201859" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="5" data-listing-word-count-sort="842">
-        <div class="metadata">          
-            <p class="date listing-date">2017-04-19</p>
-        </div>
-        <div class="body">
-            <p class="title listing-title"><a href="../blog/2017/04/19/april-community-update/index.html">April Community Team Update</a></p>
-
-            
-            <div class="post-categories listing-categories">
-                
-                <div class="post-category listing-category" onclick="window.quartoListingCategory('coala'); return false;">
-                    coala
-                </div>
-                
-                <div class="post-category listing-category" onclick="window.quartoListingCategory('community'); return false;">
-                    community
-                </div>
-                
-            </div>
-            
-
-            <p class="description listing-description">The last time you heard something from the community team was almost 3 month ago. Long long time ago…</p>
-            
-            
-        </div>
-        
-    </div>
-    
-    <div class="blog-entry" data-index="2" data-categories="Y29hbGElMkNjb21tdW5pdHk=" data-listing-date-sort="1492207200000" data-listing-file-modified-sort="1751500201839" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="3" data-listing-word-count-sort="558">
-        <div class="metadata">          
-            <p class="date listing-date">2017-04-15</p>
-        </div>
-        <div class="body">
-            <p class="title listing-title"><a href="../blog/2017/04/15/coala-call-for-chefs/index.html">coala's Call for Chefs</a></p>
-
-            
-            <div class="post-categories listing-categories">
-                
-                <div class="post-category listing-category" onclick="window.quartoListingCategory('coala'); return false;">
-                    coala
-                </div>
-                
-                <div class="post-category listing-category" onclick="window.quartoListingCategory('community'); return false;">
-                    community
-                </div>
-                
-            </div>
-            
-
-            <p class="description listing-description">A story about building community through food.</p>
-            
-            
-        </div>
-        
-    </div>
-    
-    <div class="blog-entry" data-index="3" data-categories="Y29hbGElMkNjb21tdW5pdHk=" data-listing-date-sort="1485730800000" data-listing-file-modified-sort="1751500201813" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="4" data-listing-word-count-sort="709">
-        <div class="metadata">          
-            <p class="date listing-date">2017-01-30</p>
-        </div>
-        <div class="body">
-            <p class="title listing-title"><a href="../blog/2017/01/30/birth-of-coala/index.html">The Birth of a coala</a></p>
-
-            
-            <div class="post-categories listing-categories">
-                
-                <div class="post-category listing-category" onclick="window.quartoListingCategory('coala'); return false;">
-                    coala
-                </div>
-                
-                <div class="post-category listing-category" onclick="window.quartoListingCategory('community'); return false;">
-                    community
-                </div>
-                
-            </div>
-            
-
-            <p class="description listing-description">My first entry on the coala blog.</p>
-            
-            
-        </div>
-        
-    </div>
-    
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">missing_dgp_args</span>(bad_dgp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "seed"</code></pre>
 </div>
-<div class="listing-no-matching d-none">No matching items</div>
 </div>
-<p>The blog post listing is based on the website source of <a href="https://www.andrewheiss.com/">Andrew Heiss</a>, who has put together an incredible listing template under CC-BY-SA 4.0 license. Thank you!</p>
-
 
 
 </section>
