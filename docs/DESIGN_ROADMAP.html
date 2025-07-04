@@ -141,6 +141,8 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#design-aesthetic-guide" id="toc-design-aesthetic-guide" class="nav-link" data-scroll-target="#design-aesthetic-guide">4. Design &amp; Aesthetic Guide</a>
   <ul class="collapse">
   <li><a href="#inspirations" id="toc-inspirations" class="nav-link" data-scroll-target="#inspirations">4.1. Inspirations</a></li>
+  <li><a href="#drop-cap-inspirations-implementation" id="toc-drop-cap-inspirations-implementation" class="nav-link" data-scroll-target="#drop-cap-inspirations-implementation">4.1.1. Drop Cap Inspirations &amp; Implementation</a></li>
+  <li><a href="#mobile-navigation-reference" id="toc-mobile-navigation-reference" class="nav-link" data-scroll-target="#mobile-navigation-reference">4.1.2. Mobile Navigation Reference</a></li>
   <li><a href="#game-ui-aesthetic-philosophy" id="toc-game-ui-aesthetic-philosophy" class="nav-link" data-scroll-target="#game-ui-aesthetic-philosophy">4.2. Game UI Aesthetic Philosophy</a></li>
   <li><a href="#layout" id="toc-layout" class="nav-link" data-scroll-target="#layout">4.3. Layout</a></li>
   <li><a href="#color-palette" id="toc-color-palette" class="nav-link" data-scroll-target="#color-palette">4.4. Color Palette</a></li>
@@ -229,6 +231,26 @@ ul.task-list li input[type="checkbox"] {
 <li><strong><code>simonsarris.com</code>:</strong> Model for the minimalist, single-column layout, clean header navigation, and overall focus on readable content. Particularly inspired by the landscape scribbles in the background and small illustrations at the bottom of pages.</li>
 <li><strong><code>gwern.net</code> / <code>turntrout.com</code>:</strong> Inspiration for future-state advanced hosting (caching, archival) and deep, interconnected content. Turntrout’s fish with vine leaves, large illustrated initials, nice typography, and pixel art animations exemplify the handcrafted aesthetic we’re aiming for.</li>
 <li><strong><code>putanumonit.com</code> / <code>mailchi.mp/btiscience/ferns</code>:</strong> Inspiration for the “paper-y” feel, warm color palettes, and classic typography. The fern botanical illustrations represent the organic, handcrafted aesthetic we want to achieve.</li>
+</ul>
+</section>
+<section id="drop-cap-inspirations-implementation" class="level3">
+<h3 class="anchored" data-anchor-id="drop-cap-inspirations-implementation">4.1.1. Drop Cap Inspirations &amp; Implementation</h3>
+<ul>
+<li><strong><a href="https://gwern.net/dropcap"><code>gwern.net/dropcap</code></a>:</strong> Comprehensive research on dropcap fonts and medieval manuscript aesthetics. Particularly interested in medieval-floral style dropcaps that are “fairy-taily, whimsical, cozy and soothing.”</li>
+<li><strong><a href="https://turntrout.com/design#dropcaps"><code>turntrout.com/design#dropcaps</code></a>:</strong> Simple but effective drop cap implementation approach that achieves good visual results quickly.</li>
+<li><strong>Aesthetic Goals:</strong> Medieval dropcaps with individualized character per article/theme, featuring:
+<ul>
+<li>Funny medieval scenes (e.g., “2 people chasing around the letter”)</li>
+<li>Weird medieval elements and whimsical details</li>
+<li>Medieval-floral decorative style</li>
+<li>Fairy-tale and cozy atmosphere</li>
+</ul></li>
+</ul>
+</section>
+<section id="mobile-navigation-reference" class="level3">
+<h3 class="anchored" data-anchor-id="mobile-navigation-reference">4.1.2. Mobile Navigation Reference</h3>
+<ul>
+<li><strong><a href="https://turntrout.com"><code>turntrout.com</code></a>:</strong> Mobile navigation design serves as inspiration for improved mobile experience, handling the navbar more elegantly than current implementation.</li>
 </ul>
 </section>
 <section id="game-ui-aesthetic-philosophy" class="level3">
@@ -357,9 +379,41 @@ if (artElement) {
 - **Action:** Review all pages, check for broken links, and clean up any placeholder content.
 - **Commit Message:** `fix: perform final review and cleanup before launch`
 
-## 7. Future Enhancements
+## 7. Current Implementation Status &amp; Known Issues
 
-This section captures advanced ideas for later implementation.
+### 7.1. Completed Features (As of 2025-07-04)
+
+- ✅ **Medieval Drop Caps:** Implemented using Cinzel Decorative and Uncial Antiqua fonts with fairy-tale styling
+- ✅ **Personal Homepage Image:** Added with manuscript-style borders and cozy aesthetic
+- ✅ **Manuscript Headers:** Enhanced with illuminated initials and organic gradients
+- ✅ **Colophon Placement:** Fixed positioning at bottom of blog, research, and about pages
+- ✅ **Blurred TOC Fix:** Resolved progressive blur interference with research page navigation
+- ✅ **Sunlit Theme Integration:** Day/night toggle with atmospheric visual effects
+
+### 7.2. Known Issues &amp; Pending Fixes
+
+- **Mobile Navigation:** Currently only shows name and search glass on mobile; needs improvement following turntrout.com approach
+- **Mobile Search Functionality:** Search glass icon not clickable/working on mobile devices
+- **Cursor Glow Effect:** Missing or non-functional light effect around cursor from sunlit theme
+- **Line Width Optimization:** May need further refinement for ideal accessibility (currently ~800px max-width)
+
+### 7.3. Technical Debt &amp; Optimizations
+
+- **Search Configuration:** May need debugging for mobile responsiveness
+- **Progressive Blur Performance:** Complex SVG animations could impact lower-end devices
+- **Font Loading:** Multiple decorative fonts may affect initial page load times
+- **JavaScript Coordination:** Multiple interactive elements (glow, shutters, leaves, art rotation) need optimization
+
+## 8. Future Enhancements
+
+### 8.1. Drop Cap Evolution
+
+- **Individualized Drop Caps:** Create theme-specific drop caps per article/section
+- **Medieval Scene Integration:** Implement whimsical scenes within letters (e.g., "people chasing around the letter")
+- **Interactive Elements:** Add subtle hover effects or animations to drop caps
+- **Font Library Expansion:** Research and implement additional medieval-floral fonts
+
+### 8.2. Advanced Features
 
 - **Tufte-Style Sidenotes:** Implement a system for Tufte-style sidenotes, allowing for marginal notes that don't interrupt the main flow of the text. This would be a significant step towards a more academic and information-rich presentation, especially for research articles.
 - **Evolve into a Digital Garden:** Move beyond a traditional blog structure towards a network of interconnected notes. This involves:
@@ -367,9 +421,23 @@ This section captures advanced ideas for later implementation.
 - Prioritizing bidirectional linking between pages to create a web of knowledge.
 - Writing in a way that notes can be updated over time as understanding evolves.
 - Leveraging Quarto's built-in cross-referencing (`@page-title`) as a foundation and potentially exploring more advanced solutions for visualizing the network.
-- **Illustrated Manuscript Initials:** Replace the CSS-based drop caps with a system that uses images of ornate, manuscript-style first letters. This could involve a small script to replace the first letter with an `&lt;img&gt;` tag pointing to a random initial from a collection. This could also be combined with a handwriting font for a more personal touch.
+- **Illustrated Manuscript Initials:** Replace the CSS-based drop caps with a system that uses images of ornate, manuscript-style first letters. This could involve a small script to replace the first letter with an `&lt;img&gt;` tag pointing to a random initial from a collection.
 - **Advanced Caching &amp; Archiving:** Investigate implementing a more robust hosting setup similar to `gwern.net`, potentially using a custom server or CDN rules to ensure long-term availability and performance of content and assets.
 - **Full-Text Search:** Implement a client-side or serverless search function to allow users to search the full text of all blog posts and pages.
+
+### 8.3. Mobile Experience Improvements
+
+- **Navigation Enhancement:** Implement mobile navigation inspired by turntrout.com design
+- **Touch Interactions:** Add appropriate touch gestures for mobile users
+- **Performance Optimization:** Optimize animations and effects for mobile devices
+- **Search Functionality:** Fix and enhance mobile search experience
+
+### 8.4. Whimsical Feature Additions
+
+- **Hidden Easter Eggs:** Implement discoverable elements following Peterson &amp; Findus philosophy
+- **Seasonal Variations:** Add subtle seasonal changes to visual elements
+- **Interactive Botanical Elements:** Enhance art showcase with more interactive features
+- **Cursor Following Effects:** Restore or enhance cursor glow/light effects
 
 
 
@@ -443,6 +511,20 @@ The new site will be built using Quarto, leveraging its powerful code-rendering 
 - **`simonsarris.com`:** Model for the minimalist, single-column layout, clean header navigation, and overall focus on readable content. Particularly inspired by the landscape scribbles in the background and small illustrations at the bottom of pages.
 - **`gwern.net` / `turntrout.com`:** Inspiration for future-state advanced hosting (caching, archival) and deep, interconnected content. Turntrout's fish with vine leaves, large illustrated initials, nice typography, and pixel art animations exemplify the handcrafted aesthetic we're aiming for.
 - **`putanumonit.com` / `mailchi.mp/btiscience/ferns`:** Inspiration for the "paper-y" feel, warm color palettes, and classic typography. The fern botanical illustrations represent the organic, handcrafted aesthetic we want to achieve.
+
+### 4.1.1. Drop Cap Inspirations &amp; Implementation
+
+- **[`gwern.net/dropcap`](https://gwern.net/dropcap):** Comprehensive research on dropcap fonts and medieval manuscript aesthetics. Particularly interested in medieval-floral style dropcaps that are "fairy-taily, whimsical, cozy and soothing."
+- **[`turntrout.com/design#dropcaps`](https://turntrout.com/design#dropcaps):** Simple but effective drop cap implementation approach that achieves good visual results quickly.
+- **Aesthetic Goals:** Medieval dropcaps with individualized character per article/theme, featuring:
+- Funny medieval scenes (e.g., "2 people chasing around the letter")
+- Weird medieval elements and whimsical details
+- Medieval-floral decorative style
+- Fairy-tale and cozy atmosphere
+
+### 4.1.2. Mobile Navigation Reference
+
+- **[`turntrout.com`](https://turntrout.com):** Mobile navigation design serves as inspiration for improved mobile experience, handling the navbar more elegantly than current implementation.
 
 
 ### 4.2. Game UI Aesthetic Philosophy
@@ -609,9 +691,41 @@ if (artElement) {
 - **Action:** Review all pages, check for broken links, and clean up any placeholder content.
 - **Commit Message:** `fix: perform final review and cleanup before launch`
 
-## 7. Future Enhancements
+## 7. Current Implementation Status &amp; Known Issues
 
-This section captures advanced ideas for later implementation.
+### 7.1. Completed Features (As of 2025-07-04)
+
+- ✅ **Medieval Drop Caps:** Implemented using Cinzel Decorative and Uncial Antiqua fonts with fairy-tale styling
+- ✅ **Personal Homepage Image:** Added with manuscript-style borders and cozy aesthetic
+- ✅ **Manuscript Headers:** Enhanced with illuminated initials and organic gradients
+- ✅ **Colophon Placement:** Fixed positioning at bottom of blog, research, and about pages
+- ✅ **Blurred TOC Fix:** Resolved progressive blur interference with research page navigation
+- ✅ **Sunlit Theme Integration:** Day/night toggle with atmospheric visual effects
+
+### 7.2. Known Issues &amp; Pending Fixes
+
+- **Mobile Navigation:** Currently only shows name and search glass on mobile; needs improvement following turntrout.com approach
+- **Mobile Search Functionality:** Search glass icon not clickable/working on mobile devices
+- **Cursor Glow Effect:** Missing or non-functional light effect around cursor from sunlit theme
+- **Line Width Optimization:** May need further refinement for ideal accessibility (currently ~800px max-width)
+
+### 7.3. Technical Debt &amp; Optimizations
+
+- **Search Configuration:** May need debugging for mobile responsiveness
+- **Progressive Blur Performance:** Complex SVG animations could impact lower-end devices
+- **Font Loading:** Multiple decorative fonts may affect initial page load times
+- **JavaScript Coordination:** Multiple interactive elements (glow, shutters, leaves, art rotation) need optimization
+
+## 8. Future Enhancements
+
+### 8.1. Drop Cap Evolution
+
+- **Individualized Drop Caps:** Create theme-specific drop caps per article/section
+- **Medieval Scene Integration:** Implement whimsical scenes within letters (e.g., "people chasing around the letter")
+- **Interactive Elements:** Add subtle hover effects or animations to drop caps
+- **Font Library Expansion:** Research and implement additional medieval-floral fonts
+
+### 8.2. Advanced Features
 
 - **Tufte-Style Sidenotes:** Implement a system for Tufte-style sidenotes, allowing for marginal notes that don't interrupt the main flow of the text. This would be a significant step towards a more academic and information-rich presentation, especially for research articles.
 - **Evolve into a Digital Garden:** Move beyond a traditional blog structure towards a network of interconnected notes. This involves:
@@ -619,9 +733,23 @@ This section captures advanced ideas for later implementation.
 - Prioritizing bidirectional linking between pages to create a web of knowledge.
 - Writing in a way that notes can be updated over time as understanding evolves.
 - Leveraging Quarto's built-in cross-referencing (`@page-title`) as a foundation and potentially exploring more advanced solutions for visualizing the network.
-- **Illustrated Manuscript Initials:** Replace the CSS-based drop caps with a system that uses images of ornate, manuscript-style first letters. This could involve a small script to replace the first letter with an `&lt;img&gt;` tag pointing to a random initial from a collection. This could also be combined with a handwriting font for a more personal touch.
+- **Illustrated Manuscript Initials:** Replace the CSS-based drop caps with a system that uses images of ornate, manuscript-style first letters. This could involve a small script to replace the first letter with an `&lt;img&gt;` tag pointing to a random initial from a collection.
 - **Advanced Caching &amp; Archiving:** Investigate implementing a more robust hosting setup similar to `gwern.net`, potentially using a custom server or CDN rules to ensure long-term availability and performance of content and assets.
-- **Full-Text Search:** Implement a client-side or serverless search function to allow users to search the full text of all blog posts and pages.</code></pre>
+- **Full-Text Search:** Implement a client-side or serverless search function to allow users to search the full text of all blog posts and pages.
+
+### 8.3. Mobile Experience Improvements
+
+- **Navigation Enhancement:** Implement mobile navigation inspired by turntrout.com design
+- **Touch Interactions:** Add appropriate touch gestures for mobile users
+- **Performance Optimization:** Optimize animations and effects for mobile devices
+- **Search Functionality:** Fix and enhance mobile search experience
+
+### 8.4. Whimsical Feature Additions
+
+- **Hidden Easter Eggs:** Implement discoverable elements following Peterson &amp; Findus philosophy
+- **Seasonal Variations:** Add subtle seasonal changes to visual elements
+- **Interactive Botanical Elements:** Enhance art showcase with more interactive features
+- **Cursor Following Effects:** Restore or enhance cursor glow/light effects</code></pre>
 <p>:::</p>
 </section>
 </section>
