@@ -47,6 +47,109 @@ function initFlipCard() {
   }
 }
 
+function initMobileMenu() {
+  // Enhance Quarto's existing Bootstrap navbar collapse for better mobile experience
+  const navbarCollapse = document.getElementById('navbarCollapse');
+  const navbar = document.querySelector('.navbar-nav');
+  
+  if (!navbarCollapse || !navbar) return;
+  
+  // Add search functionality to mobile menu
+  const searchContainer = document.createElement('div');
+  searchContainer.className = 'mobile-search-container';
+  searchContainer.style.cssText = `
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--paper-shadow);
+    margin-bottom: 1rem;
+  `;
+  
+  if (document.body.classList.contains('dark')) {
+    searchContainer.style.borderBottomColor = 'rgba(255, 255, 255, 0.1)';
+  }
+  
+  const searchInput = document.createElement('input');
+  searchInput.type = 'search';
+  searchInput.className = 'mobile-search-input';
+  searchInput.placeholder = 'Search...';
+  searchInput.setAttribute('aria-label', 'Search');
+  searchInput.style.cssText = `
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--paper-shadow);
+    border-radius: 6px;
+    background: var(--paper-white);
+    color: var(--text-dark);
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+  `;
+  
+  if (document.body.classList.contains('dark')) {
+    searchInput.style.background = 'var(--night)';
+    searchInput.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+    searchInput.style.color = 'var(--day)';
+  }
+  
+  // Add search button
+  const searchButton = document.createElement('button');
+  searchButton.textContent = 'Search';
+  searchButton.style.cssText = `
+    margin-top: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--accent-terracotta);
+    color: var(--paper-white);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    width: 100%;
+  `;
+  
+  searchContainer.appendChild(searchInput);
+  searchContainer.appendChild(searchButton);
+  
+  // Insert search at the beginning of the navbar collapse
+  navbarCollapse.insertBefore(searchContainer, navbarCollapse.firstChild);
+  
+  // Enhanced search functionality in mobile menu
+  searchInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      const query = searchInput.value.trim();
+      if (query) {
+        // Try to use Quarto's search if available
+        const quartoSearch = document.getElementById('quarto-search');
+        if (quartoSearch) {
+          // Try to trigger Quarto search
+          const searchBtn = quartoSearch.querySelector('button, .aa-SubmitButton');
+          if (searchBtn) {
+            // Set the search query if there's an input
+            const quartoInput = quartoSearch.querySelector('input, .aa-Input');
+            if (quartoInput) {
+              quartoInput.value = query;
+              quartoInput.focus();
+              // Trigger search
+              quartoInput.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+            searchBtn.click();
+          } else {
+            // Fallback to our search functionality
+            searchInCurrentPage(query);
+          }
+        } else {
+          // Use our search functionality
+          searchInCurrentPage(query);
+        }
+      }
+    }
+  });
+  
+  // Search button functionality
+  searchButton.addEventListener('click', () => {
+    const query = searchInput.value.trim();
+    if (query) {
+      searchInCurrentPage(query);
+    }
+  });
+}
 
 // --- Main Initializer ---
 // Runs when the page is fully loaded
@@ -64,6 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize other interactive elements
   initArtShowcase();
   initFlipCard();
+  initMobileMenu();
   
   // Initialize search functionality
   setTimeout(() => {

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Navigation Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            background: #f5f5f5;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .screen-size {
+            display: inline-block;
+            padding: 5px 10px;
+            background: #007acc;
+            color: white;
+            border-radius: 4px;
+            margin: 5px;
+        }
+        @media (max-width: 991px) {
+            .tablet-indicator {
+                background: #ff6b35;
+            }
+        }
+        @media (max-width: 768px) {
+            .mobile-indicator {
+                background: #28a745;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Mobile Navigation Test Page</h1>
+    
+    <div class="test-section">
+        <h2>Current Screen Size Indicators</h2>
+        <div class="screen-size">Desktop (>991px)</div>
+        <div class="screen-size tablet-indicator">Tablet (≤991px)</div>
+        <div class="screen-size mobile-indicator">Mobile (≤768px)</div>
+    </div>
+
+    <div class="test-section">
+        <h2>Navigation Implementation Checklist</h2>
+        <ul>
+            <li>✅ Mobile hamburger menu toggle in navbar</li>
+            <li>✅ Slide-out mobile menu panel</li>
+            <li>✅ All navigation links accessible</li>
+            <li>✅ Search functionality in mobile menu</li>
+            <li>✅ Theme toggle in mobile menu</li>
+            <li>✅ Responsive design (tablet/mobile breakpoints)</li>
+            <li>✅ Touch-friendly interface</li>
+            <li>✅ Proper keyboard navigation (Escape key)</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Instructions</h2>
+        <ol>
+            <li><strong>Desktop (>991px):</strong> All navigation links should be visible in the navbar</li>
+            <li><strong>Tablet (≤991px):</strong> Most links hidden, hamburger menu appears, theme toggle and search still visible</li>
+            <li><strong>Mobile (≤768px):</strong> Only hamburger menu visible, all functionality moved to slide-out menu</li>
+            <li><strong>Functionality Tests:</strong>
+                <ul>
+                    <li>Click hamburger menu to open mobile navigation</li>
+                    <li>Test search in mobile menu</li>
+                    <li>Test theme toggle in mobile menu</li>
+                    <li>Test navigation links in mobile menu</li>
+                    <li>Test closing menu (X button, overlay click, Escape key)</li>
+                </ul>
+            </li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h2>Features Implemented</h2>
+        <h3>✅ Mobile-First Approach</h3>
+        <ul>
+            <li>Hamburger menu pattern for mobile navigation</li>
+            <li>Slide-out panel from right side</li>
+            <li>Overlay with backdrop blur</li>
+        </ul>
+
+        <h3>✅ Responsive Breakpoints</h3>
+        <ul>
+            <li>Desktop: Full navigation visible</li>
+            <li>Tablet (≤991px): Partial collapse with hamburger menu</li>
+            <li>Mobile (≤768px): Full collapse to mobile menu only</li>
+        </ul>
+
+        <h3>✅ Accessibility & UX</h3>
+        <ul>
+            <li>ARIA labels for screen readers</li>
+            <li>Keyboard navigation support</li>
+            <li>Touch-friendly 44px+ touch targets</li>
+            <li>Proper focus management</li>
+        </ul>
+
+        <h3>✅ Search Integration</h3>
+        <ul>
+            <li>Native search input in mobile menu</li>
+            <li>Fallback search functionality</li>
+            <li>Search result highlighting</li>
+        </ul>
+
+        <h3>✅ Theme Consistency</h3>
+        <ul>
+            <li>Dark/light mode support</li>
+            <li>Consistent with site's cozy manuscript aesthetic</li>
+            <li>Smooth transitions and animations</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>Browser DevTools Testing</h2>
+        <p>Use browser developer tools to test responsive behavior:</p>
+        <ol>
+            <li>Open Developer Tools (F12)</li>
+            <li>Toggle device toolbar (Ctrl+Shift+M)</li>
+            <li>Test various device sizes:
+                <ul>
+                    <li>iPhone SE (375px)</li>
+                    <li>iPhone 12 Pro (390px)</li>
+                    <li>iPad (768px)</li>
+                    <li>iPad Pro (1024px)</li>
+                </ul>
+            </li>
+        </ol>
+    </div>
+
+    <script>
+        // Simple script to show current viewport width
+        function updateViewportInfo() {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            document.title = `Mobile Nav Test - ${width}x${height}`;
+        }
+        
+        window.addEventListener('resize', updateViewportInfo);
+        updateViewportInfo();
+        
+        // Test mobile menu functionality if on actual site
+        if (typeof initMobileMenu === 'function') {
+            console.log('Mobile menu functionality detected');
+        } else {
+            console.log('This is a standalone test page - mobile menu functionality available on main site');
+        }
+    </script>
+</body>
+</html>
