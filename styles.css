@@ -715,7 +715,7 @@ article.sunlit-content a:hover {
   left: 1rem; /* Changed from right to left */
   width: 50px;
   height: 50px;
-  background-image: url('/img/ovid4footer.svg');
+  background-image: url('img/ovid4footer.svg');
   background-repeat: no-repeat;
   background-size: contain;
   opacity: 0.3;
@@ -1118,12 +1118,7 @@ article.sunlit-content a:hover {
   --drop-cap-shadow: rgba(0, 0, 0, 0.3);
 }
 
-/* Target only the very first paragraph after the title block - limiting frequency */
-#quarto-document-content > header + p:first-of-type::first-letter,
-.quarto-title-block + p::first-letter,
-main.content > p:first-child::first-letter,
-/* Also target the first paragraph in sections for home page */
-section#welcome > p:first-of-type::first-letter {
+h1 + p::first-letter, h2 + p::first-letter, h3 + p::first-letter, h4 + p::first-letter, h5 + p::first-letter, h6 + p::first-letter {
   /* Basic positioning and size */
   float: left;
   font-family: "Cinzel Decorative", "Uncial Antiqua", serif;
@@ -1478,6 +1473,26 @@ nav#TOC,
   isolation: isolate;
 }
 
+/* Enhanced TOC background for better visibility in dark mode */
+.dark nav#TOC,
+.dark #quarto-sidebar {
+  background-color: rgba(15, 19, 28, 0.95);
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Light mode TOC background for consistency */
+nav#TOC,
+#quarto-sidebar {
+  background-color: rgba(253, 251, 246, 0.95);
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--paper-shadow);
+}
+
 /* Ensure TOC text is crisp and readable */
 #TOC .nav-link,
 #TOC h2,
@@ -1491,11 +1506,60 @@ nav#TOC,
   font-weight: 500;
 }
 
+/* Light mode active and hover states */
+#TOC .nav-link.active,
+#TOC .nav-link:hover,
+.sidebar .nav-link.active,
+.sidebar .nav-link:hover {
+  color: var(--accent-terracotta);
+  font-weight: 600;
+}
+
+/* Dark mode TOC styling with improved contrast */
 .dark #TOC .nav-link,
 .dark #TOC h2,
 .dark .sidebar .nav-link,
 .dark .sidebar h2 {
   color: var(--day);
+}
+
+.dark #TOC .nav-link.active,
+.dark #TOC .nav-link:hover,
+.dark .sidebar .nav-link.active,
+.dark .sidebar .nav-link:hover {
+  color: var(--accent-terracotta);
+  font-weight: 600;
+}
+
+/* Additional TOC styling for better visibility */
+#TOC ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+#TOC li {
+  margin: 0.25rem 0;
+}
+
+#TOC .nav-link {
+  display: block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+/* Enhanced hover effects */
+#TOC .nav-link:hover,
+.sidebar .nav-link:hover {
+  background-color: rgba(138, 59, 59, 0.1);
+  transform: translateX(2px);
+}
+
+.dark #TOC .nav-link:hover,
+.dark .sidebar .nav-link:hover {
+  background-color: rgba(255, 253, 250, 0.1);
+  transform: translateX(2px);
 }
 
 /* Override any blur effects that might affect the sidebar */
@@ -1540,10 +1604,7 @@ nav#TOC,
   }
 }
 
-.navbar-brand-container {
-  flex: 0 1 auto; /* Allows the container to shrink to fit its content */
-  margin-right: auto !important; /* Pushes other elements to the right */
-}
+
 
 #glow {
   --mx: 50%; /* Default to center */
@@ -1639,6 +1700,7 @@ nav#TOC,
   border-radius: 50%;
   opacity: 0.3;
 }
+
 
 /* Responsive adjustments for personal image */
 @media (max-width: 768px) {
