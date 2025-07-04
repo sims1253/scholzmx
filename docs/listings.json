@@ -1,8 +1,7 @@
 [
   {
-    "listing": "/blog.html",
+    "listing": "/blog/index.html",
     "items": [
-      "/blog/index.html",
       "/blog/2017/11/02/gsoc-2017-postmortem-part-1-overview/index.html",
       "/blog/2024/04/08/understanding-mcmc-diagnostics/index.html",
       "/blog/2024/03/12/academic-life-reflections/index.html",
@@ -16,7 +15,7 @@
     ]
   },
   {
-    "listing": "/blog/index.html",
+    "listing": "/blog.html",
     "items": [
       "/blog/2017/11/02/gsoc-2017-postmortem-part-1-overview/index.html",
       "/blog/2024/04/08/understanding-mcmc-diagnostics/index.html",

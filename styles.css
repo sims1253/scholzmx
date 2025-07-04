@@ -41,17 +41,6 @@ body {
   animation-timing-function: linear;
 }
 
-body.animation-ready {
-  animation-play-state: running;
-  animation-duration: 1s;
-  animation-name: sunrise;
-}
-
-body.animation-ready.dark {
-  animation-duration: 1.7s;
-  animation-name: sunset;
-}
-
 body.dark {
   --light: var(--night);
   --dark: var(--day);
@@ -251,24 +240,36 @@ body.dark {
   height: 80px;
 }
 
-@keyframes billow {
-  0% {
-    transform: perspective(400px) rotateX(0deg) rotateY(0deg) scale(1);
+@media (prefers-reduced-motion: no-preference) {
+  body.animation-ready {
+    animation-play-state: running;
+    animation-duration: 1s;
+    animation-name: sunrise;
   }
-  25% {
-    transform: perspective(400px) rotateX(1deg) rotateY(2deg) scale(1.02);
+
+  body.animation-ready.dark {
+    animation-duration: 1.7s;
+    animation-name: sunset;
   }
-  50% {
-    transform: perspective(400px) rotateX(-4deg) rotateY(-2deg) scale(0.97);
-  }
-  75% {
-    transform: perspective(400px) rotateX(1deg) rotateY(-1deg) scale(1.04);
-  }
-  100% {
-    transform: perspective(400px) rotateX(0deg) rotateY(0deg) scale(1);
+
+  @keyframes billow {
+    0% {
+      transform: perspective(400px) rotateX(0deg) rotateY(0deg) scale(1);
+    }
+    25% {
+      transform: perspective(400px) rotateX(1deg) rotateY(2deg) scale(1.02);
+    }
+    50% {
+      transform: perspective(400px) rotateX(-4deg) rotateY(-2deg) scale(0.97);
+    }
+    75% {
+      transform: perspective(400px) rotateX(1deg) rotateY(-1deg) scale(1.04);
+    }
+    100% {
+      transform: perspective(400px) rotateX(0deg) rotateY(0deg) scale(1);
+    }
   }
 }
-
 /* Content container for maximum readability */
 .quarto-body-content,
 article {
@@ -279,12 +280,93 @@ article {
   z-index: 1;
 }
 
+/* Main content area width constraint for optimal readability */
+main.content,
+.column-page {
+  max-width: 65ch; /* Character-based width for optimal readability */
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* Fallback using pixel-based width for browsers that don't support ch units */
+@supports not (max-width: 65ch) {
+  main.content,
+  .column-page {
+    max-width: 700px;
+  }
+}
+
+/* Quarto content container overrides for line width optimization */
+#quarto-document-content {
+  max-width: 65ch;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* Fallback for browsers that don't support ch units */
+@supports not (max-width: 65ch) {
+  #quarto-document-content {
+    max-width: 700px;
+  }
+}
+
+/* Ensure text content within main respects the line width constraints */
+main.content p,
+main.content h1,
+main.content h2,
+main.content h3,
+main.content h4,
+main.content h5,
+main.content h6,
+.column-page p,
+.column-page h1,
+.column-page h2,
+.column-page h3,
+.column-page h4,
+.column-page h5,
+.column-page h6 {
+  max-width: 65ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Fallback for browsers that don't support ch units */
+@supports not (max-width: 65ch) {
+  main.content p,
+  main.content h1,
+  main.content h2,
+  main.content h3,
+  main.content h4,
+  main.content h5,
+  main.content h6,
+  .column-page p,
+  .column-page h1,
+  .column-page h2,
+  .column-page h3,
+  .column-page h4,
+  .column-page h5,
+  .column-page h6 {
+    max-width: 700px;
+  }
+}
+
 /* Sunlit content styling */
 article.sunlit-content {
   color: var(--dark);
   isolation: isolate;
   padding: 15vh 2rem 2rem;
   transition: color 1s var(--timing-fn);
+  max-width: 65ch; /* Apply line width constraint */
+  margin: 0 auto;
+}
+
+/* Fallback for browsers that don't support ch units */
+@supports not (max-width: 65ch) {
+  article.sunlit-content {
+    max-width: 700px;
+  }
 }
 
 /* Link styling with accent color and dark mode support */
@@ -682,37 +764,58 @@ article.sunlit-content a:hover {
   display: flex;
   align-items: center;
   margin: 2rem 0 3rem 0;
-  padding: 1.5rem;
-  /* CHANGE: Add a subtle gradient for texture */
-  background: linear-gradient(135deg, var(--paper-white), var(--paper-shadow));
-  border-radius: 12px;
-  /* CHANGE: Use a border that matches the shadow for an "embossed" look */
-  border: 2px solid var(--paper-shadow);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  /* Enhanced gradient for more depth */
+  background: linear-gradient(135deg, 
+    var(--paper-white) 0%, 
+    var(--paper-shadow) 50%, 
+    var(--paper-white) 100%);
+  border-radius: 16px;
+  /* Organic-style border with subtle texture */
+  border: 3px solid var(--paper-shadow);
+  /* Elevated shadow for depth */
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
   position: relative;
+  /* Add subtle texture overlay */
+  overflow: hidden;
 }
 
 .dark .manuscript-header {
-  background: linear-gradient(135deg, var(--night), var(--dawn));
-  border-color: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, 
+    var(--night) 0%, 
+    var(--dawn) 50%, 
+    var(--night) 100%);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .illuminated-initial {
-  font-size: 4rem;
-  font-weight: bold;
+  font-size: 5rem;
+  font-weight: 900;
   color: var(--accent-terracotta);
-  /* CHANGE: Use a classic serif font for a more calligraphic feel */
-  font-family: Georgia, 'Times New Roman', serif;
-  margin-right: 1rem;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-  line-height: 1;
-  /* You can even get fancy with background-clip */
-  background: linear-gradient(45deg, var(--accent-terracotta), #b84a4a);
+  /* Enhanced serif font with more character */
+  font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  margin-right: 1.5rem;
+  text-shadow: 
+    2px 2px 4px rgba(0, 0, 0, 0.3),
+    0 0 10px rgba(138, 59, 59, 0.2);
+  line-height: 0.8;
+  /* Enhanced gradient with more sophistication */
+  background: linear-gradient(45deg, 
+    var(--accent-terracotta) 0%, 
+    #b84a4a  30%, 
+    #d4594a  70%, 
+    var(--accent-terracotta) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   position: relative;
+  /* Add a subtle glow effect */
+  filter: drop-shadow(0 0 8px rgba(138, 59, 59, 0.3));
 }
 
 .illuminated-initial::before {
@@ -884,6 +987,34 @@ article.sunlit-content a:hover {
   
   article.sunlit-content {
     padding: 15vh 1rem 1rem;
+  }
+  
+  /* Maintain optimal line width constraints on mobile */
+  main.content,
+  .column-page,
+  article.sunlit-content {
+    max-width: 65ch;
+    padding: 1rem 0.75rem;
+  }
+  
+  /* Content elements maintain line width constraints */
+  main.content p,
+  main.content h1,
+  main.content h2,
+  main.content h3,
+  main.content h4,
+  main.content h5,
+  main.content h6,
+  .column-page p,
+  .column-page h1,
+  .column-page h2,
+  .column-page h3,
+  .column-page h4,
+  .column-page h5,
+  .column-page h6 {
+    max-width: 65ch;
+    margin-left: auto;
+    margin-right: auto;
   }
   
   .perspective {
@@ -1132,7 +1263,36 @@ body.dark .navbar .aa-SubmitButton:hover .aa-SubmitIcon {
   opacity: 1;
 }
 
+/* Search highlight styling */
+.search-highlight {
+  background-color: rgba(255, 235, 59, 0.6);
+  color: inherit;
+  padding: 0 2px;
+  border-radius: 2px;
+  font-weight: 500;
+}
+
+.dark .search-highlight {
+  background-color: rgba(255, 193, 7, 0.4);
+  color: inherit;
+}
+
 .navbar-brand-container {
   flex: 0 1 auto; /* Allows the container to shrink to fit its content */
   margin-right: auto !important; /* Pushes other elements to the right */
+}
+
+#glow {
+  --mx: 50%; /* Default to center */
+  --my: 50%;
+  position: absolute;
+  background: radial-gradient(
+    circle at var(--mx) var(--my),
+    var(--bounce-light),
+    transparent 40vh
+  );
+  transition: background 1.0s var(--timing-fn);
+  height: 100%;
+  width: 100%;
+  opacity: 0.5;
 }

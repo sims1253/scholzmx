@@ -30,6 +30,10 @@ title-block-banner: false
   </div>
 </div>
 
-{{< include ../_colophon.html >}}
+```{=html}
+<div class="colophon">
+    <img src="/img/ovid4footer.svg" alt="A decorative illustration">
+</div>
+```
 
 </article>

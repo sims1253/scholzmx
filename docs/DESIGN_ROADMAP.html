@@ -6,6 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Maximilian Scholz">
 
 <title>design_roadmap – Max Scholz</title>
 <style>
@@ -39,7 +40,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-4e56adb180a8f247e6b6e74feaf14d27.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-3e175d460df0048ec3504016a1f421c8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -72,7 +73,7 @@ ul.task-list li input[type="checkbox"] {
 <link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="nav-fixed quarto-light">
+<body class="floating nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -115,7 +116,7 @@ ul.task-list li input[type="checkbox"] {
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./#"> 
-<span class="menu-text"><i class="fa-solid fa-sun" id="theme-toggle"></i></span></a>
+<span class="menu-text">&lt;i class="fa-solid fa-sun" id="theme-toggle"&gt;&lt;/i&gt;</span></a>
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
@@ -127,10 +128,9 @@ ul.task-list li input[type="checkbox"] {
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
-<!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Contents</h2>
    
   <ul>
   <li><a href="#design-implementation-roadmap-scholzmx.com-v2" id="toc-design-implementation-roadmap-scholzmx.com-v2" class="nav-link active" data-scroll-target="#design-implementation-roadmap-scholzmx.com-v2">Design &amp; Implementation Roadmap: scholzmx.com v2</a>
@@ -153,16 +153,43 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#phase-2-content-pages" id="toc-phase-2-content-pages" class="nav-link" data-scroll-target="#phase-2-content-pages"><strong>Phase 2: Content Pages</strong></a></li>
   <li><a href="#phase-3-interactive-personal-elements" id="toc-phase-3-interactive-personal-elements" class="nav-link" data-scroll-target="#phase-3-interactive-personal-elements"><strong>Phase 3: Interactive &amp; Personal Elements</strong></a></li>
   <li><a href="#phase-4-deployment-finalization" id="toc-phase-4-deployment-finalization" class="nav-link" data-scroll-target="#phase-4-deployment-finalization"><strong>Phase 4: Deployment &amp; Finalization</strong></a></li>
+  <li><a href="#phase-2-content-pages-1" id="toc-phase-2-content-pages-1" class="nav-link" data-scroll-target="#phase-2-content-pages-1"><strong>Phase 2: Content Pages</strong></a></li>
+  <li><a href="#phase-3-interactive-personal-elements-1" id="toc-phase-3-interactive-personal-elements-1" class="nav-link" data-scroll-target="#phase-3-interactive-personal-elements-1"><strong>Phase 3: Interactive &amp; Personal Elements</strong></a></li>
+  <li><a href="#phase-4-deployment-finalization-1" id="toc-phase-4-deployment-finalization-1" class="nav-link" data-scroll-target="#phase-4-deployment-finalization-1"><strong>Phase 4: Deployment &amp; Finalization</strong></a></li>
   </ul></li>
-  <li><a href="#future-enhancements" id="toc-future-enhancements" class="nav-link" data-scroll-target="#future-enhancements">7. Future Enhancements</a></li>
   </ul></li>
   </ul>
 </nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
+<main class="content" id="quarto-document-content"><div class="quarto-title-block"><div class="quarto-title-tools-only"><h1></h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+</div>
 
 
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p><a href="https://www.scholzmx.com/">Maximilian Scholz</a> <a href="https://orcid.org/0000-0002-4486-1393" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a></p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
 
 
 <section id="design-implementation-roadmap-scholzmx.com-v2" class="level1">
@@ -324,28 +351,279 @@ if (artElement) {
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./docs</code></pre>
-<p>``<code>- **Commit Message:**</code>ci: add GitHub Actions workflow for deploying to GitHub Pages`</p>
-<p><strong>Task 4.2: Final Review &amp; Cleanup</strong> - <strong>Action:</strong> Review all pages, check for broken links, and clean up any placeholder content. - <strong>Commit Message:</strong> <code>fix: perform final review and cleanup before launch</code></p>
-</section>
-</section>
-<section id="future-enhancements" class="level2">
-<h2 class="anchored" data-anchor-id="future-enhancements">7. Future Enhancements</h2>
-<p>This section captures advanced ideas for later implementation.</p>
+<pre><code>- **Commit Message:** `ci: add GitHub Actions workflow for deploying to GitHub Pages`
+
+**Task 4.2: Final Review &amp; Cleanup**
+- **Action:** Review all pages, check for broken links, and clean up any placeholder content.
+- **Commit Message:** `fix: perform final review and cleanup before launch`
+
+## 7. Future Enhancements
+
+This section captures advanced ideas for later implementation.
+
+- **Tufte-Style Sidenotes:** Implement a system for Tufte-style sidenotes, allowing for marginal notes that don't interrupt the main flow of the text. This would be a significant step towards a more academic and information-rich presentation, especially for research articles.
+- **Evolve into a Digital Garden:** Move beyond a traditional blog structure towards a network of interconnected notes. This involves:
+- Creating a dedicated `/garden` section for evergreen notes, ideas, and summaries.
+- Prioritizing bidirectional linking between pages to create a web of knowledge.
+- Writing in a way that notes can be updated over time as understanding evolves.
+- Leveraging Quarto's built-in cross-referencing (`@page-title`) as a foundation and potentially exploring more advanced solutions for visualizing the network.
+- **Illustrated Manuscript Initials:** Replace the CSS-based drop caps with a system that uses images of ornate, manuscript-style first letters. This could involve a small script to replace the first letter with an `&lt;img&gt;` tag pointing to a random initial from a collection. This could also be combined with a handwriting font for a more personal touch.
+- **Advanced Caching &amp; Archiving:** Investigate implementing a more robust hosting setup similar to `gwern.net`, potentially using a custom server or CDN rules to ensure long-term availability and performance of content and assets.
+- **Full-Text Search:** Implement a client-side or serverless search function to allow users to search the full text of all blog posts and pages.
+
+
+
+:::{#quarto-navigation-envelope .hidden}
+[Max Scholz]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1zaWRlYmFyLXRpdGxl"}
+[Max Scholz]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1uYXZiYXItdGl0bGU="}
+[Home]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1uYXZiYXI6SG9tZQ=="}
+[/index.html]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1uYXZiYXI6L2luZGV4Lmh0bWw="}
+[Blog]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1uYXZiYXI6QmxvZw=="}
+[/blog.html]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1uYXZiYXI6L2Jsb2cuaHRtbA=="}
+[Research]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1uYXZiYXI6UmVzZWFyY2g="}
+[/research.html]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1uYXZiYXI6L3Jlc2VhcmNoLmh0bWw="}
+[About]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1uYXZiYXI6QWJvdXQ="}
+[/about.html]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1uYXZiYXI6L2Fib3V0Lmh0bWw="}
+[Projects]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1uYXZiYXI6UHJvamVjdHM="}
+[/projects/index.html]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1uYXZiYXI6L3Byb2plY3RzL2luZGV4Lmh0bWw="}
+[Recipes]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1uYXZiYXI6UmVjaXBlcw=="}
+[/recipes.html]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1uYXZiYXI6L3JlY2lwZXMuaHRtbA=="}
+[&lt;i class="fa-solid fa-sun" id="theme-toggle"&gt;&lt;/i&gt;]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1uYXZiYXI6PGkgY2xhc3M9ImZhLXNvbGlkIGZhLXN1biIgaWQ9InRoZW1lLXRvZ2dsZSI+PC9pPg=="}
+[/#]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLWludC1uYXZiYXI6LyM="}
+:::
+
+
+
+:::{#quarto-meta-markdown .hidden}
+[Max Scholz]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLW1ldGF0aXRsZQ=="}
+[Max Scholz]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLXR3aXR0ZXJjYXJkdGl0bGU="}
+[Max Scholz]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLW9nY2FyZHRpdGxl"}
+[Max Scholz]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLW1ldGFzaXRlbmFtZQ=="}
+[]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLXR3aXR0ZXJjYXJkZGVzYw=="}
+[]{.hidden .quarto-markdown-envelope-contents render-id="cXVhcnRvLW9nY2FyZGRkZXNj"}
+:::
+
+
+
+
+&lt;!-- --&gt;
+
+::: {.quarto-embedded-source-code}
+```````````````````{.markdown shortcodes="false"}
+# Design &amp; Implementation Roadmap: scholzmx.com v2
+
+## 1. Overview &amp; Goals
+
+This document outlines the plan for rebuilding the personal and professional website for Max Scholz (scholzmx.com). The primary goal is to create a visually distinct, content-focused, and highly personal website that serves as a hub for professional information, research, and personal blogging.
+
+The new site will be built using Quarto, leveraging its powerful code-rendering capabilities while applying a completely custom theme to achieve a unique aesthetic.
+
+## 2. Guiding Principles
+
+- **Content-First:** The design must prioritize readability and put the user's written content at the forefront.
+- **Embrace the Slow Web:** The site should be designed for longevity, not urgency. This means focusing on durable content, simple and robust technology, and a calm, intentional user experience. It is a rejection of the ephemeral, attention-grabbing trends of the modern web.
+- **"Paper-y" Aesthetic:** The visual theme should evoke the feeling of reading on high-quality paper—warm, comfortable, and classic.
+- **Accessibility First (No-JS Core):** All core content and navigation must be perfectly functional and readable with JavaScript disabled.
+- **Progressive Enhancement:** Interactive elements will be layered on top using non-essential JavaScript.
+- **Personal Touch:** The site should feel unique, incorporating elements like the author's mother's artwork.
+- **Desktop First, Mobile Responsive:** The primary design target is a desktop view, but the layout must be fully responsive.
+- **Privacy-Focused:** No tracking or third-party dependencies from large corporations (e.g., Google Fonts).
+
+## 3. Tech Stack
+
+- **Engine:** Quarto
+- **Styling:** Custom SCSS theme with privacy-friendly fonts (Bunny Fonts).
+- **Interactivity:** Minimal, vanilla JavaScript for progressive enhancements.
+- **Hosting:** GitHub Pages with a GitHub Actions workflow.
+
+## 4. Design &amp; Aesthetic Guide
+
+### 4.1. Inspirations
+
+- **`simonsarris.com`:** Model for the minimalist, single-column layout, clean header navigation, and overall focus on readable content. Particularly inspired by the landscape scribbles in the background and small illustrations at the bottom of pages.
+- **`gwern.net` / `turntrout.com`:** Inspiration for future-state advanced hosting (caching, archival) and deep, interconnected content. Turntrout's fish with vine leaves, large illustrated initials, nice typography, and pixel art animations exemplify the handcrafted aesthetic we're aiming for.
+- **`putanumonit.com` / `mailchi.mp/btiscience/ferns`:** Inspiration for the "paper-y" feel, warm color palettes, and classic typography. The fern botanical illustrations represent the organic, handcrafted aesthetic we want to achieve.
+
+
+### 4.2. Game UI Aesthetic Philosophy
+
+**Core Principle: UI as Part of the World**
+The website should feel like a cozy, discoverable world rather than a sterile corporate interface. This means:
+
+- **Embedded Interface Elements:** Instead of generic floating buttons and menus, interface elements should feel integrated into the world (like Settlers 4's stone wall framing, or a scroll for navigation menus).
+- **Hidden Discoveries:** Following the Peterson &amp; Findus and Löwenzahn PC games philosophy, there should be small, delightful elements that users can discover by exploring - hidden animations, easter eggs, or subtle interactive details.
+- **Handcrafted Materials:** Embrace organic textures, botanical illustrations, manuscript illuminations, and aged paper aesthetics over clean geometric shapes.
+- **Cozy Adventure Feel:** The site should evoke the warmth of a point-and-click adventure game rather than the sterility of a modern corporate website.
+
+**Visual References:**
+- Century botanical illustrations: detailed, handcrafted, aged paper feel
+- Manuscript illuminations: ornate initial letters, organic decorative elements
+- Forest textures: moss, ferns, natural materials over stark minimalism
+- Game world integration: interface elements that feel like natural parts of the environment
+
+**Anti-Patterns to Avoid:**
+- Generic "Unity UI" sterile modern look
+- Floating buttons and menus that feel disconnected from the content
+- Overly clean, geometric designs that lack soul and personality
+- Corporate website aesthetics that prioritize "professional" over "personal"
+
+**Achieving a "Haptic" Feel without Skeuomorphism:**
+The goal is to make elements feel tangible and part of the world, but we must avoid the pitfalls of dated, overly literal skeuomorphism (e.g., a literal stone texture that looks like a 2000s video game UI). The approach should be subtle and focus on texture, depth, and material feel.
+
+- **Texture over Graphics:** Instead of applying a repeating `stone.jpg` as a background, we can use subtle noise, paper-like textures, and layered CSS gradients to create a sense of depth and material.
+- **Shadow and Light:** Use soft, complex shadows to lift elements off the page or give them an "embossed" or "impressed" feel, rather than hard, unrealistic drop-shadows.
+- **Organic Borders &amp; Edges:** Instead of sharp, geometric borders, we can use slightly irregular, organic-feeling borders or layered elements to soften the digital feel.
+- **Subtle Animations:** Animations should reinforce the material feel. For example, a button press could have a subtle "squish" effect, as if pressing into a soft surface.
+
+### 4.3. Layout
+
+- **Main Layout:** A single, centered content column with generous whitespace. Max width of `800px`.
+- **Header:** Simple header with "Max Scholz" on the left and navigation links (`Blog`, `Research`, `About`, `CV`) on the right.
+- **Footer:** Minimal footer with copyright, CC license, and social/professional links.
+
+### 4.4. Color Palette
+
+- **Background:** Warm, off-white, paper-like color (e.g., `#fdfbf6`).
+- **Text:** Dark, soft gray/black (e.g., `#333333`).
+- **Accent Color:** Muted, earthy tone for links (e.g., a deep green or terracotta).
+
+### 4.5. Typography (Privacy-Focused)
+
+- **Font Source:** [Bunny Fonts](https://fonts.bunny.net/) (GDPR-compliant Google Fonts alternative).
+- **Body Text:** A classic, readable serif font (e.g., "Lora" or "Source Serif Pro").
+- **Headings:** A clean, complementary sans-serif font (e.g., "Lato" or "Source Sans Pro").
+- **Accent Handwriting:** Sparingly use a highly readable handwriting font (e.g., from Bunny Fonts) for non-essential, personal touches like a signature. This adds personality without compromising the readability of core content.
+
+## 5. Feature Specifications
+
+This section details the specific features to be implemented, derived from the project's goals and design principles.
+
+- **Homepage:** A welcoming landing page that introduces the author and provides clear navigation to other sections.
+- **Blog:** A reverse-chronological listing of blog posts with support for categories. The design will prioritize readability.
+- **Research Page:** A dedicated section to list academic publications, pre-prints, and ongoing research projects.
+- **About Page:** A personal page containing a biography and contact information. It will feature a unique, interactive element like a flipping profile image.
+- **Art Showcase:** A non-intrusive, desktop-only element that showcases personal artwork (e.g., paintings by the author's mother). This element will rotate through a series of images.
+- **Custom Theme:** A completely custom visual theme with a "paper-y" aesthetic, warm color palette, and carefully selected typography.
+- **Responsive Design:** The website will be fully responsive and functional on all screen sizes, from mobile to desktop.
+- **Interactive Elements:**
+- **Flipping Profile Image:** A CSS-only interactive element on the About page.
+- **Rotating Art &amp; Phrases:** JavaScript-powered elements to add a dynamic, personal touch.
+- **Stylized Drop Caps:** A decorative CSS element to enhance the manuscript feel of the text.
+- **Deployment:** A fully automated deployment process using GitHub Actions to build and deploy the site to GitHub Pages.
+
+## 6. Implementation Roadmap: Atomic Commits
+
+This roadmap is broken into atomic commits. Each step should result in a single, self-contained commit.
+
+---
+
+### **Phase 1: Foundation &amp; Structure**
+
+**Task 1.1: Initialize Quarto Project**
+- **Action:** Create the `_quarto.yml` file. Define the basic site properties and navigation structure for GitHub Pages deployment.
+- **Files to Create:** `_quarto.yml`
+- **`_quarto.yml` Content:**
+```yaml
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "Max Scholz"
+  site-url: "https://scholzmx.com" # Replace with your actual URL
+  navbar:
+    right:
+      - href: index.qmd
+        text: Home
+      - href: blog.qmd
+        text: Blog
+      - href: research.qmd
+        text: Research
+      - href: about.qmd
+        text: About
+  page-footer:
+    left: "© Max Scholz, 2025. Content licensed under CC BY-SA 4.0."
+    right:
+      - icon: github
+        href: https://github.com/scholzmx
+      - icon: twitter
+        href: https://twitter.com/scholz_mx
+
+format:
+  html:
+    theme: theme.scss
+    css: styles.css
+    toc: true</code></pre>
 <ul>
-<li><strong>Tufte-Style Sidenotes:</strong> Implement a system for Tufte-style sidenotes, allowing for marginal notes that don’t interrupt the main flow of the text. This would be a significant step towards a more academic and information-rich presentation, especially for research articles.</li>
-<li><strong>Evolve into a Digital Garden:</strong> Move beyond a traditional blog structure towards a network of interconnected notes. This involves:
-<ul>
-<li>Creating a dedicated <code>/garden</code> section for evergreen notes, ideas, and summaries.</li>
-<li>Prioritizing bidirectional linking between pages to create a web of knowledge.</li>
-<li>Writing in a way that notes can be updated over time as understanding evolves.</li>
-<li>Leveraging Quarto’s built-in cross-referencing (<code>@page-title</code>) as a foundation and potentially exploring more advanced solutions for visualizing the network.</li>
-</ul></li>
-<li><strong>Illustrated Manuscript Initials:</strong> Replace the CSS-based drop caps with a system that uses images of ornate, manuscript-style first letters. This could involve a small script to replace the first letter with an <code>&lt;img&gt;</code> tag pointing to a random initial from a collection. This could also be combined with a handwriting font for a more personal touch.</li>
-<li><strong>Advanced Caching &amp; Archiving:</strong> Investigate implementing a more robust hosting setup similar to <code>gwern.net</code>, potentially using a custom server or CDN rules to ensure long-term availability and performance of content and assets.</li>
-<li><strong>Full-Text Search:</strong> Implement a client-side or serverless search function to allow users to search the full text of all blog posts and pages.</li>
+<li><strong>Commit Message:</strong> <code>feat: initialize Quarto project for GitHub Pages</code></li>
 </ul>
+<p><strong>Task 1.2: Establish Core Theme with Bunny Fonts</strong> - <strong>Action:</strong> Create the main theme file. Define fonts (from Bunny Fonts), colors, and basic layout rules. - <strong>Files to Create:</strong> <code>theme.scss</code> - <strong><code>theme.scss</code> Content:</strong> ```scss /<em>– scss:defaults –</em>/ // Fonts (Privacy-focused from Bunny Fonts) <span class="citation" data-cites="import">@import</span> url(‘https://fonts.bunny.net/css?family=lora:400,700|source-sans-pro:400,700’); $font-family-sans-serif: “Source Sans Pro”, sans-serif; $font-family-serif: “Lora”, serif; $font-family-base: $font-family-serif;</p>
+<p>// Colors $body-bg: #fdfbf6; $body-color: #333333; $link-color: #8a3b3b; // A muted terracotta/red</p>
+<p>/<em>– scss:rules –</em>/ // Layout body { line-height: 1.7; } .navbar { font-family: $font-family-sans-serif; } ``<code>- **Commit Message:**</code>style: establish core theme with Bunny Fonts and color palette`</p>
+<p><strong>Task 1.3: Migrate Homepage</strong> - <strong>Action:</strong> Create <code>index.qmd</code> and transfer the content from the old <code>index.Rmd</code>. - <strong>Files to Create:</strong> <code>index.qmd</code> - <strong>Action:</strong> Copy content from <code>index.Rmd</code>, adjusting metadata to Quarto’s YAML format. - <strong>Commit Message:</strong> <code>content: migrate homepage content to index.qmd</code></p>
+<hr>
+</section>
+<section id="phase-2-content-pages-1" class="level3">
+<h3 class="anchored" data-anchor-id="phase-2-content-pages-1"><strong>Phase 2: Content Pages</strong></h3>
+<p><strong>Task 2.1: Create Blog Listing Page</strong> - <strong>Action:</strong> Create a <code>blog.qmd</code> file that will serve as the listing page for all posts. - <strong>Files to Create:</strong> <code>blog.qmd</code> - <strong><code>blog.qmd</code> Content:</strong> <code>yaml   ---   title: "Blog"   listing:     contents: post     sort: "date desc"     type: default     categories: true     sort-ui: false     filter-ui: false   page-layout: full   title-block-banner: false   ---</code> - <strong>Commit Message:</strong> <code>feat: create blog listing page</code></p>
+<p><strong>Task 2.2: Create Research Page</strong> - <strong>Action:</strong> Create a <code>research.qmd</code> file. For now, this can be a simple page where publication content will be added. - <strong>Files to Create:</strong> <code>research.qmd</code> - <strong><code>research.qmd</code> Content:</strong> ```yaml — title: “Research &amp; Publications” —</p>
+<p>This page lists my academic publications and research projects. ``<code>- **Commit Message:**</code>feat: create research page structure`</p>
+<p><strong>Task 2.3: Create About Page</strong> - <strong>Action:</strong> Create the <code>about.qmd</code> page. This will house the bio and the flipping profile image. - <strong>Files to Create:</strong> <code>about.qmd</code> - <strong><code>about.qmd</code> Content:</strong> ```yaml — title: “About Me” —</p>
+<p>This is the about page. The flipping image will go here. ``<code>- **Commit Message:**</code>feat: create about page structure`</p>
+<hr>
+</section>
+<section id="phase-3-interactive-personal-elements-1" class="level3">
+<h3 class="anchored" data-anchor-id="phase-3-interactive-personal-elements-1"><strong>Phase 3: Interactive &amp; Personal Elements</strong></h3>
+<p><strong>Task 3.1: Implement CSS-Only Flipping Image</strong> - <strong>Action:</strong> Add the HTML structure to <code>about.qmd</code> and the required CSS to a new <code>styles.css</code> file. - <strong>Files to Modify:</strong> <code>about.qmd</code> - <strong>Files to Create:</strong> <code>styles.css</code> - <strong><code>about.qmd</code> Addition:</strong> <code>html   &lt;!-- Add to the body of about.qmd --&gt;   &lt;div class="flip-container"&gt;     &lt;input type="checkbox" id="flipper" aria-hidden="true"&gt;     &lt;label for="flipper" class="flip-card"&gt;       &lt;div class="card-front"&gt;         &lt;img src="/path/to/professional-image.jpg" alt="Professional headshot"&gt;       &lt;/div&gt;       &lt;div class="card-back"&gt;         &lt;img src="/path/to/casual-image.jpg" alt="Casual photo"&gt;       &lt;/div&gt;     &lt;/label&gt;   &lt;/div&gt;</code> - <strong><code>styles.css</code> Content:</strong> <code>css   /* Flipping Image */   .flip-container {     perspective: 1000px;     width: 250px;     height: 250px;   }   .flip-container input[type=checkbox] { display: none; }   .flip-card {     position: relative;     width: 100%;     height: 100%;     transform-style: preserve-3d;     transition: transform 0.8s;     cursor: pointer;   }   .flip-container input[type=checkbox]:checked + .flip-card {     transform: rotateY(180deg);   }   .card-front, .card-back {     position: absolute;     width: 100%;     height: 100%;     backface-visibility: hidden;   }   .card-back {     transform: rotateY(180deg);   }</code> - <strong>Commit Message:</strong> <code>feat(about): add CSS-only flipping profile image</code></p>
+<p><strong>Task 3.2: Implement Art Showcase (Static)</strong> - <strong>Action:</strong> Add the HTML for the easel to the Quarto layout and style it in <code>styles.css</code>. It will only show one static image for now. - <strong>Files to Create:</strong> <code>_partials/art-showcase.html</code> (or similar custom partial) - <strong>Action:</strong> Modify <code>_quarto.yml</code> to include the partial. - <strong><code>art-showcase.html</code> Content:</strong> <code>html   &lt;aside class="art-showcase"&gt;     &lt;figure&gt;       &lt;img src="/path/to/moms-painting1.jpg" alt="A painting by my mother"&gt;       &lt;figcaption&gt;Artwork by my mother&lt;/figcaption&gt;     &lt;/figure&gt;   &lt;/aside&gt;</code> - <strong><code>styles.css</code> Addition:</strong> <code>css   .art-showcase {     position: fixed;     top: 200px;     right: 50px;     width: 200px;     display: none; /* Hidden by default */   }   @media (min-width: 1400px) {     .art-showcase {       display: block; /* Only show on very wide screens */     }   }</code> - <strong>Commit Message:</strong> <code>feat: add static art showcase element to layout</code></p>
+<p><strong>Task 3.3: Implement Rotating Art &amp; Phrases (JS)</strong> - <strong>Action:</strong> Create a JavaScript file. Add code to rotate the art and the footer phrases. - <strong>Files to Create:</strong> <code>site.js</code> - <strong>Action:</strong> Update <code>_quarto.yml</code> to include the script. - <strong><code>site.js</code> Content:</strong> ```javascript document.addEventListener(‘DOMContentLoaded’, () =&gt; { // Rotating Phrases const phrases = [“Phrase 1”, “Phrase 2”, “Phrase 3”]; const phraseElement = document.querySelector(‘#rotating-phrase’); // Assumes an ID on the target element if (phraseElement) { phraseElement.textContent = phrases[Math.floor(Math.random() * phrases.length)]; }</p>
+<pre><code>// Rotating Art
+const paintings = ["/path/to/painting1.jpg", "/path/to/painting2.jpg"];
+const artElement = document.querySelector('.art-showcase img');
+if (artElement) {
+  artElement.src = paintings[Math.floor(Math.random() * paintings.length)];
+}</code></pre>
+<p>}); ``<code>- **Commit Message:**</code>feat: add JS for rotating art and phrases`</p>
+<p><strong>Task 3.4: Add Stylized Drop Caps</strong> - <strong>Action:</strong> Add CSS to <code>styles.css</code> to style the first letter of the main content area, creating a “drop cap” effect. - <strong>Files to Modify:</strong> <code>styles.css</code> - <strong><code>styles.css</code> Addition:</strong> <code>css   /* Stylized Drop Cap */   .quarto-body-content p:first-of-type::first-letter {     font-family: "Lora", serif; /* Or a more decorative font */     font-size: 4.5em;     font-weight: bold;     float: left;     line-height: 0.7;     padding-right: 0.1em;     color: #8a3b3b; /* Use accent color */   }</code> - <strong>Commit Message:</strong> <code>style: add CSS for stylized drop caps</code></p>
+<hr>
+</section>
+<section id="phase-4-deployment-finalization-1" class="level3">
+<h3 class="anchored" data-anchor-id="phase-4-deployment-finalization-1"><strong>Phase 4: Deployment &amp; Finalization</strong></h3>
+<p><strong>Task 4.1: Create GitHub Pages Deployment Workflow</strong> - <strong>Action:</strong> Create a GitHub Actions workflow file to build and deploy the Quarto site. - <strong>Files to Create:</strong> <code>.github/workflows/deploy.yml</code> - <strong><code>deploy.yml</code> Content:</strong> ```yaml name: Deploy Website</p>
+<p>on: push: branches: - main # Or your default branch</p>
+<p>jobs: build-and-deploy: runs-on: ubuntu-latest steps: - name: Check out repository uses: actions/checkout@v3</p>
+<pre><code>    - name: Set up Quarto
+      uses: quarto-dev/quarto-actions/setup@v2
 
+    - name: Render Website
+      run: quarto render
 
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs</code></pre>
+<pre><code>- **Commit Message:** `ci: add GitHub Actions workflow for deploying to GitHub Pages`
+
+**Task 4.2: Final Review &amp; Cleanup**
+- **Action:** Review all pages, check for broken links, and clean up any placeholder content.
+- **Commit Message:** `fix: perform final review and cleanup before launch`
+
+## 7. Future Enhancements
+
+This section captures advanced ideas for later implementation.
+
+- **Tufte-Style Sidenotes:** Implement a system for Tufte-style sidenotes, allowing for marginal notes that don't interrupt the main flow of the text. This would be a significant step towards a more academic and information-rich presentation, especially for research articles.
+- **Evolve into a Digital Garden:** Move beyond a traditional blog structure towards a network of interconnected notes. This involves:
+- Creating a dedicated `/garden` section for evergreen notes, ideas, and summaries.
+- Prioritizing bidirectional linking between pages to create a web of knowledge.
+- Writing in a way that notes can be updated over time as understanding evolves.
+- Leveraging Quarto's built-in cross-referencing (`@page-title`) as a foundation and potentially exploring more advanced solutions for visualizing the network.
+- **Illustrated Manuscript Initials:** Replace the CSS-based drop caps with a system that uses images of ornate, manuscript-style first letters. This could involve a small script to replace the first letter with an `&lt;img&gt;` tag pointing to a random initial from a collection. This could also be combined with a handwriting font for a more personal touch.
+- **Advanced Caching &amp; Archiving:** Investigate implementing a more robust hosting setup similar to `gwern.net`, potentially using a custom server or CDN rules to ensure long-term availability and performance of content and assets.
+- **Full-Text Search:** Implement a client-side or serverless search function to allow users to search the full text of all blog posts and pages.</code></pre>
+<p>:::</p>
+</section>
 </section>
 </section>
 
@@ -420,6 +698,57 @@ if (artElement) {
         container: window.document.getElementById('quarto-embedded-source-code-modal')
       });
       clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
@@ -751,32 +1080,6 @@ if (artElement) {
   });
   </script>
 </div> <!-- /content -->
-<footer class="footer">
-  <div class="nav-footer">
-    <div class="nav-footer-left">
-<p>© Max Scholz, 2025. Content licensed under CC BY-SA 4.0.</p>
-</div>   
-    <div class="nav-footer-center">
-      &nbsp;
-    </div>
-    <div class="nav-footer-right">
-      <ul class="footer-items list-unstyled">
-    <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/sims1253">
-      <i class="bi bi-github" role="img">
-</i> 
-    </a>
-  </li>  
-    <li class="nav-item compact">
-    <a class="nav-link" href="https://twitter.com/scholzmx">
-      <i class="bi bi-twitter" role="img">
-</i> 
-    </a>
-  </li>  
-</ul>
-    </div>
-  </div>
-</footer>
 
 
 

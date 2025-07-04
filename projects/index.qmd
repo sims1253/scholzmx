@@ -74,3 +74,9 @@ Provide researchers with practical tools for making reliable decisions under unc
 ```
 
 ----
+
+```{=html}
+<div class="colophon">
+    <img src="/img/ovid4footer.svg" alt="A decorative illustration">
+</div>
+```

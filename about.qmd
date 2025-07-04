@@ -4,7 +4,11 @@ title: "About Me"
 
 {{< include _dappled-light.qmd >}}
 {{< include _art-showcase.qmd >}}
-{{< include _colophon.html >}}
+```{=html}
+<div class="colophon">
+    <img src="/img/ovid4footer.svg" alt="A decorative illustration">
+</div>
+```
 
 ```{=html}      
 <div class="flip-card-container">

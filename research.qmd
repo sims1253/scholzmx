@@ -11,7 +11,11 @@ title: "Research & Publications"
 
 {{< include _dappled-light.qmd >}}
 {{< include _art-showcase.qmd >}}
-{{< include _colophon.html >}}
+```{=html}
+<div class="colophon">
+    <img src="/img/ovid4footer.svg" alt="A decorative illustration">
+</div>
+```
 
 My research focuses on developing robust statistical methods and computational tools for complex scientific problems, particularly in the intersection of Bayesian statistics, computational science, and software engineering.
 

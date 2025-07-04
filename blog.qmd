@@ -2,8 +2,8 @@
 title: "Blog"
 listing:
   contents: 
-    - "blog/**/*.qmd"
-    - "blog/**/*.md"
+    - "blog/20*/**/*.qmd"
+    - "blog/20*/**/*.md"
     - "content/post/**/*.qmd" 
     - "content/post/**/*.Rmd"
   sort: "date desc"
@@ -15,8 +15,17 @@ page-layout: full
 title-block-banner: false
 ---
 
-{{< include _dappled-light.qmd >}}
-{{< include _art-showcase.qmd >}}
-{{< include _colophon.html >}}
+```{=html}
+<div class="manuscript-header">
+  <div class="illuminated-initial">B</div>
+  <div class="manuscript-title">Blog & Musings</div>
+</div>
+```
 
 Welcome to my blog, where I share thoughts on statistics, data science, and the occasional random musings.
+
+```{=html}
+<div class="colophon">
+    <img src="/img/ovid4footer.svg" alt="A decorative illustration">
+</div>
+```
