@@ -68,7 +68,25 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize search functionality
   setTimeout(() => {
     const searchEl = document.getElementById('quarto-search');
-    if (searchEl && searchEl.innerHTML.trim() === '') {
+    console.log('Search element found:', searchEl);
+    console.log('Search element innerHTML:', searchEl ? searchEl.innerHTML : 'N/A');
+    console.log('Search element classes:', searchEl ? searchEl.className : 'N/A');
+    
+    // Check if autocomplete library is available
+    console.log('Autocomplete library available:', typeof window['@algolia/autocomplete-js']);
+    console.log('Quarto search options:', document.getElementById('quarto-search-options'));
+    
+    // Check if Quarto search initialized successfully
+    const hasSearchContent = searchEl && (
+      searchEl.innerHTML.trim() !== '' || 
+      searchEl.querySelector('.aa-Form') ||
+      searchEl.querySelector('input[type="search"]') ||
+      searchEl.querySelector('.aa-Input')
+    );
+    
+    console.log('Has search content:', hasSearchContent);
+    
+    if (searchEl && !hasSearchContent) {
       // Search widget failed to initialize, add a fallback search icon
       console.log('Search widget failed to initialize, adding fallback...');
       
@@ -109,15 +127,81 @@ document.addEventListener('DOMContentLoaded', () => {
       // Add click handler to trigger search
       searchButton.addEventListener('click', (e) => {
         e.preventDefault();
+        console.log('Search button clicked');
+        
+        // First try to manually initialize the Quarto search
+        if (typeof window['@algolia/autocomplete-js'] !== 'undefined') {
+          console.log('Trying to manually initialize search...');
+          try {
+            // Try to manually trigger Quarto search initialization
+            const searchOptions = document.getElementById('quarto-search-options');
+            if (searchOptions) {
+              const options = JSON.parse(searchOptions.textContent);
+              console.log('Search options found:', options);
+              
+              // Try to manually initialize the search
+              const { autocomplete } = window['@algolia/autocomplete-js'];
+              if (autocomplete && !searchEl.querySelector('.aa-Form')) {
+                console.log('Manually initializing autocomplete...');
+                const searchInstance = autocomplete({
+                  container: searchEl,
+                  placeholder: options.language['search-text-placeholder'] || 'Search...',
+                  debug: false,
+                  openOnFocus: true,
+                  getSources() {
+                    return [
+                      {
+                        sourceId: 'search',
+                        getItems({ query }) {
+                          if (!query) return [];
+                          // Simple fallback search - just filter available content
+                          return fetch('./search.json')
+                            .then(response => response.json())
+                            .then(data => {
+                              const results = data.filter(item => 
+                                item.title?.toLowerCase().includes(query.toLowerCase()) ||
+                                item.text?.toLowerCase().includes(query.toLowerCase())
+                              ).slice(0, 10);
+                              return results;
+                            })
+                            .catch(() => []);
+                        },
+                        getItemUrl({ item }) {
+                          return item.href;
+                        },
+                        templates: {
+                          item({ item }) {
+                            return `<div>
+                              <strong>${item.title || 'Untitled'}</strong>
+                              <div style="font-size: 0.9em; color: #666;">${item.text?.substring(0, 100) || ''}...</div>
+                            </div>`;
+                          }
+                        }
+                      }
+                    ];
+                  }
+                });
+                console.log('Search initialized successfully');
+                return;
+              }
+            }
+          } catch (error) {
+            console.log('Failed to manually initialize search:', error);
+          }
+        }
+        
         // Try to trigger the global search function if it exists
         if (window.quartoOpenSearch) {
+          console.log('Using quartoOpenSearch');
           window.quartoOpenSearch();
         } else {
           // Fallback: focus on any existing search input or create a simple search
           const existingInput = document.querySelector('input[type="search"], .aa-Input');
           if (existingInput) {
+            console.log('Focusing existing input');
             existingInput.focus();
           } else {
+            console.log('Creating simple search overlay');
             // Create a simple search overlay
             showSimpleSearch();
           }
@@ -145,7 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
     }
-  }, 1000);
+  }, 2000);
   
   // Simple search overlay function
   function showSimpleSearch() {

@@ -25,7 +25,55 @@ title-block-banner: false
 Welcome to my blog, where I share thoughts on statistics, data science, and the occasional random musings.
 
 ```{=html}
-<div class="colophon">
+<style>
+.blog-colophon {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    pointer-events: none;
+    margin-bottom: 1rem;
+}
+
+/* Override for blog page to position colophon after content */
+.quarto-listing ~ .blog-colophon {
+    position: static;
+    transform: none;
+    margin: 3rem auto 2rem auto;
+    text-align: center;
+    pointer-events: auto;
+}
+</style>
+
+<div class="colophon blog-colophon" id="blog-colophon">
     <img src="/img/ovid4footer.svg" alt="A decorative illustration">
 </div>
+
+<script>
+// Move colophon to bottom after listing loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Function to move colophon
+    function moveColophon() {
+        const colophon = document.getElementById('blog-colophon');
+        const listing = document.getElementById('listing-listing');
+        
+        if (colophon && listing) {
+            // Move colophon after the listing
+            listing.parentNode.insertBefore(colophon, listing.nextSibling);
+        }
+    }
+    
+    // Try to move immediately
+    moveColophon();
+    
+    // Also try after a short delay to ensure listing is fully loaded
+    setTimeout(moveColophon, 100);
+    
+    // Also try after listing is fully rendered
+    if (window.addEventListener) {
+        window.addEventListener('load', moveColophon);
+    }
+});
+</script>
 ```
