@@ -107,6 +107,8 @@ body.dark {
   inset: 0;
   backdrop-filter: blur(var(--blur-amount));
   mask-image: linear-gradient(252deg, transparent, transparent var(--stop1), black var(--stop2), black);
+  /* Ensure blur doesn't affect sidebar areas */
+  clip-path: polygon(0 0, 85% 0, 100% 100%, 0 100%);
 }
 
 #progressive-blur>div:nth-child(1) {
@@ -1080,8 +1082,11 @@ article.sunlit-content a:hover {
 
 /* Stylized Drop Caps */
 .drop-cap,
+.quarto-body-content h1 + p::first-letter,
 .quarto-body-content h2 + p::first-letter,
-.quarto-body-content h3 + p::first-letter {
+.quarto-body-content h3 + p::first-letter,
+.quarto-body-content > p:first-of-type::first-letter,
+main > p:first-of-type::first-letter {
   float: left;
   font-size: 5.5rem;
   line-height: 0.8;
@@ -1094,15 +1099,21 @@ article.sunlit-content a:hover {
 }
 
 .dark .drop-cap,
+.dark .quarto-body-content h1 + p::first-letter,
 .dark .quarto-body-content h2 + p::first-letter,
-.dark .quarto-body-content h3 + p::first-letter {
+.dark .quarto-body-content h3 + p::first-letter,
+.dark .quarto-body-content > p:first-of-type::first-letter,
+.dark main > p:first-of-type::first-letter {
   text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.1);
 }
 
 @media (max-width: 768px) {
   .drop-cap,
+  .quarto-body-content h1 + p::first-letter,
   .quarto-body-content h2 + p::first-letter,
-  .quarto-body-content h3 + p::first-letter {
+  .quarto-body-content h3 + p::first-letter,
+  .quarto-body-content > p:first-of-type::first-letter,
+  main > p:first-of-type::first-letter {
     font-size: 3.5rem;
     line-height: 2.8rem;
   }
@@ -1277,6 +1288,80 @@ body.dark .navbar .aa-SubmitButton:hover .aa-SubmitIcon {
   color: inherit;
 }
 
+/* TOC and Sidebar Protection from Blur Effects */
+#quarto-sidebar,
+nav#TOC,
+.sidebar,
+.toc-active {
+  position: relative !important;
+  z-index: 100 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  isolation: isolate;
+}
+
+/* Ensure TOC text is crisp and readable */
+#TOC .nav-link,
+#TOC h2,
+.sidebar .nav-link,
+.sidebar h2 {
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  text-shadow: none !important;
+  color: var(--text-dark);
+  font-weight: 500;
+}
+
+.dark #TOC .nav-link,
+.dark #TOC h2,
+.dark .sidebar .nav-link,
+.dark .sidebar h2 {
+  color: var(--day);
+}
+
+/* Override any blur effects that might affect the sidebar */
+.sidebar-navigation {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
+  z-index: 100;
+}
+
+/* Ensure the sidebar glass element doesn't interfere */
+#quarto-sidebar-glass {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  z-index: 99;
+}
+
+/* Responsive adjustments for progressive blur clipping */
+@media (max-width: 1200px) {
+  #progressive-blur>div {
+    clip-path: polygon(0 0, 75% 0, 100% 100%, 0 100%);
+  }
+}
+
+@media (max-width: 768px) {
+  #progressive-blur>div {
+    clip-path: none; /* Remove clipping on mobile */
+  }
+  
+  /* Ensure sidebar is still protected on mobile */
+  #quarto-sidebar,
+  nav#TOC {
+    background-color: var(--paper-white);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .dark #quarto-sidebar,
+  .dark nav#TOC {
+    background-color: var(--night);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+}
+
 .navbar-brand-container {
   flex: 0 1 auto; /* Allows the container to shrink to fit its content */
   margin-right: auto !important; /* Pushes other elements to the right */
@@ -1295,4 +1380,100 @@ body.dark .navbar .aa-SubmitButton:hover .aa-SubmitIcon {
   height: 100%;
   width: 100%;
   opacity: 0.5;
+}
+
+/* Personal Image Styling - Cozy/Manuscript Aesthetic */
+.personal-image-container {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0 3rem 0;
+  position: relative;
+}
+
+.personal-image {
+  width: 200px;
+  height: 200px;
+  border-radius: 16px;
+  object-fit: cover;
+  /* Enhanced gradient for more depth */
+  background: linear-gradient(135deg, 
+    var(--paper-white) 0%, 
+    var(--paper-shadow) 50%, 
+    var(--paper-white) 100%);
+  /* Organic-style border with subtle texture */
+  border: 4px solid var(--paper-shadow);
+  /* Elevated shadow for depth */
+  box-shadow: 
+    0 12px 32px rgba(0, 0, 0, 0.15),
+    inset 0 2px 0 rgba(255, 255, 255, 0.6),
+    0 0 0 1px rgba(138, 59, 59, 0.1);
+  transition: all 0.3s ease;
+  filter: sepia(5%) saturate(1.1) brightness(1.02);
+}
+
+.personal-image:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 
+    0 16px 40px rgba(0, 0, 0, 0.2),
+    inset 0 2px 0 rgba(255, 255, 255, 0.7),
+    0 0 0 2px rgba(138, 59, 59, 0.2);
+  filter: sepia(8%) saturate(1.15) brightness(1.05);
+}
+
+.dark .personal-image {
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 12px 32px rgba(0, 0, 0, 0.4),
+    inset 0 2px 0 rgba(255, 255, 255, 0.1),
+    0 0 0 1px rgba(138, 59, 59, 0.3);
+  filter: sepia(3%) saturate(1.05) brightness(0.95);
+}
+
+.dark .personal-image:hover {
+  box-shadow: 
+    0 16px 40px rgba(0, 0, 0, 0.6),
+    inset 0 2px 0 rgba(255, 255, 255, 0.15),
+    0 0 0 2px rgba(138, 59, 59, 0.4);
+  filter: sepia(5%) saturate(1.1) brightness(1.0);
+}
+
+/* Add a subtle decorative element around the image */
+.personal-image-container::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  right: calc(50% - 108px);
+  width: 16px;
+  height: 16px;
+  background: radial-gradient(circle, var(--accent-terracotta) 40%, transparent 41%);
+  border-radius: 50%;
+  opacity: 0.4;
+}
+
+.personal-image-container::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: calc(50% - 108px);
+  width: 12px;
+  height: 12px;
+  background: linear-gradient(45deg, var(--accent-terracotta), transparent);
+  border-radius: 50%;
+  opacity: 0.3;
+}
+
+/* Responsive adjustments for personal image */
+@media (max-width: 768px) {
+  .personal-image {
+    width: 160px;
+    height: 160px;
+  }
+  
+  .personal-image-container::before {
+    right: calc(50% - 88px);
+  }
+  
+  .personal-image-container::after {
+    left: calc(50% - 88px);
+  }
 }
