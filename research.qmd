@@ -11,11 +11,6 @@ title: "Research & Publications"
 
 {{< include _dappled-light.qmd >}}
 {{< include _art-showcase.qmd >}}
-```{=html}
-<div class="colophon">
-    <img src="/img/ovid4footer.svg" alt="A decorative illustration">
-</div>
-```
 
 My research focuses on developing robust statistical methods and computational tools for complex scientific problems, particularly in the intersection of Bayesian statistics, computational science, and software engineering.
 
@@ -60,3 +55,9 @@ Developing methods for automated model selection in complex statistical scenario
 ---
 
 *For collaboration opportunities or questions about my research, please feel free to [contact me](mailto:scholzmxb@gmail.com).*
+
+```{=html}
+<div class="colophon">
+    <img src="/img/ovid4footer.svg" alt="A decorative illustration">
+</div>
+```

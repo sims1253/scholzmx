@@ -1080,43 +1080,162 @@ article.sunlit-content a:hover {
   }
 }
 
-/* Stylized Drop Caps */
+/* Medieval-Style Drop Caps */
+/* Import decorative fonts for drop caps */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Uncial+Antiqua&family=EB+Garamond:wght@400;500;600;700&display=swap');
+
+/* Main drop cap selectors - targeting first paragraphs after headers */
 .drop-cap,
-.quarto-body-content h1 + p::first-letter,
-.quarto-body-content h2 + p::first-letter,
-.quarto-body-content h3 + p::first-letter,
-.quarto-body-content > p:first-of-type::first-letter,
-main > p:first-of-type::first-letter {
+main.content > p:first-of-type::first-letter,
+main .content > p:first-of-type::first-letter,
+main article > p:first-of-type::first-letter,
+section > p:first-of-type::first-letter,
+.post-content > p:first-of-type::first-letter,
+#quarto-content > p:first-of-type::first-letter,
+#quarto-document-content > p:first-of-type::first-letter,
+main > p:first-of-type::first-letter,
+article > p:first-of-type::first-letter,
+/* Target first paragraphs after headers specifically */
+h1 + p::first-letter,
+h2 + p::first-letter,
+h3 + p::first-letter,
+header + p::first-letter,
+.header + p::first-letter,
+.quarto-title-block + p::first-letter {
   float: left;
-  font-size: 5.5rem;
-  line-height: 0.8;
-  padding-right: 0.2em;
-  padding-left: 0.1em;
-  margin-top: 0.1em;
+  font-family: "Cinzel Decorative", "Uncial Antiqua", "EB Garamond", serif;
+  font-size: 4.5rem;
+  line-height: 0.85;
+  margin-top: 0.1rem;
+  margin-right: 0.15rem;
+  margin-bottom: -0.1rem;
+  padding-right: 0.1rem;
   color: var(--accent-terracotta);
-  font-family: "Dancing Script", cursive;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+  font-weight: 700;
+  text-shadow: 2px 2px 4px rgba(138, 59, 59, 0.25);
+  position: relative;
+  z-index: 1;
 }
 
+/* Enhanced styling for fairy-tale, whimsical feel */
+.drop-cap::before,
+main.content > p:first-of-type::first-letter::before,
+main .content > p:first-of-type::first-letter::before,
+main article > p:first-of-type::first-letter::before,
+section > p:first-of-type::first-letter::before,
+.post-content > p:first-of-type::first-letter::before,
+#quarto-content > p:first-of-type::first-letter::before,
+#quarto-document-content > p:first-of-type::first-letter::before,
+main > p:first-of-type::first-letter::before,
+article > p:first-of-type::first-letter::before,
+h1 + p::first-letter::before,
+h2 + p::first-letter::before,
+h3 + p::first-letter::before,
+header + p::first-letter::before,
+.header + p::first-letter::before,
+.quarto-title-block + p::first-letter::before {
+  content: '';
+  position: absolute;
+  top: -0.2rem;
+  left: -0.2rem;
+  right: -0.2rem;
+  bottom: -0.2rem;
+  background: radial-gradient(circle at center, 
+    rgba(138, 59, 59, 0.1) 0%, 
+    rgba(138, 59, 59, 0.05) 40%,
+    transparent 70%);
+  border-radius: 50%;
+  z-index: -1;
+  opacity: 0.6;
+}
+
+/* Dark mode adjustments */
 .dark .drop-cap,
-.dark .quarto-body-content h1 + p::first-letter,
-.dark .quarto-body-content h2 + p::first-letter,
-.dark .quarto-body-content h3 + p::first-letter,
-.dark .quarto-body-content > p:first-of-type::first-letter,
-.dark main > p:first-of-type::first-letter {
-  text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.1);
+.dark main.content > p:first-of-type::first-letter,
+.dark main .content > p:first-of-type::first-letter,
+.dark main article > p:first-of-type::first-letter,
+.dark section > p:first-of-type::first-letter,
+.dark .post-content > p:first-of-type::first-letter,
+.dark #quarto-content > p:first-of-type::first-letter,
+.dark #quarto-document-content > p:first-of-type::first-letter,
+.dark main > p:first-of-type::first-letter,
+.dark article > p:first-of-type::first-letter,
+.dark h1 + p::first-letter,
+.dark h2 + p::first-letter,
+.dark h3 + p::first-letter,
+.dark header + p::first-letter,
+.dark .header + p::first-letter,
+.dark .quarto-title-block + p::first-letter {
+  color: var(--accent-gold);
+  text-shadow: 2px 2px 4px rgba(210, 180, 140, 0.3);
 }
 
+.dark .drop-cap::before,
+.dark main.content > p:first-of-type::first-letter::before,
+.dark main .content > p:first-of-type::first-letter::before,
+.dark main article > p:first-of-type::first-letter::before,
+.dark section > p:first-of-type::first-letter::before,
+.dark .post-content > p:first-of-type::first-letter::before,
+.dark #quarto-content > p:first-of-type::first-letter::before,
+.dark #quarto-document-content > p:first-of-type::first-letter::before,
+.dark main > p:first-of-type::first-letter::before,
+.dark article > p:first-of-type::first-letter::before,
+.dark h1 + p::first-letter::before,
+.dark h2 + p::first-letter::before,
+.dark h3 + p::first-letter::before,
+.dark header + p::first-letter::before,
+.dark .header + p::first-letter::before,
+.dark .quarto-title-block + p::first-letter::before {
+  background: radial-gradient(circle at center, 
+    rgba(210, 180, 140, 0.15) 0%, 
+    rgba(210, 180, 140, 0.08) 40%,
+    transparent 70%);
+}
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
   .drop-cap,
-  .quarto-body-content h1 + p::first-letter,
-  .quarto-body-content h2 + p::first-letter,
-  .quarto-body-content h3 + p::first-letter,
-  .quarto-body-content > p:first-of-type::first-letter,
-  main > p:first-of-type::first-letter {
+  main.content > p:first-of-type::first-letter,
+  main .content > p:first-of-type::first-letter,
+  main article > p:first-of-type::first-letter,
+  section > p:first-of-type::first-letter,
+  .post-content > p:first-of-type::first-letter,
+  #quarto-content > p:first-of-type::first-letter,
+  #quarto-document-content > p:first-of-type::first-letter,
+  main > p:first-of-type::first-letter,
+  article > p:first-of-type::first-letter,
+  h1 + p::first-letter,
+  h2 + p::first-letter,
+  h3 + p::first-letter,
+  header + p::first-letter,
+  .header + p::first-letter,
+  .quarto-title-block + p::first-letter {
     font-size: 3.5rem;
-    line-height: 2.8rem;
+    line-height: 0.9;
+    margin-right: 0.1rem;
   }
+}
+
+/* Ensure first paragraphs have proper spacing for drop caps */
+main.content > p:first-of-type,
+main .content > p:first-of-type,
+main article > p:first-of-type,
+section > p:first-of-type,
+.post-content > p:first-of-type,
+#quarto-content > p:first-of-type,
+#quarto-document-content > p:first-of-type,
+main > p:first-of-type,
+article > p:first-of-type,
+h1 + p,
+h2 + p,
+h3 + p,
+header + p,
+.header + p,
+.quarto-title-block + p {
+  margin-top: 1.5rem;
+  text-align: justify;
+  text-indent: 0;
+}
 }
 
 .flip-card-container {

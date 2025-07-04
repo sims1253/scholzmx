@@ -4,11 +4,6 @@ title: "About Me"
 
 {{< include _dappled-light.qmd >}}
 {{< include _art-showcase.qmd >}}
-```{=html}
-<div class="colophon">
-    <img src="/img/ovid4footer.svg" alt="A decorative illustration">
-</div>
-```
 
 ```{=html}      
 <div class="flip-card-container">
@@ -37,3 +32,9 @@ This site serves as my digital garden - a space for sharing research, thoughts, 
 Feel free to reach out if you'd like to discuss research collaborations, interesting problems, or just want to chat about the craft of creating meaningful digital experiences.
 
 *Professional contact information and social links can be found in the site navigation.*
+
+```{=html}
+<div class="colophon">
+    <img src="/img/ovid4footer.svg" alt="A decorative illustration">
+</div>
+```
