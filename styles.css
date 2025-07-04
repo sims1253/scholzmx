@@ -198,7 +198,8 @@ body.dark {
   width: 1600px;
   height: 1400px;
   background-image: url("./leaves.png");
-  filter: url(#wind);
+  /* filter: url(#wind);*/
+  /*  using the cheaper animation for performance reasons */
   animation: billow 8s ease-in-out infinite;
   will-change: transform;
   transform: translateZ(0);
@@ -305,40 +306,6 @@ article.sunlit-content a {
 
 article.sunlit-content a:hover {
   border-bottom-color: var(--dark);
-}
-
-/* Navigation styling */
-.navbar {
-  position: relative; /* Needed for pseudo-element positioning */
-  border-bottom: 1px solid var(--paper-shadow);
-  background: var(--paper-white) url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEWFhYWDg4N3d3dtbW17e3t1dXVדהדחZWVldXV2MjIyRkZGNjY1WVlZQUFBXV1dDQ0NBQUFERERGRkZGQkJBQUF6enp4eHhycnJra2tGRkY6OjoBAAAA6gJ4AAAAHUlEQVR42u3OMQEAAAgDAIgP4f81jCRy5gAAAAAAAAAAAPsDAnAAATgAAZwAAgAAAABJRU5ErkJggg==');
-}
-
-.navbar::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEWFhYWDg4N3d3dtbW17e3t1dXVדהדחZWVldXV2MjIyRkZGNjY1WVlZQUFBXV1dDQ0NBQUFERERGRkZGQkJBQUF6enp4eHhycnJra2tGRkY6OjoBAAAA6gJ4AAAAHUlEQVR42u3OMQEAAAgDAIgP4f81jCRy5gAAAAAAAAAAAPsDAnAAATgAAZwAAgAAAABJRU5ErkJggg==');
-  opacity: 0.05;
-  z-index: 0;
-}
-
-/* Ensure navbar content is above the texture */
-.navbar-brand, .navbar-nav {
-  position: relative;
-  z-index: 1;
-}
-
-.navbar-nav .nav-link {
-  transition: all 0.2s ease-in-out;
-}
-
-.navbar-nav .nav-link:hover {
-  text-shadow: 1px 1px 1px rgba(0,0,0,0.1);
-  transform: translateY(1px);
 }
 
 /* Search field styling - Make search field visible and styled */
@@ -539,75 +506,6 @@ article.sunlit-content a:hover {
   color: var(--accent-terracotta);
 }
 
-/* Remove the navbar link styling from the toggle */
-.navbar-nav .nav-link:has(#theme-toggle) {
-  padding: 0.5rem 0.75rem;
-}
-
-.navbar-nav .nav-link:has(#theme-toggle):hover {
-  background: none;
-}
-
-/* CSS-Only Flipping Image */
-.flip-container {
-  display: flex;
-  justify-content: center;
-  margin: 2rem 0 3rem 0;
-  perspective: 1000px;
-}
-
-.flip-card {
-  position: relative;
-  width: 280px;
-  height: 280px;
-  cursor: pointer;
-  transform-style: preserve-3d;
-  transition: transform 0.8s ease;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-}
-
-.flip-card:hover {
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
-}
-
-.card-front,
-.card-back {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  backface-visibility: hidden;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.card-front img,
-.card-back img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.card-back {
-  transform: rotateY(180deg);
-}
-
-#flipper {
-  display: none;
-}
-
-#flipper:checked + .flip-card {
-  transform: rotateY(180deg);
-}
-
-/* Keyboard accessibility for flip card */
-.flip-card:focus {
-  outline: 3px solid var(--accent-terracotta);
-  outline-offset: 4px;
-}
-
 /* Art Showcase - Fixed position for wide screens */
 .art-showcase {
   position: fixed;
@@ -673,21 +571,6 @@ article.sunlit-content a:hover {
   }
 }
 
-/* Stylized Drop Caps */
-.drop-cap,
-.quarto-body-content h2 + p::first-letter,
-.quarto-body-content h3 + p::first-letter {
-  float: left;
-  font-size: 5.5rem; /* Increased size */
-  line-height: 0.8;
-  padding-right: 0.2em;
-  padding-left: 0.1em;
-  margin-top: 0.1em;
-  color: #8a3b3b; /* Accent color */
-  font-family: "Dancing Script", cursive; /* Ornate font */
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.2); /* Subtle shadow */
-}
-
 /* Dark mode adjustments for interactive elements */
 .dark .flip-card {
   box-shadow: 0 8px 24px rgba(255, 255, 255, 0.1);
@@ -703,13 +586,6 @@ article.sunlit-content a:hover {
 
 .dark .art-showcase:hover {
   box-shadow: 0 8px 28px rgba(255, 255, 255, 0.2);
-}
-
-.dark .drop-cap,
-.dark .quarto-body-content h2 + p::first-letter,
-.dark .quarto-body-content h3 + p::first-letter {
-  color: var(--accent-terracotta);
-  text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.1);
 }
 
 /* Footer styling - ensure clear text readability */
@@ -732,15 +608,26 @@ article.sunlit-content a:hover {
   content: '';
   position: absolute;
   bottom: 1rem;
-  right: 1rem;
+  left: 1rem; /* Changed from right to left */
   width: 50px;
   height: 50px;
-  background-image: url('/img/botanical-flourish.svg');
+  background-image: url('/img/ovid4footer.svg');
   background-repeat: no-repeat;
   background-size: contain;
   opacity: 0.3;
   filter: invert(15%) sepia(13%) saturate(3011%) hue-rotate(315deg) brightness(94%) contrast(86%);
   transition: all 0.3s ease-in-out;
+  z-index: 0; /* Ensure it's behind other content */
+}
+
+.footer .nav-link {
+  position: relative; /* Ensure social icons are above the SVG */
+  z-index: 1;
+}
+
+.footer .bi {
+  position: relative; /* Ensure social icons are above the SVG */
+  z-index: 1;
 }
 
 .footer:hover::after {
@@ -796,8 +683,10 @@ article.sunlit-content a:hover {
   align-items: center;
   margin: 2rem 0 3rem 0;
   padding: 1.5rem;
+  /* CHANGE: Add a subtle gradient for texture */
   background: linear-gradient(135deg, var(--paper-white), var(--paper-shadow));
   border-radius: 12px;
+  /* CHANGE: Use a border that matches the shadow for an "embossed" look */
   border: 2px solid var(--paper-shadow);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   position: relative;
@@ -813,10 +702,12 @@ article.sunlit-content a:hover {
   font-size: 4rem;
   font-weight: bold;
   color: var(--accent-terracotta);
+  /* CHANGE: Use a classic serif font for a more calligraphic feel */
   font-family: Georgia, 'Times New Roman', serif;
   margin-right: 1rem;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
   line-height: 1;
+  /* You can even get fancy with background-clip */
   background: linear-gradient(45deg, var(--accent-terracotta), #b84a4a);
   -webkit-background-clip: text;
   background-clip: text;
@@ -887,13 +778,9 @@ article.sunlit-content a:hover {
 
 .project-banner img {
   width: 100%;
-  height: 200px;
-  object-fit: cover;
-  transition: transform 0.3s ease;
-}
-
-.project-showcase:hover .project-banner img {
-  transform: scale(1.05);
+  height: 100%;
+  object-fit: contain;
+  object-position: top;
 }
 
 .project-details {
@@ -1014,14 +901,6 @@ article.sunlit-content a:hover {
     height: 220px;
   }
   
-  /* Smaller drop caps on mobile */
-  .drop-cap,
-  .quarto-body-content h2 + p::first-letter,
-  .quarto-body-content h3 + p::first-letter {
-    font-size: 3.5rem;
-    line-height: 2.8rem;
-  }
-  
   /* Responsive organic elements */
   .manuscript-header {
     flex-direction: column;
@@ -1048,4 +927,212 @@ article.sunlit-content a:hover {
   .project-banner img {
     height: 150px;
   }
+}
+
+@keyframes billow {
+  0% {
+    transform: perspective(400px) rotateX(0deg) rotateY(0deg) scale(1);
+  }
+  25% {
+    transform: perspective(400px) rotateX(1deg) rotateY(2deg) scale(1.02);
+  }
+  50% {
+    transform: perspective(400px) rotateX(-4deg) rotateY(-2deg) scale(0.97);
+  }
+  75% {
+    transform: perspective(400px) rotateX(1deg) rotateY(-1deg) scale(1.04);
+  }
+  100% {
+    transform: perspective(400px) rotateX(0deg) rotateY(0deg) scale(1);
+  }
+}
+
+/* Stylized Drop Caps */
+.drop-cap,
+.quarto-body-content h2 + p::first-letter,
+.quarto-body-content h3 + p::first-letter {
+  float: left;
+  font-size: 5.5rem;
+  line-height: 0.8;
+  padding-right: 0.2em;
+  padding-left: 0.1em;
+  margin-top: 0.1em;
+  color: var(--accent-terracotta);
+  font-family: "Dancing Script", cursive;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.dark .drop-cap,
+.dark .quarto-body-content h2 + p::first-letter,
+.dark .quarto-body-content h3 + p::first-letter {
+  text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.1);
+}
+
+@media (max-width: 768px) {
+  .drop-cap,
+  .quarto-body-content h2 + p::first-letter,
+  .quarto-body-content h3 + p::first-letter {
+    font-size: 3.5rem;
+    line-height: 2.8rem;
+  }
+}
+
+.flip-card-container {
+  perspective: 1000px;
+  width: 280px;
+  height: 280px;
+  margin: 2rem auto;
+  cursor: pointer;
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* This class will be added by JavaScript on click */
+.flip-card-container.is-flipped .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front,
+.flip-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden; /* Safari */
+  backface-visibility: hidden;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.flip-card-front img,
+.flip-card-back img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.flip-card-back {
+  transform: rotateY(180deg);
+}
+
+/* Base Navbar Styling (Light Mode) */
+.navbar {
+  position: relative;
+  border-bottom: 1px solid var(--paper-shadow) !important;
+  background: var(--paper-white) url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEWFhYWDg4N3d3dtbW17e3t1dXVדהדחZWVldXV2MjIyRkZGNjY1WVlZQUFBXV1dDQ0NBQUFERERGRkZGQkJBQUF6enp4eHhycnJra2tGRkY6OjoBAAAA6gJ4AAAAHUlEQVR42u3OMQEAAAgDAIgP4f81jCRy5gAAAAAAAAAAAPsDAnAAATgAAZwAAgAAAABJRU5ErkJggg==') !important;
+}
+
+.navbar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEWFhYWDg4N3d3dtbW17e3t1dXVדהדחZWVldXV2MjIyRkZGNjY1WVlZQUFBXV1dDQ0NBQUFERERGRkZGQkJBQUF6enp4eHhycnJra2tGRkY6OjoBAAAA6gJ4AAAAHUlEQVR42u3OMQEAAAgDAIgP4f81jCRy5gAAAAAAAAAAAPsDAnAAATgAAZwAAgAAAABJRU5ErkJggg==');
+  opacity: 0.05;
+  z-index: 0;
+}
+
+.navbar .navbar-brand, 
+.navbar .nav-link,
+.navbar #theme-toggle {
+  color: var(--text-dark) !important;
+  position: relative;
+  z-index: 1;
+}
+
+.navbar .nav-link:hover {
+  color: var(--accent-terracotta) !important;
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.1);
+  transform: translateY(1px);
+}
+
+/* Dark Mode Navbar Styling */
+body.dark .navbar {
+  background: var(--night) url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEWFhYWDg4N3d3dtbW17e3t1dXVדהדחZWVldXV2MjIyRkZGNjY1WVlZQUFBXV1dDQ0NBQUFERERGRkZGQkJBQUF6enp4eHhycnJra2tGRkY6OjoBAAAA6gJ4AAAAHUlEQVR42u3OMQEAAAgDAIgP4f81jCRy5gAAAAAAAAAAAPsDAnAAATgAAZwAAgAAAABJRU5ErkJggg==') !important;
+  border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+body.dark .navbar-brand,
+body.dark .navbar-nav .nav-link,
+body.dark #theme-toggle {
+  color: var(--day) !important;
+}
+
+body.dark .navbar-nav .nav-link:hover {
+  color: var(--accent-terracotta) !important;
+}
+
+/* Remove special styling for the toggle link */
+.navbar-nav .nav-link:has(#theme-toggle) {
+  padding: 0.5rem 0.75rem;
+}
+.navbar-nav .nav-link:has(#theme-toggle):hover {
+  background: none;
+}
+
+.quarto-search {
+  z-index: 1050; /* Higher than the navbar's pseudo-elements */
+}
+
+/* Light Mode Search Icon */
+.quarto-search .aa-SubmitIcon,
+.quarto-search .aa-SearchIcon {
+  fill: var(--text-dark) !important; /* Make it dark gray */
+  opacity: 0.7;
+}
+.quarto-search .aa-SubmitButton:hover .aa-SubmitIcon,
+.quarto-search .aa-SubmitButton:hover .aa-SearchIcon {
+  opacity: 1; /* Make it fully opaque on hover */
+}
+
+
+/* Dark Mode Search Icon */
+body.dark .quarto-search .aa-SubmitIcon,
+body.dark .quarto-search .aa-SearchIcon {
+  fill: var(--day) !important; /* Make it white */
+}
+
+.navbar .quarto-search {
+  position: relative;
+  z-index: 1051; /* Higher than navbar and its pseudo-elements */
+}
+
+/* Style the button itself to be clickable and transparent */
+.navbar .aa-SubmitButton {
+  cursor: pointer;
+  border: none !important;
+  background: transparent !important;
+  padding: 0.25rem;
+}
+
+/* LIGHT MODE ICON */
+.navbar .aa-SubmitIcon {
+  fill: var(--text-dark) !important;
+  opacity: 0.7;
+}
+.navbar .aa-SubmitButton:hover .aa-SubmitIcon {
+  opacity: 1;
+}
+
+/* DARK MODE ICON */
+body.dark .navbar .aa-SubmitIcon {
+  fill: var(--day) !important;
+  opacity: 0.8;
+}
+body.dark .navbar .aa-SubmitButton:hover .aa-SubmitIcon {
+  opacity: 1;
+}
+
+.navbar-brand-container {
+  flex: 0 1 auto; /* Allows the container to shrink to fit its content */
+  margin-right: auto !important; /* Pushes other elements to the right */
 }

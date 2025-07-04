@@ -2,16 +2,57 @@
 title: "Research & Publications"
 ---
 
-This page lists my academic publications and research projects.
+```{=html}
+<div class="manuscript-header">
+  <div class="illuminated-initial">R</div>
+  <div class="manuscript-title">Research & Publications</div>
+</div>
+```
+
+{{< include _dappled-light.qmd >}}
+{{< include _art-showcase.qmd >}}
+{{< include _colophon.html >}}
+
+My research focuses on developing robust statistical methods and computational tools for complex scientific problems, particularly in the intersection of Bayesian statistics, computational science, and software engineering.
 
 ## Publications
 
-*Coming soon...*
+### 2022
 
-## Working Papers
+**Some models are useful, but how do we know which ones? Towards a unified Bayesian model taxonomy**  
+*Paul-Christian Bürkner, Maximilian Scholz, Stefan T. Radev*  
+Preprint (arXiv) | [{{< ai arxiv >}} arXiv](https://arxiv.org/abs/2209.02439)
 
-*Coming soon...*
+**Prediction can be safely used as a proxy for explanation in causally consistent Bayesian generalized linear models**  
+*Maximilian Scholz, Paul-Christian Bürkner*  
+Preprint (arXiv) | [{{< ai arxiv >}} arXiv](https://arxiv.org/abs/2206.15474) | [{{< fa code >}} Code](https://github.com/sims1253/prediction-explanation-proxy) | [{{< fa database >}} Dataset](https://osf.io/3mzjr/)
 
-## Research Projects
+### 2021
 
-*Coming soon...*
+**An empirical study of Linespots: A novel past-fault algorithm**  
+*Maximilian Scholz, Richard Torkar*  
+Software Testing, Verification and Reliability (STVR) | [{{< fa code >}} Code](https://github.com/sims1253/linespots)
+
+### 2019
+
+**An Analysis of Linespots and its Utility in Realistic Scenarios**  
+*Maximilian Scholz*  
+Master's Thesis, Chalmers University of Technology | [{{< fa code >}} Code](https://github.com/sims1253/linespots)
+
+### 2016
+
+**A Line Based Approach for Bugspots**  
+*Maximilian Scholz*  
+Bachelor's Thesis, Hamburg University of Technology | [{{< fa code >}} Code](https://github.com/sims1253/linespots)
+
+## Current Research Projects
+
+### BayeSim: Bayesian Simulation Framework
+A comprehensive framework for Bayesian statistical modeling with focus on making advanced statistical methods accessible to researchers across different domains.
+
+### Robust Model Selection
+Developing methods for automated model selection in complex statistical scenarios, with emphasis on causal inference and prediction accuracy.
+
+---
+
+*For collaboration opportunities or questions about my research, please feel free to [contact me](mailto:scholzmxb@gmail.com).*

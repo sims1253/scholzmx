@@ -10,7 +10,6 @@ The new site will be built using Quarto, leveraging its powerful code-rendering 
 
 - **Content-First:** The design must prioritize readability and put the user's written content at the forefront.
 - **Embrace the Slow Web:** The site should be designed for longevity, not urgency. This means focusing on durable content, simple and robust technology, and a calm, intentional user experience. It is a rejection of the ephemeral, attention-grabbing trends of the modern web.
-- **Tufte-Inspired Clarity:** The design will draw inspiration from Edward Tufte's principles of information design, emphasizing clarity, data-ink ratio, and avoiding unnecessary decoration.
 - **"Paper-y" Aesthetic:** The visual theme should evoke the feeling of reading on high-quality paper—warm, comfortable, and classic.
 - **Accessibility First (No-JS Core):** All core content and navigation must be perfectly functional and readable with JavaScript disabled.
 - **Progressive Enhancement:** Interactive elements will be layered on top using non-essential JavaScript.
@@ -32,7 +31,7 @@ The new site will be built using Quarto, leveraging its powerful code-rendering 
 - **`simonsarris.com`:** Model for the minimalist, single-column layout, clean header navigation, and overall focus on readable content. Particularly inspired by the landscape scribbles in the background and small illustrations at the bottom of pages.
 - **`gwern.net` / `turntrout.com`:** Inspiration for future-state advanced hosting (caching, archival) and deep, interconnected content. Turntrout's fish with vine leaves, large illustrated initials, nice typography, and pixel art animations exemplify the handcrafted aesthetic we're aiming for.
 - **`putanumonit.com` / `mailchi.mp/btiscience/ferns`:** Inspiration for the "paper-y" feel, warm color palettes, and classic typography. The fern botanical illustrations represent the organic, handcrafted aesthetic we want to achieve.
-- **Edward Tufte:** The work of Edward Tufte will inform the site's commitment to data visualization, clarity, and information density.
+
 
 ### 4.2. Game UI Aesthetic Philosophy
 
@@ -402,7 +401,7 @@ This roadmap is broken into atomic commits. Each step should result in a single,
 
 This section captures advanced ideas for later implementation.
 
-- **Tufte-Style Sidenotes:** Implement a system for Tufte-style sidenotes, allowing for marginal notes that don't interrupt the main flow of the text. This would be a significant step towards a more academic and information-rich presentation, especially for research articles and would align the website more with the core ideas of Tufte.
+- **Tufte-Style Sidenotes:** Implement a system for Tufte-style sidenotes, allowing for marginal notes that don't interrupt the main flow of the text. This would be a significant step towards a more academic and information-rich presentation, especially for research articles.
 - **Evolve into a Digital Garden:** Move beyond a traditional blog structure towards a network of interconnected notes. This involves:
   - Creating a dedicated `/garden` section for evergreen notes, ideas, and summaries.
   - Prioritizing bidirectional linking between pages to create a web of knowledge.

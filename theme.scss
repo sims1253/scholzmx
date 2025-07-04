@@ -18,29 +18,6 @@ body {
 }
 
 // Typography
-.navbar-brand, h1, h2 {
+h1, h2 {
   font-family: $font-family-script;
-}
-.navbar {
-  font-family: $font-family-sans-serif;
-  background-color: #fdfbf6 !important;
-  color: #333333 !important;
-}
-.navbar-brand {
-  color: #333333 !important;
-}
-.navbar-nav .nav-link {
-  color: #333333 !important;
-}
-.navbar-nav .nav-link:hover,
-.navbar-nav .nav-link:focus {
-  color: #8a3b3b !important;
-}
-
-#theme-toggle.fa-solid.fa-sun {
-  color: #333333 !important;
-}
-
-.dark #theme-toggle.fa-solid.fa-moon {
-  color: #fdfbf6 !important;
 }

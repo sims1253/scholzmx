@@ -39,7 +39,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-642936fc12d853a82993902ef1d1e75a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-4e56adb180a8f247e6b6e74feaf14d27.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -52,7 +52,6 @@ ul.task-list li input[type="checkbox"] {
     "/",
     "s"
   ],
-  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -67,6 +66,7 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 
 <link rel="stylesheet" href="styles.css">
@@ -105,6 +105,18 @@ ul.task-list li input[type="checkbox"] {
     <a class="nav-link" href="./about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./projects/index.html"> 
+<span class="menu-text">Projects</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./recipes.html"> 
+<span class="menu-text">Recipes</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./#"> 
+<span class="menu-text"><i class="fa-solid fa-sun" id="theme-toggle"></i></span></a>
+  </li>  
 </ul>
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
@@ -130,12 +142,23 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#interactive-elements-implementation" id="toc-interactive-elements-implementation" class="nav-link" data-scroll-target="#interactive-elements-implementation">Interactive Elements Implementation</a></li>
   <li><a href="#github-actions-deployment" id="toc-github-actions-deployment" class="nav-link" data-scroll-target="#github-actions-deployment">GitHub Actions Deployment</a></li>
   <li><a href="#critical-html-rendering-issues" id="toc-critical-html-rendering-issues" class="nav-link" data-scroll-target="#critical-html-rendering-issues">Critical HTML Rendering Issues</a></li>
+  <li><a href="#aesthetic-vision-game-ui-embedded-in-world" id="toc-aesthetic-vision-game-ui-embedded-in-world" class="nav-link" data-scroll-target="#aesthetic-vision-game-ui-embedded-in-world">Aesthetic Vision: Game UI Embedded in World</a></li>
   <li><a href="#blogdown-to-quarto-migration-issues" id="toc-blogdown-to-quarto-migration-issues" class="nav-link" data-scroll-target="#blogdown-to-quarto-migration-issues">Blogdown to Quarto Migration Issues</a></li>
   <li><a href="#template-content-audit-results" id="toc-template-content-audit-results" class="nav-link" data-scroll-target="#template-content-audit-results">Template Content Audit Results</a>
   <ul class="collapse">
   <li><a href="#critical-findings-gandalf-template-content-still-present" id="toc-critical-findings-gandalf-template-content-still-present" class="nav-link" data-scroll-target="#critical-findings-gandalf-template-content-still-present">CRITICAL FINDINGS: Gandalf Template Content Still Present</a></li>
   <li><a href="#correct-content-mapping-based-on-scholzmx.com" id="toc-correct-content-mapping-based-on-scholzmx.com" class="nav-link" data-scroll-target="#correct-content-mapping-based-on-scholzmx.com">CORRECT CONTENT MAPPING (Based on scholzmx.com)</a></li>
   <li><a href="#priority-replacement-actions-needed" id="toc-priority-replacement-actions-needed" class="nav-link" data-scroll-target="#priority-replacement-actions-needed">PRIORITY REPLACEMENT ACTIONS NEEDED</a></li>
+  </ul></li>
+  <li><a href="#performance-optimization-analysis-2025-07-03" id="toc-performance-optimization-analysis-2025-07-03" class="nav-link" data-scroll-target="#performance-optimization-analysis-2025-07-03">Performance Optimization Analysis (2025-07-03)</a>
+  <ul class="collapse">
+  <li><a href="#performance-issues-identified-fixed" id="toc-performance-issues-identified-fixed" class="nav-link" data-scroll-target="#performance-issues-identified-fixed">Performance Issues Identified &amp; Fixed</a></li>
+  </ul></li>
+  <li><a href="#project-status-update-2025-07-03" id="toc-project-status-update-2025-07-03" class="nav-link" data-scroll-target="#project-status-update-2025-07-03">Project Status Update (2025-07-03)</a>
+  <ul class="collapse">
+  <li><a href="#all-primary-tasks-completed" id="toc-all-primary-tasks-completed" class="nav-link" data-scroll-target="#all-primary-tasks-completed">All Primary Tasks Completed ✅</a></li>
+  <li><a href="#current-site-status" id="toc-current-site-status" class="nav-link" data-scroll-target="#current-site-status">Current Site Status</a></li>
+  <li><a href="#ready-for-content-addition" id="toc-ready-for-content-addition" class="nav-link" data-scroll-target="#ready-for-content-addition">Ready for Content Addition</a></li>
   </ul></li>
   </ul></li>
   </ul>
@@ -220,6 +243,11 @@ ul.task-list li input[type="checkbox"] {
 <li>This was the root cause of sunlit effects not rendering properly in the initial implementation</li>
 </ul>
 </section>
+<section id="aesthetic-vision-game-ui-embedded-in-world" class="level2">
+<h2 class="anchored" data-anchor-id="aesthetic-vision-game-ui-embedded-in-world">Aesthetic Vision: Game UI Embedded in World</h2>
+<p>User wants to move away from “generic Unity UI” sterile modern look toward: - <strong>Game world integration</strong>: UI elements feel part of the world (like Settlers 4 stone wall framing) - <strong>Hidden discoveries</strong>: Peterson &amp; Findus style where cute elements can be discovered - <strong>Handcrafted feel</strong>: Century botanical illustrations, manuscript illuminations - <strong>Organic materials</strong>: Ferns, moss, forest textures vs clean geometric shapes - <strong>Cozy adventure</strong>: Point-and-click game warmth vs corporate website sterility</p>
+<p>Reference aesthetic elements: - Simon Sarris: Landscape scribbles, small illustrations, organic elements - Turntrout: Fish with vine leaves, large illustrated initials, pixel art animations - Botanical illustrations: Detailed, handcrafted, aged paper feel - Peterson &amp; Findus games: Hidden interactive elements, cozy discovery</p>
+</section>
 <section id="blogdown-to-quarto-migration-issues" class="level2">
 <h2 class="anchored" data-anchor-id="blogdown-to-quarto-migration-issues">Blogdown to Quarto Migration Issues</h2>
 <ul>
@@ -257,6 +285,37 @@ ul.task-list li input[type="checkbox"] {
 <li><strong>URGENT</strong>: Update photography page to remove wizard references</li>
 <li><strong>URGENT</strong>: Update art showcase caption from “Mother’s Artwork Collection” to appropriate description</li>
 </ol>
+</section>
+</section>
+<section id="performance-optimization-analysis-2025-07-03" class="level2">
+<h2 class="anchored" data-anchor-id="performance-optimization-analysis-2025-07-03">Performance Optimization Analysis (2025-07-03)</h2>
+<section id="performance-issues-identified-fixed" class="level3">
+<h3 class="anchored" data-anchor-id="performance-issues-identified-fixed">Performance Issues Identified &amp; Fixed</h3>
+<p><strong>Image Asset Analysis:</strong> - Photography images: 116K-144K each (4 images) - reasonable size - Profile image: 28K - optimized - Leaves.png: 48K - acceptable for background effect - Template screenshots: 384K-1.9M - large but likely unused in current site</p>
+<p><strong>Critical UX Issues Fixed:</strong> 1. ✅ Removed TOC from landing page (was showing unnecessarily) 2. ✅ Replaced confusing space/click toggle with sun/moon navbar button<br>
+3. ✅ Shortened landing page content and reduced padding to eliminate scrolling 4. ✅ Added missing sunlit background effects to blog page 5. ✅ Applied CSS performance optimizations</p>
+<p><strong>Performance Optimizations Applied:</strong> - Added <code>will-change: transform</code> to animated elements (art showcase, leaves) - Added <code>transform: translateZ(0)</code> to trigger hardware acceleration for leaves animation - Increased art rotation interval from 4s to 6s to reduce computation frequency - All image assets are reasonably sized and compressed</p>
+<p><strong>Remaining Performance Considerations:</strong> - Complex SVG animations with filters (wind effect) may cause slight lag on lower-end devices - Multiple CSS animations running simultaneously (glow, shutters, leaves, art rotation) - Could consider adding a “reduced motion” preference check for accessibility - FontAwesome icons load from external CDN (via Quarto extensions)</p>
+<p><strong>Load Time Analysis:</strong> - 1-2 second load times likely due to: 1. Multiple CSS animations initializing 2. FontAwesome icon loading 3. Art showcase auto-rotation starting up 4. SVG filter effects compilation</p>
+<p><strong>Performance is now optimized for typical usage. Complex visual effects inherently require some load time, but now within acceptable ranges for a personal academic website.</strong></p>
+</section>
+</section>
+<section id="project-status-update-2025-07-03" class="level2">
+<h2 class="anchored" data-anchor-id="project-status-update-2025-07-03">Project Status Update (2025-07-03)</h2>
+<section id="all-primary-tasks-completed" class="level3">
+<h3 class="anchored" data-anchor-id="all-primary-tasks-completed">All Primary Tasks Completed ✅</h3>
+<p><strong>High Priority Issues Fixed:</strong> 1. ✅ <strong>Design Roadmap Updated</strong>: Added comprehensive cozy game UI aesthetic philosophy with detailed guidelines for avoiding sterile modern designs 2. ✅ <strong>Footer Blur Fixed</strong>: Resolved blurry text in CC statement and social icons by adjusting progressive blur mask gradients 3. ✅ <strong>Search Field Visible</strong>: Added proper search configuration and CSS styling to make navbar search field visible and functional 4. ✅ <strong>Sun/Moon Toggle</strong>: Verified existing toggle functionality is working correctly (FontAwesome icons + JavaScript event handling)</p>
+<p><strong>Content Templates Created:</strong> 5. ✅ <strong>Project Template</strong>: Created professional huerd project showcase as template example with proper technical documentation 6. ✅ <strong>Blog Templates</strong>: Added 4 example blog posts covering research, technical, personal, and tutorial categories</p>
+</section>
+<section id="current-site-status" class="level3">
+<h3 class="anchored" data-anchor-id="current-site-status">Current Site Status</h3>
+<p><strong>Fully Functional Features:</strong> - Sunlit theme with day/night mode switching - Progressive blur visual effects (now excluding footer) - Art showcase with rotation functionality - Search functionality with overlay interface - Responsive design with mobile optimization - Professional project and blog content structure</p>
+<p><strong>Technical Implementation:</strong> - All commits follow conventional commit style as requested - No emoji usage in commit messages - Clean, professional git history - Atomic commits for each functional change</p>
+</section>
+<section id="ready-for-content-addition" class="level3">
+<h3 class="anchored" data-anchor-id="ready-for-content-addition">Ready for Content Addition</h3>
+<p>The site infrastructure is now complete and ready for: - Adding real academic/research content - Publishing actual blog posts using the templates - Showcasing additional projects following the huerd example - Customizing the aesthetic elements further based on the game UI philosophy</p>
+<p>The foundation successfully balances the cozy, discoverable aesthetic vision with professional academic presentation needs.</p>
 
 
 </section>
@@ -264,7 +323,7 @@ ul.task-list li input[type="checkbox"] {
 </section>
 
 </main> <!-- /main -->
-<script src="sunlit-script.js"></script>
+<script src="./sunlit-script.js"></script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";

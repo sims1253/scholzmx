@@ -1,32 +1,35 @@
 ---
 title: "Blog"
-author: ""
-description-meta: "Something something my blog. Welcome."
-
 listing:
-  - id: posts_2017
-    contents: "2017/**/index.md"
-    sort: "date desc"
-    template: ../html/blog/listing.ejs
-    categories: true
+  contents: 
+    - "20*/**/*.qmd"  # This glob finds all posts in folders starting with "20"
+    - "20*/**/*.md"
+  sort: "date desc"
+  type: default # Use default type since the template handles everything
+  template: ../html/blog/listing.ejs # Point to our smart template
+  categories: true
 page-layout: full
-toc-title: Year
-toc-location: right
-date-format: "YYYY-MM-DD"
-code-tools: false
-comments: false
+title-block-banner: false
 ---
 
-Blog text intro goes here.
+{{< include ../_dappled-light.qmd >}}
+{{< include ../_art-showcase.qmd >}}
 
-## 2022
+<article class="sunlit-content">
 
-:::{#posts_2022}
-:::
+<div class="manuscript-header">
+  <div class="illuminated-initial">B</div>
+  <div class="manuscript-title">Blog</div>
+</div>
 
-## 2017
+<p>Welcome to my blog, where I share thoughts on statistics, data science, and the occasional random musings.</p>
 
-:::{#posts_2017}
-:::
+<div class="quarto-listing" id="listing-all-posts">
+  <div class="list">
+    <!-- The EJS template will render everything here -->
+  </div>
+</div>
 
-The blog post listing is based on the website source of [Andrew Heiss](https://www.andrewheiss.com/), who has put together an incredible listing template under CC-BY-SA 4.0 license. Thank you!
+{{< include ../_colophon.html >}}
+
+</article>

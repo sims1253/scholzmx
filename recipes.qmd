@@ -1,0 +1,5 @@
+---
+title: "Recipes"
+---
+
+This page will contain my recipes.

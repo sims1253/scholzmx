@@ -6,8 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="">
-<meta name="description" content="Something something my blog. Welcome.">
+<meta name="author" content="Maximilian Scholz">
 
 <title>Blog – Max Scholz</title>
 <style>
@@ -21,6 +20,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -43,7 +77,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-642936fc12d853a82993902ef1d1e75a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-241b0f784cddf4ce747fa9b91d425841.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -56,7 +90,6 @@ ul.task-list li input[type="checkbox"] {
     "/",
     "s"
   ],
-  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -74,20 +107,20 @@ ul.task-list li input[type="checkbox"] {
 <script>
 
   window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-posts_2017 .list');
+    const listingTargetEl = window.document.querySelector('#listing-listing .list');
     if (!listingTargetEl) {
       // No listing discovered, do not attach.
       return; 
     }
 
     const options = {
-      valueNames: ['listing-project','listing-website','listing-format','listing-_quarto-vars','listing-language','listing-description-meta','listing-date-format','listing-toc','listing-toc-title','listing-toc-location','listing-execute','listing-author','listing-freeze','listing-title','listing-date','listing-description','listing-categories','listing-draft','listing-path','listing-outputHref','listing-date-modified','listing-filename','listing-file-modified','listing-reading-time','listing-word-count',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-date-modified-sort'] },{ data: ['listing-file-modified-sort'] },{ data: ['listing-reading-time-sort'] },{ data: ['listing-word-count-sort'] }],
+      valueNames: ['listing-project','listing-website','listing-format','listing-_quarto-vars','listing-language','listing-title','listing-author','listing-date','listing-categories','listing-tags','listing-description','listing-path','listing-outputHref','listing-date-modified','listing-filename','listing-file-modified','listing-reading-time','listing-word-count','listing-draft',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-date-modified-sort'] },{ data: ['listing-file-modified-sort'] },{ data: ['listing-reading-time-sort'] },{ data: ['listing-word-count-sort'] }],
       
-      searchColumns: ["listing-project","listing-website","listing-format","listing-_quarto-vars","listing-language","listing-description-meta","listing-date-format","listing-toc","listing-toc-title","listing-toc-location","listing-execute","listing-author","listing-freeze","listing-title","listing-date","listing-description","listing-categories","listing-draft","listing-path","listing-outputHref","listing-date-modified","listing-filename","listing-file-modified","listing-reading-time","listing-word-count"],
+      searchColumns: ["listing-project","listing-website","listing-format","listing-_quarto-vars","listing-language","listing-title","listing-author","listing-date","listing-categories","listing-tags","listing-description","listing-path","listing-outputHref","listing-date-modified","listing-filename","listing-file-modified","listing-reading-time","listing-word-count","listing-draft"],
     };
 
     window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-posts_2017'] = new List('listing-posts_2017', options);
+    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
 
     if (window['quarto-listing-loaded']) {
       window['quarto-listing-loaded']();
@@ -100,6 +133,7 @@ ul.task-list li input[type="checkbox"] {
     }
   })
   </script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -134,7 +168,7 @@ window.Quarto = {
 <link rel="stylesheet" href="../styles.css">
 </head>
 
-<body class="nav-fixed quarto-light">
+<body class="floating nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -167,6 +201,18 @@ window.Quarto = {
     <a class="nav-link" href="../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../projects/index.html"> 
+<span class="menu-text">Projects</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../recipes.html"> 
+<span class="menu-text">Recipes</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../#"> 
+<span class="menu-text"><i class="fa-solid fa-sun" id="theme-toggle"></i></span></a>
+  </li>  
 </ul>
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
@@ -177,29 +223,29 @@ window.Quarto = {
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
 <!-- sidebar -->
+  
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Year</h2>
-   
-  <ul>
-  <li><a href="#section" id="toc-section" class="nav-link active" data-scroll-target="#section">2022</a></li>
-  <li><a href="#section-1" id="toc-section-1" class="nav-link" data-scroll-target="#section-1">2017</a></li>
-  </ul>
-</nav>
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(4)</span></div><div class="category" data-category="Y29hbGE=">coala <span class="quarto-category-count">(3)</span></div><div class="category" data-category="Y29tbXVuaXR5">community <span class="quarto-category-count">(3)</span></div></div></div>
+    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(10)</span></div><div class="category" data-category="QWNhZGVtaWMlMjBMaWZl">Academic Life <span class="quarto-category-count">(1)</span></div><div class="category" data-category="QmF5ZXNpYW4lMjBTdGF0aXN0aWNz">Bayesian Statistics <span class="quarto-category-count">(2)</span></div><div class="category" data-category="Y29hbGE=">coala <span class="quarto-category-count">(3)</span></div><div class="category" data-category="Y29tbXVuaXR5">community <span class="quarto-category-count">(3)</span></div><div class="category" data-category="RGV2ZWxvcG1lbnQ=">Development <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Z2dwbG90Mg==">ggplot2 <span class="quarto-category-count">(1)</span></div><div class="category" data-category="TUNNQw==">MCMC <span class="quarto-category-count">(1)</span></div><div class="category" data-category="TWV0aG9kb2xvZ3k=">Methodology <span class="quarto-category-count">(1)</span></div><div class="category" data-category="UGVyc29uYWw=">Personal <span class="quarto-category-count">(1)</span></div><div class="category" data-category="UHJvZ3JhbW1pbmc=">Programming <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Ug==">R <span class="quarto-category-count">(2)</span></div><div class="category" data-category="UmVmbGVjdGlvbg==">Reflection <span class="quarto-category-count">(1)</span></div><div class="category" data-category="UmVzZWFyY2g=">Research <span class="quarto-category-count">(1)</span></div><div class="category" data-category="U29mdHdhcmUlMjBEZXZlbG9wbWVudA==">Software Development <span class="quarto-category-count">(1)</span></div><div class="category" data-category="VHV0b3JpYWw=">Tutorial <span class="quarto-category-count">(1)</span></div><div class="category" data-category="dmlzdWFsaXphdGlvbg==">visualization <span class="quarto-category-count">(1)</span></div></div></div>
 <!-- main -->
 <main class="content column-page-left" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Blog</h1>
+<div class="quarto-title-block"><div><h1 class="title">Blog</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
 </div>
 
 
 
 <div class="quarto-title-meta column-page-left">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p><a href="https://www.scholzmx.com/">Maximilian Scholz</a> <a href="https://orcid.org/0000-0002-4486-1393" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a></p>
+          </div>
+  </div>
     
   
     
@@ -210,129 +256,414 @@ window.Quarto = {
 </header>
 
 
-<p>Blog text intro goes here.</p>
-<section id="section" class="level2">
-<h2 class="anchored" data-anchor-id="section">2022</h2>
-<div id="posts_2022">
-
+<!-- Sunlit visual effects layer -->
+<div id="dappled-light">
+  <div id="glow"></div>
+  <div id="glow-bounce"></div>
+  <div class="perspective">
+    <div id="leaves">
+      <svg style="width: 0; height: 0; position: absolute;">
+        <defs>
+          <filter id="wind" x="-20%" y="-20%" width="140%" height="140%">
+            <feturbulence type="fractalNoise" numoctaves="2" seed="1">
+              <animate attributename="baseFrequency" dur="16s" keytimes="0;0.33;0.66;1" values="0.005 0.003;0.01 0.009;0.008 0.004;0.005 0.003" repeatcount="indefinite"></animate>
+            </feturbulence>
+            <fedisplacementmap in="SourceGraphic">
+              <animate attributename="scale" dur="20s" keytimes="0;0.25;0.5;0.75;1" values="45;55;75;55;45" repeatcount="indefinite"></animate>
+            </fedisplacementmap>
+          </filter>
+        </defs>
+      </svg>
+    </div>
+    <div id="blinds">
+      <div class="shutters">
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+        <div class="shutter"></div>
+      </div>
+      <div class="vertical">
+        <div class="bar"></div>
+        <div class="bar"></div>
+      </div>
+    </div>
+  </div>
+  <div id="progressive-blur">
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
 </div>
-</section>
-<section id="section-1" class="level2">
-<h2 class="anchored" data-anchor-id="section-1">2017</h2>
-<div id="listing-posts_2017" class="quarto-listing quarto-listing-container-custom">
+<!-- Art Showcase - Fixed position for wide screens -->
+<div class="art-showcase" id="art-showcase">
+  <div class="artwork active">
+    <img src="../photography/gandalf_image_1.jpg" alt="Research Photo 1">
+  </div>
+  <div class="artwork">
+    <img src="../photography/gandalf_image_2.jpg" alt="Research Photo 2">
+  </div>
+  <div class="artwork">
+    <img src="../photography/gandalf_image_3.jpg" alt="Research Photo 3">
+  </div>
+  <div class="artwork">
+    <img src="../photography/gandalf_image_4.jpg" alt="Research Photo 4">
+  </div>
+  <div class="art-showcase-caption">
+    Research &amp; Academic Life
+  </div>
+</div>
+<article class="sunlit-content">
+<div class="manuscript-header">
+<div class="illuminated-initial">
+B
+</div>
+<div class="manuscript-title">
+Blog
+</div>
+</div>
+<p>
+Welcome to my blog, where I share thoughts on statistics, data science, and the occasional random musings.
+</p>
+<div id="listing-all-posts" class="quarto-listing">
+<div class="list">
+<pre><code>&lt;!-- The EJS template will render everything here --&gt;</code></pre>
+</div>
+</div>
+<!-- _colophon.html -->
+<div class="colophon">
+<pre><code>&lt;img src="/img/ovid4footer.svg" alt="A decorative illustration"&gt;</code></pre>
+</div>
+</article>
+
+
+
+<!-- -->
+
+
+<div class="quarto-listing quarto-listing-container-custom" id="listing-listing">
+<h2 class="anchored">
+2024
+</h2>
 <div class="list blog">
-    
-    <div class="blog-entry" data-index="0" data-listing-file-modified-sort="1751500201883">
-        <div class="metadata">          
-            <p class="date listing-date"></p>
-        </div>
-        <div class="body">
-            <p class="title listing-title"><a href="../blog/2017/11/02/gsoc-2017-postmortem-part-1-overview/index.html"></a></p>
+<pre><code>&lt;div class="blog-entry" data-index='0' data-categories='VHV0b3JpYWwlMkNCYXllc2lhbiUyMFN0YXRpc3RpY3MlMkNNQ01D' data-listing-date-sort='1712527200000' data-listing-file-modified-sort='1751577480891' data-listing-date-modified-sort='NaN' data-listing-reading-time-sort='6' data-listing-word-count-sort='1102'&gt;
+    &lt;div class="metadata"&gt;          
+        &lt;p class="date listing-date"&gt;Apr 8, 2024&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class="body"&gt;
+        &lt;p class="title listing-title"&gt;&lt;a href="/blog/2024/04/08/understanding-mcmc-diagnostics/index.qmd"&gt;Understanding MCMC Diagnostics: A Practical Guide&lt;/a&gt;&lt;/p&gt;
 
-            
 
-            <p class="description listing-description"><div class="quarto-title-tools-only"><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></p>
+        &lt;div class="post-categories listing-categories"&gt;
             
+            &lt;div class="post-category listing-category" onclick="window.quartoListingCategory('Tutorial'); return false;"&gt;
+                Tutorial
+            &lt;/div&gt;
             
-        </div>
+            &lt;div class="post-category listing-category" onclick="window.quartoListingCategory('Bayesian Statistics'); return false;"&gt;
+                Bayesian Statistics
+            &lt;/div&gt;
+            
+            &lt;div class="post-category listing-category" onclick="window.quartoListingCategory('MCMC'); return false;"&gt;
+                MCMC
+            &lt;/div&gt;
+            
+        &lt;/div&gt;
         
-    </div>
-    
-    <div class="blog-entry" data-index="1" data-categories="Y29hbGElMkNjb21tdW5pdHk=" data-listing-date-sort="1492552800000" data-listing-file-modified-sort="1751500201859" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="5" data-listing-word-count-sort="842">
-        <div class="metadata">          
-            <p class="date listing-date">2017-04-19</p>
-        </div>
-        <div class="body">
-            <p class="title listing-title"><a href="../blog/2017/04/19/april-community-update/index.html">April Community Team Update</a></p>
 
-            
-            <div class="post-categories listing-categories">
-                
-                <div class="post-category listing-category" onclick="window.quartoListingCategory('coala'); return false;">
-                    coala
-                </div>
-                
-                <div class="post-category listing-category" onclick="window.quartoListingCategory('community'); return false;">
-                    community
-                </div>
-                
-            </div>
-            
-
-            <p class="description listing-description">The last time you heard something from the community team was almost 3 month ago. Long long time ago…</p>
-            
-            
-        </div>
+        &lt;p class="description listing-description"&gt;A comprehensive guide to diagnosing MCMC convergence issues and what to do when things go wrong.&lt;/p&gt;
         
-    </div>
-    
-    <div class="blog-entry" data-index="2" data-categories="Y29hbGElMkNjb21tdW5pdHk=" data-listing-date-sort="1492207200000" data-listing-file-modified-sort="1751500201839" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="3" data-listing-word-count-sort="558">
-        <div class="metadata">          
-            <p class="date listing-date">2017-04-15</p>
-        </div>
-        <div class="body">
-            <p class="title listing-title"><a href="../blog/2017/04/15/coala-call-for-chefs/index.html">coala's Call for Chefs</a></p>
-
-            
-            <div class="post-categories listing-categories">
-                
-                <div class="post-category listing-category" onclick="window.quartoListingCategory('coala'); return false;">
-                    coala
-                </div>
-                
-                <div class="post-category listing-category" onclick="window.quartoListingCategory('community'); return false;">
-                    community
-                </div>
-                
-            </div>
-            
-
-            <p class="description listing-description">A story about building community through food.</p>
-            
-            
-        </div>
         
-    </div>
+    &lt;/div&gt;
     
-    <div class="blog-entry" data-index="3" data-categories="Y29hbGElMkNjb21tdW5pdHk=" data-listing-date-sort="1485730800000" data-listing-file-modified-sort="1751500201813" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="4" data-listing-word-count-sort="709">
-        <div class="metadata">          
-            <p class="date listing-date">2017-01-30</p>
-        </div>
-        <div class="body">
-            <p class="title listing-title"><a href="../blog/2017/01/30/birth-of-coala/index.html">The Birth of a coala</a></p>
+&lt;/div&gt;
 
-            
-            <div class="post-categories listing-categories">
-                
-                <div class="post-category listing-category" onclick="window.quartoListingCategory('coala'); return false;">
-                    coala
-                </div>
-                
-                <div class="post-category listing-category" onclick="window.quartoListingCategory('community'); return false;">
-                    community
-                </div>
-                
-            </div>
-            
+&lt;div class="blog-entry" data-index='1' data-categories='UGVyc29uYWwlMkNBY2FkZW1pYyUyMExpZmUlMkNSZWZsZWN0aW9u' data-listing-date-sort='1710198000000' data-listing-file-modified-sort='1751577430683' data-listing-date-modified-sort='NaN' data-listing-reading-time-sort='5' data-listing-word-count-sort='839'&gt;
+    &lt;div class="metadata"&gt;          
+        &lt;p class="date listing-date"&gt;Mar 12, 2024&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class="body"&gt;
+        &lt;p class="title listing-title"&gt;&lt;a href="/blog/2024/03/12/academic-life-reflections/index.qmd"&gt;On the Long Arc of Academic Learning&lt;/a&gt;&lt;/p&gt;
 
-            <p class="description listing-description">My first entry on the coala blog.</p>
+
+        &lt;div class="post-categories listing-categories"&gt;
             
+            &lt;div class="post-category listing-category" onclick="window.quartoListingCategory('Personal'); return false;"&gt;
+                Personal
+            &lt;/div&gt;
             
-        </div>
+            &lt;div class="post-category listing-category" onclick="window.quartoListingCategory('Academic Life'); return false;"&gt;
+                Academic Life
+            &lt;/div&gt;
+            
+            &lt;div class="post-category listing-category" onclick="window.quartoListingCategory('Reflection'); return false;"&gt;
+                Reflection
+            &lt;/div&gt;
+            
+        &lt;/div&gt;
         
-    </div>
+
+        &lt;p class="description listing-description"&gt;Reflections on the non-linear journey of academic growth and the importance of embracing uncertainty.&lt;/p&gt;
+        
+        
+    &lt;/div&gt;
     
+&lt;/div&gt;
+
+&lt;div class="blog-entry" data-index='2' data-categories='UHJvZ3JhbW1pbmclMkNSJTJDU29mdHdhcmUlMjBEZXZlbG9wbWVudA==' data-listing-date-sort='1706914800000' data-listing-file-modified-sort='1751577395345' data-listing-date-modified-sort='NaN' data-listing-reading-time-sort='4' data-listing-word-count-sort='766'&gt;
+    &lt;div class="metadata"&gt;          
+        &lt;p class="date listing-date"&gt;Feb 3, 2024&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class="body"&gt;
+        &lt;p class="title listing-title"&gt;&lt;a href="/blog/2024/02/03/building-r-package-testing/index.qmd"&gt;Building Robust R Packages: A Testing-First Approach&lt;/a&gt;&lt;/p&gt;
+
+
+        &lt;div class="post-categories listing-categories"&gt;
+            
+            &lt;div class="post-category listing-category" onclick="window.quartoListingCategory('Programming'); return false;"&gt;
+                Programming
+            &lt;/div&gt;
+            
+            &lt;div class="post-category listing-category" onclick="window.quartoListingCategory('R'); return false;"&gt;
+                R
+            &lt;/div&gt;
+            
+            &lt;div class="post-category listing-category" onclick="window.quartoListingCategory('Software Development'); return false;"&gt;
+                Software Development
+            &lt;/div&gt;
+            
+        &lt;/div&gt;
+        
+
+        &lt;p class="description listing-description"&gt;How to develop R packages with confidence using test-driven development and modern R tooling.&lt;/p&gt;
+        
+        
+    &lt;/div&gt;
+    
+&lt;/div&gt;
+
+&lt;div class="blog-entry" data-index='3' data-categories='UmVzZWFyY2glMkNCYXllc2lhbiUyMFN0YXRpc3RpY3MlMkNNZXRob2RvbG9neQ==' data-listing-date-sort='1705273200000' data-listing-file-modified-sort='1751577352544' data-listing-date-modified-sort='NaN' data-listing-reading-time-sort='3' data-listing-word-count-sort='543'&gt;
+    &lt;div class="metadata"&gt;          
+        &lt;p class="date listing-date"&gt;Jan 15, 2024&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class="body"&gt;
+        &lt;p class="title listing-title"&gt;&lt;a href="/blog/2024/01/15/hierarchical-bayes-primer/index.qmd"&gt;A Gentle Introduction to Hierarchical Bayesian Models&lt;/a&gt;&lt;/p&gt;
+
+
+        &lt;div class="post-categories listing-categories"&gt;
+            
+            &lt;div class="post-category listing-category" onclick="window.quartoListingCategory('Research'); return false;"&gt;
+                Research
+            &lt;/div&gt;
+            
+            &lt;div class="post-category listing-category" onclick="window.quartoListingCategory('Bayesian Statistics'); return false;"&gt;
+                Bayesian Statistics
+            &lt;/div&gt;
+            
+            &lt;div class="post-category listing-category" onclick="window.quartoListingCategory('Methodology'); return false;"&gt;
+                Methodology
+            &lt;/div&gt;
+            
+        &lt;/div&gt;
+        
+
+        &lt;p class="description listing-description"&gt;Understanding when and how to use hierarchical Bayesian models for complex data structures.&lt;/p&gt;
+        
+        
+    &lt;/div&gt;
+    
+&lt;/div&gt;</code></pre>
+</div>
+<h2 class="anchored">
+2023
+</h2>
+<div class="list blog">
+<pre><code>&lt;div class="blog-entry" data-index='4' data-categories='UiUyQ2dncGxvdDIlMkN2aXN1YWxpemF0aW9u' data-listing-date-sort='1685570400000' data-listing-file-modified-sort='1751538947649' data-listing-date-modified-sort='NaN' data-listing-reading-time-sort='3' data-listing-word-count-sort='557'&gt;
+    &lt;div class="metadata"&gt;          
+        &lt;p class="date listing-date"&gt;Jun 1, 2023&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class="body"&gt;
+        &lt;p class="title listing-title"&gt;&lt;a href="/blog/2023/ggplot-group-colors/ggplot-group-colors.qmd"&gt;Custom Color Grouping in ggplot2&lt;/a&gt;&lt;/p&gt;
+
+
+        &lt;div class="post-categories listing-categories"&gt;
+            
+            &lt;div class="post-category listing-category" onclick="window.quartoListingCategory('R'); return false;"&gt;
+                R
+            &lt;/div&gt;
+            
+            &lt;div class="post-category listing-category" onclick="window.quartoListingCategory('ggplot2'); return false;"&gt;
+                ggplot2
+            &lt;/div&gt;
+            
+            &lt;div class="post-category listing-category" onclick="window.quartoListingCategory('visualization'); return false;"&gt;
+                visualization
+            &lt;/div&gt;
+            
+        &lt;/div&gt;
+        
+
+        &lt;p class="description listing-description"&gt;How to use custom color grouping in ggplot2 with meta-groups and custom color mapping.&lt;/p&gt;
+        
+        
+    &lt;/div&gt;
+    
+&lt;/div&gt;
+
+&lt;div class="blog-entry" data-index='5' data-categories='RGV2ZWxvcG1lbnQ=' data-listing-date-sort='1685484000000' data-listing-file-modified-sort='1751588717536' data-listing-date-modified-sort='NaN' data-listing-reading-time-sort='3' data-listing-word-count-sort='523'&gt;
+    &lt;div class="metadata"&gt;          
+        &lt;p class="date listing-date"&gt;May 31, 2023&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class="body"&gt;
+        &lt;p class="title listing-title"&gt;&lt;a href="/blog/2023/05/31-building-bayesim/index.qmd"&gt;Building bayesim: A DGP to rule them all&lt;/a&gt;&lt;/p&gt;
+
+
+        &lt;div class="post-categories listing-categories"&gt;
+            
+            &lt;div class="post-category listing-category" onclick="window.quartoListingCategory('Development'); return false;"&gt;
+                Development
+            &lt;/div&gt;
+            
+        &lt;/div&gt;
+        
+
+        &lt;p class="description listing-description"&gt;Simulated data is the foundation for any simulation study. In this post I share some thoughts about how I went about supporting arbitrary data generating functions in bayesim.&lt;/p&gt;
+        
+        
+    &lt;/div&gt;
+    
+&lt;/div&gt;</code></pre>
+</div>
+<h2 class="anchored">
+2017
+</h2>
+<div class="list blog">
+<pre><code>&lt;div class="blog-entry" data-index='6' data-categories='Y29hbGElMkNjb21tdW5pdHk=' data-listing-date-sort='1492552800000' data-listing-file-modified-sort='1751500201859' data-listing-date-modified-sort='NaN' data-listing-reading-time-sort='5' data-listing-word-count-sort='842'&gt;
+    &lt;div class="metadata"&gt;          
+        &lt;p class="date listing-date"&gt;Apr 19, 2017&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class="body"&gt;
+        &lt;p class="title listing-title"&gt;&lt;a href="/blog/2017/04/19/april-community-update/index.md"&gt;April Community Team Update&lt;/a&gt;&lt;/p&gt;
+
+
+        &lt;div class="post-categories listing-categories"&gt;
+            
+            &lt;div class="post-category listing-category" onclick="window.quartoListingCategory('coala'); return false;"&gt;
+                coala
+            &lt;/div&gt;
+            
+            &lt;div class="post-category listing-category" onclick="window.quartoListingCategory('community'); return false;"&gt;
+                community
+            &lt;/div&gt;
+            
+        &lt;/div&gt;
+        
+
+        &lt;p class="description listing-description"&gt;&lt;!-- desc(5A0113B34292)[max=175]:blog/2017/04/19/april-community-update/index.html --&gt;&lt;/p&gt;
+        
+        
+    &lt;/div&gt;
+    
+&lt;/div&gt;
+
+&lt;div class="blog-entry" data-index='7' data-categories='Y29hbGElMkNjb21tdW5pdHk=' data-listing-date-sort='1492207200000' data-listing-file-modified-sort='1751500201839' data-listing-date-modified-sort='NaN' data-listing-reading-time-sort='3' data-listing-word-count-sort='558'&gt;
+    &lt;div class="metadata"&gt;          
+        &lt;p class="date listing-date"&gt;Apr 15, 2017&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class="body"&gt;
+        &lt;p class="title listing-title"&gt;&lt;a href="/blog/2017/04/15/coala-call-for-chefs/index.md"&gt;coala's Call for Chefs&lt;/a&gt;&lt;/p&gt;
+
+
+        &lt;div class="post-categories listing-categories"&gt;
+            
+            &lt;div class="post-category listing-category" onclick="window.quartoListingCategory('coala'); return false;"&gt;
+                coala
+            &lt;/div&gt;
+            
+            &lt;div class="post-category listing-category" onclick="window.quartoListingCategory('community'); return false;"&gt;
+                community
+            &lt;/div&gt;
+            
+        &lt;/div&gt;
+        
+
+        &lt;p class="description listing-description"&gt;A story about building community through food.&lt;/p&gt;
+        
+        
+    &lt;/div&gt;
+    
+&lt;/div&gt;
+
+&lt;div class="blog-entry" data-index='8' data-categories='Y29hbGElMkNjb21tdW5pdHk=' data-listing-date-sort='1485730800000' data-listing-file-modified-sort='1751500201813' data-listing-date-modified-sort='NaN' data-listing-reading-time-sort='4' data-listing-word-count-sort='709'&gt;
+    &lt;div class="metadata"&gt;          
+        &lt;p class="date listing-date"&gt;Jan 30, 2017&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class="body"&gt;
+        &lt;p class="title listing-title"&gt;&lt;a href="/blog/2017/01/30/birth-of-coala/index.md"&gt;The Birth of a coala&lt;/a&gt;&lt;/p&gt;
+
+
+        &lt;div class="post-categories listing-categories"&gt;
+            
+            &lt;div class="post-category listing-category" onclick="window.quartoListingCategory('coala'); return false;"&gt;
+                coala
+            &lt;/div&gt;
+            
+            &lt;div class="post-category listing-category" onclick="window.quartoListingCategory('community'); return false;"&gt;
+                community
+            &lt;/div&gt;
+            
+        &lt;/div&gt;
+        
+
+        &lt;p class="description listing-description"&gt;My first entry on the coala blog.&lt;/p&gt;
+        
+        
+    &lt;/div&gt;
+    
+&lt;/div&gt;</code></pre>
+</div>
+<h2 class="anchored">
+NaN
+</h2>
+<div class="list blog">
+<pre><code>&lt;div class="blog-entry" data-index='9' data-listing-file-modified-sort='1751500201883'&gt;
+    &lt;div class="metadata"&gt;          
+        &lt;p class="date listing-date"&gt;&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class="body"&gt;
+        &lt;p class="title listing-title"&gt;&lt;a href="/blog/2017/11/02/gsoc-2017-postmortem-part-1-overview/index.md"&gt;&lt;/a&gt;&lt;/p&gt;
+
+
+
+        &lt;p class="description listing-description"&gt;&lt;!-- desc(5A0113B34292)[max=175]:blog/2017/11/02/gsoc-2017-postmortem-part-1-overview/index.html --&gt;&lt;/p&gt;
+        
+        
+    &lt;/div&gt;
+    
+&lt;/div&gt;</code></pre>
 </div>
 <div class="listing-no-matching d-none">No matching items</div>
-</div>
-<p>The blog post listing is based on the website source of <a href="https://www.andrewheiss.com/">Andrew Heiss</a>, who has put together an incredible listing template under CC-BY-SA 4.0 license. Thank you!</p>
-
-
-
-</section>
-
-</main> <!-- /main -->
-<script src="sunlit-script.js"></script>
+</div></main> <!-- /main -->
+<script src="../sunlit-script.js"></script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
@@ -402,6 +733,57 @@ window.Quarto = {
         container: window.document.getElementById('quarto-embedded-source-code-modal')
       });
       clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
@@ -731,34 +1113,44 @@ window.Quarto = {
       }
     }
   });
-  </script>
+  </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb7" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Blog"</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="an">listing:</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co">  contents: </span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co">    - "20*/**/*.qmd"  # This glob finds all posts in folders starting with "20"</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co">    - "20*/**/*.md"</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co">  sort: "date desc"</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co">  type: default # Use default type since the template handles everything</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co">  template: ../html/blog/listing.ejs # Point to our smart template</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">  categories: true</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="an">page-layout:</span><span class="co"> full</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="an">title-block-banner:</span><span class="co"> false</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>{{&lt; include ../_dappled-light.qmd &gt;}}</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>{{&lt; include ../_art-showcase.qmd &gt;}}</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">article</span><span class="ot"> class</span><span class="op">=</span><span class="st">"sunlit-content"</span><span class="dt">&gt;</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> class</span><span class="op">=</span><span class="st">"manuscript-header"</span><span class="dt">&gt;</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> class</span><span class="op">=</span><span class="st">"illuminated-initial"</span><span class="dt">&gt;</span>B<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> class</span><span class="op">=</span><span class="st">"manuscript-title"</span><span class="dt">&gt;</span>Blog<span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">p</span><span class="dt">&gt;</span>Welcome to my blog, where I share thoughts on statistics, data science, and the occasional random musings.<span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> class</span><span class="op">=</span><span class="st">"quarto-listing"</span><span class="ot"> id</span><span class="op">=</span><span class="st">"listing-all-posts"</span><span class="dt">&gt;</span></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> class</span><span class="op">=</span><span class="st">"list"</span><span class="dt">&gt;</span></span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>    <span class="co">&lt;!-- The EJS template will render everything here --&gt;</span></span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>{{&lt; include ../_colophon.html &gt;}}</span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">article</span><span class="dt">&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+</div></div></div></div></div>
 </div> <!-- /content -->
-<footer class="footer">
-  <div class="nav-footer">
-    <div class="nav-footer-left">
-<p>© Max Scholz, 2025. Content licensed under CC BY-SA 4.0.</p>
-</div>   
-    <div class="nav-footer-center">
-      &nbsp;
-    </div>
-    <div class="nav-footer-right">
-      <ul class="footer-items list-unstyled">
-    <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/sims1253">
-      <i class="bi bi-github" role="img">
-</i> 
-    </a>
-  </li>  
-    <li class="nav-item compact">
-    <a class="nav-link" href="https://twitter.com/scholzmx">
-      <i class="bi bi-twitter" role="img">
-</i> 
-    </a>
-  </li>  
-</ul>
-    </div>
-  </div>
-</footer>
 
 
 

@@ -9,7 +9,6 @@ website:
     location: navbar
     type: overlay
   navbar:
-    background: primary
     right:
       - href: index.qmd
         text: Home
@@ -19,19 +18,34 @@ website:
         text: Research
       - href: about.qmd
         text: About
+      - href: projects/index.qmd
+        text: Projects
+      - href: recipes.qmd
+        text: Recipes
       - text: <i class="fa-solid fa-sun" id="theme-toggle"></i>
         href: "#"
-  page-footer:
-    left: "© Max Scholz, 2025. Content licensed under CC BY-SA 4.0."
-    right:
-      - icon: github
-        href: https://github.com/sims1253
-      - icon: twitter
-        href: https://twitter.com/scholzmx
+        aria-label: "Toggle theme"
 
 format:
   html:
     theme: theme.scss
     css: styles.css
-    include-after-body: _include-script.html
+    include-in-header: 
+      - _include-header.html
+    include-after-body: 
+      - _include-script.html
     toc: true
+    toc-title: "Contents"
+    toc-location: left
+    code-tools: true
+    author:
+      - name: "Maximilian Scholz"
+        url: "https://www.scholzmx.com/"
+        orcid: "0000-0002-4486-1393"
+    execute:
+      freeze: true
+      echo: true
+      message: true
+      warning: true
+    quarto-template-params:
+      banner-header-class: "blog-post"

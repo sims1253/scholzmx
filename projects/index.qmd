@@ -9,19 +9,20 @@ title: Projects
 </div>
 ```
 
+
 ## huerd: Perceptually Optimized Color Palettes
 
 ```{=html}
 <div class="project-showcase">
   <div class="project-banner">
-    <img src="project_1_banner.png" alt="huerd Color Palette Generator"/>
+    <img src="https://sims1253.github.io/huerd/reference/figures/logo.png" alt="huerd Color Palette Generator"/>
   </div>
   <div class="project-details">
 ```
 
 **A discrete color palette generator with support for fixed colors optimized for both normal and color vision deficient viewers.**
 
-[{{< fa-solid fa-code >}} GitHub](https://github.com/sims1253/huerd) | [{{< fa-solid fa-book >}} Documentation](https://github.com/sims1253/huerd#readme) | [{{< fa-solid fa-download >}} Install](https://github.com/sims1253/huerd#installation)
+[{{< fa code >}} GitHub](https://github.com/sims1253/huerd) | [{{< fa book >}} Documentation](https://github.com/sims1253/huerd#readme) | [{{< fa download >}} Install](https://github.com/sims1253/huerd#installation)
 
 The huerd package (short for "Herding hues") provides sophisticated tools for creating perceptually distinct color palettes optimized for accessibility and visual appeal. Unlike standard color palette generators, huerd works in the perceptually uniform OKLAB color space and includes comprehensive support for color vision deficiency analysis.
 
@@ -54,7 +55,7 @@ The package uses constrained optimization in the OKLAB color space to maximize p
 
 **A comprehensive framework for Bayesian statistical modeling with focus on making advanced statistical methods accessible to researchers across different domains.**
 
-[{{< fa-solid fa-code >}} GitHub](https://github.com/scholzmx) | [{{< fa-solid fa-flask >}} Research](../research.qmd)
+[{{< fa code >}} GitHub](https://github.com/scholzmx) | [{{< fa flask >}} Research](../research.qmd)
 
 BayeSim is an ongoing research project developing novel Bayesian statistical methods for complex computational problems in scientific computing. The framework focuses on uncertainty quantification, model selection, and robust inference in high-dimensional parameter spaces.
 
@@ -73,27 +74,3 @@ Provide researchers with practical tools for making reliable decisions under unc
 ```
 
 ----
-
-## Software Infrastructure for Scientific Computing
-
-```{=html}
-<div class="project-showcase">
-  <div class="project-details">
-```
-
-**Developing robust software infrastructure that supports reproducible scientific research.**
-
-[{{< fa-solid fa-code >}} GitHub](https://github.com/scholzmx)
-
-This ongoing work focuses on creating tools for workflow management, data validation, and automated testing in computational science applications. The goal is to make scientific computing more reliable, accessible, and maintainable for researchers across different domains.
-
-**Focus Areas:**
-- Reproducible research workflows
-- Data validation and quality assurance
-- Automated testing for scientific code
-- Documentation and maintenance best practices
-
-```{=html}
-  </div>
-</div>
-```

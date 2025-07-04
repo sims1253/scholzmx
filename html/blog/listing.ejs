@@ -1,6 +1,24 @@
-```{=html}
-<div class="list blog">
-    <% for (const post of items) { %>
+<%
+// Step 1: Group all posts by year
+const postsByYear = items.reduce((acc, post) => {
+  const year = new Date(post.date).getFullYear();
+  if (!acc[year]) {
+    acc[year] = [];
+  }
+  acc[year].push(post);
+  return acc;
+}, {});
+
+// Step 2: Get all the years and sort them in descending order
+const years = Object.keys(postsByYear).sort((a, b) => b - a);
+%>
+
+<% /* Step 3: Loop through each year to create the section headings */ %>
+<% for (const year of years) { %>
+  <h2 class="anchored"><%= year %></h2>
+  <div class="list blog">
+    <% /* Step 4: Loop through the posts for the current year */ %>
+    <% for (const post of postsByYear[year]) { %>
     <div class="blog-entry" <%= metadataAttrs(post) %>>
         <div class="metadata">          
             <p class="date listing-date"><%= post.date %></p>
@@ -11,7 +29,7 @@
             <% if (post.categories) { %>
             <div class="post-categories listing-categories">
                 <% for (const category of post.categories) { %>
-                <div class="post-category listing-category" onclick="window.quartoListingCategory('<%=category%>'); return false;">
+                <div class="post-category listing-category" onclick="window.quartoListingCategory('<%- category %>'); return false;">
                     <%= category %>
                 </div>
                 <% } %>
@@ -26,10 +44,10 @@
         </div>
         <% if (post.image) { %>
         <div class="thumbnail">
-            <img src="<%= post.image %>" alt="<%= post.title %>" title="<%= post.title %>" />
+            <img src="<%- post.image %>" alt="<%- post.title %>" title="<%- post.title %>" />
         </div>
         <% } %>
     </div>
     <% } %>
-</div>
-```
+  </div>
+<% } %>

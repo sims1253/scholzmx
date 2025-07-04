@@ -1,67 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://scholzmx.com/sunlit-quarto-minimal/index.html</loc>
-    <lastmod>2025-07-02T22:34:45.646Z</lastmod>
+    <loc>https://scholzmx.com/scratchpad.html</loc>
+    <lastmod>2025-07-03T21:19:11.041Z</lastmod>
   </url>
   <url>
-    <loc>https://scholzmx.com/research.html</loc>
-    <lastmod>2025-07-03T00:16:17.148Z</lastmod>
+    <loc>https://scholzmx.com/recipes.html</loc>
+    <lastmod>2025-07-03T22:21:32.603Z</lastmod>
   </url>
   <url>
-    <loc>https://scholzmx.com/photography/index.html</loc>
-    <lastmod>2025-07-03T05:35:32.051Z</lastmod>
-  </url>
-  <url>
-    <loc>https://scholzmx.com/DESIGN_ROADMAP.html</loc>
-    <lastmod>2025-07-03T05:48:49.885Z</lastmod>
-  </url>
-  <url>
-    <loc>https://scholzmx.com/content/post/2023-05-31-building-bayesim-a-dgp-to-rule-them-all/index.html</loc>
-    <lastmod>2025-07-03T10:35:37.944Z</lastmod>
-  </url>
-  <url>
-    <loc>https://scholzmx.com/blog/index.html</loc>
-    <lastmod>2025-07-02T23:50:01.905Z</lastmod>
-  </url>
-  <url>
-    <loc>https://scholzmx.com/blog/2017/04/15/coala-call-for-chefs/index.html</loc>
-    <lastmod>2025-07-02T23:50:01.839Z</lastmod>
-  </url>
-  <url>
-    <loc>https://scholzmx.com/about.html</loc>
-    <lastmod>2025-07-03T11:09:55.687Z</lastmod>
-  </url>
-  <url>
-    <loc>https://scholzmx.com/blog/2017/01/30/birth-of-coala/index.html</loc>
-    <lastmod>2025-07-02T23:50:01.813Z</lastmod>
-  </url>
-  <url>
-    <loc>https://scholzmx.com/blog/2017/04/19/april-community-update/index.html</loc>
-    <lastmod>2025-07-02T23:50:01.859Z</lastmod>
-  </url>
-  <url>
-    <loc>https://scholzmx.com/blog/2023/ggplot-group-colors/ggplot-group-colors.html</loc>
-    <lastmod>2025-07-03T10:35:47.649Z</lastmod>
-  </url>
-  <url>
-    <loc>https://scholzmx.com/blog.html</loc>
-    <lastmod>2025-07-03T00:16:49.275Z</lastmod>
+    <loc>https://scholzmx.com/index.html</loc>
+    <lastmod>2025-07-04T01:19:19.611Z</lastmod>
   </url>
   <url>
     <loc>https://scholzmx.com/cv/index.html</loc>
     <lastmod>2025-07-03T05:35:48.022Z</lastmod>
   </url>
   <url>
-    <loc>https://scholzmx.com/index.html</loc>
-    <lastmod>2025-07-03T11:12:49.711Z</lastmod>
+    <loc>https://scholzmx.com/blog.html</loc>
+    <lastmod>2025-07-03T23:24:00.902Z</lastmod>
+  </url>
+  <url>
+    <loc>https://scholzmx.com/blog/2024/04/08/understanding-mcmc-diagnostics/index.html</loc>
+    <lastmod>2025-07-03T21:18:00.891Z</lastmod>
+  </url>
+  <url>
+    <loc>https://scholzmx.com/blog/2024/02/03/building-r-package-testing/index.html</loc>
+    <lastmod>2025-07-03T21:16:35.345Z</lastmod>
+  </url>
+  <url>
+    <loc>https://scholzmx.com/blog/2023/ggplot-group-colors/ggplot-group-colors.html</loc>
+    <lastmod>2025-07-03T10:35:47.649Z</lastmod>
+  </url>
+  <url>
+    <loc>https://scholzmx.com/blog/2017/04/19/april-community-update/index.html</loc>
+    <lastmod>2025-07-02T23:50:01.859Z</lastmod>
+  </url>
+  <url>
+    <loc>https://scholzmx.com/blog/2017/01/30/birth-of-coala/index.html</loc>
+    <lastmod>2025-07-02T23:50:01.813Z</lastmod>
+  </url>
+  <url>
+    <loc>https://scholzmx.com/about.html</loc>
+    <lastmod>2025-07-04T00:07:51.429Z</lastmod>
+  </url>
+  <url>
+    <loc>https://scholzmx.com/blog/2017/04/15/coala-call-for-chefs/index.html</loc>
+    <lastmod>2025-07-02T23:50:01.839Z</lastmod>
+  </url>
+  <url>
+    <loc>https://scholzmx.com/blog/2024/01/15/hierarchical-bayes-primer/index.html</loc>
+    <lastmod>2025-07-03T21:15:52.544Z</lastmod>
+  </url>
+  <url>
+    <loc>https://scholzmx.com/blog/2024/03/12/academic-life-reflections/index.html</loc>
+    <lastmod>2025-07-03T21:17:10.683Z</lastmod>
+  </url>
+  <url>
+    <loc>https://scholzmx.com/blog/index.html</loc>
+    <lastmod>2025-07-04T00:45:24.225Z</lastmod>
+  </url>
+  <url>
+    <loc>https://scholzmx.com/content/post/2023-05-31-building-bayesim-a-dgp-to-rule-them-all/index.html</loc>
+    <lastmod>2025-07-03T10:35:37.944Z</lastmod>
+  </url>
+  <url>
+    <loc>https://scholzmx.com/DESIGN_ROADMAP.html</loc>
+    <lastmod>2025-07-03T23:29:36.783Z</lastmod>
   </url>
   <url>
     <loc>https://scholzmx.com/projects/index.html</loc>
-    <lastmod>2025-07-03T05:35:18.362Z</lastmod>
+    <lastmod>2025-07-03T23:02:11.793Z</lastmod>
   </url>
   <url>
-    <loc>https://scholzmx.com/scratchpad.html</loc>
-    <lastmod>2025-07-03T05:32:20.761Z</lastmod>
+    <loc>https://scholzmx.com/research.html</loc>
+    <lastmod>2025-07-03T23:23:50.423Z</lastmod>
+  </url>
+  <url>
+    <loc>https://scholzmx.com/blog/2023/05/31-building-bayesim/index.html</loc>
+    <lastmod>2025-07-04T00:25:17.536Z</lastmod>
   </url>
 </urlset>

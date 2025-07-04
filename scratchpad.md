@@ -58,6 +58,21 @@ This file documents learnings, gotchas, and important discoveries during the web
 - Always use ```{=html} ... ``` for any substantial HTML structures in Quarto documents
 - This was the root cause of sunlit effects not rendering properly in the initial implementation
 
+## Aesthetic Vision: Game UI Embedded in World
+
+User wants to move away from "generic Unity UI" sterile modern look toward:
+- **Game world integration**: UI elements feel part of the world (like Settlers 4 stone wall framing)
+- **Hidden discoveries**: Peterson & Findus style where cute elements can be discovered
+- **Handcrafted feel**: Century botanical illustrations, manuscript illuminations
+- **Organic materials**: Ferns, moss, forest textures vs clean geometric shapes
+- **Cozy adventure**: Point-and-click game warmth vs corporate website sterility
+
+Reference aesthetic elements:
+- Simon Sarris: Landscape scribbles, small illustrations, organic elements
+- Turntrout: Fish with vine leaves, large illustrated initials, pixel art animations
+- Botanical illustrations: Detailed, handcrafted, aged paper feel
+- Peterson & Findus games: Hidden interactive elements, cozy discovery
+
 ## Blogdown to Quarto Migration Issues
 
 - Legacy blogdown posts may have invalid YAML structures that break Quarto rendering
@@ -167,3 +182,43 @@ This file documents learnings, gotchas, and important discoveries during the web
   4. SVG filter effects compilation
   
 **Performance is now optimized for typical usage. Complex visual effects inherently require some load time, but now within acceptable ranges for a personal academic website.**
+
+## Project Status Update (2025-07-03)
+
+### All Primary Tasks Completed ✅
+
+**High Priority Issues Fixed:**
+1. ✅ **Design Roadmap Updated**: Added comprehensive cozy game UI aesthetic philosophy with detailed guidelines for avoiding sterile modern designs
+2. ✅ **Footer Blur Fixed**: Resolved blurry text in CC statement and social icons by adjusting progressive blur mask gradients
+3. ✅ **Search Field Visible**: Added proper search configuration and CSS styling to make navbar search field visible and functional
+4. ✅ **Sun/Moon Toggle**: Verified existing toggle functionality is working correctly (FontAwesome icons + JavaScript event handling)
+
+**Content Templates Created:**
+5. ✅ **Project Template**: Created professional huerd project showcase as template example with proper technical documentation
+6. ✅ **Blog Templates**: Added 4 example blog posts covering research, technical, personal, and tutorial categories
+
+### Current Site Status
+
+**Fully Functional Features:**
+- Sunlit theme with day/night mode switching
+- Progressive blur visual effects (now excluding footer)
+- Art showcase with rotation functionality
+- Search functionality with overlay interface
+- Responsive design with mobile optimization
+- Professional project and blog content structure
+
+**Technical Implementation:**
+- All commits follow conventional commit style as requested
+- No emoji usage in commit messages
+- Clean, professional git history
+- Atomic commits for each functional change
+
+### Ready for Content Addition
+
+The site infrastructure is now complete and ready for:
+- Adding real academic/research content
+- Publishing actual blog posts using the templates
+- Showcasing additional projects following the huerd example
+- Customizing the aesthetic elements further based on the game UI philosophy
+
+The foundation successfully balances the cozy, discoverable aesthetic vision with professional academic presentation needs.

@@ -1,20 +1,30 @@
 [
   {
-    "listing": "/blog/index.html",
+    "listing": "/blog.html",
     "items": [
+      "/blog/index.html",
       "/blog/2017/11/02/gsoc-2017-postmortem-part-1-overview/index.html",
+      "/blog/2024/04/08/understanding-mcmc-diagnostics/index.html",
+      "/blog/2024/03/12/academic-life-reflections/index.html",
+      "/blog/2024/02/03/building-r-package-testing/index.html",
+      "/blog/2024/01/15/hierarchical-bayes-primer/index.html",
+      "/blog/2023/ggplot-group-colors/ggplot-group-colors.html",
+      "/blog/2023/05/31-building-bayesim/index.html",
       "/blog/2017/04/19/april-community-update/index.html",
       "/blog/2017/04/15/coala-call-for-chefs/index.html",
       "/blog/2017/01/30/birth-of-coala/index.html"
     ]
   },
   {
-    "listing": "/blog.html",
+    "listing": "/blog/index.html",
     "items": [
-      "/blog/index.html",
       "/blog/2017/11/02/gsoc-2017-postmortem-part-1-overview/index.html",
+      "/blog/2024/04/08/understanding-mcmc-diagnostics/index.html",
+      "/blog/2024/03/12/academic-life-reflections/index.html",
+      "/blog/2024/02/03/building-r-package-testing/index.html",
+      "/blog/2024/01/15/hierarchical-bayes-primer/index.html",
       "/blog/2023/ggplot-group-colors/ggplot-group-colors.html",
-      "/content/post/2023-05-31-building-bayesim-a-dgp-to-rule-them-all/index.html",
+      "/blog/2023/05/31-building-bayesim/index.html",
       "/blog/2017/04/19/april-community-update/index.html",
       "/blog/2017/04/15/coala-call-for-chefs/index.html",
       "/blog/2017/01/30/birth-of-coala/index.html"

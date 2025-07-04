@@ -39,7 +39,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-642936fc12d853a82993902ef1d1e75a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-4e56adb180a8f247e6b6e74feaf14d27.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -52,7 +52,6 @@ ul.task-list li input[type="checkbox"] {
     "/",
     "s"
   ],
-  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -67,6 +66,7 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 
 <link rel="stylesheet" href="styles.css">
@@ -105,6 +105,18 @@ ul.task-list li input[type="checkbox"] {
     <a class="nav-link" href="./about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./projects/index.html"> 
+<span class="menu-text">Projects</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./recipes.html"> 
+<span class="menu-text">Recipes</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./#"> 
+<span class="menu-text"><i class="fa-solid fa-sun" id="theme-toggle"></i></span></a>
+  </li>  
 </ul>
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
@@ -129,9 +141,10 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#design-aesthetic-guide" id="toc-design-aesthetic-guide" class="nav-link" data-scroll-target="#design-aesthetic-guide">4. Design &amp; Aesthetic Guide</a>
   <ul class="collapse">
   <li><a href="#inspirations" id="toc-inspirations" class="nav-link" data-scroll-target="#inspirations">4.1. Inspirations</a></li>
-  <li><a href="#layout" id="toc-layout" class="nav-link" data-scroll-target="#layout">4.2. Layout</a></li>
-  <li><a href="#color-palette" id="toc-color-palette" class="nav-link" data-scroll-target="#color-palette">4.3. Color Palette</a></li>
-  <li><a href="#typography-privacy-focused" id="toc-typography-privacy-focused" class="nav-link" data-scroll-target="#typography-privacy-focused">4.4. Typography (Privacy-Focused)</a></li>
+  <li><a href="#game-ui-aesthetic-philosophy" id="toc-game-ui-aesthetic-philosophy" class="nav-link" data-scroll-target="#game-ui-aesthetic-philosophy">4.2. Game UI Aesthetic Philosophy</a></li>
+  <li><a href="#layout" id="toc-layout" class="nav-link" data-scroll-target="#layout">4.3. Layout</a></li>
+  <li><a href="#color-palette" id="toc-color-palette" class="nav-link" data-scroll-target="#color-palette">4.4. Color Palette</a></li>
+  <li><a href="#typography-privacy-focused" id="toc-typography-privacy-focused" class="nav-link" data-scroll-target="#typography-privacy-focused">4.5. Typography (Privacy-Focused)</a></li>
   </ul></li>
   <li><a href="#feature-specifications" id="toc-feature-specifications" class="nav-link" data-scroll-target="#feature-specifications">5. Feature Specifications</a></li>
   <li><a href="#implementation-roadmap-atomic-commits" id="toc-implementation-roadmap-atomic-commits" class="nav-link" data-scroll-target="#implementation-roadmap-atomic-commits">6. Implementation Roadmap: Atomic Commits</a>
@@ -164,7 +177,6 @@ ul.task-list li input[type="checkbox"] {
 <ul>
 <li><strong>Content-First:</strong> The design must prioritize readability and put the user’s written content at the forefront.</li>
 <li><strong>Embrace the Slow Web:</strong> The site should be designed for longevity, not urgency. This means focusing on durable content, simple and robust technology, and a calm, intentional user experience. It is a rejection of the ephemeral, attention-grabbing trends of the modern web.</li>
-<li><strong>Tufte-Inspired Clarity:</strong> The design will draw inspiration from Edward Tufte’s principles of information design, emphasizing clarity, data-ink ratio, and avoiding unnecessary decoration.</li>
 <li><strong>“Paper-y” Aesthetic:</strong> The visual theme should evoke the feeling of reading on high-quality paper—warm, comfortable, and classic.</li>
 <li><strong>Accessibility First (No-JS Core):</strong> All core content and navigation must be perfectly functional and readable with JavaScript disabled.</li>
 <li><strong>Progressive Enhancement:</strong> Interactive elements will be layered on top using non-essential JavaScript.</li>
@@ -187,14 +199,32 @@ ul.task-list li input[type="checkbox"] {
 <section id="inspirations" class="level3">
 <h3 class="anchored" data-anchor-id="inspirations">4.1. Inspirations</h3>
 <ul>
-<li><strong><code>simonsarris.com</code>:</strong> Model for the minimalist, single-column layout, clean header navigation, and overall focus on readable content.</li>
-<li><strong><code>gwern.net</code> / <code>turntrout.com</code>:</strong> Inspiration for future-state advanced hosting (caching, archival) and deep, interconnected content.</li>
-<li><strong><code>putanumonit.com</code> / <code>mailchi.mp/btiscience/ferns</code>:</strong> Inspiration for the “paper-y” feel, warm color palettes, and classic typography.</li>
-<li><strong>Edward Tufte:</strong> The work of Edward Tufte will inform the site’s commitment to data visualization, clarity, and information density.</li>
+<li><strong><code>simonsarris.com</code>:</strong> Model for the minimalist, single-column layout, clean header navigation, and overall focus on readable content. Particularly inspired by the landscape scribbles in the background and small illustrations at the bottom of pages.</li>
+<li><strong><code>gwern.net</code> / <code>turntrout.com</code>:</strong> Inspiration for future-state advanced hosting (caching, archival) and deep, interconnected content. Turntrout’s fish with vine leaves, large illustrated initials, nice typography, and pixel art animations exemplify the handcrafted aesthetic we’re aiming for.</li>
+<li><strong><code>putanumonit.com</code> / <code>mailchi.mp/btiscience/ferns</code>:</strong> Inspiration for the “paper-y” feel, warm color palettes, and classic typography. The fern botanical illustrations represent the organic, handcrafted aesthetic we want to achieve.</li>
+</ul>
+</section>
+<section id="game-ui-aesthetic-philosophy" class="level3">
+<h3 class="anchored" data-anchor-id="game-ui-aesthetic-philosophy">4.2. Game UI Aesthetic Philosophy</h3>
+<p><strong>Core Principle: UI as Part of the World</strong> The website should feel like a cozy, discoverable world rather than a sterile corporate interface. This means:</p>
+<ul>
+<li><strong>Embedded Interface Elements:</strong> Instead of generic floating buttons and menus, interface elements should feel integrated into the world (like Settlers 4’s stone wall framing, or a scroll for navigation menus).</li>
+<li><strong>Hidden Discoveries:</strong> Following the Peterson &amp; Findus and Löwenzahn PC games philosophy, there should be small, delightful elements that users can discover by exploring - hidden animations, easter eggs, or subtle interactive details.</li>
+<li><strong>Handcrafted Materials:</strong> Embrace organic textures, botanical illustrations, manuscript illuminations, and aged paper aesthetics over clean geometric shapes.</li>
+<li><strong>Cozy Adventure Feel:</strong> The site should evoke the warmth of a point-and-click adventure game rather than the sterility of a modern corporate website.</li>
+</ul>
+<p><strong>Visual References:</strong> - Century botanical illustrations: detailed, handcrafted, aged paper feel - Manuscript illuminations: ornate initial letters, organic decorative elements - Forest textures: moss, ferns, natural materials over stark minimalism - Game world integration: interface elements that feel like natural parts of the environment</p>
+<p><strong>Anti-Patterns to Avoid:</strong> - Generic “Unity UI” sterile modern look - Floating buttons and menus that feel disconnected from the content - Overly clean, geometric designs that lack soul and personality - Corporate website aesthetics that prioritize “professional” over “personal”</p>
+<p><strong>Achieving a “Haptic” Feel without Skeuomorphism:</strong> The goal is to make elements feel tangible and part of the world, but we must avoid the pitfalls of dated, overly literal skeuomorphism (e.g., a literal stone texture that looks like a 2000s video game UI). The approach should be subtle and focus on texture, depth, and material feel.</p>
+<ul>
+<li><strong>Texture over Graphics:</strong> Instead of applying a repeating <code>stone.jpg</code> as a background, we can use subtle noise, paper-like textures, and layered CSS gradients to create a sense of depth and material.</li>
+<li><strong>Shadow and Light:</strong> Use soft, complex shadows to lift elements off the page or give them an “embossed” or “impressed” feel, rather than hard, unrealistic drop-shadows.</li>
+<li><strong>Organic Borders &amp; Edges:</strong> Instead of sharp, geometric borders, we can use slightly irregular, organic-feeling borders or layered elements to soften the digital feel.</li>
+<li><strong>Subtle Animations:</strong> Animations should reinforce the material feel. For example, a button press could have a subtle “squish” effect, as if pressing into a soft surface.</li>
 </ul>
 </section>
 <section id="layout" class="level3">
-<h3 class="anchored" data-anchor-id="layout">4.2. Layout</h3>
+<h3 class="anchored" data-anchor-id="layout">4.3. Layout</h3>
 <ul>
 <li><strong>Main Layout:</strong> A single, centered content column with generous whitespace. Max width of <code>800px</code>.</li>
 <li><strong>Header:</strong> Simple header with “Max Scholz” on the left and navigation links (<code>Blog</code>, <code>Research</code>, <code>About</code>, <code>CV</code>) on the right.</li>
@@ -202,7 +232,7 @@ ul.task-list li input[type="checkbox"] {
 </ul>
 </section>
 <section id="color-palette" class="level3">
-<h3 class="anchored" data-anchor-id="color-palette">4.3. Color Palette</h3>
+<h3 class="anchored" data-anchor-id="color-palette">4.4. Color Palette</h3>
 <ul>
 <li><strong>Background:</strong> Warm, off-white, paper-like color (e.g., <code>#fdfbf6</code>).</li>
 <li><strong>Text:</strong> Dark, soft gray/black (e.g., <code>#333333</code>).</li>
@@ -210,7 +240,7 @@ ul.task-list li input[type="checkbox"] {
 </ul>
 </section>
 <section id="typography-privacy-focused" class="level3">
-<h3 class="anchored" data-anchor-id="typography-privacy-focused">4.4. Typography (Privacy-Focused)</h3>
+<h3 class="anchored" data-anchor-id="typography-privacy-focused">4.5. Typography (Privacy-Focused)</h3>
 <ul>
 <li><strong>Font Source:</strong> <a href="https://fonts.bunny.net/">Bunny Fonts</a> (GDPR-compliant Google Fonts alternative).</li>
 <li><strong>Body Text:</strong> A classic, readable serif font (e.g., “Lora” or “Source Serif Pro”).</li>
@@ -221,7 +251,23 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="feature-specifications" class="level2">
 <h2 class="anchored" data-anchor-id="feature-specifications">5. Feature Specifications</h2>
-<p>(Content is unchanged from previous version)</p>
+<p>This section details the specific features to be implemented, derived from the project’s goals and design principles.</p>
+<ul>
+<li><strong>Homepage:</strong> A welcoming landing page that introduces the author and provides clear navigation to other sections.</li>
+<li><strong>Blog:</strong> A reverse-chronological listing of blog posts with support for categories. The design will prioritize readability.</li>
+<li><strong>Research Page:</strong> A dedicated section to list academic publications, pre-prints, and ongoing research projects.</li>
+<li><strong>About Page:</strong> A personal page containing a biography and contact information. It will feature a unique, interactive element like a flipping profile image.</li>
+<li><strong>Art Showcase:</strong> A non-intrusive, desktop-only element that showcases personal artwork (e.g., paintings by the author’s mother). This element will rotate through a series of images.</li>
+<li><strong>Custom Theme:</strong> A completely custom visual theme with a “paper-y” aesthetic, warm color palette, and carefully selected typography.</li>
+<li><strong>Responsive Design:</strong> The website will be fully responsive and functional on all screen sizes, from mobile to desktop.</li>
+<li><strong>Interactive Elements:</strong>
+<ul>
+<li><strong>Flipping Profile Image:</strong> A CSS-only interactive element on the About page.</li>
+<li><strong>Rotating Art &amp; Phrases:</strong> JavaScript-powered elements to add a dynamic, personal touch.</li>
+<li><strong>Stylized Drop Caps:</strong> A decorative CSS element to enhance the manuscript feel of the text.</li>
+</ul></li>
+<li><strong>Deployment:</strong> A fully automated deployment process using GitHub Actions to build and deploy the site to GitHub Pages.</li>
+</ul>
 </section>
 <section id="implementation-roadmap-atomic-commits" class="level2">
 <h2 class="anchored" data-anchor-id="implementation-roadmap-atomic-commits">6. Implementation Roadmap: Atomic Commits</h2>
@@ -286,7 +332,7 @@ if (artElement) {
 <h2 class="anchored" data-anchor-id="future-enhancements">7. Future Enhancements</h2>
 <p>This section captures advanced ideas for later implementation.</p>
 <ul>
-<li><strong>Tufte-Style Sidenotes:</strong> Implement a system for Tufte-style sidenotes, allowing for marginal notes that don’t interrupt the main flow of the text. This would be a significant step towards a more academic and information-rich presentation, especially for research articles and would align the website more with the core ideas of Tufte.</li>
+<li><strong>Tufte-Style Sidenotes:</strong> Implement a system for Tufte-style sidenotes, allowing for marginal notes that don’t interrupt the main flow of the text. This would be a significant step towards a more academic and information-rich presentation, especially for research articles.</li>
 <li><strong>Evolve into a Digital Garden:</strong> Move beyond a traditional blog structure towards a network of interconnected notes. This involves:
 <ul>
 <li>Creating a dedicated <code>/garden</code> section for evergreen notes, ideas, and summaries.</li>
@@ -304,7 +350,7 @@ if (artElement) {
 </section>
 
 </main> <!-- /main -->
-<script src="sunlit-script.js"></script>
+<script src="./sunlit-script.js"></script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
