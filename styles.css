@@ -34,6 +34,7 @@ body {
   width: 100%;
   background-color: var(--light);
   color: var(--text-dark);
+  line-height: 1.6; /* Tighter line height for better space utilization */
   
   /* Animation setup */
   animation-duration: 0s;
@@ -277,7 +278,7 @@ body.dark {
 article {
   max-width: 800px;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: 1.5rem 1rem;
   position: relative;
   z-index: 1;
 }
@@ -287,7 +288,7 @@ main.content,
 .column-page {
   max-width: 65ch; /* Character-based width for optimal readability */
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: 1.5rem 1rem;
   position: relative;
   z-index: 1;
 }
@@ -304,7 +305,7 @@ main.content,
 #quarto-document-content {
   max-width: 65ch;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: 1.5rem 1rem;
 }
 
 /* Fallback for browsers that don't support ch units */
@@ -358,7 +359,7 @@ main.content h6,
 article.sunlit-content {
   color: var(--dark);
   isolation: isolate;
-  padding: 15vh 2rem 2rem;
+  padding: 8vh 2rem 1.5rem;
   transition: color 1s var(--timing-fn);
   max-width: 65ch; /* Apply line width constraint */
   margin: 0 auto;
@@ -699,7 +700,7 @@ article.sunlit-content a:hover {
 
 /* Content spacing for better readability */
 .quarto-body-content p {
-  margin-bottom: 1.2em;
+  margin-bottom: 1em;
 }
 
 .quarto-body-content h1,
@@ -708,9 +709,23 @@ article.sunlit-content a:hover {
 .quarto-body-content h4,
 .quarto-body-content h5,
 .quarto-body-content h6 {
-  margin-top: 2em;
-  margin-bottom: 0.8em;
+  margin-top: 1.5em;
+  margin-bottom: 0.6em;
   color: var(--text-dark);
+}
+
+/* Optimize title block spacing */
+#title-block-header {
+  margin-bottom: 1.5rem;
+}
+
+.quarto-title-block {
+  margin-bottom: 1rem;
+}
+
+.quarto-title-meta {
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 /* Theme toggle button styling */
@@ -909,8 +924,8 @@ article.sunlit-content a:hover {
 .manuscript-header {
   display: flex;
   align-items: center;
-  margin: 2rem 0 3rem 0;
-  padding: 2rem;
+  margin: 1.5rem 0 2rem 0;
+  padding: 1.5rem;
   /* Enhanced gradient for more depth */
   background: linear-gradient(135deg, 
     var(--paper-white) 0%, 
@@ -998,9 +1013,9 @@ article.sunlit-content a:hover {
 .project-showcase {
   display: grid;
   grid-template-columns: 1fr 2fr;
-  gap: 2rem;
-  margin: 2rem 0;
-  padding: 2rem;
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+  padding: 1.5rem;
   background: var(--paper-white);
   border-radius: 16px;
   border: 1px solid var(--paper-shadow);
@@ -1189,6 +1204,7 @@ article.sunlit-content a:hover {
     flex-direction: column;
     text-align: center;
     padding: 1rem;
+    margin: 1rem 0 1.5rem 0;
   }
   
   .illuminated-initial {
@@ -1203,8 +1219,9 @@ article.sunlit-content a:hover {
   
   .project-showcase {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
-    padding: 1.5rem;
+    gap: 1.2rem;
+    padding: 1.2rem;
+    margin: 1.2rem 0;
   }
   
   .project-banner img {
@@ -1230,23 +1247,17 @@ article.sunlit-content a:hover {
   }
 }
 
-/* Medieval-Style Drop Caps */
-/* Import authentic medieval manuscript fonts */
-/* Google Fonts removed for privacy compliance - using fallback fonts */
+/* Clean Drop Caps - TurnTrout Inspired */
+/* Simple, elegant drop caps focused on typography and readability */
 
-/* Define color variables for medieval manuscript drop caps */
+/* Define color variables for clean drop caps */
 :root {
-  --drop-cap-ink: #2c1810;
-  --drop-cap-gold: #c9a961;
-  --drop-cap-vermillion: #c1272d;
-  --drop-cap-azure: #4a90e2;
-  --drop-cap-parchment: #f7f4e9;
-  --drop-cap-vellum: #ede8d5;
-  --drop-cap-shadow: rgba(44, 24, 16, 0.4);
-  --drop-cap-quill: #8b4513;
+  --drop-cap-foreground: #2c3e50;
+  --drop-cap-background: #95a5a6;
+  --drop-cap-shadow: rgba(52, 73, 94, 0.15);
 }
 
-/* Medieval manuscript drop caps with authentic styling - CONTENT ONLY */
+/* Clean drop caps with elegant typography - CONTENT ONLY */
 /* Only apply drop caps to actual content areas, not headers or navigation */
 .blog-content p:first-of-type::first-letter,
 .article-content p:first-of-type::first-letter,
@@ -1257,113 +1268,28 @@ main.content > p:first-child::first-letter,
 .manuscript-content p:first-of-type::first-letter {
   /* Basic positioning and size */
   float: left;
-  font-family: "Old English Text MT", "Blackletter", "Gothic", "Fraktur", "Book Antiqua", "Times New Roman", serif;
-  font-size: 6rem;
+  font-family: "EB Garamond", "Crimson Text", "Libre Baskerville", "Book Antiqua", "Times New Roman", serif;
+  font-size: 4.5rem;
   line-height: 0.8;
-  font-weight: 700;
+  font-weight: 400;
   
-  /* Spacing and positioning */
-  margin: 0.2rem 0.3rem 0 0;
-  padding: 0.6rem 0.8rem;
+  /* Clean spacing */
+  margin: 0.1rem 0.4rem 0 0;
+  padding: 0.2rem 0.3rem;
   
-  /* Medieval ink color - no gradients, authentic manuscript style */
-  color: var(--drop-cap-ink);
+  /* Simple, elegant colors */
+  color: var(--drop-cap-foreground);
+  background: transparent;
   
-  /* Manuscript-style text shadow for depth */
-  text-shadow: 
-    1px 1px 0 var(--drop-cap-vellum),
-    2px 2px 0 var(--drop-cap-shadow),
-    3px 3px 6px rgba(44, 24, 16, 0.3);
+  /* Subtle depth without ornamentation */
+  text-shadow: 2px 2px 4px var(--drop-cap-shadow);
   
-  /* Parchment-like background without gradients */
-  background: var(--drop-cap-parchment);
-  
-  /* Organic, hand-drawn border effect */
-  border: 2px solid var(--drop-cap-ink);
-  border-radius: 3px;
-  
-  /* Subtle manuscript-style shadow */
-  box-shadow: 
-    0 0 0 1px var(--drop-cap-vellum),
-    0 4px 8px rgba(44, 24, 16, 0.2),
-    inset 0 1px 0 rgba(247, 244, 233, 0.8);
-  
-  /* Position and layering */
+  /* Position and transition */
   position: relative;
-  z-index: 2;
-  
-  /* Subtle organic movement */
   transition: all 0.2s ease;
-  transform: rotate(-0.5deg);
 }
 
-/* Medieval manuscript decorative elements with SVG vine patterns - CONTENT ONLY */
-.blog-content p:first-of-type::before,
-.article-content p:first-of-type::before,
-.post-content p:first-of-type::before,
-.content-area p:first-of-type::before,
-main.content > p:first-child::before,
-#quarto-document-content > p:first-of-type::before,
-.manuscript-content p:first-of-type::before {
-  content: '';
-  position: absolute;
-  top: -12px;
-  left: -12px;
-  right: -12px;
-  bottom: -12px;
-  background: 
-    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="vine" patternUnits="userSpaceOnUse" width="20" height="20"><path d="M2 10 Q 10 2 18 10 Q 10 18 2 10" fill="none" stroke="%23c9a961" stroke-width="0.5" opacity="0.3"/><circle cx="5" cy="5" r="1" fill="%23c9a961" opacity="0.4"/><circle cx="15" cy="15" r="1" fill="%23c9a961" opacity="0.4"/></pattern></defs><rect width="100%" height="100%" fill="url(%23vine)"/></svg>') repeat,
-    radial-gradient(circle at center, 
-      rgba(201, 169, 97, 0.08) 0%, 
-      rgba(44, 24, 16, 0.04) 40%,
-      transparent 70%);
-  border-radius: 6px;
-  z-index: -1;
-  opacity: 0.6;
-}
-
-/* Medieval manuscript flourishes and decorative elements - CONTENT ONLY */
-.blog-content p:first-of-type::after,
-.article-content p:first-of-type::after,
-.post-content p:first-of-type::after,
-.content-area p:first-of-type::after,
-main.content > p:first-child::after,
-#quarto-document-content > p:first-of-type::after,
-.manuscript-content p:first-of-type::after {
-  content: '❦'; /* Medieval fleuron */
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  font-size: 0.9rem;
-  color: var(--drop-cap-gold);
-  text-shadow: 1px 1px 2px var(--drop-cap-shadow);
-  z-index: 3;
-  opacity: 0.8;
-  transform: rotate(15deg);
-}
-
-/* Add whimsical medieval creatures and elements - CONTENT ONLY */
-.blog-content p:first-of-type::first-letter::before,
-.article-content p:first-of-type::first-letter::before,
-.post-content p:first-of-type::first-letter::before,
-.content-area p:first-of-type::first-letter::before,
-main.content > p:first-child::first-letter::before,
-#quarto-document-content > p:first-of-type::first-letter::before,
-.manuscript-content p:first-of-type::first-letter::before {
-  content: '';
-  position: absolute;
-  top: -5px;
-  left: -5px;
-  width: 8px;
-  height: 8px;
-  background: 
-    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path d="M2 5 Q 5 2 8 5 Q 5 8 2 5" fill="%23c9a961" opacity="0.6"/><circle cx="3" cy="3" r="0.5" fill="%23c1272d" opacity="0.8"/></svg>') no-repeat;
-  background-size: contain;
-  z-index: 4;
-  opacity: 0.7;
-}
-
-/* Medieval manuscript hover effects - subtle and organic - CONTENT ONLY */
+/* Clean hover effect - CONTENT ONLY */
 .blog-content p:first-of-type:hover::first-letter,
 .article-content p:first-of-type:hover::first-letter,
 .post-content p:first-of-type:hover::first-letter,
@@ -1371,20 +1297,12 @@ main.content > p:first-child::first-letter::before,
 main.content > p:first-child:hover::first-letter,
 #quarto-document-content > p:first-of-type:hover::first-letter,
 .manuscript-content p:first-of-type:hover::first-letter {
-  transform: rotate(0deg) scale(1.05);
-  color: var(--drop-cap-vermillion);
-  text-shadow: 
-    1px 1px 0 var(--drop-cap-vellum),
-    2px 2px 0 var(--drop-cap-shadow),
-    3px 3px 8px rgba(193, 39, 45, 0.4);
-  box-shadow: 
-    0 0 0 1px var(--drop-cap-vellum),
-    0 0 0 2px var(--drop-cap-gold),
-    0 6px 12px rgba(44, 24, 16, 0.3),
-    inset 0 1px 0 rgba(247, 244, 233, 0.9);
+  color: var(--drop-cap-background);
+  text-shadow: 2px 2px 6px rgba(52, 73, 94, 0.25);
+  transform: scale(1.02);
 }
 
-/* Dark mode adjustments for medieval manuscript style - CONTENT ONLY */
+/* Dark mode adjustments for clean drop caps - CONTENT ONLY */
 .dark .blog-content p:first-of-type::first-letter,
 .dark .article-content p:first-of-type::first-letter,
 .dark .post-content p:first-of-type::first-letter,
@@ -1392,50 +1310,23 @@ main.content > p:first-child:hover::first-letter,
 .dark main.content > p:first-child::first-letter,
 .dark #quarto-document-content > p:first-of-type::first-letter,
 .dark .manuscript-content p:first-of-type::first-letter {
-  --drop-cap-ink: #e8dcc0;
-  --drop-cap-gold: #f4d03f;
-  --drop-cap-parchment: #2c2c2c;
-  --drop-cap-vellum: #3a3a3a;
-  --drop-cap-shadow: rgba(248, 248, 248, 0.3);
+  --drop-cap-foreground: #ecf0f1;
+  --drop-cap-background: #7f8c8d;
+  --drop-cap-shadow: rgba(236, 240, 241, 0.15);
   
-  color: var(--drop-cap-ink);
-  background: var(--drop-cap-parchment);
-  
-  text-shadow: 
-    1px 1px 0 var(--drop-cap-vellum),
-    2px 2px 0 var(--drop-cap-shadow),
-    3px 3px 6px rgba(248, 248, 248, 0.2);
-  
-  box-shadow: 
-    0 0 0 1px var(--drop-cap-vellum),
-    0 4px 8px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(58, 58, 58, 0.8);
+  color: var(--drop-cap-foreground);
+  text-shadow: 2px 2px 4px var(--drop-cap-shadow);
 }
 
-.dark .blog-content p:first-of-type::before,
-.dark .article-content p:first-of-type::before,
-.dark .post-content p:first-of-type::before,
-.dark .content-area p:first-of-type::before,
-.dark main.content > p:first-child::before,
-.dark #quarto-document-content > p:first-of-type::before,
-.dark .manuscript-content p:first-of-type::before {
-  background: 
-    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="darkVine" patternUnits="userSpaceOnUse" width="20" height="20"><path d="M2 10 Q 10 2 18 10 Q 10 18 2 10" fill="none" stroke="%23f4d03f" stroke-width="0.5" opacity="0.2"/><circle cx="5" cy="5" r="1" fill="%23f4d03f" opacity="0.3"/><circle cx="15" cy="15" r="1" fill="%23f4d03f" opacity="0.3"/></pattern></defs><rect width="100%" height="100%" fill="url(%23darkVine)"/></svg>') repeat,
-    radial-gradient(circle at center, 
-      rgba(244, 208, 63, 0.06) 0%, 
-      rgba(232, 220, 192, 0.03) 40%,
-      transparent 70%);
-}
-
-.dark .blog-content p:first-of-type::after,
-.dark .article-content p:first-of-type::after,
-.dark .post-content p:first-of-type::after,
-.dark .content-area p:first-of-type::after,
-.dark main.content > p:first-child::after,
-.dark #quarto-document-content > p:first-of-type::after,
-.dark .manuscript-content p:first-of-type::after {
-  color: var(--drop-cap-gold);
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+.dark .blog-content p:first-of-type:hover::first-letter,
+.dark .article-content p:first-of-type:hover::first-letter,
+.dark .post-content p:first-of-type:hover::first-letter,
+.dark .content-area p:first-of-type:hover::first-letter,
+.dark main.content > p:first-child:hover::first-letter,
+.dark #quarto-document-content > p:first-of-type:hover::first-letter,
+.dark .manuscript-content p:first-of-type:hover::first-letter {
+  color: var(--drop-cap-background);
+  text-shadow: 2px 2px 6px rgba(236, 240, 241, 0.25);
 }
 
 /* Responsive adjustments for medieval drop caps - CONTENT ONLY */
@@ -1475,13 +1366,13 @@ main.content > p:first-child:hover::first-letter,
 main.content > p:first-child,
 #quarto-document-content > p:first-of-type,
 .manuscript-content p:first-of-type {
-  margin-top: 2rem;
-  margin-bottom: 1.5rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1.2rem;
   text-align: justify;
   text-indent: 0;
-  line-height: 1.8;
+  line-height: 1.7;
   /* Prevent text from wrapping too close to the drop cap */
-  min-height: 6rem;
+  min-height: 5.5rem;
 }
 
 /* Medieval drop cap variations by section/theme - CONTENT ONLY */
@@ -2347,7 +2238,7 @@ nav#TOC,
 .personal-image-container {
   display: flex;
   justify-content: center;
-  margin: 2rem 0 3rem 0;
+  margin: 1.5rem 0 2rem 0;
   position: relative;
 }
 
