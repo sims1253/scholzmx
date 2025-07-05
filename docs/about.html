@@ -139,10 +139,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span class="menu-text">Research</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="./about.html" aria-current="page"> 
-<span class="menu-text">About</span></a>
-  </li>  
-  <li class="nav-item">
     <a class="nav-link" href="./projects/index.html"> 
 <span class="menu-text">Projects</span></a>
   </li>  
@@ -162,24 +158,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
-    <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Contents</h2>
-   
-  <ul>
-  <li><a href="#bio" id="toc-bio" class="nav-link active" data-scroll-target="#bio">Bio</a></li>
-  <li><a href="#contact" id="toc-contact" class="nav-link" data-scroll-target="#contact">Contact</a></li>
-  </ul>
-</nav>
-</nav>
+  
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-    </div>
+    
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content column-page" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
@@ -188,7 +174,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<div class="quarto-title-meta">
+<div class="quarto-title-meta column-page">
 
     <div>
     <div class="quarto-title-meta-heading">Author</div>
@@ -206,107 +192,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<!-- Sunlit visual effects layer -->
-<div id="dappled-light">
-  <div id="glow"></div>
-  <div id="glow-bounce"></div>
-  <div class="perspective">
-    <div id="leaves">
-      <svg style="width: 0; height: 0; position: absolute;">
-        <defs>
-          <filter id="wind" x="-20%" y="-20%" width="140%" height="140%">
-            <feturbulence type="fractalNoise" numoctaves="2" seed="1">
-              <animate attributename="baseFrequency" dur="16s" keytimes="0;0.33;0.66;1" values="0.005 0.003;0.01 0.009;0.008 0.004;0.005 0.003" repeatcount="indefinite"></animate>
-            </feturbulence>
-            <fedisplacementmap in="SourceGraphic">
-              <animate attributename="scale" dur="20s" keytimes="0;0.25;0.5;0.75;1" values="45;55;75;55;45" repeatcount="indefinite"></animate>
-            </fedisplacementmap>
-          </filter>
-        </defs>
-      </svg>
-    </div>
-    <div id="blinds">
-      <div class="shutters">
-        <div class="shutter"></div>
-        <div class="shutter"></div>
-        <div class="shutter"></div>
-        <div class="shutter"></div>
-        <div class="shutter"></div>
-        <div class="shutter"></div>
-        <div class="shutter"></div>
-        <div class="shutter"></div>
-        <div class="shutter"></div>
-        <div class="shutter"></div>
-        <div class="shutter"></div>
-        <div class="shutter"></div>
-        <div class="shutter"></div>
-        <div class="shutter"></div>
-        <div class="shutter"></div>
-        <div class="shutter"></div>
-        <div class="shutter"></div>
-        <div class="shutter"></div>
-        <div class="shutter"></div>
-        <div class="shutter"></div>
-        <div class="shutter"></div>
-        <div class="shutter"></div>
-        <div class="shutter"></div>
-      </div>
-      <div class="vertical">
-        <div class="bar"></div>
-        <div class="bar"></div>
-      </div>
-    </div>
-  </div>
-  <div id="progressive-blur">
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-  </div>
-</div>
-<!-- Art Showcase - Fixed position for wide screens -->
-<div class="art-showcase" id="art-showcase">
-  <div class="artwork active">
-    <img src="./img/cool_me.jpg" alt="Research Photo 1">
-  </div>
-  <div class="artwork">
-    <img src="./img/fancy_me.jpg" alt="Research Photo 2">
-  </div>
-  <div class="artwork">
-    <img src="./img/my_image.jpg" alt="Research Photo 3">
-  </div>
-  <div class="art-showcase-caption">
-    Research &amp; Academic Life
-  </div>
-</div>
-<div class="flip-card-container">
-  <div class="flip-card-inner">
-    <div class="flip-card-front">
-      <img src="./img/fancy_me.jpg" alt="Professional headshot of Max Scholz">
-    </div>
-    <div class="flip-card-back">
-      <img src="./img/cool_me.jpg" alt="Casual photo of Max Scholz">
-    </div>
-  </div>
-</div>
-<section id="bio" class="level2">
-<h2 class="anchored" data-anchor-id="bio">Bio</h2>
-<p>Welcome to my corner of the internet. I’m a researcher and developer passionate about data science, statistical computing, and the intersection of technology and human understanding.</p>
-<p>When I’m not diving deep into code or exploring new methodologies, you might find me contemplating the slow web movement, appreciating thoughtful design, or working on projects that prioritize clarity and longevity over fleeting trends.</p>
-<p>This site serves as my digital garden - a space for sharing research, thoughts, and the occasional personal reflection. It’s built with intentionality, embracing principles of accessibility, privacy, and sustainable web practices.</p>
-</section>
-<section id="contact" class="level2">
-<h2 class="anchored" data-anchor-id="contact">Contact</h2>
-<p>Feel free to reach out if you’d like to discuss research collaborations, interesting problems, or just want to chat about the craft of creating meaningful digital experiences.</p>
-<p><em>Professional contact information and social links can be found in the site navigation.</em></p>
-<div class="colophon">
-    <img src="./img/ovid4footer.svg" alt="A decorative illustration">
-</div>
+<script>
+// Redirect to homepage where the about content is now located
+window.location.href = "/";
+</script>
+<p>This page has been merged with the homepage. You will be redirected automatically.</p>
+<p>If you are not redirected, please <a href=".">click here to go to the homepage</a>.</p>
 
 
 <!-- -->
 
-</section>
 
 </main> <!-- /main -->
 <script src="./sunlit-script.js"></script>
@@ -762,44 +657,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
 <div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "About Me"</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>{{&lt; include _dappled-light.qmd &gt;}}</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>{{&lt; include _art-showcase.qmd &gt;}}</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="in">```{=html}      </span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="in">&lt;div class="flip-card-container"&gt;</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="in">  &lt;div class="flip-card-inner"&gt;</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="in">    &lt;div class="flip-card-front"&gt;</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="in">      &lt;img src="/img/fancy_me.jpg" alt="Professional headshot of Max Scholz"&gt;</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="in">    &lt;/div&gt;</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="in">    &lt;div class="flip-card-back"&gt;</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="in">      &lt;img src="/img/cool_me.jpg" alt="Casual photo of Max Scholz"&gt;</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="in">    &lt;/div&gt;</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="in">  &lt;/div&gt;</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="in">&lt;/div&gt;</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="fu">## Bio</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>Welcome to my corner of the internet. I'm a researcher and developer passionate about data science, statistical computing, and the intersection of technology and human understanding.</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>When I'm not diving deep into code or exploring new methodologies, you might find me contemplating the slow web movement, appreciating thoughtful design, or working on projects that prioritize clarity and longevity over fleeting trends.</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>This site serves as my digital garden - a space for sharing research, thoughts, and the occasional personal reflection. It's built with intentionality, embracing principles of accessibility, privacy, and sustainable web practices.</span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="fu">## Contact</span></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>Feel free to reach out if you'd like to discuss research collaborations, interesting problems, or just want to chat about the craft of creating meaningful digital experiences.</span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>*Professional contact information and social links can be found in the site navigation.*</span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="in">```{=html}</span></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="in">&lt;div class="colophon"&gt;</span></span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="in">    &lt;img src="/img/ovid4footer.svg" alt="A decorative illustration"&gt;</span></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="in">&lt;/div&gt;</span></span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="an">page-layout:</span><span class="co"> full</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="an">toc:</span><span class="co"> false</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="in">```{=html}</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="in">&lt;script&gt;</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="in">// Redirect to homepage where the about content is now located</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="in">window.location.href = "/";</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="in">&lt;/script&gt;</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>This page has been merged with the homepage. You will be redirected automatically.</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>If you are not redirected, please <span class="co">[</span><span class="ot">click here to go to the homepage</span><span class="co">](/)</span>.</span></code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 

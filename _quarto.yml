@@ -16,8 +16,6 @@ website:
         text: Blog
       - href: research.qmd
         text: Research
-      - href: about.qmd
-        text: About
       - href: projects/index.qmd
         text: Projects
       - href: recipes.qmd

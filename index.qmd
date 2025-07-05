@@ -11,9 +11,16 @@ format:
 
 # Welcome!
 
-```{=html}
-<div class="personal-image-container">
-    <img src="/img/my_image.jpg" alt="Maximilian Scholz" class="personal-image">
+```{=html}      
+<div class="flip-card-container">
+  <div class="flip-card-inner">
+    <div class="flip-card-front">
+      <img src="/img/fancy_me.jpg" alt="Professional headshot of Max Scholz">
+    </div>
+    <div class="flip-card-back">
+      <img src="/img/cool_me.jpg" alt="Casual photo of Max Scholz">
+    </div>
+  </div>
 </div>
 ```
 
@@ -21,7 +28,19 @@ I am a PhD researcher at the University of Stuttgart, Cluster of Excellence SimT
 
 My research focuses on developing robust statistical methods and computational tools for complex scientific problems. I'm particularly interested in making statistical methods more accessible and reliable for researchers across different domains.
 
+## About Me
+
+Welcome to my corner of the internet. I'm a researcher and developer passionate about data science, statistical computing, and the intersection of technology and human understanding.
+
+When I'm not diving deep into code or exploring new methodologies, you might find me contemplating the slow web movement, appreciating thoughtful design, or working on projects that prioritize clarity and longevity over fleeting trends.
+
+This site serves as my digital garden - a space for sharing research, thoughts, and the occasional personal reflection. It's built with intentionality, embracing principles of accessibility, privacy, and sustainable web practices.
+
 My academic background includes a Bachelor's in Computational Science from Hamburg University of Technology and a Master's in Software Engineering from Chalmers University of Technology.
+
+## Contact
+
+Feel free to reach out if you'd like to discuss research collaborations, interesting problems, or just want to chat about the craft of creating meaningful digital experiences.
 
 Please feel free to [contact me](mailto:scholzmxb@gmail.com) if you have questions or would like to discuss potential projects.
 
