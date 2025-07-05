@@ -392,101 +392,141 @@ article.sunlit-content a:hover {
   border-bottom-color: var(--dark);
 }
 
-/* Search field styling - Make search field visible and styled */
+/* Desktop Search - Clean minimal approach */
 #quarto-search {
   position: relative;
   z-index: 1000;
-  min-width: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Ensure search widget is visible even when not initialized */
-#quarto-search:empty::before {
-  content: "";
-  width: 20px;
-  height: 20px;
-  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>') no-repeat center;
-  background-size: contain;
-  opacity: 0.7;
-  cursor: pointer;
+/* Desktop: Show only small search icon */
+@media (min-width: 992px) {
+  #quarto-search {
+    min-width: 40px;
+  }
+  
+  /* Hide the large search form on desktop */
+  .quarto-search .aa-Form {
+    display: none;
+  }
+  
+  /* Show clean search icon when search is not initialized */
+  #quarto-search:empty::before {
+    content: "";
+    width: 20px;
+    height: 20px;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>') no-repeat center;
+    background-size: contain;
+    opacity: 0.7;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+  }
+  
+  #quarto-search:empty:hover::before {
+    opacity: 1;
+  }
+  
+  /* When search is initialized, show only the search button */
+  .quarto-search .aa-SubmitButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .quarto-search .aa-SubmitButton:hover {
+    background-color: rgba(138, 59, 59, 0.1);
+  }
+  
+  .dark .quarto-search .aa-SubmitButton:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
 }
 
-.quarto-search {
-  position: relative;
-  z-index: 1000;
-}
+/* Mobile and Tablet: Show full search functionality */
+@media (max-width: 991px) {
+  .quarto-search {
+    position: relative;
+    z-index: 1000;
+  }
+  
+  .quarto-search .aa-Form {
+    background-color: var(--paper-white);
+    border: 1px solid var(--paper-shadow);
+    border-radius: 6px;
+    padding: 0.25rem 0.5rem;
+    margin-right: 0.5rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    min-width: 200px;
+  }
+  
+  .quarto-search .aa-Form:focus-within {
+    border-color: var(--accent-terracotta);
+    box-shadow: 0 0 0 2px rgba(138, 59, 59, 0.2);
+  }
 
-.quarto-search .aa-Form {
-  background-color: var(--paper-white);
-  border: 1px solid var(--paper-shadow);
-  border-radius: 6px;
-  padding: 0.25rem 0.5rem;
-  margin-right: 0.5rem;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  min-width: 200px;
-}
+  .quarto-search .aa-Input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-dark);
+    font-size: 0.9rem;
+    width: 100%;
+    padding: 0.25rem;
+  }
 
-.quarto-search .aa-Form:focus-within {
-  border-color: var(--accent-terracotta);
-  box-shadow: 0 0 0 2px rgba(138, 59, 59, 0.2);
-}
+  .quarto-search .aa-Input::placeholder {
+    color: rgba(51, 51, 51, 0.6);
+  }
 
-.quarto-search .aa-Input {
-  background: transparent;
-  border: none;
-  outline: none;
-  color: var(--text-dark);
-  font-size: 0.9rem;
-  width: 100%;
-  padding: 0.25rem;
-}
+  .quarto-search .aa-InputWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
 
-.quarto-search .aa-Input::placeholder {
-  color: rgba(51, 51, 51, 0.6);
-}
+  .quarto-search .aa-InputWrapperPrefix {
+    color: var(--text-dark);
+    opacity: 0.7;
+    margin-right: 0.5rem;
+  }
 
-.quarto-search .aa-InputWrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
+  .quarto-search .aa-InputWrapperSuffix {
+    color: var(--text-dark);
+    opacity: 0.7;
+    margin-left: 0.5rem;
+  }
 
-.quarto-search .aa-InputWrapperPrefix {
-  color: var(--text-dark);
-  opacity: 0.7;
-  margin-right: 0.5rem;
-}
+  /* Dark mode search styling for mobile/tablet */
+  .dark .quarto-search .aa-Form {
+    background-color: var(--night);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
 
-.quarto-search .aa-InputWrapperSuffix {
-  color: var(--text-dark);
-  opacity: 0.7;
-  margin-left: 0.5rem;
-}
+  .dark .quarto-search .aa-Form:focus-within {
+    border-color: var(--accent-terracotta);
+    box-shadow: 0 0 0 2px rgba(138, 59, 59, 0.3);
+  }
 
-/* Dark mode search styling */
-.dark .quarto-search .aa-Form {
-  background-color: var(--night);
-  border-color: rgba(255, 255, 255, 0.2);
-}
+  .dark .quarto-search .aa-Input {
+    color: var(--day);
+  }
 
-.dark .quarto-search .aa-Form:focus-within {
-  border-color: var(--accent-terracotta);
-  box-shadow: 0 0 0 2px rgba(138, 59, 59, 0.3);
-}
+  .dark .quarto-search .aa-Input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+  }
 
-.dark .quarto-search .aa-Input {
-  color: var(--day);
-}
-
-.dark .quarto-search .aa-Input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.dark .quarto-search .aa-InputWrapperPrefix,
-.dark .quarto-search .aa-InputWrapperSuffix {
-  color: var(--day);
+  .dark .quarto-search .aa-InputWrapperPrefix,
+  .dark .quarto-search .aa-InputWrapperSuffix {
+    color: var(--day);
+  }
 }
 
 /* Search overlay styling */
@@ -562,7 +602,7 @@ article.sunlit-content a:hover {
   fill: var(--day);
 }
 
-/* Responsive search styling */
+/* Mobile-specific search styling */
 @media (max-width: 768px) {
   .quarto-search .aa-Form {
     min-width: 150px;
@@ -1953,12 +1993,13 @@ nav#TOC,
     margin-bottom: -1.5px;
   }
   
-  /* Hide search on mobile to preserve space */
+  /* Show search in navbar on mobile/tablet */
   .navbar .quarto-search {
-    display: none;
+    display: flex;
+    margin-right: 0.5rem;
   }
   
-  /* Improve collapsed navbar styling */
+  /* Add search to mobile collapsed menu */
   .navbar-collapse {
     background: var(--paper-white);
     border: 1px solid var(--paper-shadow);
@@ -1968,6 +2009,16 @@ nav#TOC,
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
     position: relative;
     z-index: 999;
+  }
+  
+  /* Add search section to mobile menu */
+  .navbar-collapse::before {
+    content: '';
+    display: block;
+    width: 100%;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--paper-shadow);
   }
   
   .dark .navbar-collapse {
