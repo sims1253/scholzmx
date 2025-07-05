@@ -1147,134 +1147,163 @@ article.sunlit-content a:hover {
 }
 
 /* Medieval-Style Drop Caps */
-/* Import decorative fonts for drop caps */
-@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Uncial+Antiqua&family=EB+Garamond:wght@400;500;600;700&display=swap');
+/* Import authentic medieval manuscript fonts */
+@import url('https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&family=Pirata+One&family=Griffy&family=Uncial+Antiqua&family=EB+Garamond:wght@400;500;600;700&display=swap');
 
-/* Define color variables for drop caps */
+/* Define color variables for medieval manuscript drop caps */
 :root {
-  --drop-cap-gold: #d4af37;
-  --drop-cap-burgundy: #800020;
-  --drop-cap-parchment: #f4f1e8;
-  --drop-cap-shadow: rgba(0, 0, 0, 0.3);
+  --drop-cap-ink: #2c1810;
+  --drop-cap-gold: #c9a961;
+  --drop-cap-vermillion: #c1272d;
+  --drop-cap-azure: #4a90e2;
+  --drop-cap-parchment: #f7f4e9;
+  --drop-cap-vellum: #ede8d5;
+  --drop-cap-shadow: rgba(44, 24, 16, 0.4);
+  --drop-cap-quill: #8b4513;
 }
 
+/* Medieval manuscript drop caps with authentic styling */
 h1 + p::first-letter, h2 + p::first-letter, h3 + p::first-letter, h4 + p::first-letter, h5 + p::first-letter, h6 + p::first-letter {
   /* Basic positioning and size */
   float: left;
-  font-family: "Cinzel Decorative", "Uncial Antiqua", serif;
-  font-size: 5.5rem;
-  line-height: 0.75;
-  font-weight: 900;
+  font-family: "UnifrakturCook", "Pirata One", "Griffy", "Uncial Antiqua", serif;
+  font-size: 6rem;
+  line-height: 0.8;
+  font-weight: 700;
   
   /* Spacing and positioning */
-  margin: 0.15rem 0.25rem -0.1rem 0;
-  padding: 0.8rem;
+  margin: 0.2rem 0.3rem 0 0;
+  padding: 0.6rem 0.8rem;
   
-  /* Medieval styling */
-  color: var(--drop-cap-gold);
+  /* Medieval ink color - no gradients, authentic manuscript style */
+  color: var(--drop-cap-ink);
+  
+  /* Manuscript-style text shadow for depth */
   text-shadow: 
-    2px 2px 4px var(--drop-cap-shadow),
-    0 0 12px rgba(212, 175, 55, 0.4),
-    inset 1px 1px 2px rgba(255, 255, 255, 0.3);
+    1px 1px 0 var(--drop-cap-vellum),
+    2px 2px 0 var(--drop-cap-shadow),
+    3px 3px 6px rgba(44, 24, 16, 0.3);
   
-  /* Decorative background - medieval illuminated manuscript style */
-  background: 
-    radial-gradient(circle at 30% 30%, var(--drop-cap-gold) 0%, var(--drop-cap-burgundy) 45%, #4a0e0e 100%),
-    linear-gradient(45deg, var(--drop-cap-parchment) 0%, #e8dcc0 100%);
-  background-blend-mode: overlay, normal;
+  /* Parchment-like background without gradients */
+  background: var(--drop-cap-parchment);
   
-  /* Medieval frame effect */
-  border: 3px solid var(--drop-cap-gold);
-  border-radius: 8px;
+  /* Organic, hand-drawn border effect */
+  border: 2px solid var(--drop-cap-ink);
+  border-radius: 3px;
+  
+  /* Subtle manuscript-style shadow */
   box-shadow: 
-    0 0 0 2px var(--drop-cap-burgundy),
-    0 0 0 4px var(--drop-cap-gold),
-    0 6px 16px rgba(0, 0, 0, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
-  
-  /* Make text transparent to show background */
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+    0 0 0 1px var(--drop-cap-vellum),
+    0 4px 8px rgba(44, 24, 16, 0.2),
+    inset 0 1px 0 rgba(247, 244, 233, 0.8);
   
   /* Position and layering */
   position: relative;
   z-index: 2;
   
-  /* Subtle animation */
-  transition: all 0.3s ease;
+  /* Subtle organic movement */
+  transition: all 0.2s ease;
+  transform: rotate(-0.5deg);
 }
 
-/* Enhanced decorative pseudo-elements for manuscript feel */
+/* Medieval manuscript decorative elements with SVG vine patterns */
 #quarto-document-content > header + p:first-of-type::before,
 .quarto-title-block + p::before,
 main.content > p:first-child::before,
 section#welcome > p:first-of-type::before {
   content: '';
   position: absolute;
-  top: -8px;
-  left: -8px;
-  right: -8px;
-  bottom: -8px;
+  top: -12px;
+  left: -12px;
+  right: -12px;
+  bottom: -12px;
   background: 
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="vine" patternUnits="userSpaceOnUse" width="20" height="20"><path d="M2 10 Q 10 2 18 10 Q 10 18 2 10" fill="none" stroke="%23c9a961" stroke-width="0.5" opacity="0.3"/><circle cx="5" cy="5" r="1" fill="%23c9a961" opacity="0.4"/><circle cx="15" cy="15" r="1" fill="%23c9a961" opacity="0.4"/></pattern></defs><rect width="100%" height="100%" fill="url(%23vine)"/></svg>') repeat,
     radial-gradient(circle at center, 
-      rgba(212, 175, 55, 0.15) 0%, 
-      rgba(128, 0, 32, 0.08) 40%,
+      rgba(201, 169, 97, 0.08) 0%, 
+      rgba(44, 24, 16, 0.04) 40%,
       transparent 70%);
-  border-radius: 12px;
+  border-radius: 6px;
   z-index: -1;
-  opacity: 0.8;
+  opacity: 0.6;
 }
 
-/* Additional decorative corner elements */
+/* Medieval manuscript flourishes and decorative elements */
 #quarto-document-content > header + p:first-of-type::after,
 .quarto-title-block + p::after,
 main.content > p:first-child::after,
 section#welcome > p:first-of-type::after {
   content: '❦'; /* Medieval fleuron */
   position: absolute;
-  top: -6px;
-  right: -6px;
-  font-size: 0.8rem;
+  top: -8px;
+  right: -8px;
+  font-size: 0.9rem;
   color: var(--drop-cap-gold);
   text-shadow: 1px 1px 2px var(--drop-cap-shadow);
   z-index: 3;
+  opacity: 0.8;
+  transform: rotate(15deg);
+}
+
+/* Add whimsical medieval creatures and elements */
+#quarto-document-content > header + p:first-of-type::first-letter::before,
+.quarto-title-block + p::first-letter::before,
+main.content > p:first-child::first-letter::before,
+section#welcome > p:first-of-type::first-letter::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  width: 8px;
+  height: 8px;
+  background: 
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path d="M2 5 Q 5 2 8 5 Q 5 8 2 5" fill="%23c9a961" opacity="0.6"/><circle cx="3" cy="3" r="0.5" fill="%23c1272d" opacity="0.8"/></svg>') no-repeat;
+  background-size: contain;
+  z-index: 4;
   opacity: 0.7;
 }
 
-/* Hover effect for interactivity */
+/* Medieval manuscript hover effects - subtle and organic */
 #quarto-document-content > header + p:first-of-type:hover::first-letter,
 .quarto-title-block + p:hover::first-letter,
 main.content > p:first-child:hover::first-letter,
 section#welcome > p:first-of-type:hover::first-letter {
-  transform: scale(1.02);
+  transform: rotate(0deg) scale(1.05);
+  color: var(--drop-cap-vermillion);
+  text-shadow: 
+    1px 1px 0 var(--drop-cap-vellum),
+    2px 2px 0 var(--drop-cap-shadow),
+    3px 3px 8px rgba(193, 39, 45, 0.4);
   box-shadow: 
-    0 0 0 2px var(--drop-cap-burgundy),
-    0 0 0 4px var(--drop-cap-gold),
-    0 8px 20px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+    0 0 0 1px var(--drop-cap-vellum),
+    0 0 0 2px var(--drop-cap-gold),
+    0 6px 12px rgba(44, 24, 16, 0.3),
+    inset 0 1px 0 rgba(247, 244, 233, 0.9);
 }
 
-/* Dark mode adjustments */
+/* Dark mode adjustments for medieval manuscript style */
 .dark #quarto-document-content > header + p:first-of-type::first-letter,
 .dark .quarto-title-block + p::first-letter,
 .dark main.content > p:first-child::first-letter,
 .dark section#welcome > p:first-of-type::first-letter {
-  --drop-cap-gold: #ffd700;
-  --drop-cap-burgundy: #a0002a;
-  --drop-cap-parchment: #2a2a2a;
-  --drop-cap-shadow: rgba(255, 255, 255, 0.2);
+  --drop-cap-ink: #e8dcc0;
+  --drop-cap-gold: #f4d03f;
+  --drop-cap-parchment: #2c2c2c;
+  --drop-cap-vellum: #3a3a3a;
+  --drop-cap-shadow: rgba(248, 248, 248, 0.3);
   
-  background: 
-    radial-gradient(circle at 30% 30%, var(--drop-cap-gold) 0%, var(--drop-cap-burgundy) 45%, #2a0a0a 100%),
-    linear-gradient(45deg, var(--drop-cap-parchment) 0%, #3a3a3a 100%);
+  color: var(--drop-cap-ink);
+  background: var(--drop-cap-parchment);
   
   text-shadow: 
-    2px 2px 4px rgba(0, 0, 0, 0.5),
-    0 0 12px rgba(255, 215, 0, 0.3),
-    inset 1px 1px 2px rgba(255, 255, 255, 0.2);
+    1px 1px 0 var(--drop-cap-vellum),
+    2px 2px 0 var(--drop-cap-shadow),
+    3px 3px 6px rgba(248, 248, 248, 0.2);
+  
+  box-shadow: 
+    0 0 0 1px var(--drop-cap-vellum),
+    0 4px 8px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(58, 58, 58, 0.8);
 }
 
 .dark #quarto-document-content > header + p:first-of-type::before,
@@ -1282,9 +1311,10 @@ section#welcome > p:first-of-type:hover::first-letter {
 .dark main.content > p:first-child::before,
 .dark section#welcome > p:first-of-type::before {
   background: 
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="darkVine" patternUnits="userSpaceOnUse" width="20" height="20"><path d="M2 10 Q 10 2 18 10 Q 10 18 2 10" fill="none" stroke="%23f4d03f" stroke-width="0.5" opacity="0.2"/><circle cx="5" cy="5" r="1" fill="%23f4d03f" opacity="0.3"/><circle cx="15" cy="15" r="1" fill="%23f4d03f" opacity="0.3"/></pattern></defs><rect width="100%" height="100%" fill="url(%23darkVine)"/></svg>') repeat,
     radial-gradient(circle at center, 
-      rgba(255, 215, 0, 0.1) 0%, 
-      rgba(160, 0, 42, 0.05) 40%,
+      rgba(244, 208, 63, 0.06) 0%, 
+      rgba(232, 220, 192, 0.03) 40%,
       transparent 70%);
 }
 
@@ -1293,19 +1323,20 @@ section#welcome > p:first-of-type:hover::first-letter {
 .dark main.content > p:first-child::after,
 .dark section#welcome > p:first-of-type::after {
   color: var(--drop-cap-gold);
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
 }
 
-/* Responsive adjustments */
+/* Responsive adjustments for medieval drop caps */
 @media (max-width: 768px) {
   #quarto-document-content > header + p:first-of-type::first-letter,
   .quarto-title-block + p::first-letter,
   main.content > p:first-child::first-letter,
   section#welcome > p:first-of-type::first-letter {
-    font-size: 4rem;
-    line-height: 0.8;
-    margin-right: 0.2rem;
-    padding: 0.6rem;
+    font-size: 4.5rem;
+    line-height: 0.85;
+    margin: 0.15rem 0.25rem 0 0;
+    padding: 0.5rem 0.6rem;
+    transform: rotate(-0.3deg);
   }
   
   #quarto-document-content > header + p:first-of-type::after,
@@ -1330,6 +1361,66 @@ section#welcome > p:first-of-type {
   line-height: 1.8;
   /* Prevent text from wrapping too close to the drop cap */
   min-height: 6rem;
+}
+
+/* Medieval drop cap variations by section/theme */
+/* Research page - more scholarly, darker ink */
+.research-page h1 + p::first-letter,
+.research-page h2 + p::first-letter,
+.research-page h3 + p::first-letter {
+  color: var(--drop-cap-ink);
+  font-family: "UnifrakturCook", "Uncial Antiqua", serif;
+  text-shadow: 
+    1px 1px 0 var(--drop-cap-vellum),
+    2px 2px 0 var(--drop-cap-shadow),
+    3px 3px 6px rgba(44, 24, 16, 0.4);
+}
+
+/* Blog page - more whimsical, with azure accents */
+.blog-page h1 + p::first-letter,
+.blog-page h2 + p::first-letter,
+.blog-page h3 + p::first-letter {
+  color: var(--drop-cap-azure);
+  font-family: "Griffy", "Pirata One", serif;
+  text-shadow: 
+    1px 1px 0 var(--drop-cap-vellum),
+    2px 2px 0 rgba(74, 144, 226, 0.3),
+    3px 3px 6px rgba(74, 144, 226, 0.4);
+}
+
+/* Projects page - golden, more decorative */
+.projects-page h1 + p::first-letter,
+.projects-page h2 + p::first-letter,
+.projects-page h3 + p::first-letter {
+  color: var(--drop-cap-gold);
+  font-family: "Pirata One", "Griffy", serif;
+  text-shadow: 
+    1px 1px 0 var(--drop-cap-vellum),
+    2px 2px 0 rgba(201, 169, 97, 0.4),
+    3px 3px 6px rgba(201, 169, 97, 0.5);
+}
+
+/* Additional medieval manuscript flourishes */
+.medieval-page h1 + p::first-letter::after,
+.medieval-page h2 + p::first-letter::after,
+.medieval-page h3 + p::first-letter::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path d="M1 5 Q 5 1 9 5 Q 5 9 1 5" fill="none" stroke="%23c9a961" stroke-width="0.3" opacity="0.5"/></svg>') no-repeat center;
+  background-size: 80% 80%;
+  z-index: -1;
+  opacity: 0.3;
+  animation: subtle-glow 4s ease-in-out infinite alternate;
+}
+
+@keyframes subtle-glow {
+  0% { opacity: 0.3; }
+  100% { opacity: 0.6; }
 }
 
 .flip-card-container {
