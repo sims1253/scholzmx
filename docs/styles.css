@@ -392,81 +392,151 @@ article.sunlit-content a:hover {
   border-bottom-color: var(--dark);
 }
 
-/* Search field styling - Make search field visible and styled */
-.quarto-search {
+/* Desktop Search - Clean minimal approach */
+#quarto-search {
   position: relative;
   z-index: 1000;
-}
-
-.quarto-search .aa-Form {
-  background-color: var(--paper-white);
-  border: 1px solid var(--paper-shadow);
-  border-radius: 6px;
-  padding: 0.25rem 0.5rem;
-  margin-right: 0.5rem;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  min-width: 200px;
-}
-
-.quarto-search .aa-Form:focus-within {
-  border-color: var(--accent-terracotta);
-  box-shadow: 0 0 0 2px rgba(138, 59, 59, 0.2);
-}
-
-.quarto-search .aa-Input {
-  background: transparent;
-  border: none;
-  outline: none;
-  color: var(--text-dark);
-  font-size: 0.9rem;
-  width: 100%;
-  padding: 0.25rem;
-}
-
-.quarto-search .aa-Input::placeholder {
-  color: rgba(51, 51, 51, 0.6);
-}
-
-.quarto-search .aa-InputWrapper {
-  position: relative;
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
-.quarto-search .aa-InputWrapperPrefix {
-  color: var(--text-dark);
-  opacity: 0.7;
-  margin-right: 0.5rem;
+/* Desktop: Show only small search icon */
+@media (min-width: 992px) {
+  #quarto-search {
+    min-width: 40px;
+  }
+  
+  /* Hide the large search form on desktop */
+  #quarto-search .aa-Form {
+    display: none !important;
+  }
+  
+  /* Hide the search input field on desktop */
+  #quarto-search .aa-InputWrapper {
+    display: none !important;
+  }
+  
+  /* Hide the search input on desktop */
+  #quarto-search .aa-Input {
+    display: none !important;
+  }
+  
+  /* Show clean search icon when search is not initialized */
+  #quarto-search:empty::before {
+    content: "";
+    width: 20px;
+    height: 20px;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>') no-repeat center;
+    background-size: contain;
+    opacity: 0.7;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+  }
+  
+  #quarto-search:empty:hover::before {
+    opacity: 1;
+  }
+  
+  /* When search is initialized, show only the search button */
+  #quarto-search .aa-SubmitButton {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    background: none !important;
+    border: none !important;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+  
+  #quarto-search .aa-SubmitButton:hover {
+    background-color: rgba(138, 59, 59, 0.1) !important;
+  }
+  
+  .dark #quarto-search .aa-SubmitButton:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+  }
 }
 
-.quarto-search .aa-InputWrapperSuffix {
-  color: var(--text-dark);
-  opacity: 0.7;
-  margin-left: 0.5rem;
-}
+/* Mobile and Tablet: Show full search functionality */
+@media (max-width: 991px) {
+  .quarto-search {
+    position: relative;
+    z-index: 1000;
+  }
+  
+  .quarto-search .aa-Form {
+    background-color: var(--paper-white);
+    border: 1px solid var(--paper-shadow);
+    border-radius: 6px;
+    padding: 0.25rem 0.5rem;
+    margin-right: 0.5rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    min-width: 200px;
+  }
+  
+  .quarto-search .aa-Form:focus-within {
+    border-color: var(--accent-terracotta);
+    box-shadow: 0 0 0 2px rgba(138, 59, 59, 0.2);
+  }
 
-/* Dark mode search styling */
-.dark .quarto-search .aa-Form {
-  background-color: var(--night);
-  border-color: rgba(255, 255, 255, 0.2);
-}
+  .quarto-search .aa-Input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-dark);
+    font-size: 0.9rem;
+    width: 100%;
+    padding: 0.25rem;
+  }
 
-.dark .quarto-search .aa-Form:focus-within {
-  border-color: var(--accent-terracotta);
-  box-shadow: 0 0 0 2px rgba(138, 59, 59, 0.3);
-}
+  .quarto-search .aa-Input::placeholder {
+    color: rgba(51, 51, 51, 0.6);
+  }
 
-.dark .quarto-search .aa-Input {
-  color: var(--day);
-}
+  .quarto-search .aa-InputWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
 
-.dark .quarto-search .aa-Input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
-}
+  .quarto-search .aa-InputWrapperPrefix {
+    color: var(--text-dark);
+    opacity: 0.7;
+    margin-right: 0.5rem;
+  }
 
-.dark .quarto-search .aa-InputWrapperPrefix,
-.dark .quarto-search .aa-InputWrapperSuffix {
-  color: var(--day);
+  .quarto-search .aa-InputWrapperSuffix {
+    color: var(--text-dark);
+    opacity: 0.7;
+    margin-left: 0.5rem;
+  }
+
+  /* Dark mode search styling for mobile/tablet */
+  .dark .quarto-search .aa-Form {
+    background-color: var(--night);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .dark .quarto-search .aa-Form:focus-within {
+    border-color: var(--accent-terracotta);
+    box-shadow: 0 0 0 2px rgba(138, 59, 59, 0.3);
+  }
+
+  .dark .quarto-search .aa-Input {
+    color: var(--day);
+  }
+
+  .dark .quarto-search .aa-Input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .dark .quarto-search .aa-InputWrapperPrefix,
+  .dark .quarto-search .aa-InputWrapperSuffix {
+    color: var(--day);
+  }
 }
 
 /* Search overlay styling */
@@ -542,7 +612,7 @@ article.sunlit-content a:hover {
   fill: var(--day);
 }
 
-/* Responsive search styling */
+/* Mobile-specific search styling */
 @media (max-width: 768px) {
   .quarto-search .aa-Form {
     min-width: 150px;
@@ -818,6 +888,12 @@ article.sunlit-content a:hover {
   position: relative;
   /* Add a subtle glow effect */
   filter: drop-shadow(0 0 8px rgba(138, 59, 59, 0.3));
+  /* Ensure content isolation */
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 1ch;
+  text-overflow: clip;
 }
 
 .illuminated-initial::before {
@@ -1081,161 +1157,280 @@ article.sunlit-content a:hover {
 }
 
 /* Medieval-Style Drop Caps */
-/* Import decorative fonts for drop caps */
-@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Uncial+Antiqua&family=EB+Garamond:wght@400;500;600;700&display=swap');
+/* Import authentic medieval manuscript fonts */
+@import url('https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&family=Pirata+One&family=Griffy&family=Uncial+Antiqua&family=EB+Garamond:wght@400;500;600;700&display=swap');
 
-/* Main drop cap selectors - targeting first paragraphs after headers */
-.drop-cap,
-main.content > p:first-of-type::first-letter,
-main .content > p:first-of-type::first-letter,
-main article > p:first-of-type::first-letter,
-section > p:first-of-type::first-letter,
-.post-content > p:first-of-type::first-letter,
-#quarto-content > p:first-of-type::first-letter,
-#quarto-document-content > p:first-of-type::first-letter,
-main > p:first-of-type::first-letter,
-article > p:first-of-type::first-letter,
-/* Target first paragraphs after headers specifically */
-h1 + p::first-letter,
-h2 + p::first-letter,
-h3 + p::first-letter,
-header + p::first-letter,
-.header + p::first-letter,
-.quarto-title-block + p::first-letter {
-  float: left;
-  font-family: "Cinzel Decorative", "Uncial Antiqua", "EB Garamond", serif;
-  font-size: 4.5rem;
-  line-height: 0.85;
-  margin-top: 0.1rem;
-  margin-right: 0.15rem;
-  margin-bottom: -0.1rem;
-  padding-right: 0.1rem;
-  color: var(--accent-terracotta);
-  font-weight: 700;
-  text-shadow: 2px 2px 4px rgba(138, 59, 59, 0.25);
-  position: relative;
-  z-index: 1;
+/* Define color variables for medieval manuscript drop caps */
+:root {
+  --drop-cap-ink: #2c1810;
+  --drop-cap-gold: #c9a961;
+  --drop-cap-vermillion: #c1272d;
+  --drop-cap-azure: #4a90e2;
+  --drop-cap-parchment: #f7f4e9;
+  --drop-cap-vellum: #ede8d5;
+  --drop-cap-shadow: rgba(44, 24, 16, 0.4);
+  --drop-cap-quill: #8b4513;
 }
 
-/* Enhanced styling for fairy-tale, whimsical feel */
-.drop-cap::before,
-main.content > p:first-of-type::first-letter::before,
-main .content > p:first-of-type::first-letter::before,
-main article > p:first-of-type::first-letter::before,
-section > p:first-of-type::first-letter::before,
-.post-content > p:first-of-type::first-letter::before,
-#quarto-content > p:first-of-type::first-letter::before,
-#quarto-document-content > p:first-of-type::first-letter::before,
-main > p:first-of-type::first-letter::before,
-article > p:first-of-type::first-letter::before,
-h1 + p::first-letter::before,
-h2 + p::first-letter::before,
-h3 + p::first-letter::before,
-header + p::first-letter::before,
-.header + p::first-letter::before,
-.quarto-title-block + p::first-letter::before {
+/* Medieval manuscript drop caps with authentic styling */
+h1 + p::first-letter, h2 + p::first-letter, h3 + p::first-letter, h4 + p::first-letter, h5 + p::first-letter, h6 + p::first-letter {
+  /* Basic positioning and size */
+  float: left;
+  font-family: "UnifrakturCook", "Pirata One", "Griffy", "Uncial Antiqua", serif;
+  font-size: 6rem;
+  line-height: 0.8;
+  font-weight: 700;
+  
+  /* Spacing and positioning */
+  margin: 0.2rem 0.3rem 0 0;
+  padding: 0.6rem 0.8rem;
+  
+  /* Medieval ink color - no gradients, authentic manuscript style */
+  color: var(--drop-cap-ink);
+  
+  /* Manuscript-style text shadow for depth */
+  text-shadow: 
+    1px 1px 0 var(--drop-cap-vellum),
+    2px 2px 0 var(--drop-cap-shadow),
+    3px 3px 6px rgba(44, 24, 16, 0.3);
+  
+  /* Parchment-like background without gradients */
+  background: var(--drop-cap-parchment);
+  
+  /* Organic, hand-drawn border effect */
+  border: 2px solid var(--drop-cap-ink);
+  border-radius: 3px;
+  
+  /* Subtle manuscript-style shadow */
+  box-shadow: 
+    0 0 0 1px var(--drop-cap-vellum),
+    0 4px 8px rgba(44, 24, 16, 0.2),
+    inset 0 1px 0 rgba(247, 244, 233, 0.8);
+  
+  /* Position and layering */
+  position: relative;
+  z-index: 2;
+  
+  /* Subtle organic movement */
+  transition: all 0.2s ease;
+  transform: rotate(-0.5deg);
+}
+
+/* Medieval manuscript decorative elements with SVG vine patterns */
+#quarto-document-content > header + p:first-of-type::before,
+.quarto-title-block + p::before,
+main.content > p:first-child::before,
+section#welcome > p:first-of-type::before {
   content: '';
   position: absolute;
-  top: -0.2rem;
-  left: -0.2rem;
-  right: -0.2rem;
-  bottom: -0.2rem;
-  background: radial-gradient(circle at center, 
-    rgba(138, 59, 59, 0.1) 0%, 
-    rgba(138, 59, 59, 0.05) 40%,
-    transparent 70%);
-  border-radius: 50%;
+  top: -12px;
+  left: -12px;
+  right: -12px;
+  bottom: -12px;
+  background: 
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="vine" patternUnits="userSpaceOnUse" width="20" height="20"><path d="M2 10 Q 10 2 18 10 Q 10 18 2 10" fill="none" stroke="%23c9a961" stroke-width="0.5" opacity="0.3"/><circle cx="5" cy="5" r="1" fill="%23c9a961" opacity="0.4"/><circle cx="15" cy="15" r="1" fill="%23c9a961" opacity="0.4"/></pattern></defs><rect width="100%" height="100%" fill="url(%23vine)"/></svg>') repeat,
+    radial-gradient(circle at center, 
+      rgba(201, 169, 97, 0.08) 0%, 
+      rgba(44, 24, 16, 0.04) 40%,
+      transparent 70%);
+  border-radius: 6px;
   z-index: -1;
   opacity: 0.6;
 }
 
-/* Dark mode adjustments */
-.dark .drop-cap,
-.dark main.content > p:first-of-type::first-letter,
-.dark main .content > p:first-of-type::first-letter,
-.dark main article > p:first-of-type::first-letter,
-.dark section > p:first-of-type::first-letter,
-.dark .post-content > p:first-of-type::first-letter,
-.dark #quarto-content > p:first-of-type::first-letter,
-.dark #quarto-document-content > p:first-of-type::first-letter,
-.dark main > p:first-of-type::first-letter,
-.dark article > p:first-of-type::first-letter,
-.dark h1 + p::first-letter,
-.dark h2 + p::first-letter,
-.dark h3 + p::first-letter,
-.dark header + p::first-letter,
-.dark .header + p::first-letter,
-.dark .quarto-title-block + p::first-letter {
-  color: var(--accent-gold);
-  text-shadow: 2px 2px 4px rgba(210, 180, 140, 0.3);
+/* Medieval manuscript flourishes and decorative elements */
+#quarto-document-content > header + p:first-of-type::after,
+.quarto-title-block + p::after,
+main.content > p:first-child::after,
+section#welcome > p:first-of-type::after {
+  content: '❦'; /* Medieval fleuron */
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 0.9rem;
+  color: var(--drop-cap-gold);
+  text-shadow: 1px 1px 2px var(--drop-cap-shadow);
+  z-index: 3;
+  opacity: 0.8;
+  transform: rotate(15deg);
 }
 
-.dark .drop-cap::before,
-.dark main.content > p:first-of-type::first-letter::before,
-.dark main .content > p:first-of-type::first-letter::before,
-.dark main article > p:first-of-type::first-letter::before,
-.dark section > p:first-of-type::first-letter::before,
-.dark .post-content > p:first-of-type::first-letter::before,
-.dark #quarto-content > p:first-of-type::first-letter::before,
-.dark #quarto-document-content > p:first-of-type::first-letter::before,
-.dark main > p:first-of-type::first-letter::before,
-.dark article > p:first-of-type::first-letter::before,
-.dark h1 + p::first-letter::before,
-.dark h2 + p::first-letter::before,
-.dark h3 + p::first-letter::before,
-.dark header + p::first-letter::before,
-.dark .header + p::first-letter::before,
-.dark .quarto-title-block + p::first-letter::before {
-  background: radial-gradient(circle at center, 
-    rgba(210, 180, 140, 0.15) 0%, 
-    rgba(210, 180, 140, 0.08) 40%,
-    transparent 70%);
+/* Add whimsical medieval creatures and elements */
+#quarto-document-content > header + p:first-of-type::first-letter::before,
+.quarto-title-block + p::first-letter::before,
+main.content > p:first-child::first-letter::before,
+section#welcome > p:first-of-type::first-letter::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  width: 8px;
+  height: 8px;
+  background: 
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path d="M2 5 Q 5 2 8 5 Q 5 8 2 5" fill="%23c9a961" opacity="0.6"/><circle cx="3" cy="3" r="0.5" fill="%23c1272d" opacity="0.8"/></svg>') no-repeat;
+  background-size: contain;
+  z-index: 4;
+  opacity: 0.7;
 }
 
-/* Responsive adjustments */
+/* Medieval manuscript hover effects - subtle and organic */
+#quarto-document-content > header + p:first-of-type:hover::first-letter,
+.quarto-title-block + p:hover::first-letter,
+main.content > p:first-child:hover::first-letter,
+section#welcome > p:first-of-type:hover::first-letter {
+  transform: rotate(0deg) scale(1.05);
+  color: var(--drop-cap-vermillion);
+  text-shadow: 
+    1px 1px 0 var(--drop-cap-vellum),
+    2px 2px 0 var(--drop-cap-shadow),
+    3px 3px 8px rgba(193, 39, 45, 0.4);
+  box-shadow: 
+    0 0 0 1px var(--drop-cap-vellum),
+    0 0 0 2px var(--drop-cap-gold),
+    0 6px 12px rgba(44, 24, 16, 0.3),
+    inset 0 1px 0 rgba(247, 244, 233, 0.9);
+}
+
+/* Dark mode adjustments for medieval manuscript style */
+.dark #quarto-document-content > header + p:first-of-type::first-letter,
+.dark .quarto-title-block + p::first-letter,
+.dark main.content > p:first-child::first-letter,
+.dark section#welcome > p:first-of-type::first-letter {
+  --drop-cap-ink: #e8dcc0;
+  --drop-cap-gold: #f4d03f;
+  --drop-cap-parchment: #2c2c2c;
+  --drop-cap-vellum: #3a3a3a;
+  --drop-cap-shadow: rgba(248, 248, 248, 0.3);
+  
+  color: var(--drop-cap-ink);
+  background: var(--drop-cap-parchment);
+  
+  text-shadow: 
+    1px 1px 0 var(--drop-cap-vellum),
+    2px 2px 0 var(--drop-cap-shadow),
+    3px 3px 6px rgba(248, 248, 248, 0.2);
+  
+  box-shadow: 
+    0 0 0 1px var(--drop-cap-vellum),
+    0 4px 8px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(58, 58, 58, 0.8);
+}
+
+.dark #quarto-document-content > header + p:first-of-type::before,
+.dark .quarto-title-block + p::before,
+.dark main.content > p:first-child::before,
+.dark section#welcome > p:first-of-type::before {
+  background: 
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="darkVine" patternUnits="userSpaceOnUse" width="20" height="20"><path d="M2 10 Q 10 2 18 10 Q 10 18 2 10" fill="none" stroke="%23f4d03f" stroke-width="0.5" opacity="0.2"/><circle cx="5" cy="5" r="1" fill="%23f4d03f" opacity="0.3"/><circle cx="15" cy="15" r="1" fill="%23f4d03f" opacity="0.3"/></pattern></defs><rect width="100%" height="100%" fill="url(%23darkVine)"/></svg>') repeat,
+    radial-gradient(circle at center, 
+      rgba(244, 208, 63, 0.06) 0%, 
+      rgba(232, 220, 192, 0.03) 40%,
+      transparent 70%);
+}
+
+.dark #quarto-document-content > header + p:first-of-type::after,
+.dark .quarto-title-block + p::after,
+.dark main.content > p:first-child::after,
+.dark section#welcome > p:first-of-type::after {
+  color: var(--drop-cap-gold);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+/* Responsive adjustments for medieval drop caps */
 @media (max-width: 768px) {
-  .drop-cap,
-  main.content > p:first-of-type::first-letter,
-  main .content > p:first-of-type::first-letter,
-  main article > p:first-of-type::first-letter,
-  section > p:first-of-type::first-letter,
-  .post-content > p:first-of-type::first-letter,
-  #quarto-content > p:first-of-type::first-letter,
-  #quarto-document-content > p:first-of-type::first-letter,
-  main > p:first-of-type::first-letter,
-  article > p:first-of-type::first-letter,
-  h1 + p::first-letter,
-  h2 + p::first-letter,
-  h3 + p::first-letter,
-  header + p::first-letter,
-  .header + p::first-letter,
-  .quarto-title-block + p::first-letter {
-    font-size: 3.5rem;
-    line-height: 0.9;
-    margin-right: 0.1rem;
+  #quarto-document-content > header + p:first-of-type::first-letter,
+  .quarto-title-block + p::first-letter,
+  main.content > p:first-child::first-letter,
+  section#welcome > p:first-of-type::first-letter {
+    font-size: 4.5rem;
+    line-height: 0.85;
+    margin: 0.15rem 0.25rem 0 0;
+    padding: 0.5rem 0.6rem;
+    transform: rotate(-0.3deg);
+  }
+  
+  #quarto-document-content > header + p:first-of-type::after,
+  .quarto-title-block + p::after,
+  main.content > p:first-child::after,
+  section#welcome > p:first-of-type::after {
+    font-size: 0.6rem;
+    top: -4px;
+    right: -4px;
   }
 }
 
-/* Ensure first paragraphs have proper spacing for drop caps */
-main.content > p:first-of-type,
-main .content > p:first-of-type,
-main article > p:first-of-type,
-section > p:first-of-type,
-.post-content > p:first-of-type,
-#quarto-content > p:first-of-type,
-#quarto-document-content > p:first-of-type,
-main > p:first-of-type,
-article > p:first-of-type,
-h1 + p,
-h2 + p,
-h3 + p,
-header + p,
-.header + p,
-.quarto-title-block + p {
-  margin-top: 1.5rem;
+/* Ensure proper spacing for drop cap paragraphs */
+#quarto-document-content > header + p:first-of-type,
+.quarto-title-block + p,
+main.content > p:first-child,
+section#welcome > p:first-of-type {
+  margin-top: 2rem;
+  margin-bottom: 1.5rem;
   text-align: justify;
   text-indent: 0;
+  line-height: 1.8;
+  /* Prevent text from wrapping too close to the drop cap */
+  min-height: 6rem;
 }
+
+/* Medieval drop cap variations by section/theme */
+/* Research page - more scholarly, darker ink */
+.research-page h1 + p::first-letter,
+.research-page h2 + p::first-letter,
+.research-page h3 + p::first-letter {
+  color: var(--drop-cap-ink);
+  font-family: "UnifrakturCook", "Uncial Antiqua", serif;
+  text-shadow: 
+    1px 1px 0 var(--drop-cap-vellum),
+    2px 2px 0 var(--drop-cap-shadow),
+    3px 3px 6px rgba(44, 24, 16, 0.4);
+}
+
+/* Blog page - more whimsical, with azure accents */
+.blog-page h1 + p::first-letter,
+.blog-page h2 + p::first-letter,
+.blog-page h3 + p::first-letter {
+  color: var(--drop-cap-azure);
+  font-family: "Griffy", "Pirata One", serif;
+  text-shadow: 
+    1px 1px 0 var(--drop-cap-vellum),
+    2px 2px 0 rgba(74, 144, 226, 0.3),
+    3px 3px 6px rgba(74, 144, 226, 0.4);
+}
+
+/* Projects page - golden, more decorative */
+.projects-page h1 + p::first-letter,
+.projects-page h2 + p::first-letter,
+.projects-page h3 + p::first-letter {
+  color: var(--drop-cap-gold);
+  font-family: "Pirata One", "Griffy", serif;
+  text-shadow: 
+    1px 1px 0 var(--drop-cap-vellum),
+    2px 2px 0 rgba(201, 169, 97, 0.4),
+    3px 3px 6px rgba(201, 169, 97, 0.5);
+}
+
+/* Additional medieval manuscript flourishes */
+.medieval-page h1 + p::first-letter::after,
+.medieval-page h2 + p::first-letter::after,
+.medieval-page h3 + p::first-letter::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path d="M1 5 Q 5 1 9 5 Q 5 9 1 5" fill="none" stroke="%23c9a961" stroke-width="0.3" opacity="0.5"/></svg>') no-repeat center;
+  background-size: 80% 80%;
+  z-index: -1;
+  opacity: 0.3;
+  animation: subtle-glow 4s ease-in-out infinite alternate;
+}
+
+@keyframes subtle-glow {
+  0% { opacity: 0.3; }
+  100% { opacity: 0.6; }
 }
 
 .flip-card-container {
@@ -1419,6 +1614,26 @@ nav#TOC,
   isolation: isolate;
 }
 
+/* Enhanced TOC background for better visibility in dark mode */
+.dark nav#TOC,
+.dark #quarto-sidebar {
+  background-color: rgba(15, 19, 28, 0.95);
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Light mode TOC background for consistency */
+nav#TOC,
+#quarto-sidebar {
+  background-color: rgba(253, 251, 246, 0.95);
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--paper-shadow);
+}
+
 /* Ensure TOC text is crisp and readable */
 #TOC .nav-link,
 #TOC h2,
@@ -1432,11 +1647,60 @@ nav#TOC,
   font-weight: 500;
 }
 
+/* Light mode active and hover states */
+#TOC .nav-link.active,
+#TOC .nav-link:hover,
+.sidebar .nav-link.active,
+.sidebar .nav-link:hover {
+  color: var(--accent-terracotta);
+  font-weight: 600;
+}
+
+/* Dark mode TOC styling with improved contrast */
 .dark #TOC .nav-link,
 .dark #TOC h2,
 .dark .sidebar .nav-link,
 .dark .sidebar h2 {
   color: var(--day);
+}
+
+.dark #TOC .nav-link.active,
+.dark #TOC .nav-link:hover,
+.dark .sidebar .nav-link.active,
+.dark .sidebar .nav-link:hover {
+  color: var(--accent-terracotta);
+  font-weight: 600;
+}
+
+/* Additional TOC styling for better visibility */
+#TOC ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+#TOC li {
+  margin: 0.25rem 0;
+}
+
+#TOC .nav-link {
+  display: block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+/* Enhanced hover effects */
+#TOC .nav-link:hover,
+.sidebar .nav-link:hover {
+  background-color: rgba(138, 59, 59, 0.1);
+  transform: translateX(2px);
+}
+
+.dark #TOC .nav-link:hover,
+.dark .sidebar .nav-link:hover {
+  background-color: rgba(255, 253, 250, 0.1);
+  transform: translateX(2px);
 }
 
 /* Override any blur effects that might affect the sidebar */
@@ -1452,6 +1716,460 @@ nav#TOC,
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   z-index: 99;
+}
+
+/* Responsive Navigation Following TurnTrout Approach */
+
+/* Mobile-only and Desktop-only utilities */
+.mobile-only {
+  display: none;
+}
+
+.desktop-only {
+  display: block;
+}
+
+@media (max-width: 991px) {
+  .mobile-only {
+    display: block;
+  }
+  
+  .desktop-only {
+    display: none;
+  }
+}
+
+/* Mobile Menu Toggle Button (Hamburger) */
+.mobile-menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  margin-left: 0.5rem;
+  position: relative;
+  z-index: 1002;
+  transition: all 0.3s ease;
+}
+
+.mobile-menu-toggle:focus {
+  outline: 2px solid var(--accent-terracotta);
+  outline-offset: 2px;
+}
+
+/* Hamburger Icon */
+.hamburger {
+  display: flex;
+  flex-direction: column;
+  width: 24px;
+  height: 18px;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.hamburger span {
+  display: block;
+  height: 3px;
+  width: 100%;
+  background-color: var(--text-dark);
+  border-radius: 1px;
+  transition: all 0.3s ease;
+  transform-origin: center;
+}
+
+.dark .hamburger span {
+  background-color: var(--day);
+}
+
+/* Hamburger Animation */
+.mobile-menu-active .hamburger span:nth-child(1) {
+  transform: rotate(45deg) translate(6px, 6px);
+}
+
+.mobile-menu-active .hamburger span:nth-child(2) {
+  opacity: 0;
+}
+
+.mobile-menu-active .hamburger span:nth-child(3) {
+  transform: rotate(-45deg) translate(6px, -6px);
+}
+
+.mobile-menu-toggle:hover .hamburger span {
+  background-color: var(--accent-terracotta);
+}
+
+@media (max-width: 991px) {
+  .mobile-menu-toggle {
+    display: block;
+  }
+}
+
+/* Mobile Menu Overlay */
+.mobile-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.mobile-menu-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Mobile Menu Panel - Improved Design */
+.mobile-menu-panel {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 320px;
+  height: 100vh;
+  background: var(--paper-white);
+  z-index: 1001;
+  transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.15);
+  overflow-y: auto;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--paper-shadow);
+}
+
+.dark .mobile-menu-panel {
+  background: var(--night);
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.4);
+  border-left-color: rgba(255, 255, 255, 0.1);
+}
+
+.mobile-menu-panel.active {
+  right: 0;
+}
+
+/* Mobile Menu Header */
+.mobile-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1.5rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--paper-shadow);
+  padding-bottom: 1rem;
+}
+
+.dark .mobile-menu-header {
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.mobile-menu-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin: 0;
+}
+
+.dark .mobile-menu-title {
+  color: var(--day);
+}
+
+.mobile-menu-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  color: var(--text-dark);
+  transition: color 0.3s ease;
+}
+
+.mobile-menu-close:hover {
+  color: var(--accent-terracotta);
+}
+
+.dark .mobile-menu-close {
+  color: var(--day);
+}
+
+/* Mobile Menu Navigation Links */
+.mobile-menu-nav {
+  flex: 1;
+  padding: 0 1.5rem;
+}
+
+.mobile-menu-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.mobile-menu-nav li {
+  margin-bottom: 0.5rem;
+}
+
+.mobile-menu-nav a {
+  display: block;
+  padding: 0.75rem 1rem;
+  color: var(--text-dark);
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  position: relative;
+}
+
+.mobile-menu-nav a:hover {
+  background: var(--paper-shadow);
+  color: var(--accent-terracotta);
+  transform: translateX(4px);
+}
+
+.dark .mobile-menu-nav a {
+  color: var(--day);
+}
+
+.dark .mobile-menu-nav a:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--accent-terracotta);
+}
+
+/* Mobile Menu Footer */
+.mobile-menu-footer {
+  padding: 1.5rem;
+  border-top: 1px solid var(--paper-shadow);
+  margin-top: auto;
+}
+
+.dark .mobile-menu-footer {
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+.mobile-menu-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.mobile-theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: 1px solid var(--paper-shadow);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  color: var(--text-dark);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.mobile-theme-toggle:hover {
+  background: var(--paper-shadow);
+  color: var(--accent-terracotta);
+}
+
+.dark .mobile-theme-toggle {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--day);
+}
+
+.dark .mobile-theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--accent-terracotta);
+}
+
+/* Mobile Search Integration */
+.mobile-search-container {
+  padding: 0 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.mobile-search-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--paper-shadow);
+  border-radius: 8px;
+  background: var(--paper-white);
+  color: var(--text-dark);
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.mobile-search-input:focus {
+  outline: none;
+  border-color: var(--accent-terracotta);
+  box-shadow: 0 0 0 2px rgba(138, 59, 59, 0.2);
+}
+
+.dark .mobile-search-input {
+  background: var(--night);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--day);
+}
+
+.dark .mobile-search-input:focus {
+  border-color: var(--accent-terracotta);
+  box-shadow: 0 0 0 2px rgba(138, 59, 59, 0.3);
+}
+
+/* Enhanced Mobile Navigation - Quarto Bootstrap Integration */
+
+/* Improve the native Bootstrap navbar collapse */
+@media (max-width: 991px) {
+  
+  /* Style the navbar toggler button */
+  .navbar-toggler {
+    border: none !important;
+    padding: 0.5rem !important;
+    margin-left: 0.5rem !important;
+    background: none !important;
+    position: relative;
+    z-index: 1000;
+  }
+  
+  .navbar-toggler:focus {
+    box-shadow: 0 0 0 2px var(--accent-terracotta) !important;
+    outline: none !important;
+  }
+  
+  /* Improve hamburger icon */
+  .navbar-toggler-icon {
+    background-image: none !important;
+    width: 24px !important;
+    height: 18px !important;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Create custom hamburger lines */
+  .navbar-toggler-icon::before,
+  .navbar-toggler-icon::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 3px;
+    background-color: var(--text-dark);
+    border-radius: 1px;
+    transition: all 0.3s ease;
+  }
+  
+  .navbar-toggler-icon::before {
+    box-shadow: 0 7px 0 var(--text-dark);
+    top: 3px;
+  }
+  
+  .navbar-toggler-icon::after {
+    bottom: 3px;
+  }
+  
+  /* Dark mode hamburger */
+  .dark .navbar-toggler-icon::before,
+  .dark .navbar-toggler-icon::after {
+    background-color: var(--day);
+  }
+  
+  .dark .navbar-toggler-icon::before {
+    box-shadow: 0 7px 0 var(--day);
+  }
+  
+  /* Animate hamburger when active */
+  .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::before {
+    transform: rotate(45deg);
+    box-shadow: none;
+    top: 50%;
+    margin-top: -1.5px;
+  }
+  
+  .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::after {
+    transform: rotate(-45deg);
+    bottom: 50%;
+    margin-bottom: -1.5px;
+  }
+  
+  /* Show search in navbar on mobile/tablet */
+  .navbar .quarto-search {
+    display: flex;
+    margin-right: 0.5rem;
+  }
+  
+  /* Add search to mobile collapsed menu */
+  .navbar-collapse {
+    background: var(--paper-white);
+    border: 1px solid var(--paper-shadow);
+    border-radius: 8px;
+    margin-top: 0.5rem;
+    padding: 1rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    position: relative;
+    z-index: 999;
+  }
+  
+  /* Add search section to mobile menu */
+  .navbar-collapse::before {
+    content: '';
+    display: block;
+    width: 100%;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--paper-shadow);
+  }
+  
+  .dark .navbar-collapse {
+    background: var(--night);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  }
+  
+  .navbar-nav {
+    align-items: stretch;
+  }
+  
+  .navbar-nav .nav-item {
+    margin: 0.25rem 0;
+  }
+  
+  .navbar-nav .nav-link {
+    padding: 0.75rem 1rem !important;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    color: var(--text-dark) !important;
+    font-weight: 500;
+  }
+  
+  .navbar-nav .nav-link:hover {
+    background: var(--paper-shadow);
+    color: var(--accent-terracotta) !important;
+    transform: translateX(4px);
+  }
+  
+  .dark .navbar-nav .nav-link {
+    color: var(--day) !important;
+  }
+  
+  .dark .navbar-nav .nav-link:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--accent-terracotta) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Full mobile experience */
+  .mobile-menu-panel {
+    width: 100vw;
+    right: -100vw;
+  }
+  
+  .mobile-menu-panel.active {
+    right: 0;
+  }
 }
 
 /* Responsive adjustments for progressive blur clipping */
@@ -1481,10 +2199,7 @@ nav#TOC,
   }
 }
 
-.navbar-brand-container {
-  flex: 0 1 auto; /* Allows the container to shrink to fit its content */
-  margin-right: auto !important; /* Pushes other elements to the right */
-}
+
 
 #glow {
   --mx: 50%; /* Default to center */
@@ -1580,6 +2295,7 @@ nav#TOC,
   border-radius: 50%;
   opacity: 0.3;
 }
+
 
 /* Responsive adjustments for personal image */
 @media (max-width: 768px) {

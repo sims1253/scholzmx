@@ -408,8 +408,18 @@ article.sunlit-content a:hover {
   }
   
   /* Hide the large search form on desktop */
-  .quarto-search .aa-Form {
-    display: none;
+  #quarto-search .aa-Form {
+    display: none !important;
+  }
+  
+  /* Hide the search input field on desktop */
+  #quarto-search .aa-InputWrapper {
+    display: none !important;
+  }
+  
+  /* Hide the search input on desktop */
+  #quarto-search .aa-Input {
+    display: none !important;
   }
   
   /* Show clean search icon when search is not initialized */
@@ -429,24 +439,24 @@ article.sunlit-content a:hover {
   }
   
   /* When search is initialized, show only the search button */
-  .quarto-search .aa-SubmitButton {
-    display: flex;
+  #quarto-search .aa-SubmitButton {
+    display: flex !important;
     align-items: center;
     justify-content: center;
-    background: none;
-    border: none;
+    background: none !important;
+    border: none !important;
     cursor: pointer;
     padding: 0.5rem;
     border-radius: 4px;
     transition: background-color 0.3s ease;
   }
   
-  .quarto-search .aa-SubmitButton:hover {
-    background-color: rgba(138, 59, 59, 0.1);
+  #quarto-search .aa-SubmitButton:hover {
+    background-color: rgba(138, 59, 59, 0.1) !important;
   }
   
-  .dark .quarto-search .aa-SubmitButton:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+  .dark #quarto-search .aa-SubmitButton:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
   }
 }
 

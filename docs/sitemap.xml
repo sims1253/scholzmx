@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://scholzmx.com/scratchpad.html</loc>
-    <lastmod>2025-07-03T21:19:11.041Z</lastmod>
+    <lastmod>2025-07-04T15:18:18.477Z</lastmod>
   </url>
   <url>
     <loc>https://scholzmx.com/recipes.html</loc>
@@ -13,56 +13,52 @@
     <lastmod>2025-07-04T10:29:28.766Z</lastmod>
   </url>
   <url>
-    <loc>https://scholzmx.com/cv/index.html</loc>
-    <lastmod>2025-07-03T05:35:48.022Z</lastmod>
-  </url>
-  <url>
-    <loc>https://scholzmx.com/blog/index.html</loc>
-    <lastmod>2025-07-04T01:46:30.002Z</lastmod>
-  </url>
-  <url>
-    <loc>https://scholzmx.com/blog/2024/03/12/academic-life-reflections/index.html</loc>
-    <lastmod>2025-07-03T21:17:10.683Z</lastmod>
-  </url>
-  <url>
-    <loc>https://scholzmx.com/blog/2024/01/15/hierarchical-bayes-primer/index.html</loc>
-    <lastmod>2025-07-03T21:15:52.544Z</lastmod>
-  </url>
-  <url>
-    <loc>https://scholzmx.com/blog/2023/05/31-building-bayesim/index.html</loc>
-    <lastmod>2025-07-04T00:25:17.536Z</lastmod>
-  </url>
-  <url>
-    <loc>https://scholzmx.com/blog/2017/04/19/april-community-update/index.html</loc>
-    <lastmod>2025-07-02T23:50:01.859Z</lastmod>
-  </url>
-  <url>
-    <loc>https://scholzmx.com/blog/2017/01/30/birth-of-coala/index.html</loc>
-    <lastmod>2025-07-02T23:50:01.813Z</lastmod>
-  </url>
-  <url>
-    <loc>https://scholzmx.com/about.html</loc>
-    <lastmod>2025-07-04T10:30:11.390Z</lastmod>
-  </url>
-  <url>
-    <loc>https://scholzmx.com/blog/2017/04/15/coala-call-for-chefs/index.html</loc>
-    <lastmod>2025-07-02T23:50:01.839Z</lastmod>
-  </url>
-  <url>
-    <loc>https://scholzmx.com/blog/2023/ggplot-group-colors/ggplot-group-colors.html</loc>
-    <lastmod>2025-07-03T10:35:47.649Z</lastmod>
-  </url>
-  <url>
-    <loc>https://scholzmx.com/blog/2024/02/03/building-r-package-testing/index.html</loc>
-    <lastmod>2025-07-03T21:16:35.345Z</lastmod>
+    <loc>https://scholzmx.com/blog.html</loc>
+    <lastmod>2025-07-04T14:43:04.284Z</lastmod>
   </url>
   <url>
     <loc>https://scholzmx.com/blog/2024/04/08/understanding-mcmc-diagnostics/index.html</loc>
     <lastmod>2025-07-03T21:18:00.891Z</lastmod>
   </url>
   <url>
-    <loc>https://scholzmx.com/blog.html</loc>
-    <lastmod>2025-07-04T10:29:40.147Z</lastmod>
+    <loc>https://scholzmx.com/blog/2024/02/03/building-r-package-testing/index.html</loc>
+    <lastmod>2025-07-03T21:16:35.345Z</lastmod>
+  </url>
+  <url>
+    <loc>https://scholzmx.com/blog/2023/ggplot-group-colors/ggplot-group-colors.html</loc>
+    <lastmod>2025-07-03T10:35:47.649Z</lastmod>
+  </url>
+  <url>
+    <loc>https://scholzmx.com/blog/2017/04/15/coala-call-for-chefs/index.html</loc>
+    <lastmod>2025-07-02T23:50:01.839Z</lastmod>
+  </url>
+  <url>
+    <loc>https://scholzmx.com/about.html</loc>
+    <lastmod>2025-07-04T10:30:11.390Z</lastmod>
+  </url>
+  <url>
+    <loc>https://scholzmx.com/blog/2017/01/30/birth-of-coala/index.html</loc>
+    <lastmod>2025-07-02T23:50:01.813Z</lastmod>
+  </url>
+  <url>
+    <loc>https://scholzmx.com/blog/2017/04/19/april-community-update/index.html</loc>
+    <lastmod>2025-07-02T23:50:01.859Z</lastmod>
+  </url>
+  <url>
+    <loc>https://scholzmx.com/blog/2023/05/31-building-bayesim/index.html</loc>
+    <lastmod>2025-07-04T00:25:17.536Z</lastmod>
+  </url>
+  <url>
+    <loc>https://scholzmx.com/blog/2024/01/15/hierarchical-bayes-primer/index.html</loc>
+    <lastmod>2025-07-03T21:15:52.544Z</lastmod>
+  </url>
+  <url>
+    <loc>https://scholzmx.com/blog/2024/03/12/academic-life-reflections/index.html</loc>
+    <lastmod>2025-07-03T21:17:10.683Z</lastmod>
+  </url>
+  <url>
+    <loc>https://scholzmx.com/blog/index.html</loc>
+    <lastmod>2025-07-04T01:46:30.002Z</lastmod>
   </url>
   <url>
     <loc>https://scholzmx.com/DESIGN_ROADMAP.html</loc>

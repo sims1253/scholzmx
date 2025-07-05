@@ -47,6 +47,109 @@ function initFlipCard() {
   }
 }
 
+function initMobileMenu() {
+  // Enhance Quarto's existing Bootstrap navbar collapse for better mobile experience
+  const navbarCollapse = document.getElementById('navbarCollapse');
+  const navbar = document.querySelector('.navbar-nav');
+  
+  if (!navbarCollapse || !navbar) return;
+  
+  // Add search functionality to mobile menu
+  const searchContainer = document.createElement('div');
+  searchContainer.className = 'mobile-search-container';
+  searchContainer.style.cssText = `
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--paper-shadow);
+    margin-bottom: 1rem;
+  `;
+  
+  if (document.body.classList.contains('dark')) {
+    searchContainer.style.borderBottomColor = 'rgba(255, 255, 255, 0.1)';
+  }
+  
+  const searchInput = document.createElement('input');
+  searchInput.type = 'search';
+  searchInput.className = 'mobile-search-input';
+  searchInput.placeholder = 'Search...';
+  searchInput.setAttribute('aria-label', 'Search');
+  searchInput.style.cssText = `
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--paper-shadow);
+    border-radius: 6px;
+    background: var(--paper-white);
+    color: var(--text-dark);
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+  `;
+  
+  if (document.body.classList.contains('dark')) {
+    searchInput.style.background = 'var(--night)';
+    searchInput.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+    searchInput.style.color = 'var(--day)';
+  }
+  
+  // Add search button
+  const searchButton = document.createElement('button');
+  searchButton.textContent = 'Search';
+  searchButton.style.cssText = `
+    margin-top: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--accent-terracotta);
+    color: var(--paper-white);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    width: 100%;
+  `;
+  
+  searchContainer.appendChild(searchInput);
+  searchContainer.appendChild(searchButton);
+  
+  // Insert search at the beginning of the navbar collapse
+  navbarCollapse.insertBefore(searchContainer, navbarCollapse.firstChild);
+  
+  // Enhanced search functionality in mobile menu
+  searchInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      const query = searchInput.value.trim();
+      if (query) {
+        // Try to use Quarto's search if available
+        const quartoSearch = document.getElementById('quarto-search');
+        if (quartoSearch) {
+          // Try to trigger Quarto search
+          const searchBtn = quartoSearch.querySelector('button, .aa-SubmitButton');
+          if (searchBtn) {
+            // Set the search query if there's an input
+            const quartoInput = quartoSearch.querySelector('input, .aa-Input');
+            if (quartoInput) {
+              quartoInput.value = query;
+              quartoInput.focus();
+              // Trigger search
+              quartoInput.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+            searchBtn.click();
+          } else {
+            // Fallback to our search functionality
+            searchInCurrentPage(query);
+          }
+        } else {
+          // Use our search functionality
+          searchInCurrentPage(query);
+        }
+      }
+    }
+  });
+  
+  // Search button functionality
+  searchButton.addEventListener('click', () => {
+    const query = searchInput.value.trim();
+    if (query) {
+      searchInCurrentPage(query);
+    }
+  });
+}
 
 // --- Main Initializer ---
 // Runs when the page is fully loaded
@@ -64,11 +167,30 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize other interactive elements
   initArtShowcase();
   initFlipCard();
+  initMobileMenu();
   
   // Initialize search functionality
   setTimeout(() => {
     const searchEl = document.getElementById('quarto-search');
-    if (searchEl && searchEl.innerHTML.trim() === '') {
+    console.log('Search element found:', searchEl);
+    console.log('Search element innerHTML:', searchEl ? searchEl.innerHTML : 'N/A');
+    console.log('Search element classes:', searchEl ? searchEl.className : 'N/A');
+    
+    // Check if autocomplete library is available
+    console.log('Autocomplete library available:', typeof window['@algolia/autocomplete-js']);
+    console.log('Quarto search options:', document.getElementById('quarto-search-options'));
+    
+    // Check if Quarto search initialized successfully
+    const hasSearchContent = searchEl && (
+      searchEl.innerHTML.trim() !== '' || 
+      searchEl.querySelector('.aa-Form') ||
+      searchEl.querySelector('input[type="search"]') ||
+      searchEl.querySelector('.aa-Input')
+    );
+    
+    console.log('Has search content:', hasSearchContent);
+    
+    if (searchEl && !hasSearchContent) {
       // Search widget failed to initialize, add a fallback search icon
       console.log('Search widget failed to initialize, adding fallback...');
       
@@ -109,15 +231,81 @@ document.addEventListener('DOMContentLoaded', () => {
       // Add click handler to trigger search
       searchButton.addEventListener('click', (e) => {
         e.preventDefault();
+        console.log('Search button clicked');
+        
+        // First try to manually initialize the Quarto search
+        if (typeof window['@algolia/autocomplete-js'] !== 'undefined') {
+          console.log('Trying to manually initialize search...');
+          try {
+            // Try to manually trigger Quarto search initialization
+            const searchOptions = document.getElementById('quarto-search-options');
+            if (searchOptions) {
+              const options = JSON.parse(searchOptions.textContent);
+              console.log('Search options found:', options);
+              
+              // Try to manually initialize the search
+              const { autocomplete } = window['@algolia/autocomplete-js'];
+              if (autocomplete && !searchEl.querySelector('.aa-Form')) {
+                console.log('Manually initializing autocomplete...');
+                const searchInstance = autocomplete({
+                  container: searchEl,
+                  placeholder: options.language['search-text-placeholder'] || 'Search...',
+                  debug: false,
+                  openOnFocus: true,
+                  getSources() {
+                    return [
+                      {
+                        sourceId: 'search',
+                        getItems({ query }) {
+                          if (!query) return [];
+                          // Simple fallback search - just filter available content
+                          return fetch('./search.json')
+                            .then(response => response.json())
+                            .then(data => {
+                              const results = data.filter(item => 
+                                item.title?.toLowerCase().includes(query.toLowerCase()) ||
+                                item.text?.toLowerCase().includes(query.toLowerCase())
+                              ).slice(0, 10);
+                              return results;
+                            })
+                            .catch(() => []);
+                        },
+                        getItemUrl({ item }) {
+                          return item.href;
+                        },
+                        templates: {
+                          item({ item }) {
+                            return `<div>
+                              <strong>${item.title || 'Untitled'}</strong>
+                              <div style="font-size: 0.9em; color: #666;">${item.text?.substring(0, 100) || ''}...</div>
+                            </div>`;
+                          }
+                        }
+                      }
+                    ];
+                  }
+                });
+                console.log('Search initialized successfully');
+                return;
+              }
+            }
+          } catch (error) {
+            console.log('Failed to manually initialize search:', error);
+          }
+        }
+        
         // Try to trigger the global search function if it exists
         if (window.quartoOpenSearch) {
+          console.log('Using quartoOpenSearch');
           window.quartoOpenSearch();
         } else {
           // Fallback: focus on any existing search input or create a simple search
           const existingInput = document.querySelector('input[type="search"], .aa-Input');
           if (existingInput) {
+            console.log('Focusing existing input');
             existingInput.focus();
           } else {
+            console.log('Creating simple search overlay');
             // Create a simple search overlay
             showSimpleSearch();
           }
@@ -145,7 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
     }
-  }, 1000);
+  }, 2000);
   
   // Simple search overlay function
   function showSimpleSearch() {
