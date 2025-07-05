@@ -54,65 +54,70 @@ function initMobileMenu() {
   
   if (!navbarCollapse || !navbar) return;
   
-  // Add search functionality to mobile menu
-  const searchContainer = document.createElement('div');
-  searchContainer.className = 'mobile-search-container';
-  searchContainer.style.cssText = `
-    padding: 1rem 0;
-    border-bottom: 1px solid var(--paper-shadow);
-    margin-bottom: 1rem;
-  `;
+  // Only add mobile search on mobile/tablet devices
+  const isMobile = window.innerWidth < 992;
   
-  if (document.body.classList.contains('dark')) {
-    searchContainer.style.borderBottomColor = 'rgba(255, 255, 255, 0.1)';
-  }
-  
-  const searchInput = document.createElement('input');
-  searchInput.type = 'search';
-  searchInput.className = 'mobile-search-input';
-  searchInput.placeholder = 'Search...';
-  searchInput.setAttribute('aria-label', 'Search');
-  searchInput.style.cssText = `
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid var(--paper-shadow);
-    border-radius: 6px;
-    background: var(--paper-white);
-    color: var(--text-dark);
-    font-size: 1rem;
-    transition: border-color 0.3s ease;
-  `;
-  
-  if (document.body.classList.contains('dark')) {
-    searchInput.style.background = 'var(--night)';
-    searchInput.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-    searchInput.style.color = 'var(--day)';
-  }
-  
-  // Add search button
-  const searchButton = document.createElement('button');
-  searchButton.textContent = 'Search';
-  searchButton.style.cssText = `
-    margin-top: 0.5rem;
-    padding: 0.5rem 1rem;
-    background: var(--accent-terracotta);
-    color: var(--paper-white);
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-    width: 100%;
-  `;
-  
-  searchContainer.appendChild(searchInput);
-  searchContainer.appendChild(searchButton);
-  
-  // Insert search at the beginning of the navbar collapse
-  navbarCollapse.insertBefore(searchContainer, navbarCollapse.firstChild);
-  
-  // Enhanced search functionality in mobile menu
-  searchInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
+  if (isMobile) {
+    // Add search functionality to mobile menu
+    const searchContainer = document.createElement('div');
+    searchContainer.className = 'mobile-search-container';
+    searchContainer.style.cssText = `
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--paper-shadow);
+      margin-bottom: 1rem;
+    `;
+    
+    if (document.body.classList.contains('dark')) {
+      searchContainer.style.borderBottomColor = 'rgba(255, 255, 255, 0.1)';
+    }
+    
+    const searchInput = document.createElement('input');
+    searchInput.type = 'search';
+    searchInput.className = 'mobile-search-input';
+    searchInput.placeholder = 'Search...';
+    searchInput.setAttribute('aria-label', 'Search');
+    searchInput.style.cssText = `
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--paper-shadow);
+      border-radius: 6px;
+      background: var(--paper-white);
+      color: var(--text-dark);
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    `;
+    
+    if (document.body.classList.contains('dark')) {
+      searchInput.style.background = 'var(--night)';
+      searchInput.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+      searchInput.style.color = 'var(--day)';
+    }
+    
+    // Add search button (mobile only)
+    const searchButton = document.createElement('button');
+    searchButton.textContent = 'Search';
+    searchButton.className = 'mobile-search-button';
+    searchButton.style.cssText = `
+      margin-top: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--accent-terracotta);
+      color: var(--paper-white);
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      width: 100%;
+    `;
+    
+    searchContainer.appendChild(searchInput);
+    searchContainer.appendChild(searchButton);
+    
+    // Insert search at the beginning of the navbar collapse
+    navbarCollapse.insertBefore(searchContainer, navbarCollapse.firstChild);
+    
+    // Enhanced search functionality in mobile menu
+    searchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
       const query = searchInput.value.trim();
       if (query) {
         // Try to use Quarto's search if available
@@ -142,13 +147,14 @@ function initMobileMenu() {
     }
   });
   
-  // Search button functionality
-  searchButton.addEventListener('click', () => {
-    const query = searchInput.value.trim();
-    if (query) {
-      searchInCurrentPage(query);
-    }
-  });
+    // Search button functionality
+    searchButton.addEventListener('click', () => {
+      const query = searchInput.value.trim();
+      if (query) {
+        searchInCurrentPage(query);
+      }
+    });
+  }
 }
 
 // --- Main Initializer ---
@@ -194,144 +200,86 @@ document.addEventListener('DOMContentLoaded', () => {
       // Search widget failed to initialize, add a fallback search icon
       console.log('Search widget failed to initialize, adding fallback...');
       
-      // Create a search icon that opens the search when clicked
-      const searchButton = document.createElement('button');
-      searchButton.type = 'button';
-      searchButton.title = 'Search';
-      searchButton.style.cssText = `
-        background: none;
-        border: none;
-        padding: 0.25rem;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      `;
+      // Only add fallback for desktop - mobile should rely on the mobile menu search
+      const isDesktop = window.innerWidth >= 992;
       
-      // Add the search icon
-      const searchIcon = document.createElement('i');
-      searchIcon.className = 'fa-solid fa-magnifying-glass';
-      searchIcon.style.cssText = `
-        font-size: 16px;
-        color: var(--text-dark);
-        opacity: 0.7;
-        transition: opacity 0.3s ease;
-      `;
-      
-      searchButton.appendChild(searchIcon);
-      
-      // Add hover effect
-      searchButton.addEventListener('mouseenter', () => {
-        searchIcon.style.opacity = '1';
-      });
-      searchButton.addEventListener('mouseleave', () => {
-        searchIcon.style.opacity = '0.7';
-      });
-      
-      // Add click handler to trigger search
-      searchButton.addEventListener('click', (e) => {
-        e.preventDefault();
-        console.log('Search button clicked');
+      if (isDesktop) {
+        // Create a clean search icon for desktop that opens the search overlay
+        const searchButton = document.createElement('button');
+        searchButton.type = 'button';
+        searchButton.title = 'Search';
+        searchButton.className = 'desktop-search-fallback';
+        searchButton.style.cssText = `
+          background: none;
+          border: none;
+          padding: 0.5rem;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 40px;
+          height: 40px;
+          border-radius: 4px;
+          transition: background-color 0.3s ease;
+        `;
         
-        // First try to manually initialize the Quarto search
-        if (typeof window['@algolia/autocomplete-js'] !== 'undefined') {
-          console.log('Trying to manually initialize search...');
-          try {
-            // Try to manually trigger Quarto search initialization
-            const searchOptions = document.getElementById('quarto-search-options');
-            if (searchOptions) {
-              const options = JSON.parse(searchOptions.textContent);
-              console.log('Search options found:', options);
-              
-              // Try to manually initialize the search
-              const { autocomplete } = window['@algolia/autocomplete-js'];
-              if (autocomplete && !searchEl.querySelector('.aa-Form')) {
-                console.log('Manually initializing autocomplete...');
-                const searchInstance = autocomplete({
-                  container: searchEl,
-                  placeholder: options.language['search-text-placeholder'] || 'Search...',
-                  debug: false,
-                  openOnFocus: true,
-                  getSources() {
-                    return [
-                      {
-                        sourceId: 'search',
-                        getItems({ query }) {
-                          if (!query) return [];
-                          // Simple fallback search - just filter available content
-                          return fetch('./search.json')
-                            .then(response => response.json())
-                            .then(data => {
-                              const results = data.filter(item => 
-                                item.title?.toLowerCase().includes(query.toLowerCase()) ||
-                                item.text?.toLowerCase().includes(query.toLowerCase())
-                              ).slice(0, 10);
-                              return results;
-                            })
-                            .catch(() => []);
-                        },
-                        getItemUrl({ item }) {
-                          return item.href;
-                        },
-                        templates: {
-                          item({ item }) {
-                            return `<div>
-                              <strong>${item.title || 'Untitled'}</strong>
-                              <div style="font-size: 0.9em; color: #666;">${item.text?.substring(0, 100) || ''}...</div>
-                            </div>`;
-                          }
-                        }
-                      }
-                    ];
-                  }
-                });
-                console.log('Search initialized successfully');
-                return;
-              }
-            }
-          } catch (error) {
-            console.log('Failed to manually initialize search:', error);
-          }
-        }
+        // Add the search icon using Font Awesome
+        const searchIcon = document.createElement('i');
+        searchIcon.className = 'fa-solid fa-magnifying-glass';
+        searchIcon.style.cssText = `
+          font-size: 16px;
+          color: var(--text-dark);
+          opacity: 0.7;
+          transition: opacity 0.3s ease;
+        `;
         
-        // Try to trigger the global search function if it exists
-        if (window.quartoOpenSearch) {
-          console.log('Using quartoOpenSearch');
-          window.quartoOpenSearch();
-        } else {
-          // Fallback: focus on any existing search input or create a simple search
-          const existingInput = document.querySelector('input[type="search"], .aa-Input');
-          if (existingInput) {
-            console.log('Focusing existing input');
-            existingInput.focus();
+        searchButton.appendChild(searchIcon);
+        
+        // Add hover effect
+        searchButton.addEventListener('mouseenter', () => {
+          searchIcon.style.opacity = '1';
+          searchButton.style.backgroundColor = 'rgba(138, 59, 59, 0.1)';
+        });
+        searchButton.addEventListener('mouseleave', () => {
+          searchIcon.style.opacity = '0.7';
+          searchButton.style.backgroundColor = 'transparent';
+        });
+        
+        // Add click handler to trigger search overlay
+        searchButton.addEventListener('click', (e) => {
+          e.preventDefault();
+          console.log('Desktop search button clicked');
+          // Always show the simple search overlay for desktop
+          showSimpleSearch();
+        });
+        
+        // Add the button to the search container
+        searchEl.appendChild(searchButton);
+        
+        // Ensure proper styling for dark mode
+        const updateIconColor = () => {
+          if (document.body.classList.contains('dark')) {
+            searchIcon.style.color = 'var(--day)';
+            searchButton.addEventListener('mouseenter', () => {
+              searchButton.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+            });
           } else {
-            console.log('Creating simple search overlay');
-            // Create a simple search overlay
-            showSimpleSearch();
+            searchIcon.style.color = 'var(--text-dark)';
+            searchButton.addEventListener('mouseenter', () => {
+              searchButton.style.backgroundColor = 'rgba(138, 59, 59, 0.1)';
+            });
           }
-        }
-      });
-      
-      // Add the button to the search container
-      searchEl.appendChild(searchButton);
-      
-      // Ensure proper styling for dark mode
-      const updateIconColor = () => {
-        if (document.body.classList.contains('dark')) {
-          searchIcon.style.color = 'var(--day)';
-        } else {
-          searchIcon.style.color = 'var(--text-dark)';
-        }
-      };
-      
-      // Initial color set
-      updateIconColor();
-      
-      // Listen for theme changes
-      const observer = new MutationObserver(() => {
+        };
+        
+        // Initial color set
         updateIconColor();
-      });
-      observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+        
+        // Listen for theme changes
+        const observer = new MutationObserver(() => {
+          updateIconColor();
+        });
+        observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+      }
     }
   }, 2000);
   

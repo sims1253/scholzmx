@@ -401,25 +401,57 @@ article.sunlit-content a:hover {
   justify-content: center;
 }
 
-/* Desktop: Show only small search icon */
+/* Desktop: Show only small search icon, hide all forms */
 @media (min-width: 992px) {
   #quarto-search {
     min-width: 40px;
+    max-width: 40px;
+    overflow: hidden;
   }
   
-  /* Hide the large search form on desktop */
-  #quarto-search .aa-Form {
+  /* Hide ALL search form elements on desktop - AGGRESSIVE */
+  #quarto-search .aa-Form,
+  #quarto-search .aa-InputWrapper,
+  #quarto-search .aa-Input,
+  #quarto-search input[type="search"],
+  #quarto-search input[type="text"],
+  #quarto-search .mobile-search-input,
+  #quarto-search .mobile-search-container,
+  .navbar input[type="search"],
+  .navbar input[type="text"],
+  .navbar .search-form,
+  .navbar .search-input,
+  .quarto-search input,
+  .quarto-search form,
+  .quarto-search .aa-Form,
+  .quarto-search .aa-InputWrapper,
+  .quarto-search .aa-Input {
     display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    position: absolute !important;
+    left: -9999px !important;
   }
   
-  /* Hide the search input field on desktop */
-  #quarto-search .aa-InputWrapper {
+  /* Hide any ugly search buttons created by JavaScript - AGGRESSIVE */
+  #quarto-search button:not(.aa-SubmitButton):not([class*="aa-"]),
+  #quarto-search button[type="button"]:not(.aa-SubmitButton),
+  #quarto-search button[type="submit"]:not(.aa-SubmitButton),
+  .navbar button[style*="background"],
+  .navbar .search-button,
+  .quarto-search button:not(.aa-SubmitButton),
+  #quarto-search .mobile-search-button {
     display: none !important;
-  }
-  
-  /* Hide the search input on desktop */
-  #quarto-search .aa-Input {
-    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    position: absolute !important;
+    left: -9999px !important;
   }
   
   /* Show clean search icon when search is not initialized */
@@ -432,13 +464,18 @@ article.sunlit-content a:hover {
     opacity: 0.7;
     cursor: pointer;
     transition: opacity 0.3s ease;
+    color: var(--text-dark);
   }
   
   #quarto-search:empty:hover::before {
     opacity: 1;
   }
   
-  /* When search is initialized, show only the search button */
+  .dark #quarto-search:empty::before {
+    color: var(--day);
+  }
+  
+  /* When search is initialized, show only the search icon button */
   #quarto-search .aa-SubmitButton {
     display: flex !important;
     align-items: center;
@@ -446,9 +483,11 @@ article.sunlit-content a:hover {
     background: none !important;
     border: none !important;
     cursor: pointer;
-    padding: 0.5rem;
+    padding: 0.5rem !important;
     border-radius: 4px;
     transition: background-color 0.3s ease;
+    width: 40px;
+    height: 40px;
   }
   
   #quarto-search .aa-SubmitButton:hover {
@@ -458,10 +497,45 @@ article.sunlit-content a:hover {
   .dark #quarto-search .aa-SubmitButton:hover {
     background-color: rgba(255, 255, 255, 0.1) !important;
   }
+  
+  /* Hide fallback search buttons on desktop - they are ugly */
+  #quarto-search button[style*="background: var(--accent-terracotta)"],
+  #quarto-search button[style*="background:var(--accent-terracotta)"],
+  #quarto-search .mobile-search-button {
+    display: none !important;
+  }
+  
+  /* Style the desktop search fallback icon */
+  #quarto-search .desktop-search-fallback {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    background: none !important;
+    border: none !important;
+    cursor: pointer;
+    padding: 0.5rem !important;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+    width: 40px;
+    height: 40px;
+  }
+  
+  #quarto-search .desktop-search-fallback:hover {
+    background-color: rgba(138, 59, 59, 0.1) !important;
+  }
+  
+  .dark #quarto-search .desktop-search-fallback:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+  }
 }
 
-/* Mobile and Tablet: Show full search functionality */
+/* Mobile and Tablet: Hide navbar search, use mobile menu search instead */
 @media (max-width: 991px) {
+  /* Hide the navbar search element completely on mobile/tablet */
+  #quarto-search {
+    display: none !important;
+  }
+  
   .quarto-search {
     position: relative;
     z-index: 1000;
@@ -1158,7 +1232,7 @@ article.sunlit-content a:hover {
 
 /* Medieval-Style Drop Caps */
 /* Import authentic medieval manuscript fonts */
-@import url('https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&family=Pirata+One&family=Griffy&family=Uncial+Antiqua&family=EB+Garamond:wght@400;500;600;700&display=swap');
+/* Google Fonts removed for privacy compliance - using fallback fonts */
 
 /* Define color variables for medieval manuscript drop caps */
 :root {
@@ -1183,7 +1257,7 @@ main.content > p:first-child::first-letter,
 .manuscript-content p:first-of-type::first-letter {
   /* Basic positioning and size */
   float: left;
-  font-family: "UnifrakturCook", "Pirata One", "Griffy", "Uncial Antiqua", serif;
+  font-family: "Old English Text MT", "Blackletter", "Gothic", "Fraktur", "Book Antiqua", "Times New Roman", serif;
   font-size: 6rem;
   line-height: 0.8;
   font-weight: 700;
@@ -1420,7 +1494,7 @@ main.content > p:first-child,
 .research-page #quarto-document-content > p:first-of-type::first-letter,
 .research-page .manuscript-content p:first-of-type::first-letter {
   color: var(--drop-cap-ink);
-  font-family: "UnifrakturCook", "Uncial Antiqua", serif;
+  font-family: "Old English Text MT", "Book Antiqua", "Times New Roman", serif;
   text-shadow: 
     1px 1px 0 var(--drop-cap-vellum),
     2px 2px 0 var(--drop-cap-shadow),
@@ -1436,7 +1510,7 @@ main.content > p:first-child,
 .blog-page #quarto-document-content > p:first-of-type::first-letter,
 .blog-page .manuscript-content p:first-of-type::first-letter {
   color: var(--drop-cap-azure);
-  font-family: "Griffy", "Pirata One", serif;
+  font-family: "Blackletter", "Book Antiqua", "Times New Roman", serif;
   text-shadow: 
     1px 1px 0 var(--drop-cap-vellum),
     2px 2px 0 rgba(74, 144, 226, 0.3),
@@ -1452,7 +1526,7 @@ main.content > p:first-child,
 .projects-page #quarto-document-content > p:first-of-type::first-letter,
 .projects-page .manuscript-content p:first-of-type::first-letter {
   color: var(--drop-cap-gold);
-  font-family: "Pirata One", "Griffy", serif;
+  font-family: "Old English Text MT", "Book Antiqua", "Times New Roman", serif;
   text-shadow: 
     1px 1px 0 var(--drop-cap-vellum),
     2px 2px 0 rgba(201, 169, 97, 0.4),
