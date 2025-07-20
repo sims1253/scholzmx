@@ -1,0 +1,979 @@
+{
+  "timestamp": "2025-07-20T13:57:53.931Z",
+  "pages": [
+    {
+      "pageName": "Homepage",
+      "url": "https://scholzmx.com",
+      "totalTime": 4629,
+      "performance": {
+        "domContentLoaded": 13.900000002235174,
+        "loadComplete": 7,
+        "firstPaint": 1264,
+        "firstContentfulPaint": 1264,
+        "domInteractive": 981.3999999985099,
+        "totalLoadTime": 1125.699999999255
+      },
+      "webVitals": {
+        "lcp": null,
+        "fid": null,
+        "cls": 0
+      },
+      "resources": [
+        {
+          "url": "https://scholzmx.com/",
+          "size": 40,
+          "type": "text/plain; charset=utf-8",
+          "status": 301
+        },
+        {
+          "url": "https://www.scholzmx.com/",
+          "size": 4221,
+          "type": "text/html; charset=UTF-8",
+          "status": 200
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Merriweather&family=Roboto+Mono&display=swap",
+          "size": 0,
+          "type": "text/css; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://identity.netlify.com/v1/netlify-identity-widget.js",
+          "size": 54594,
+          "type": "application/javascript; charset=UTF-8",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/js/mathjax-config.js",
+          "size": 528,
+          "type": "application/javascript; charset=UTF-8",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/js/wowchemy-init.min.8f76bdc9e086322ed5147724ebba3d06.js",
+          "size": 599,
+          "type": "application/javascript; charset=UTF-8",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/author/maximilian-scholz/avatar_hu677229a8e88fcda36e75742201837208_26523_270x270_fill_q75_lanczos_center.jpg",
+          "size": 11040,
+          "type": "image/jpeg",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/desandro/imagesloaded@v4.1.4/imagesloaded.pkgd.min.js",
+          "size": 1911,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/metafizzy/isotope@v3.0.6/dist/isotope.pkgd.min.js",
+          "size": 10668,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.2.1/build/highlight.min.js",
+          "size": 35004,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.2.1/build/languages/r.min.js",
+          "size": 518,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.2.1/build/languages/python.min.js",
+          "size": 868,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.2.1/build/languages/latex.min.js",
+          "size": 372,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.min.js",
+          "size": 39314,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/krisk/Fuse@v3.2.1/dist/fuse.min.js",
+          "size": 4024,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/julmot/mark.js@8.11.1/dist/jquery.mark.min.js",
+          "size": 5597,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/css/wowchemy.c7f37aec95bb5879591fb5ae1db671b9.css",
+          "size": 0,
+          "type": "text/css; charset=UTF-8",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/js/vendor-bundle.min.b73dfaac3b6499dc997741748a7c3fe2.js",
+          "size": 0,
+          "type": "application/javascript; charset=UTF-8",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/en/js/wowchemy.min.247fd8f54253895301106e3006f53f38.js",
+          "size": 0,
+          "type": "application/javascript; charset=UTF-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js",
+          "size": 229434,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.2.1/build/styles/github.min.css",
+          "size": 324,
+          "type": "text/css; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.min.css",
+          "size": 2751,
+          "type": "text/css; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/academicons@1.9.1/css/academicons.min.css",
+          "size": 1488,
+          "type": "text/css; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://fonts.gstatic.com/s/lato/v24/S6uyw4BMUTPHjx4wXg.woff2",
+          "size": 23580,
+          "type": "font/woff2",
+          "status": 200
+        },
+        {
+          "url": "https://fonts.gstatic.com/s/lato/v24/S6u9w4BMUTPHh6UVSwiPGQ.woff2",
+          "size": 23040,
+          "type": "font/woff2",
+          "status": 200
+        },
+        {
+          "url": "https://fonts.gstatic.com/s/merriweather/v32/u-4D0qyriQwlOrhSvowK_l5UcA6zuSYEqOzpPe3HOZJ5eX1WtLaQwmYiScCmDxhtNOKl8yDr3icaFF31.woff2",
+          "size": 49168,
+          "type": "font/woff2",
+          "status": 200
+        },
+        {
+          "url": "https://buttons.github.io/buttons.js",
+          "size": 6701,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/academicons@1.9.1/fonts/academicons.ttf",
+          "size": 35609,
+          "type": "font/ttf",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/mathjax@3/es5/input/tex/extensions/noerrors.js",
+          "size": 544,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/css/vendor-bundle.min.f1ecf783c14edc00c9320c205831ad8e.css",
+          "size": 0,
+          "type": "text/css; charset=UTF-8",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/index.json",
+          "size": 0,
+          "type": "application/json",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/media/icon_hua2ec155b4296a9c9791d015323e16eb5_11927_32x32_fill_lanczos_center_3.png",
+          "size": 1043,
+          "type": "image/png",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/manifest.webmanifest",
+          "size": 474,
+          "type": "application/octet-stream",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/webfonts/fa-solid-900.woff2",
+          "size": 78196,
+          "type": "font/woff2",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/webfonts/fa-brands-400.woff2",
+          "size": 76764,
+          "type": "font/woff2",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/media/icon_hua2ec155b4296a9c9791d015323e16eb5_11927_192x192_fill_lanczos_center_3.png",
+          "size": 6633,
+          "type": "image/png",
+          "status": 200
+        }
+      ],
+      "resourceCount": 36,
+      "totalResourceSize": 705047
+    },
+    {
+      "pageName": "Blog",
+      "url": "https://scholzmx.com/blog.html",
+      "totalTime": 3415,
+      "performance": {
+        "domContentLoaded": 3.099999997764826,
+        "loadComplete": 1.7000000029802322,
+        "firstPaint": 476,
+        "firstContentfulPaint": 476,
+        "domInteractive": 366.19999999925494,
+        "totalLoadTime": 483.1000000014901
+      },
+      "webVitals": {
+        "lcp": null,
+        "fid": null,
+        "cls": 0
+      },
+      "resources": [
+        {
+          "url": "https://scholzmx.com/blog.html",
+          "size": 49,
+          "type": "text/plain; charset=utf-8",
+          "status": 301
+        },
+        {
+          "url": "https://www.scholzmx.com/blog.html",
+          "size": 0,
+          "type": "text/html; charset=utf-8",
+          "status": 404
+        },
+        {
+          "url": "https://www.scholzmx.com/css/wowchemy.c7f37aec95bb5879591fb5ae1db671b9.css",
+          "size": 28092,
+          "type": "text/css; charset=UTF-8",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/js/mathjax-config.js",
+          "size": 528,
+          "type": "application/javascript; charset=UTF-8",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/js/wowchemy-init.min.8f76bdc9e086322ed5147724ebba3d06.js",
+          "size": 599,
+          "type": "application/javascript; charset=UTF-8",
+          "status": 200
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Merriweather&family=Roboto+Mono&display=swap",
+          "size": 0,
+          "type": "text/css; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/en/js/wowchemy.min.247fd8f54253895301106e3006f53f38.js",
+          "size": 8260,
+          "type": "application/javascript; charset=UTF-8",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/css/vendor-bundle.min.f1ecf783c14edc00c9320c205831ad8e.css",
+          "size": 12427,
+          "type": "text/css; charset=UTF-8",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/js/vendor-bundle.min.b73dfaac3b6499dc997741748a7c3fe2.js",
+          "size": 53552,
+          "type": "application/javascript; charset=UTF-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/academicons@1.9.1/css/academicons.min.css",
+          "size": 1488,
+          "type": "text/css; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.2.1/build/styles/github.min.css",
+          "size": 324,
+          "type": "text/css; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.min.css",
+          "size": 2751,
+          "type": "text/css; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://fonts.gstatic.com/s/merriweather/v32/u-4D0qyriQwlOrhSvowK_l5UcA6zuSYEqOzpPe3HOZJ5eX1WtLaQwmYiScCmDxhtNOKl8yDr3icaFF31.woff2",
+          "size": 49168,
+          "type": "font/woff2",
+          "status": 200
+        },
+        {
+          "url": "https://fonts.gstatic.com/s/lato/v24/S6uyw4BMUTPHjx4wXg.woff2",
+          "size": 23580,
+          "type": "font/woff2",
+          "status": 200
+        },
+        {
+          "url": "https://fonts.gstatic.com/s/lato/v24/S6u9w4BMUTPHh6UVSwiPGQ.woff2",
+          "size": 23040,
+          "type": "font/woff2",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/webfonts/fa-solid-900.woff2",
+          "size": 78196,
+          "type": "font/woff2",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/metafizzy/isotope@v3.0.6/dist/isotope.pkgd.min.js",
+          "size": 10668,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.2.1/build/languages/python.min.js",
+          "size": 868,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/krisk/Fuse@v3.2.1/dist/fuse.min.js",
+          "size": 4024,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.2.1/build/languages/r.min.js",
+          "size": 518,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.2.1/build/languages/latex.min.js",
+          "size": 372,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/julmot/mark.js@8.11.1/dist/jquery.mark.min.js",
+          "size": 5597,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.min.js",
+          "size": 39314,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.2.1/build/highlight.min.js",
+          "size": 35004,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://buttons.github.io/buttons.js",
+          "size": 6701,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js",
+          "size": 229434,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/desandro/imagesloaded@v4.1.4/imagesloaded.pkgd.min.js",
+          "size": 1911,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/index.json",
+          "size": 20790,
+          "type": "application/json",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/mathjax@3/es5/input/tex/extensions/noerrors.js",
+          "size": 544,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/js/wowchemy-headroom.1cb9e2fc8399acee94eab837265b73bf.js",
+          "size": 1933,
+          "type": "application/javascript; charset=UTF-8",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/media/icon_hua2ec155b4296a9c9791d015323e16eb5_11927_32x32_fill_lanczos_center_3.png",
+          "size": 1043,
+          "type": "image/png",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/manifest.webmanifest",
+          "size": 474,
+          "type": "application/octet-stream",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/media/icon_hua2ec155b4296a9c9791d015323e16eb5_11927_192x192_fill_lanczos_center_3.png",
+          "size": 6633,
+          "type": "image/png",
+          "status": 200
+        }
+      ],
+      "resourceCount": 33,
+      "totalResourceSize": 647882
+    },
+    {
+      "pageName": "Research",
+      "url": "https://scholzmx.com/research.html",
+      "totalTime": 3464,
+      "performance": {
+        "domContentLoaded": 0.5,
+        "loadComplete": 2.699999999254942,
+        "firstPaint": 468,
+        "firstContentfulPaint": 468,
+        "domInteractive": 307.5999999977648,
+        "totalLoadTime": 426.69999999925494
+      },
+      "webVitals": {
+        "lcp": null,
+        "fid": null,
+        "cls": 0
+      },
+      "resources": [
+        {
+          "url": "https://scholzmx.com/research.html",
+          "size": 53,
+          "type": "text/plain; charset=utf-8",
+          "status": 301
+        },
+        {
+          "url": "https://www.scholzmx.com/research.html",
+          "size": 0,
+          "type": "text/html; charset=utf-8",
+          "status": 404
+        },
+        {
+          "url": "https://www.scholzmx.com/css/wowchemy.c7f37aec95bb5879591fb5ae1db671b9.css",
+          "size": 28092,
+          "type": "text/css; charset=UTF-8",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/js/mathjax-config.js",
+          "size": 528,
+          "type": "application/javascript; charset=UTF-8",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/js/wowchemy-init.min.8f76bdc9e086322ed5147724ebba3d06.js",
+          "size": 599,
+          "type": "application/javascript; charset=UTF-8",
+          "status": 200
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Merriweather&family=Roboto+Mono&display=swap",
+          "size": 0,
+          "type": "text/css; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/css/vendor-bundle.min.f1ecf783c14edc00c9320c205831ad8e.css",
+          "size": 12427,
+          "type": "text/css; charset=UTF-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.2.1/build/styles/github.min.css",
+          "size": 324,
+          "type": "text/css; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://fonts.gstatic.com/s/merriweather/v32/u-4D0qyriQwlOrhSvowK_l5UcA6zuSYEqOzpPe3HOZJ5eX1WtLaQwmYiScCmDxhtNOKl8yDr3icaFF31.woff2",
+          "size": 49168,
+          "type": "font/woff2",
+          "status": 200
+        },
+        {
+          "url": "https://fonts.gstatic.com/s/lato/v24/S6u9w4BMUTPHh6UVSwiPGQ.woff2",
+          "size": 23040,
+          "type": "font/woff2",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/academicons@1.9.1/css/academicons.min.css",
+          "size": 1488,
+          "type": "text/css; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.min.css",
+          "size": 2751,
+          "type": "text/css; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://fonts.gstatic.com/s/lato/v24/S6uyw4BMUTPHjx4wXg.woff2",
+          "size": 23580,
+          "type": "font/woff2",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/js/vendor-bundle.min.b73dfaac3b6499dc997741748a7c3fe2.js",
+          "size": 53552,
+          "type": "application/javascript; charset=UTF-8",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/js/wowchemy-headroom.1cb9e2fc8399acee94eab837265b73bf.js",
+          "size": 1933,
+          "type": "application/javascript; charset=UTF-8",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/en/js/wowchemy.min.247fd8f54253895301106e3006f53f38.js",
+          "size": 8260,
+          "type": "application/javascript; charset=UTF-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/desandro/imagesloaded@v4.1.4/imagesloaded.pkgd.min.js",
+          "size": 1911,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.2.1/build/languages/latex.min.js",
+          "size": 372,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/metafizzy/isotope@v3.0.6/dist/isotope.pkgd.min.js",
+          "size": 10668,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.2.1/build/languages/r.min.js",
+          "size": 518,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.2.1/build/languages/python.min.js",
+          "size": 868,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/krisk/Fuse@v3.2.1/dist/fuse.min.js",
+          "size": 4024,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/julmot/mark.js@8.11.1/dist/jquery.mark.min.js",
+          "size": 5597,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.min.js",
+          "size": 39314,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.2.1/build/highlight.min.js",
+          "size": 35004,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://buttons.github.io/buttons.js",
+          "size": 6701,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js",
+          "size": 229434,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/webfonts/fa-solid-900.woff2",
+          "size": 78196,
+          "type": "font/woff2",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/index.json",
+          "size": 20790,
+          "type": "application/json",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/mathjax@3/es5/input/tex/extensions/noerrors.js",
+          "size": 544,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/media/icon_hua2ec155b4296a9c9791d015323e16eb5_11927_32x32_fill_lanczos_center_3.png",
+          "size": 1043,
+          "type": "image/png",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/manifest.webmanifest",
+          "size": 474,
+          "type": "application/octet-stream",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/media/icon_hua2ec155b4296a9c9791d015323e16eb5_11927_192x192_fill_lanczos_center_3.png",
+          "size": 6633,
+          "type": "image/png",
+          "status": 200
+        }
+      ],
+      "resourceCount": 33,
+      "totalResourceSize": 647886
+    },
+    {
+      "pageName": "Projects",
+      "url": "https://scholzmx.com/projects/",
+      "totalTime": 3496,
+      "performance": {
+        "domContentLoaded": 3.599999997764826,
+        "loadComplete": 2.800000000745058,
+        "firstPaint": 948,
+        "firstContentfulPaint": 948,
+        "domInteractive": 768.8999999985099,
+        "totalLoadTime": 1046.699999999255
+      },
+      "webVitals": {
+        "lcp": null,
+        "fid": null,
+        "cls": 0
+      },
+      "resources": [
+        {
+          "url": "https://scholzmx.com/projects/",
+          "size": 49,
+          "type": "text/plain; charset=utf-8",
+          "status": 301
+        },
+        {
+          "url": "https://www.scholzmx.com/projects/",
+          "size": 0,
+          "type": "text/html; charset=utf-8",
+          "status": 404
+        },
+        {
+          "url": "https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Merriweather&family=Roboto+Mono&display=swap",
+          "size": 0,
+          "type": "text/css; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.2.1/build/languages/python.min.js",
+          "size": 868,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.2.1/build/languages/r.min.js",
+          "size": 518,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/desandro/imagesloaded@v4.1.4/imagesloaded.pkgd.min.js",
+          "size": 1911,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/metafizzy/isotope@v3.0.6/dist/isotope.pkgd.min.js",
+          "size": 10668,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.2.1/build/languages/latex.min.js",
+          "size": 372,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/krisk/Fuse@v3.2.1/dist/fuse.min.js",
+          "size": 4024,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/julmot/mark.js@8.11.1/dist/jquery.mark.min.js",
+          "size": 5597,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.2.1/build/highlight.min.js",
+          "size": 35004,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.min.js",
+          "size": 39314,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/js/mathjax-config.js",
+          "size": 528,
+          "type": "application/javascript; charset=UTF-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.2.1/build/styles/github.min.css",
+          "size": 324,
+          "type": "text/css; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/academicons@1.9.1/css/academicons.min.css",
+          "size": 1488,
+          "type": "text/css; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.min.css",
+          "size": 2751,
+          "type": "text/css; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/js/wowchemy-init.min.8f76bdc9e086322ed5147724ebba3d06.js",
+          "size": 599,
+          "type": "application/javascript; charset=UTF-8",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/js/wowchemy-headroom.1cb9e2fc8399acee94eab837265b73bf.js",
+          "size": 0,
+          "type": "application/javascript; charset=UTF-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js",
+          "size": 229434,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://buttons.github.io/buttons.js",
+          "size": 6701,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/css/wowchemy.c7f37aec95bb5879591fb5ae1db671b9.css",
+          "size": 0,
+          "type": "text/css; charset=UTF-8",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/en/js/wowchemy.min.247fd8f54253895301106e3006f53f38.js",
+          "size": 0,
+          "type": "application/javascript; charset=UTF-8",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/css/vendor-bundle.min.f1ecf783c14edc00c9320c205831ad8e.css",
+          "size": 0,
+          "type": "text/css; charset=UTF-8",
+          "status": 200
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/mathjax@3/es5/input/tex/extensions/noerrors.js",
+          "size": 544,
+          "type": "application/javascript; charset=utf-8",
+          "status": 200
+        },
+        {
+          "url": "https://fonts.gstatic.com/s/lato/v24/S6u9w4BMUTPHh6UVSwiPGQ.woff2",
+          "size": 23040,
+          "type": "font/woff2",
+          "status": 200
+        },
+        {
+          "url": "https://fonts.gstatic.com/s/lato/v24/S6uyw4BMUTPHjx4wXg.woff2",
+          "size": 23580,
+          "type": "font/woff2",
+          "status": 200
+        },
+        {
+          "url": "https://fonts.gstatic.com/s/merriweather/v32/u-4D0qyriQwlOrhSvowK_l5UcA6zuSYEqOzpPe3HOZJ5eX1WtLaQwmYiScCmDxhtNOKl8yDr3icaFF31.woff2",
+          "size": 49168,
+          "type": "font/woff2",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/js/vendor-bundle.min.b73dfaac3b6499dc997741748a7c3fe2.js",
+          "size": 0,
+          "type": "application/javascript; charset=UTF-8",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/index.json",
+          "size": 0,
+          "type": "application/json",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/webfonts/fa-solid-900.woff2",
+          "size": 78196,
+          "type": "font/woff2",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/media/icon_hua2ec155b4296a9c9791d015323e16eb5_11927_32x32_fill_lanczos_center_3.png",
+          "size": 1043,
+          "type": "image/png",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/manifest.webmanifest",
+          "size": 474,
+          "type": "application/octet-stream",
+          "status": 200
+        },
+        {
+          "url": "https://www.scholzmx.com/media/icon_hua2ec155b4296a9c9791d015323e16eb5_11927_192x192_fill_lanczos_center_3.png",
+          "size": 6633,
+          "type": "image/png",
+          "status": 200
+        }
+      ],
+      "resourceCount": 33,
+      "totalResourceSize": 522828
+    }
+  ],
+  "assets": {
+    "images": [],
+    "fonts": [],
+    "svgs": [],
+    "css": [
+      {
+        "path": "node_modules\\@lhci\\cli\\node_modules\\lighthouse\\flow-report\\assets\\styles.css",
+        "size": 16228,
+        "type": "css",
+        "lastModified": "2025-07-20T13:56:50.859Z",
+        "recommendations": []
+      },
+      {
+        "path": "node_modules\\@lhci\\cli\\node_modules\\lighthouse\\report\\assets\\styles.css",
+        "size": 71961,
+        "type": "css",
+        "lastModified": "2025-07-20T13:56:50.895Z",
+        "recommendations": []
+      },
+      {
+        "path": "node_modules\\@lhci\\utils\\node_modules\\lighthouse\\flow-report\\assets\\styles.css",
+        "size": 16228,
+        "type": "css",
+        "lastModified": "2025-07-20T13:56:50.857Z",
+        "recommendations": []
+      },
+      {
+        "path": "node_modules\\@lhci\\utils\\node_modules\\lighthouse\\report\\assets\\styles.css",
+        "size": 71961,
+        "type": "css",
+        "lastModified": "2025-07-20T13:56:50.895Z",
+        "recommendations": []
+      },
+      {
+        "path": "node_modules\\lighthouse\\flow-report\\assets\\styles.css",
+        "size": 16228,
+        "type": "css",
+        "lastModified": "2025-07-20T13:56:51.110Z",
+        "recommendations": []
+      },
+      {
+        "path": "node_modules\\lighthouse\\report\\assets\\styles.css",
+        "size": 72074,
+        "type": "css",
+        "lastModified": "2025-07-20T13:56:51.135Z",
+        "recommendations": []
+      },
+      {
+        "path": "node_modules\\mute-stream\\coverage\\lcov-report\\base.css",
+        "size": 5058,
+        "type": "css",
+        "lastModified": "2025-07-20T13:52:42.270Z",
+        "recommendations": []
+      },
+      {
+        "path": "node_modules\\mute-stream\\coverage\\lcov-report\\prettify.css",
+        "size": 676,
+        "type": "css",
+        "lastModified": "2025-07-20T13:52:42.301Z",
+        "recommendations": []
+      }
+    ],
+    "js": []
+  },
+  "summary": {
+    "averageLoadTime": 3751,
+    "averageResourceCount": 34,
+    "averageResourceSize": 616,
+    "totalAssets": 8,
+    "totalAssetSize": 0.26,
+    "performanceTarget": 3000,
+    "meetsTarget": false,
+    "recommendations": [
+      "Page load time exceeds 3-second target"
+    ]
+  }
+}

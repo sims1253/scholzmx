@@ -1,0 +1,21 @@
+{
+  "name": "scholzmx-website",
+  "version": "1.0.0",
+  "description": "Personal website with performance monitoring",
+  "scripts": {
+    "install:performance": "cd performance && npm install",
+    "build:performance": "cd performance && npm run build",
+    "lighthouse": "cd performance && npm run lighthouse",
+    "test:performance": "cd performance && npm run test:local"
+  },
+  "devDependencies": {
+    "@lhci/cli": "^0.15.1"
+  },
+  "keywords": [
+    "website",
+    "quarto",
+    "performance"
+  ],
+  "author": "Maximilian Scholz",
+  "license": "MIT"
+}

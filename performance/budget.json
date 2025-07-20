@@ -1,0 +1,38 @@
+{
+  "budget": [
+    {
+      "resourceType": "total",
+      "budget": 500
+    },
+    {
+      "resourceType": "image",
+      "budget": 200
+    },
+    {
+      "resourceType": "script",
+      "budget": 100
+    },
+    {
+      "resourceType": "stylesheet",
+      "budget": 50
+    },
+    {
+      "resourceType": "font",
+      "budget": 100
+    }
+  ],
+  "timing": [
+    {
+      "metric": "first-contentful-paint",
+      "budget": 1800
+    },
+    {
+      "metric": "largest-contentful-paint",
+      "budget": 2500
+    },
+    {
+      "metric": "cumulative-layout-shift",
+      "budget": 0.1
+    }
+  ]
+}

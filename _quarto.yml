@@ -9,7 +9,8 @@ website:
     location: navbar
     type: overlay
   navbar:
-    right:
+    title: false
+    left:
       - href: index.qmd
         text: Home
       - href: blog.qmd
@@ -20,6 +21,7 @@ website:
         text: Projects
       - href: recipes.qmd
         text: Recipes
+    right:
       - text: <i class="fa-solid fa-sun" id="theme-toggle"></i>
         href: "#"
         aria-label: "Toggle theme"
@@ -30,6 +32,8 @@ format:
     css: styles.css
     include-in-header: 
       - _include-header.html
+    include-before-body:
+      - _integrated-nav.html
     include-after-body: 
       - _include-script.html
     toc: true

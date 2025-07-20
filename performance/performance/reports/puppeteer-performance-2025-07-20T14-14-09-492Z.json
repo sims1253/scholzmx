@@ -1,0 +1,81 @@
+{
+  "timestamp": "2025-07-20T14:14:09.493Z",
+  "tool": "puppeteer",
+  "results": [
+    {
+      "url": "https://scholzmx.com",
+      "timestamp": "2025-07-20T14:13:57.354Z",
+      "metrics": {
+        "loadTime": 1176,
+        "firstContentfulPaint": 860,
+        "largestContentfulPaint": 0,
+        "cumulativeLayoutShift": 0,
+        "totalBlockingTime": 0,
+        "speedIndex": 0
+      },
+      "scores": {
+        "performance": 100,
+        "accessibility": 85
+      },
+      "recommendations": []
+    },
+    {
+      "url": "https://scholzmx.com/blog.html",
+      "timestamp": "2025-07-20T14:14:01.415Z",
+      "metrics": {
+        "loadTime": 346,
+        "firstContentfulPaint": 244,
+        "largestContentfulPaint": 0,
+        "cumulativeLayoutShift": 0,
+        "totalBlockingTime": 0,
+        "speedIndex": 0
+      },
+      "scores": {
+        "performance": 100,
+        "accessibility": 85
+      },
+      "recommendations": []
+    },
+    {
+      "url": "https://scholzmx.com/research.html",
+      "timestamp": "2025-07-20T14:14:05.447Z",
+      "metrics": {
+        "loadTime": 347,
+        "firstContentfulPaint": 252,
+        "largestContentfulPaint": 0,
+        "cumulativeLayoutShift": 0,
+        "totalBlockingTime": 0,
+        "speedIndex": 0
+      },
+      "scores": {
+        "performance": 100,
+        "accessibility": 85
+      },
+      "recommendations": []
+    },
+    {
+      "url": "https://scholzmx.com/projects/",
+      "timestamp": "2025-07-20T14:14:09.481Z",
+      "metrics": {
+        "loadTime": 348,
+        "firstContentfulPaint": 244,
+        "largestContentfulPaint": 0,
+        "cumulativeLayoutShift": 0,
+        "totalBlockingTime": 0,
+        "speedIndex": 0
+      },
+      "scores": {
+        "performance": 100,
+        "accessibility": 85
+      },
+      "recommendations": []
+    }
+  ],
+  "summary": {
+    "totalPages": 4,
+    "averageLoadTime": 554,
+    "averagePerformanceScore": 100,
+    "meetsTarget": true,
+    "recommendations": []
+  }
+}

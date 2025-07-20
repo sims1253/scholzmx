@@ -1,0 +1,55 @@
+{
+  "budget": [
+    {
+      "resourceType": "total",
+      "budget": 500
+    },
+    {
+      "resourceType": "image",
+      "budget": 200
+    },
+    {
+      "resourceType": "script",
+      "budget": 100
+    },
+    {
+      "resourceType": "stylesheet",
+      "budget": 50
+    },
+    {
+      "resourceType": "font",
+      "budget": 100
+    }
+  ],
+  "timing": [
+    {
+      "metric": "first-contentful-paint",
+      "budget": 1800
+    },
+    {
+      "metric": "largest-contentful-paint",
+      "budget": 2500
+    },
+    {
+      "metric": "cumulative-layout-shift",
+      "budget": 0.1
+    },
+    {
+      "metric": "total-blocking-time",
+      "budget": 300
+    }
+  ],
+  "targets": {
+    "loadTime": 3000,
+    "performanceScore": 80,
+    "accessibilityScore": 90,
+    "bestPracticesScore": 80,
+    "seoScore": 80
+  },
+  "notes": {
+    "baseline": "2025-07-20",
+    "currentLoadTime": 3751,
+    "targetReduction": 751,
+    "priority": "Reduce load time by 20% to meet 3-second target"
+  }
+}

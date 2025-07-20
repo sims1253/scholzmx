@@ -1,0 +1,41 @@
+{
+  "name": "homepage-performance-tools",
+  "version": "1.0.0",
+  "description": "Performance auditing and monitoring tools for homepage enhancement",
+  "main": "dist/audit-baseline.js",
+  "devDependencies": {
+    "@types/node": "^24.0.15",
+    "@types/puppeteer": "^5.4.7",
+    "typescript": "^5.8.3"
+  },
+  "scripts": {
+    "build": "tsc",
+    "audit": "npm run build && node dist/audit-baseline.js",
+    "audit:production": "npm run build && node dist/audit-baseline.js --production",
+    "lighthouse": "npm run build && node dist/lighthouse-audit.js",
+    "lighthouse:production": "npm run build && node dist/lighthouse-audit.js --production",
+    "puppeteer": "npm run build && node dist/puppeteer-test.js",
+    "puppeteer:production": "npm run build && node dist/puppeteer-test.js --production",
+    "test:local": "npm run puppeteer",
+    "report": "npm run build && node dist/performance-reporter.js",
+    "report:update": "npm run build && node dist/performance-reporter.js",
+    "setup": "npm run build && node dist/lighthouse-audit.js",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "performance",
+    "audit",
+    "lighthouse",
+    "web-vitals",
+    "typescript"
+  ],
+  "author": "Maximilian Scholz",
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "@lhci/cli": "^0.15.1",
+    "lighthouse": "^12.8.0",
+    "puppeteer": "^24.14.0"
+  }
+}

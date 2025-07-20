@@ -1736,7 +1736,174 @@ nav#TOC,
   z-index: 99;
 }
 
-/* Responsive Navigation Following TurnTrout Approach */
+/* Integrated Navigation - TurnTrout/SimonSarris Style */
+
+/* Hide the default Quarto navbar completely */
+#quarto-header {
+  display: none !important;
+}
+
+/* Create custom integrated navigation */
+.integrated-nav {
+  max-width: 65ch;
+  margin: 0 auto;
+  padding: 2rem 1rem 1rem 1rem;
+  position: relative;
+  z-index: 1000;
+  text-align: center;
+}
+
+/* Fallback for browsers that don't support ch units */
+@supports not (max-width: 65ch) {
+  .integrated-nav {
+    max-width: 700px;
+  }
+}
+
+/* Author name - primary element */
+.integrated-nav h1 {
+  font-size: 2.5rem;
+  font-weight: 300;
+  color: var(--text-dark);
+  font-family: Georgia, 'Times New Roman', serif;
+  margin: 0 0 0.5rem 0;
+  letter-spacing: 0.5px;
+}
+
+.dark .integrated-nav h1 {
+  color: var(--day);
+}
+
+/* Navigation links container */
+.integrated-nav-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+/* Navigation links */
+.integrated-nav-links a {
+  color: var(--text-dark);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 400;
+  transition: color 0.3s ease;
+  position: relative;
+}
+
+.integrated-nav-links a:hover {
+  color: var(--accent-terracotta);
+}
+
+.dark .integrated-nav-links a {
+  color: var(--day);
+}
+
+.dark .integrated-nav-links a:hover {
+  color: var(--accent-terracotta);
+}
+
+/* Dot separators */
+.integrated-nav-links .separator {
+  color: var(--text-dark);
+  opacity: 0.5;
+  font-size: 0.8rem;
+  margin: 0 0.25rem;
+}
+
+.dark .integrated-nav-links .separator {
+  color: var(--day);
+}
+
+/* Theme toggle styling */
+.integrated-nav-links .theme-toggle {
+  background: none;
+  border: none;
+  color: var(--text-dark);
+  cursor: pointer;
+  font-size: 1rem;
+  transition: color 0.3s ease, transform 0.2s ease;
+  padding: 0.25rem;
+}
+
+.integrated-nav-links .theme-toggle:hover {
+  color: var(--accent-terracotta);
+  transform: scale(1.1);
+}
+
+.dark .integrated-nav-links .theme-toggle {
+  color: var(--day);
+}
+
+.dark .integrated-nav-links .theme-toggle:hover {
+  color: var(--accent-terracotta);
+}
+
+/* Search integration */
+.integrated-nav-search {
+  background: none;
+  border: none;
+  color: var(--text-dark);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+  padding: 0.25rem;
+}
+
+.integrated-nav-search:hover {
+  color: var(--accent-terracotta);
+}
+
+.dark .integrated-nav-search {
+  color: var(--day);
+}
+
+.dark .integrated-nav-search:hover {
+  color: var(--accent-terracotta);
+}
+
+/* Responsive behavior */
+@media (max-width: 768px) {
+  .integrated-nav {
+    padding: 1.5rem 1rem 1rem 1rem;
+  }
+  
+  .integrated-nav h1 {
+    font-size: 2rem;
+  }
+  
+  .integrated-nav-links {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .integrated-nav-links .separator {
+    display: none;
+  }
+  
+  .integrated-nav-links a {
+    font-size: 1rem;
+  }
+}
+
+/* Adjust main content positioning */
+#quarto-content {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* Hide redundant page title when using integrated nav */
+.integrated-nav + #title-block-header {
+  display: none;
+}
+
+/* Also hide duplicate titles in the content area */
+.integrated-nav ~ * h1.title:first-child {
+  display: none;
+}
 
 /* Mobile-only and Desktop-only utilities */
 .mobile-only {

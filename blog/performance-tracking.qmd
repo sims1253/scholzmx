@@ -1,0 +1,59 @@
+---
+title: "Performance Tracking"
+date: "2025-07-20"
+categories: [performance, monitoring]
+format: html
+---
+
+```{r}
+#| echo: false
+#| warning: false
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+
+# Performance data
+perf_data <- data.frame(
+  date = as.Date("2025-07-20"),
+  page = c("Homepage", "Blog", "Research", "Projects"),
+  load_time = c(4629, 3415, 3464, 3496),
+  target = 1000
+)
+
+# Create performance chart
+ggplot(perf_data, aes(x = page, y = load_time)) +
+  geom_col(fill = "#8a3b3b", alpha = 0.7) +
+  geom_hline(yintercept = 1000, color = "#2c5530", linetype = "dashed", size = 1) +
+  geom_hline(yintercept = 3000, color = "#d4594a", linetype = "dotted", size = 1) +
+  labs(
+    title = "Current Page Load Times",
+    subtitle = "Baseline measurements from July 20, 2025",
+    x = "Page",
+    y = "Load Time (ms)",
+    caption = "Green line: Target (<1s) | Red line: Requirement (<3s)"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(family = "serif", size = 16),
+    plot.subtitle = element_text(family = "serif", size = 12, color = "#666"),
+    axis.text = element_text(family = "serif"),
+    axis.title = element_text(family = "serif")
+  ) +
+  scale_y_continuous(breaks = seq(0, 5000, 1000))
+```
+
+## Current Status
+
+**Baseline Date**: July 20, 2025  
+**Average Load Time**: 3,751ms  
+**Target**: <1,000ms  
+**Gap**: 2,751ms reduction needed
+
+| Page | Load Time | Over Target |
+|------|-----------|-------------|
+| Homepage | 4,629ms | +3,629ms |
+| Blog | 3,415ms | +2,415ms |
+| Research | 3,464ms | +2,464ms |
+| Projects | 3,496ms | +2,496ms |
+
+*This page will be automatically updated as optimizations are implemented.*

@@ -1,0 +1,58 @@
+<div class="integrated-nav">
+  <h1>Max Scholz</h1>
+  <div class="integrated-nav-links">
+    <a href="/index.html">Home</a>
+    <span class="separator">·</span>
+    <a href="/blog.html">Blog</a>
+    <span class="separator">·</span>
+    <a href="/research.html">Research</a>
+    <span class="separator">·</span>
+    <a href="/projects/index.html">Projects</a>
+    <span class="separator">·</span>
+    <a href="/recipes.html">Recipes</a>
+    <span class="separator">·</span>
+    <button class="integrated-nav-search" onclick="if (window.quartoToggleSearch) { window.quartoToggleSearch(); }" title="Search">
+      <i class="fa-solid fa-magnifying-glass"></i>
+    </button>
+    <span class="separator">·</span>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+      <i class="fa-solid fa-sun" id="theme-toggle"></i>
+    </button>
+  </div>
+</div>
+
+<script>
+// Ensure the integrated search works with Quarto's search functionality
+document.addEventListener('DOMContentLoaded', function() {
+  // Initialize search functionality if it exists
+  if (window.quartoToggleSearch) {
+    document.querySelector('.integrated-nav-search').addEventListener('click', function(e) {
+      e.preventDefault();
+      window.quartoToggleSearch();
+    });
+  }
+  
+  // Make sure theme toggle functionality works
+  if (typeof toggleTheme === 'undefined') {
+    window.toggleTheme = function() {
+      const body = document.body;
+      const currentTheme = body.classList.contains('dark') ? 'dark' : 'light';
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      
+      body.classList.remove('dark');
+      if (newTheme === 'dark') {
+        body.classList.add('dark');
+      }
+      
+      // Update theme toggle icon
+      const themeIcon = document.getElementById('theme-toggle');
+      if (themeIcon) {
+        themeIcon.className = newTheme === 'dark' ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+      }
+      
+      // Store theme preference
+      localStorage.setItem('theme', newTheme);
+    };
+  }
+});
+</script>
