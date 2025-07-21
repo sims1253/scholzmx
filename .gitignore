@@ -9,3 +9,7 @@ Thumbs.db
 .DS_Store
 
 /.quarto/
+node_modules
+docs
+_freeze
+.vscode

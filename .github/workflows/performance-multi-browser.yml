@@ -1,0 +1,391 @@
+name: Multi-Browser Performance Testing
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+# Cancel old runs when new ones are triggered
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lighthouse-chrome:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: |
+          npm install -g @lhci/cli
+          npm install
+          
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+          
+      - name: Install R dependencies (binary)
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            any::knitr
+            any::rmarkdown
+            any::ggplot2
+            any::rstan
+            any::bayesplot
+            any::devtools
+            any::usethis
+            any::testthat
+            any::brms
+            any::lubridate
+            
+      - name: Setup Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+        
+      - name: Build site
+        run: quarto render
+        
+      - name: Serve site with compression
+        run: |
+          npx http-server docs -p 3000 --gzip --brotli &
+          sleep 5
+          curl -f http://localhost:3000 || exit 1
+          
+      - name: Run Lighthouse CI (Chrome)
+        run: |
+          # Run lighthouse CI and collect results
+          lhci collect --url=http://localhost:3000 --url=http://localhost:3000/blog.html --url=http://localhost:3000/research.html --url=http://localhost:3000/projects/ --numberOfRuns=3
+          
+          # Upload to temporary storage (optional)
+          lhci upload || echo "Upload failed, continuing..."
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+        continue-on-error: true
+          
+      - name: Process Lighthouse results for artifacts
+        run: |
+          echo "Processing Lighthouse results..."
+          
+          # Create results directory
+          mkdir -p lighthouse-results
+          
+          # Check what files were created
+          echo "Checking .lighthouseci directory:"
+          ls -la .lighthouseci/ || echo "Directory not found"
+          
+          # Copy all lighthouse results to a consistent location
+          if [ -d ".lighthouseci" ]; then
+            cp -r .lighthouseci/* lighthouse-results/ 2>/dev/null || echo "No files to copy from .lighthouseci"
+          fi
+          
+          # Look for any LHR files in current directory and copy them
+          find . -maxdepth 1 -name "lhr-*.json" -exec cp {} lighthouse-results/ \; 2>/dev/null || echo "No lhr-*.json files found"
+          find . -maxdepth 1 -name "*.lhr.json" -exec cp {} lighthouse-results/ \; 2>/dev/null || echo "No *.lhr.json files found"
+          
+          # Create a summary of what we found
+          echo "Final lighthouse-results directory contents:"
+          ls -la lighthouse-results/ || echo "lighthouse-results directory is empty"
+          
+          # If we have any JSON files, create a simple summary
+          if ls lighthouse-results/*.json 1> /dev/null 2>&1; then
+            echo "Found Lighthouse JSON files - creating summary"
+            for file in lighthouse-results/*.json; do
+              if [ -f "$file" ]; then
+                echo "Processing: $file"
+                # Try to extract basic info from each file
+                node -e "
+                  const fs = require('fs');
+                  try {
+                    const data = JSON.parse(fs.readFileSync('$file', 'utf8'));
+                    if (data.categories && data.categories.performance) {
+                      console.log('File: $(basename $file)');
+                      console.log('URL: ' + (data.finalUrl || data.requestedUrl || 'unknown'));
+                      console.log('Performance: ' + Math.round(data.categories.performance.score * 100) + '%');
+                    }
+                  } catch (e) {
+                    console.log('Could not parse: $file');
+                  }
+                " || echo "Could not process $file"
+              fi
+            done
+          else
+            echo "No JSON files found in lighthouse-results"
+            # Create a placeholder file so the artifact upload doesn't fail
+            echo '{"error": "No Lighthouse results found", "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"}' > lighthouse-results/no-results.json
+          fi
+        continue-on-error: true
+          
+      - name: Upload Chrome Lighthouse results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse-chrome-results
+          path: lighthouse-results/
+          if-no-files-found: warn
+
+  firefox-performance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: |
+          npm install
+          npm install playwright
+          
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+          
+      - name: Install R dependencies (binary)
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            any::knitr
+            any::rmarkdown
+            any::ggplot2
+            any::rstan
+            any::bayesplot
+            any::devtools
+            any::usethis
+            any::testthat
+            any::brms
+            any::lubridate
+            
+      - name: Setup Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+        
+      - name: Build site
+        run: quarto render
+        
+      - name: Install Playwright browsers
+        run: |
+          npx playwright install --with-deps firefox
+        
+
+          
+      - name: Serve site for Firefox testing
+        run: |
+          npx http-server docs -p 3000 --gzip --brotli &
+          sleep 5
+          curl -f http://localhost:3000 || exit 1
+          
+      - name: Run Firefox performance test
+        run: node test-firefox-perf.js
+        continue-on-error: true
+        
+      - name: Upload Firefox performance results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: firefox-performance-results
+          path: firefox-performance.json
+
+  webpagetest:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: WebPageTest Chrome vs Firefox
+        uses: WPO-Foundation/webpagetest-github-action@v1
+        with:
+          apikey: ${{ secrets.WEBPAGETEST_API_KEY }}
+          urls: |
+            https://scholzmx.com
+          settings: |
+            {
+              "runs": 3,
+              "location": "Dulles:Chrome",
+              "connectivity": "3G",
+              "label": "Chrome Performance Test"
+            }
+        continue-on-error: true
+        
+      - name: WebPageTest Firefox
+        uses: WPO-Foundation/webpagetest-github-action@v1
+        with:
+          apikey: ${{ secrets.WEBPAGETEST_API_KEY }}
+          urls: |
+            https://scholzmx.com
+          settings: |
+            {
+              "runs": 3,
+              "location": "Dulles:Firefox",
+              "connectivity": "3G", 
+              "label": "Firefox Performance Test"
+            }
+        continue-on-error: true
+
+  performance-comparison:
+    needs: [lighthouse-chrome, firefox-performance]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Download Chrome results
+        uses: actions/download-artifact@v4
+        with:
+          name: lighthouse-chrome-results
+          path: ./chrome-results/
+        continue-on-error: true
+        
+      - name: Download Firefox results
+        uses: actions/download-artifact@v4
+        with:
+          name: firefox-performance-results
+          path: ./firefox-results/
+        continue-on-error: true
+        
+      - name: Install Node.js for JSON parsing
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          
+      - name: Compare performance results
+        run: |
+          echo "🔥 Multi-Browser Performance Comparison"
+          echo "========================================"
+          
+          # Output to both logs and summary
+          echo "## 🔥 Multi-Browser Performance Comparison" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Firefox Results
+          if [ -f "./firefox-results/firefox-performance.json" ]; then
+            echo ""
+            echo "Firefox Results:"
+            echo "---------------"
+            cat ./firefox-results/firefox-performance.json
+            echo ""
+            
+            echo "### 🦊 Firefox Results" >> $GITHUB_STEP_SUMMARY
+            echo '```json' >> $GITHUB_STEP_SUMMARY
+            cat ./firefox-results/firefox-performance.json >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "Firefox Results: Not Available"
+            echo "### 🦊 Firefox Results: Not Available" >> $GITHUB_STEP_SUMMARY
+            echo "Debug: Checking firefox-results directory contents:" >> $GITHUB_STEP_SUMMARY
+            ls -la ./firefox-results/ 2>/dev/null >> $GITHUB_STEP_SUMMARY || echo "firefox-results directory not found" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🌐 Chrome Lighthouse Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Parse Chrome Lighthouse results
+          if [ -d "./chrome-results" ]; then
+            echo ""
+            echo "Chrome Lighthouse Results:"
+            echo "-------------------------"
+            
+            # Debug: List all files in chrome-results recursively
+            echo "Contents of chrome-results directory:"
+            find ./chrome-results -type f | head -20
+            
+            # Look for Lighthouse JSON files
+            LHR_FILES=($(find ./chrome-results -name "*.json" -type f | grep -v "no-results.json" | head -5))
+            
+            if [ ${#LHR_FILES[@]} -gt 0 ]; then
+              echo "Found ${#LHR_FILES[@]} Lighthouse report file(s)"
+              
+              # Process the first valid Lighthouse report for summary
+              for LHR_FILE in "${LHR_FILES[@]}"; do
+                echo "Checking file: $LHR_FILE"
+                
+                # Check if this looks like a valid Lighthouse report
+                if grep -q "categories.*performance" "$LHR_FILE" 2>/dev/null; then
+                  echo "Processing Lighthouse report: $LHR_FILE"
+                  
+                  # Extract key metrics using Node.js with error handling
+                  node -e "
+                    const fs = require('fs');
+                    try {
+                      const data = JSON.parse(fs.readFileSync('$LHR_FILE', 'utf8'));
+                      
+                      if (!data.categories || !data.categories.performance) {
+                        console.log('Invalid Lighthouse report format');
+                        process.exit(1);
+                      }
+                      
+                      const performance = Math.round(data.categories.performance.score * 100);
+                      const accessibility = Math.round(data.categories.accessibility.score * 100);
+                      const bestPractices = Math.round(data.categories['best-practices'].score * 100);
+                      const seo = Math.round(data.categories.seo.score * 100);
+                      
+                      const fcp = Math.round(data.audits['first-contentful-paint'].numericValue);
+                      const lcp = Math.round(data.audits['largest-contentful-paint'].numericValue);
+                      const cls = data.audits['cumulative-layout-shift'].numericValue.toFixed(3);
+                      const tbt = Math.round(data.audits['total-blocking-time'].numericValue);
+                      
+                      const getStatus = (score, target) => score >= target ? '✅' : '❌';
+                      const getVitalStatus = (value, target) => value <= target ? '✅' : '❌';
+                      
+                      console.log('**URL:** ' + (data.finalUrl || data.requestedUrl || 'unknown'));
+                      console.log('');
+                      console.log('| Metric | Score | Target | Status |');
+                      console.log('|--------|-------|--------|--------|');
+                      console.log('| Performance | ' + performance + '% | ≥80% | ' + getStatus(performance, 80) + ' |');
+                      console.log('| Accessibility | ' + accessibility + '% | ≥90% | ' + getStatus(accessibility, 90) + ' |');
+                      console.log('| Best Practices | ' + bestPractices + '% | ≥80% | ' + getStatus(bestPractices, 80) + ' |');
+                      console.log('| SEO | ' + seo + '% | ≥80% | ' + getStatus(seo, 80) + ' |');
+                      console.log('');
+                      console.log('**Core Web Vitals:**');
+                      console.log('- **FCP**: ' + fcp + 'ms (target: ≤1800ms) ' + getVitalStatus(fcp, 1800));
+                      console.log('- **LCP**: ' + lcp + 'ms (target: ≤2500ms) ' + getVitalStatus(lcp, 2500));
+                      console.log('- **CLS**: ' + cls + ' (target: ≤0.1) ' + getVitalStatus(parseFloat(cls), 0.1));
+                      console.log('- **TBT**: ' + tbt + 'ms (target: ≤300ms) ' + getVitalStatus(tbt, 300));
+                    } catch (error) {
+                      console.log('Error parsing Lighthouse report:', error.message);
+                      console.log('File content preview:');
+                      const content = fs.readFileSync('$LHR_FILE', 'utf8');
+                      console.log(content.substring(0, 200) + '...');
+                    }
+                  " | tee -a $GITHUB_STEP_SUMMARY
+                  
+                  # Only process the first valid file for the summary
+                  break
+                else
+                  echo "Skipping $LHR_FILE - not a valid Lighthouse report"
+                fi
+              done
+              
+            else
+              echo "No valid Lighthouse JSON results found in artifacts" | tee -a $GITHUB_STEP_SUMMARY
+              
+              # Check if there's a no-results file
+              if [ -f "./chrome-results/no-results.json" ]; then
+                echo "Found no-results indicator:" | tee -a $GITHUB_STEP_SUMMARY
+                cat ./chrome-results/no-results.json | tee -a $GITHUB_STEP_SUMMARY
+              fi
+            fi
+          else
+            echo "Chrome results: Not Available" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📊 Browser Performance Notes" >> $GITHUB_STEP_SUMMARY
+          echo "- Firefox testing focuses on Core Web Vitals equivalents" >> $GITHUB_STEP_SUMMARY
+          echo "- Chrome testing uses Lighthouse CI for comprehensive analysis" >> $GITHUB_STEP_SUMMARY
+          echo "- WebPageTest provides cross-browser comparison when available" >> $GITHUB_STEP_SUMMARY
