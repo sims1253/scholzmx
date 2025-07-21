@@ -1,2 +1,18 @@
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Optimized font loading strategy for better performance -->
+<!-- DNS prefetch for font CDN -->
+<link rel="dns-prefetch" href="//fonts.bunny.net">
+<link rel="preconnect" href="https://fonts.bunny.net" crossorigin>
+
+<!-- Preload critical fonts in order of importance -->
+<!-- 1. Body text font (most critical) -->
+<link rel="preload" href="https://fonts.bunny.net/lora/files/lora-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<!-- 2. Heading font (second most critical) -->
+<link rel="preload" href="https://fonts.bunny.net/dancing-script/files/dancing-script-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<!-- 3. Display font for special elements -->
+<link rel="preload" href="https://fonts.bunny.net/playfair-display/files/playfair-display-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+
+<!-- Prefetch secondary fonts (loaded after critical fonts) -->
+<link rel="prefetch" href="https://fonts.bunny.net/source-sans-pro/files/source-sans-pro-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="prefetch" href="https://fonts.bunny.net/lora/files/lora-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">

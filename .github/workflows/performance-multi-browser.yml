@@ -49,6 +49,7 @@ jobs:
             any::testthat
             any::brms
             any::lubridate
+            any::colorspace
             
       - name: Setup Quarto
         uses: quarto-dev/quarto-actions/setup@v2
@@ -170,6 +171,7 @@ jobs:
             any::testthat
             any::brms
             any::lubridate
+            any::colorspace
             
       - name: Setup Quarto
         uses: quarto-dev/quarto-actions/setup@v2
@@ -279,9 +281,83 @@ jobs:
             echo ""
             
             echo "### 🦊 Firefox Results" >> $GITHUB_STEP_SUMMARY
-            echo '```json' >> $GITHUB_STEP_SUMMARY
-            cat ./firefox-results/firefox-performance.json >> $GITHUB_STEP_SUMMARY
-            echo '```' >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            
+            # Parse and format Firefox results nicely
+            node -e "
+              const fs = require('fs');
+              try {
+                const data = JSON.parse(fs.readFileSync('./firefox-results/firefox-performance.json', 'utf8'));
+                
+                console.log('**URL:** http://localhost:3000/');
+                console.log('');
+                
+                // Create a table similar to Chrome results
+                console.log('| Metric | Value | Target | Status |');
+                console.log('|--------|-------|--------|--------|');
+                
+                const fcp = data.firstContentfulPaint || 0;
+                const loadTime = data.totalLoadTime || 0;
+                const domContentLoaded = data.domContentLoaded || 0;
+                const pageLoadTime = data.pageLoadTime || 0;
+                
+                const getStatus = (value, target) => value <= target ? '✅' : '❌';
+                
+                console.log('| First Contentful Paint | ' + fcp + 'ms | ≤1800ms | ' + getStatus(fcp, 1800) + ' |');
+                console.log('| Total Load Time | ' + loadTime + 'ms | ≤3000ms | ' + getStatus(loadTime, 3000) + ' |');
+                console.log('| DOM Content Loaded | ' + domContentLoaded + 'ms | ≤2000ms | ' + getStatus(domContentLoaded, 2000) + ' |');
+                console.log('| Page Load Time | ' + pageLoadTime + 'ms | ≤4000ms | ' + getStatus(pageLoadTime, 4000) + ' |');
+                
+                console.log('');
+                console.log('**Additional Metrics:**');
+                console.log('- **First Paint**: ' + (data.firstPaint || 'N/A') + 'ms');
+                console.log('- **Load Complete**: ' + (data.loadComplete || 'N/A') + 'ms');
+                console.log('- **Browser**: ' + (data.browser || 'Firefox'));
+                console.log('- **Timestamp**: ' + (data.timestamp || 'N/A'));
+                
+                // Overall assessment
+                console.log('');
+                console.log('**Overall Assessment:**');
+                let goodMetrics = 0;
+                let totalMetrics = 4;
+                
+                if (fcp <= 1800) goodMetrics++;
+                if (loadTime <= 3000) goodMetrics++;
+                if (domContentLoaded <= 2000) goodMetrics++;
+                if (pageLoadTime <= 4000) goodMetrics++;
+                
+                const percentage = Math.round((goodMetrics / totalMetrics) * 100);
+                const overallStatus = percentage >= 75 ? '✅' : percentage >= 50 ? '⚠️' : '❌';
+                
+                console.log('- **Performance Score**: ' + percentage + '% (' + goodMetrics + '/' + totalMetrics + ' metrics passing) ' + overallStatus);
+                
+              } catch (error) {
+                console.log('**Error parsing Firefox results:** ' + error.message);
+                console.log('');
+                console.log('**Attempting to display available data:**');
+                
+                try {
+                  const rawData = fs.readFileSync('./firefox-results/firefox-performance.json', 'utf8');
+                  const partialData = JSON.parse(rawData);
+                  
+                  console.log('| Available Data | Value |');
+                  console.log('|----------------|-------|');
+                  
+                  Object.keys(partialData).forEach(key => {
+                    const value = partialData[key];
+                    if (typeof value === 'string' || typeof value === 'number') {
+                      console.log('| ' + key + ' | ' + value + ' |');
+                    }
+                  });
+                  
+                } catch (parseError) {
+                  console.log('**Unable to parse Firefox results file**');
+                  console.log('- File exists but contains invalid JSON');
+                  console.log('- Parse error: ' + parseError.message);
+                }
+              }
+            " >> $GITHUB_STEP_SUMMARY
+            
             echo "" >> $GITHUB_STEP_SUMMARY
           else
             echo "Firefox Results: Not Available"

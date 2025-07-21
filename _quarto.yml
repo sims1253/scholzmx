@@ -29,7 +29,9 @@ website:
 format:
   html:
     theme: theme.scss
-    css: styles.css
+    css: 
+      - fonts-optimized.css
+      - styles.css
     include-in-header: 
       - _include-header.html
     include-before-body:

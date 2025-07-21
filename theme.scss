@@ -1,6 +1,6 @@
 /*-- scss:defaults --*/
-// Fonts (Privacy-focused from Bunny Fonts)
-@import url('https://fonts.bunny.net/css?family=dancing-script:700|lora:400,700|source-sans-pro:400,700|playfair-display:400,700,900');
+// Fonts (Privacy-focused from Bunny Fonts with optimized loading)
+// Using custom font loading for better performance - see fonts-optimized.css
 $font-family-sans-serif: "Source Sans Pro", sans-serif;
 $font-family-serif: "Lora", serif;
 $font-family-script: "Dancing Script", cursive;
