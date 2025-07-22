@@ -7,7 +7,7 @@
     "build:ts:watch": "tsc --watch",
     "optimize:images": "tsx src/image-optimizer.ts",
     "watch:images": "tsx src/image-watcher.ts",
-    "verify:images": "node scripts/verify-image-optimization.js",
+    "verify:images": "tsx src/verify-image-optimization.ts",
     "prerender": "tsx src/pre-render.ts",
     "build:js": "tsc -p tsconfig.browser.json && tsx src/copy-js.ts",
     "build": "npm run build:js && npm run prerender && quarto render",

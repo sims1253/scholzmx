@@ -1,1 +1,50 @@
-<script src="/sunlit-script.js"></script>
+<!-- Load our custom script with defer to prevent render blocking -->
+<script src="/sunlit-script.js" defer></script>
+
+<!-- Performance monitoring and optimization -->
+<script>
+// Measure and optimize loading performance
+(function() {
+  // Track render-blocking resources
+  var renderStart = performance.now();
+  
+  // Defer non-critical Quarto functionality
+  window.addEventListener('load', function() {
+    var loadTime = performance.now() - renderStart;
+    
+    // Initialize search after page load
+    if (typeof window.quartoSearch !== 'undefined') {
+      setTimeout(function() {
+        window.quartoSearch.init();
+      }, 100);
+    }
+    
+    // Log performance metrics (development only)
+    if (window.location.hostname === 'localhost') {
+      console.log('Page load time:', Math.round(loadTime), 'ms');
+      
+      // Check for render-blocking resources
+      if (performance.getEntriesByType) {
+        var resources = performance.getEntriesByType('resource');
+        var blocking = resources.filter(function(r) {
+          return r.renderBlockingStatus === 'blocking';
+        });
+        if (blocking.length > 0) {
+          console.log('Render-blocking resources:', blocking.length);
+        }
+      }
+    }
+  });
+  
+  // Preload critical resources on hover
+  document.addEventListener('mouseover', function(e) {
+    var link = e.target.closest('a[href]');
+    if (link && link.hostname === window.location.hostname) {
+      var prefetchLink = document.createElement('link');
+      prefetchLink.rel = 'prefetch';
+      prefetchLink.href = link.href;
+      document.head.appendChild(prefetchLink);
+    }
+  }, { once: true, passive: true });
+})();
+</script>

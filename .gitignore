@@ -25,3 +25,22 @@ img/optimized/
 projects/optimized/
 assets/optimized/
 optimized/
+
+# Generated HTML files (Quarto output)
+*.html
+!test-*.html
+!_include-*.html
+
+# Generated documentation and reports
+*_files/
+*.md.html
+*-listing.json
+blog-listing.json
+site_libs/
+
+# Build artifacts and temporary files
+_pre-render.js
+lighthouserc.server.json
+
+# Empty scripts directory (all scripts moved to TypeScript)
+scripts/

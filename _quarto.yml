@@ -34,6 +34,7 @@ format:
       - styles.css
     include-in-header: 
       - _include-header.html
+      - _css-loader.html
     include-before-body:
       - _integrated-nav.html
     include-after-body: 

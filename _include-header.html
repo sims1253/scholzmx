@@ -15,4 +15,64 @@
 <link rel="prefetch" href="https://fonts.bunny.net/source-sans-pro/files/source-sans-pro-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="prefetch" href="https://fonts.bunny.net/lora/files/lora-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Preload critical above-the-fold image -->
+<link rel="preload" href="img/optimized/fancy_me-md.avif" as="image" type="image/avif">
+<link rel="preload" href="img/optimized/fancy_me-md.webp" as="image" type="image/webp">
+
+<!-- Resource hints for Quarto assets -->
+<link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+
+<!-- Prefetch non-critical Quarto scripts -->
+<link rel="prefetch" href="/site_libs/quarto-search/autocomplete.umd.js">
+<link rel="prefetch" href="/site_libs/quarto-search/fuse.min.js">
+<link rel="prefetch" href="/site_libs/clipboard/clipboard.min.js">
+
+<!-- Critical CSS for above-the-fold content -->
+<style>
+/* Critical layout styles to prevent FOUC */
+body { 
+  font-family: 'Lora', serif; 
+  margin: 0; 
+  line-height: 1.6;
+  background: var(--paper-white, #fefefe);
+  color: var(--text-dark, #2c2c2c);
+}
+
+/* Critical navigation styles */
+.navbar { 
+  background: var(--paper-white, #fefefe);
+  border-bottom: 1px solid var(--paper-shadow, rgba(0,0,0,0.1));
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* Critical flip card container */
+.flip-card-container {
+  perspective: 1000px;
+  width: 280px;
+  height: 280px;
+  margin: 2rem auto;
+}
+
+/* Critical typography */
+h1, h2, h3 { 
+  font-family: 'Playfair Display', serif;
+  line-height: 1.2;
+  margin-top: 0;
+}
+
+/* Critical button styles */
+.btn {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+</style>
+
+<!-- Load Font Awesome asynchronously to prevent render blocking -->
+<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>

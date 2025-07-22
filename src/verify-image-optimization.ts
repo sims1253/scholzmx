@@ -173,8 +173,7 @@ async function verifyImageOptimization(): Promise<boolean> {
   }
 }
 
-export { verifyImageOptimization };
-
+// CLI usage
 if (require.main === module) {
   verifyImageOptimization().then(success => {
     process.exit(success ? 0 : 1);
@@ -183,3 +182,5 @@ if (require.main === module) {
     process.exit(1);
   });
 }
+
+export { verifyImageOptimization };
