@@ -13,6 +13,6 @@ This page will contain my recipes.
 
 ```{=html}
 <div class="colophon">
-    <img src="/img/ovid4footer.svg" alt="A decorative illustration">
+    <img src="/img/ovid4footer.svg" alt="A decorative illustration" loading="lazy">
 </div>
 ```

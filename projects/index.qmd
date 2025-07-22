@@ -15,7 +15,7 @@ title: Projects
 ```{=html}
 <div class="project-showcase">
   <div class="project-banner">
-    <img src="https://sims1253.github.io/huerd/reference/figures/logo.png" alt="huerd Color Palette Generator"/>
+    <img src="https://sims1253.github.io/huerd/reference/figures/logo.png" alt="huerd Color Palette Generator" loading="lazy"/>
   </div>
   <div class="project-details">
 ```
@@ -48,7 +48,13 @@ The package uses constrained optimization in the OKLAB color space to maximize p
 ```{=html}
 <div class="project-showcase">
   <div class="project-banner">
-    <img src="project_2_banner.png" alt="BayeSim Framework"/>
+    <picture>
+      <source srcset="optimized/project_2_banner-md.avif" type="image/avif" media="(min-width: 768px)">
+      <source srcset="optimized/project_2_banner-md.webp" type="image/webp" media="(min-width: 768px)">
+      <source srcset="optimized/project_2_banner-sm.avif" type="image/avif">
+      <source srcset="optimized/project_2_banner-sm.webp" type="image/webp">
+      <img src="optimized/project_2_banner-md.png" alt="BayeSim Framework" loading="lazy">
+    </picture>
   </div>
   <div class="project-details">
 ```

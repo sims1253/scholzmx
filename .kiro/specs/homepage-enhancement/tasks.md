@@ -21,15 +21,6 @@
 
   - [x] 1.2 Set up performance regression testing system
 
-
-
-
-
-
-
-
-
-
     - Create GitHub Action using Lighthouse CI for consistent performance measurement
     - Set up local performance testing with Puppeteer for development
     - Create performance tracking blog post that updates with each release
@@ -42,12 +33,26 @@
   - [ ] 2.1 Optimize existing SVG assets
 
 
+
+
+
     - Compress SVGs using vecta.io/nano or similar tools
     - Remove unnecessary metadata and optimize paths
     - Inline critical SVGs to reduce HTTP requests
     - _Requirements: 2.2, 2.4_
 
-  - [ ] 2.2 Optimize font loading strategy
+  - [x] 2.2 Optimize font loading strategy
+
+
+
+
+
+
+
+
+
+
+
     - Audit current Bunny Fonts usage and loading
     - Implement font-display: swap for better perceived performance
     - Consider subsetting fonts to reduce file sizes
@@ -55,6 +60,22 @@
     - _Requirements: 2.1, 2.4_
 
   - [ ] 2.3 Optimize existing images
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     - Compress and convert images to modern formats (WebP, AVIF)
     - Implement responsive image sizing
     - Add lazy loading for non-critical images

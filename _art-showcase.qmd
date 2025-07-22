@@ -2,13 +2,31 @@
 <!-- Art Showcase - Fixed position for wide screens -->
 <div class="art-showcase" id="art-showcase">
   <div class="artwork active">
-    <img src="/img/cool_me.jpg" alt="Research Photo 1">
+    <picture>
+      <source srcset="img/optimized/cool_me-md.avif" type="image/avif" media="(min-width: 768px)">
+      <source srcset="img/optimized/cool_me-md.webp" type="image/webp" media="(min-width: 768px)">
+      <source srcset="img/optimized/cool_me-sm.avif" type="image/avif">
+      <source srcset="img/optimized/cool_me-sm.webp" type="image/webp">
+      <img src="img/optimized/cool_me-md.jpeg" alt="Research Photo 1" loading="lazy">
+    </picture>
   </div>
   <div class="artwork">
-    <img src="/img/fancy_me.jpg" alt="Research Photo 2">
+    <picture>
+      <source srcset="img/optimized/fancy_me-lg.avif" type="image/avif" media="(min-width: 1024px)">
+      <source srcset="img/optimized/fancy_me-lg.webp" type="image/webp" media="(min-width: 1024px)">
+      <source srcset="img/optimized/fancy_me-md.avif" type="image/avif" media="(min-width: 768px)">
+      <source srcset="img/optimized/fancy_me-md.webp" type="image/webp" media="(min-width: 768px)">
+      <source srcset="img/optimized/fancy_me-sm.avif" type="image/avif">
+      <source srcset="img/optimized/fancy_me-sm.webp" type="image/webp">
+      <img src="img/optimized/fancy_me-md.jpeg" alt="Research Photo 2" loading="lazy">
+    </picture>
   </div>
   <div class="artwork">
-    <img src="/img/my_image.jpg" alt="Research Photo 3">
+    <picture>
+      <source srcset="img/optimized/my_image-sm.avif" type="image/avif">
+      <source srcset="img/optimized/my_image-sm.webp" type="image/webp">
+      <img src="img/optimized/my_image-sm.jpeg" alt="Research Photo 3" loading="lazy">
+    </picture>
   </div>
   <div class="art-showcase-caption">
     Research & Academic Life

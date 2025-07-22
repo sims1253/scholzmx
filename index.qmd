@@ -15,10 +15,24 @@ format:
 <div class="flip-card-container">
   <div class="flip-card-inner">
     <div class="flip-card-front">
-      <img src="/img/fancy_me.jpg" alt="Professional headshot of Max Scholz">
+      <picture>
+        <source srcset="img/optimized/fancy_me-lg.avif" type="image/avif" media="(min-width: 1024px)">
+        <source srcset="img/optimized/fancy_me-lg.webp" type="image/webp" media="(min-width: 1024px)">
+        <source srcset="img/optimized/fancy_me-md.avif" type="image/avif" media="(min-width: 768px)">
+        <source srcset="img/optimized/fancy_me-md.webp" type="image/webp" media="(min-width: 768px)">
+        <source srcset="img/optimized/fancy_me-sm.avif" type="image/avif">
+        <source srcset="img/optimized/fancy_me-sm.webp" type="image/webp">
+        <img src="img/optimized/fancy_me-md.jpeg" alt="Professional headshot of Max Scholz">
+      </picture>
     </div>
     <div class="flip-card-back">
-      <img src="/img/cool_me.jpg" alt="Casual photo of Max Scholz">
+      <picture>
+        <source srcset="img/optimized/cool_me-md.avif" type="image/avif" media="(min-width: 768px)">
+        <source srcset="img/optimized/cool_me-md.webp" type="image/webp" media="(min-width: 768px)">
+        <source srcset="img/optimized/cool_me-sm.avif" type="image/avif">
+        <source srcset="img/optimized/cool_me-sm.webp" type="image/webp">
+        <img src="img/optimized/cool_me-md.jpeg" alt="Casual photo of Max Scholz" loading="lazy">
+      </picture>
     </div>
   </div>
 </div>
@@ -46,6 +60,6 @@ Please feel free to [contact me](mailto:scholzmxb@gmail.com) if you have questio
 
 ```{=html}
 <div class="colophon">
-    <img src="/img/ovid4footer.svg" alt="A decorative illustration">
+    <img src="/img/ovid4footer.svg" alt="A decorative illustration" loading="lazy">
 </div>
 ```

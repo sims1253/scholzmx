@@ -189,12 +189,22 @@ body.dark {
   right: -700px;
   width: 1600px;
   height: 1400px;
-  background-image: url("./leaves.png");
+  /* Fallback for browsers that don't support WebP */
+  background-image: url("./img/optimized/leaves.png");
+  /* Modern browsers will use WebP */
+  background-image: url("./img/optimized/leaves.webp");
   /* filter: url(#wind);*/
   /*  using the cheaper animation for performance reasons */
   animation: billow 8s ease-in-out infinite;
   will-change: transform;
   transform: translateZ(0);
+}
+
+/* Use AVIF for browsers that support it (most modern browsers) */
+@supports (background-image: url("data:image/avif;base64,")) {
+  #leaves {
+    background-image: url("./img/optimized/leaves.avif");
+  }
 }
 
 #blinds {
@@ -770,11 +780,15 @@ article.sunlit-content a:hover {
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.25);
 }
 
+.art-showcase picture,
 .art-showcase img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
   display: block;
+}
+
+.art-showcase img {
+  object-fit: cover;
   transition: opacity 0.5s ease;
 }
 
@@ -1485,10 +1499,17 @@ main.content > p:first-child,
   overflow: hidden;
 }
 
+.flip-card-front picture,
+.flip-card-back picture,
 .flip-card-front img,
 .flip-card-back img {
   width: 100%;
   height: 100%;
+  display: block;
+}
+
+.flip-card-front img,
+.flip-card-back img {
   object-fit: cover;
 }
 

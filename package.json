@@ -3,13 +3,32 @@
   "version": "1.0.0",
   "description": "Personal website with performance monitoring",
   "scripts": {
+    "build:ts": "tsc",
+    "build:ts:watch": "tsc --watch",
+    "optimize:images": "tsx src/image-optimizer.ts",
+    "watch:images": "tsx src/image-watcher.ts",
+    "verify:images": "node scripts/verify-image-optimization.js",
+    "prerender": "tsx src/pre-render.ts",
+    "build:js": "tsc -p tsconfig.browser.json && tsx src/copy-js.ts",
+    "build": "npm run build:js && npm run prerender && quarto render",
+    "preview": "npm run prerender && quarto preview",
+    "dev": "npm run watch:images & npm run preview",
+    "serve": "npm run prerender && quarto preview --port 4200",
     "install:performance": "cd performance && npm install",
     "build:performance": "cd performance && npm run build",
     "lighthouse": "cd performance && npm run lighthouse",
     "test:performance": "cd performance && npm run test:local"
   },
   "devDependencies": {
-    "@lhci/cli": "^0.15.1"
+    "@lhci/cli": "^0.15.1",
+    "@types/glob": "^8.1.0",
+    "@types/node": "^24.1.0",
+    "chokidar": "^4.0.3",
+    "glob": "^11.0.3",
+    "nodemon": "^3.1.10",
+    "sharp": "^0.34.3",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
   },
   "keywords": [
     "website",
@@ -17,5 +36,8 @@
     "performance"
   ],
   "author": "Maximilian Scholz",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "playwright": "^1.54.1"
+  }
 }

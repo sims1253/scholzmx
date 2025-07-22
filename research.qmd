@@ -58,6 +58,6 @@ Developing methods for automated model selection in complex statistical scenario
 
 ```{=html}
 <div class="colophon">
-    <img src="/img/ovid4footer.svg" alt="A decorative illustration">
+    <img src="/img/ovid4footer.svg" alt="A decorative illustration" loading="lazy">
 </div>
 ```

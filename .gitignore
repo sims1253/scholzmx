@@ -15,3 +15,13 @@ _freeze
 .vscode
 performance/dist/
 .kiro
+
+# TypeScript compilation output
+dist/
+dist-browser/
+
+# Optimized images (generated automatically)
+img/optimized/
+projects/optimized/
+assets/optimized/
+optimized/

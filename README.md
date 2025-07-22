@@ -1,6 +1,15 @@
-# Quarto Template for the Tutorial
+# Max Scholz Personal Website
 
-This repository contains the template for the website tutorial at <https://www.marvinschmitt.com/blog/website-tutorial-quarto/>.
+A modern, performance-optimized personal website built with Quarto and TypeScript.
+
+## Features
+
+- 🖼️ **Advanced Image Optimization**: Automatic WebP/AVIF conversion with responsive sizing
+- 🎨 **Modern Design**: Clean, accessible design with dark/light theme support
+- ⚡ **High Performance**: Optimized for speed with lazy loading and modern formats
+- 📱 **Responsive**: Works perfectly on all devices
+- 🔍 **Search**: Built-in search functionality
+- 📊 **Performance Monitoring**: Automated Lighthouse testing
 
 <p align="center">
   <img src="img/website_template_screenshot_1.png" width="45%">

@@ -47,7 +47,7 @@ Welcome to my blog, where I share thoughts on statistics, data science, and the 
 </style>
 
 <div class="colophon blog-colophon" id="blog-colophon">
-    <img src="/img/ovid4footer.svg" alt="A decorative illustration">
+    <img src="/img/ovid4footer.svg" alt="A decorative illustration" loading="lazy">
 </div>
 
 <script>

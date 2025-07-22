@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "ES2020",
+    "moduleResolution": "node",
+    "outDir": "./dist-browser"
+  },
+  "include": [
+    "src/sunlit-script-browser.ts"
+  ]
+}

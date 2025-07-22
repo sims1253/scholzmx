@@ -54,8 +54,8 @@ jobs:
       - name: Setup Quarto
         uses: quarto-dev/quarto-actions/setup@v2
         
-      - name: Build site
-        run: quarto render
+      - name: Build site with image optimization
+        run: npm run build
         
       - name: Serve site with compression
         run: |
@@ -176,8 +176,8 @@ jobs:
       - name: Setup Quarto
         uses: quarto-dev/quarto-actions/setup@v2
         
-      - name: Build site
-        run: quarto render
+      - name: Build site with image optimization
+        run: npm run build
         
       - name: Install Playwright browsers
         run: |
