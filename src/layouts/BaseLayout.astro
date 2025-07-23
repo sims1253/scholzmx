@@ -3,7 +3,6 @@ import '../styles/global.css';
 import BotanicalBorder from '../components/BotanicalBorder.astro';
 import PaperGrain from '../components/PaperGrain.astro';
 import IllustratedFooter from '../components/IllustratedFooter.astro';
-import IntegratedNav from '../components/IntegratedNav.astro';
 
 export interface Props {
   title: string;
@@ -11,7 +10,6 @@ export interface Props {
   image?: string;
   addBorders?: boolean;
   footerVariant?: 'garden' | 'kitchen' | 'craft' | 'writing' | 'default';
-  navStyle?: 'traditional' | 'integrated';
 }
 
 const { 
@@ -19,8 +17,7 @@ const {
   description = "A digital garden and personal website - thoughtful, slow web principles with a warm, botanical aesthetic.",
   image = "/img/og-default.jpg",
   addBorders = true,
-  footerVariant = 'default',
-  navStyle = 'traditional'
+  footerVariant = 'default'
 } = Astro.props;
 
 const currentPath = Astro.url.pathname;
@@ -76,11 +73,8 @@ const currentPath = Astro.url.pathname;
         </>
       )}
       
-      <!-- Navigation -->
-      {navStyle === 'integrated' ? (
-        <IntegratedNav currentPath={currentPath} />
-      ) : (
-        <nav class="manuscript-nav" role="navigation" aria-label="Main navigation">
+      <!-- Integrated manuscript-style navigation -->
+      <nav class="manuscript-nav" role="navigation" aria-label="Main navigation">
         <div class="nav-scroll">
           <div class="nav-brand">
             <a href="/" class="site-logo" aria-label="Home">
@@ -101,8 +95,7 @@ const currentPath = Astro.url.pathname;
             <a href="/projects" class={currentPath.startsWith('/projects') ? 'nav-link active' : 'nav-link'}>Craft</a>
           </div>
         </div>
-        </nav>
-      )}
+      </nav>
 
       <!-- Main content area -->
       <main class="main-content">
