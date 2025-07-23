@@ -1,9 +1,11 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import QuoteOfTheDay from '../components/QuoteOfTheDay.astro';
 import PaperTexture from '../components/PaperTexture.astro';
 import DropCap from '../components/DropCap.astro';
 import MarginNote from '../components/MarginNote.astro';
 import Slideshow from '../components/Slideshow.astro';
+import HandDrawnDivider from '../components/HandDrawnDivider.astro';
 import { Image } from 'astro:assets';
 import SunlitEffect from '../components/SunlitEffect.astro';
 
@@ -33,7 +35,7 @@ const portfolioImages = [
 <BaseLayout 
   title="Scholz MX - Digital Garden & Personal Website"
   description="Welcome to my digital garden - a thoughtful space for ideas, recipes, projects, and musings. Built with slow web principles and a warm, botanical aesthetic."
-  footerVariant="garden"
+  footerVariant="default"
 >
   <PaperTexture pattern="botanical" intensity="light" className="landing-page">
     <!-- Single screen layout -->
@@ -94,6 +96,14 @@ const portfolioImages = [
           </div>
         </div>
       </aside>
+    </div>
+    
+    <!-- Quote section below main layout -->
+    <div class="quote-container">
+      <HandDrawnDivider variant="vine" width="wide" />
+      <div class="quote-section">
+        <QuoteOfTheDay />
+      </div>
     </div>
   </PaperTexture>
 
@@ -194,6 +204,16 @@ const portfolioImages = [
     display: block;
   }
 
+  /* Quote container styling */
+  .quote-container {
+    max-width: 1200px;
+    margin: var(--space-xl) auto 0;
+    padding: 0 var(--space-lg) var(--space-lg);
+  }
+
+  .quote-section {
+    /* QuoteOfTheDay component will handle its own styling */
+  }
 
   /* Easel slideshow section */
   .easel-section {
@@ -201,6 +221,31 @@ const portfolioImages = [
     align-items: center;
     justify-content: center;
     height: 100%;
+  }
+
+  /* Ensure grid layout on large screens */
+  @media (min-width: 769px) {
+    .landing-container {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .landing-container {
+      grid-template-columns: minmax(0, 1fr) 400px;
+      gap: var(--space-xl);
+    }
+
+    .easel-container {
+      width: 320px;
+      height: 380px;
+    }
+
+    .canvas-holder {
+      width: 280px;
+      height: 320px;
+    }
   }
 
   .easel-container {
@@ -377,7 +422,7 @@ const portfolioImages = [
     }
   }
 
-  @media (max-width: 900px) {
+  @media (max-width: 768px) {
     .landing-container {
       grid-template-columns: 1fr;
       min-height: auto;

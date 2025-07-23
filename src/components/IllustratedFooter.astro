@@ -37,8 +37,8 @@ const illustrations = {
   },
   default: {
     title: "Digital garden",
-    quote: "Slow growth, deep roots, lasting wisdom.",
-    attribution: "— Garden wisdom",
+    quote: "",
+    attribution: "",
     elements: ['botanical', 'patience', 'wisdom']
   }
 };
@@ -142,10 +142,12 @@ const currentIllustration = illustrations[variant];
         {currentIllustration.title}
       </p>
       
-      <blockquote class="footer-quote">
-        <p>"{currentIllustration.quote}"</p>
-        <cite>{currentIllustration.attribution}</cite>
-      </blockquote>
+      {currentIllustration.quote && (
+        <blockquote class="footer-quote">
+          <p>"{currentIllustration.quote}"</p>
+          <cite>{currentIllustration.attribution}</cite>
+        </blockquote>
+      )}
       
       <div class="footer-meta">
         <p>
