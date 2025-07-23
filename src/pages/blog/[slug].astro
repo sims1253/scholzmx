@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PaperTexture from '../../components/PaperTexture.astro';
 import DropCap from '../../components/DropCap.astro';
+import HandDrawnDivider from '../../components/HandDrawnDivider.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -52,9 +53,13 @@ const formatDate = (date: Date) => {
         <p class="post-description">{post.data.description}</p>
       </header>
       
+      <HandDrawnDivider variant="botanical" width="wide" />
+      
       <div class="post-body">
         <Content />
       </div>
+      
+      <HandDrawnDivider variant="simple" width="medium" />
       
       <footer class="post-footer">
         <nav class="post-navigation">
@@ -71,7 +76,7 @@ const formatDate = (date: Date) => {
   }
 
   .post-content {
-    max-width: 65ch;
+    max-width: 72ch;
     margin: 0 auto;
     padding: var(--space-xl) var(--space-lg);
   }
