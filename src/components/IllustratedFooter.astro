@@ -1,0 +1,280 @@
+---
+export interface Props {
+  variant?: 'garden' | 'kitchen' | 'craft' | 'writing' | 'default';
+  className?: string;
+}
+
+const { 
+  variant = 'default',
+  className = ''
+} = Astro.props;
+
+// Different illustrations based on page type
+const illustrations = {
+  garden: {
+    title: "Tending the digital garden",
+    quote: "In every walk with nature, one receives far more than they seek.",
+    attribution: "— John Muir",
+    elements: ['botanical', 'growth', 'seasons']
+  },
+  kitchen: {
+    title: "From the kitchen",
+    quote: "Cooking is love made visible.",
+    attribution: "— Traditional",
+    elements: ['herbs', 'warmth', 'nourishment']
+  },
+  craft: {
+    title: "Tools and making",
+    quote: "The best way to find out if you can trust somebody is to trust them.",
+    attribution: "— Ernest Hemingway",
+    elements: ['tools', 'creation', 'craft']
+  },
+  writing: {
+    title: "Words and thoughts",
+    quote: "Writing is thinking on paper.",
+    attribution: "— William Zinsser",
+    elements: ['ink', 'manuscript', 'reflection']
+  },
+  default: {
+    title: "Digital garden",
+    quote: "Slow growth, deep roots, lasting wisdom.",
+    attribution: "— Garden wisdom",
+    elements: ['botanical', 'patience', 'wisdom']
+  }
+};
+
+const currentIllustration = illustrations[variant];
+---
+
+<footer class={`illustrated-footer ${variant} ${className}`}>
+  <!-- Botanical illustration divider -->
+  <div class="footer-illustration">
+    <svg class="footer-artwork" viewBox="0 0 800 120" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <filter id="footerTexture" x="0%" y="0%" width="100%" height="100%">
+          <feTurbulence baseFrequency="0.02" numOctaves="2" result="noise" seed="4" />
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="1" />
+        </filter>
+        <linearGradient id="earthGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:rgba(139, 90, 60, 0.4);stop-opacity:1" />
+          <stop offset="30%" style="stop-color:rgba(90, 107, 71, 0.3);stop-opacity:1" />
+          <stop offset="70%" style="stop-color:rgba(168, 181, 160, 0.3);stop-opacity:1" />
+          <stop offset="100%" style="stop-color:rgba(139, 90, 60, 0.4);stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      
+      <!-- Ground line with organic texture -->
+      <path
+        d="M0,60 Q200,45 400,55 T800,50"
+        stroke="url(#earthGradient)"
+        stroke-width="3"
+        fill="none"
+        filter="url(#footerTexture)"
+      />
+      
+      <!-- Botanical elements based on variant -->
+      {variant === 'garden' && (
+        <g fill="rgba(90, 107, 71, 0.4)" filter="url(#footerTexture)">
+          <!-- Growing plants -->
+          <path d="M150,60 Q155,40 160,45 Q165,35 170,50 L175,60" stroke="rgba(90, 107, 71, 0.5)" stroke-width="2" fill="none" />
+          <path d="M350,55 Q355,35 360,40 Q365,25 370,45 L375,55" stroke="rgba(90, 107, 71, 0.5)" stroke-width="2" fill="none" />
+          <path d="M550,50 Q555,30 560,35 Q565,20 570,40 L575,50" stroke="rgba(90, 107, 71, 0.5)" stroke-width="2" fill="none" />
+          
+          <!-- Leaves -->
+          <ellipse cx="165" cy="42" rx="5" ry="3" transform="rotate(45 165 42)" />
+          <ellipse cx="365" cy="37" rx="4" ry="2.5" transform="rotate(-30 365 37)" />
+          <ellipse cx="565" cy="32" rx="6" ry="3.5" transform="rotate(60 565 32)" />
+        </g>
+      )}
+      
+      {variant === 'kitchen' && (
+        <g fill="rgba(139, 90, 60, 0.4)" filter="url(#footerTexture)">
+          <!-- Herb sprigs -->
+          <path d="M200,55 L205,35 M210,55 L215,30 M220,55 L225,35" stroke="rgba(90, 107, 71, 0.6)" stroke-width="1.5" />
+          <path d="M400,50 L405,30 M410,50 L415,25 M420,50 L425,30" stroke="rgba(90, 107, 71, 0.6)" stroke-width="1.5" />
+          
+          <!-- Small herb leaves -->
+          <circle cx="203" cy="38" r="2" fill="rgba(168, 181, 160, 0.5)" />
+          <circle cx="213" cy="33" r="1.5" fill="rgba(168, 181, 160, 0.5)" />
+          <circle cx="403" cy="33" r="2" fill="rgba(168, 181, 160, 0.5)" />
+          <circle cx="413" cy="28" r="1.5" fill="rgba(168, 181, 160, 0.5)" />
+        </g>
+      )}
+      
+      {variant === 'writing' && (
+        <g filter="url(#footerTexture)">
+          <!-- Ink well and quill suggestion -->
+          <circle cx="300" cy="55" r="8" fill="rgba(139, 90, 60, 0.3)" />
+          <circle cx="300" cy="55" r="5" fill="rgba(68, 45, 30, 0.4)" />
+          
+          <!-- Quill feather -->
+          <path d="M320,55 Q340,35 350,45 Q345,50 340,48 Q335,52 330,50 Q325,54 320,52" 
+                fill="rgba(90, 107, 71, 0.3)" stroke="rgba(139, 90, 60, 0.4)" stroke-width="1" />
+        </g>
+      )}
+      
+      {(variant === 'craft' || variant === 'default') && (
+        <g fill="rgba(139, 90, 60, 0.4)" filter="url(#footerTexture)">
+          <!-- Simple botanical elements -->
+          <path d="M250,55 Q255,40 260,50 Q265,35 270,45" stroke="rgba(90, 107, 71, 0.5)" stroke-width="2" fill="none" />
+          <path d="M450,50 Q455,35 460,45 Q465,30 470,40" stroke="rgba(90, 107, 71, 0.5)" stroke-width="2" fill="none" />
+          
+          <!-- Small flowers -->
+          <circle cx="260" cy="45" r="3" fill="rgba(168, 181, 160, 0.4)" />
+          <circle cx="460" cy="40" r="2.5" fill="rgba(168, 181, 160, 0.4)" />
+        </g>
+      )}
+      
+      <!-- Scattered small elements for texture -->
+      <g fill="rgba(139, 90, 60, 0.2)">
+        <circle cx="100" cy="58" r="1" />
+        <circle cx="280" cy="52" r="0.8" />
+        <circle cx="520" cy="56" r="1.2" />
+        <circle cx="680" cy="54" r="0.9" />
+      </g>
+    </svg>
+  </div>
+  
+  <!-- Footer content -->
+  <div class="footer-content">
+    <div class="footer-text">
+      <p class="footer-attribution">
+        {currentIllustration.title}
+      </p>
+      
+      <blockquote class="footer-quote">
+        <p>"{currentIllustration.quote}"</p>
+        <cite>{currentIllustration.attribution}</cite>
+      </blockquote>
+      
+      <div class="footer-meta">
+        <p>
+          Built with care using <a href="https://astro.build" class="astro-link">Astro</a>. 
+          No tracking, no analytics, just thoughtful content.
+        </p>
+        <p class="license-info">
+          <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="license" class="cc-license">
+            Content licensed under CC BY-SA 4.0
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .illustrated-footer {
+    background: linear-gradient(to bottom, 
+      rgba(250, 247, 240, 0.98) 0%, 
+      rgba(243, 238, 226, 1) 100%);
+    border-top: 1px solid rgba(139, 90, 60, 0.1);
+    position: relative;
+    overflow: hidden;
+    margin-top: var(--space-xl);
+  }
+
+  .footer-illustration {
+    width: 100%;
+    height: 120px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .footer-artwork {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 2px 4px rgba(139, 90, 60, 0.05));
+  }
+
+  .footer-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--space-lg) var(--space-md) var(--space-md);
+    text-align: center;
+  }
+
+  .footer-attribution {
+    font-family: var(--font-heading);
+    font-size: var(--text-sm);
+    color: var(--color-ink-medium);
+    margin-bottom: var(--space-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 500;
+  }
+
+  .footer-quote {
+    margin: 0 auto var(--space-md);
+    max-width: 500px;
+    position: relative;
+  }
+
+  .footer-quote p {
+    font-family: var(--font-serif);
+    font-size: var(--text-md);
+    font-style: italic;
+    color: var(--color-ink-dark);
+    margin-bottom: var(--space-xs);
+    line-height: 1.6;
+  }
+
+  .footer-quote cite {
+    font-size: var(--text-sm);
+    color: var(--color-ink-light);
+    font-style: normal;
+    font-weight: 500;
+  }
+
+  .footer-meta {
+    font-size: var(--text-sm);
+    color: var(--color-ink-light);
+    line-height: 1.5;
+    margin-top: var(--space-md);
+    padding-top: var(--space-md);
+    border-top: 1px solid rgba(139, 90, 60, 0.1);
+  }
+
+  .footer-meta p {
+    margin-bottom: var(--space-xs);
+  }
+
+  .footer-meta p:last-child {
+    margin-bottom: 0;
+  }
+
+  .astro-link,
+  .cc-license {
+    color: var(--color-moss);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color var(--transition-fast);
+  }
+
+  .astro-link:hover,
+  .cc-license:hover {
+    color: var(--color-walnut);
+    text-decoration: underline;
+  }
+
+  /* Mobile responsiveness */
+  @media (max-width: 768px) {
+    .footer-content {
+      padding: var(--space-md) var(--space-md) var(--space-sm);
+    }
+
+    .footer-quote p {
+      font-size: var(--text-sm);
+    }
+
+    .footer-meta {
+      font-size: var(--text-xs);
+    }
+  }
+
+  /* Reduce animation for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .footer-artwork {
+      filter: none;
+    }
+  }
+</style>

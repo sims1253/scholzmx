@@ -2,19 +2,22 @@
 import '../styles/global.css';
 import BotanicalBorder from '../components/BotanicalBorder.astro';
 import PaperGrain from '../components/PaperGrain.astro';
+import IllustratedFooter from '../components/IllustratedFooter.astro';
 
 export interface Props {
   title: string;
   description?: string;
   image?: string;
   addBorders?: boolean;
+  footerVariant?: 'garden' | 'kitchen' | 'craft' | 'writing' | 'default';
 }
 
 const { 
   title, 
   description = "A digital garden and personal website - thoughtful, slow web principles with a warm, botanical aesthetic.",
   image = "/img/og-default.jpg",
-  addBorders = true
+  addBorders = true,
+  footerVariant = 'default'
 } = Astro.props;
 
 const currentPath = Astro.url.pathname;
@@ -101,31 +104,8 @@ const currentPath = Astro.url.pathname;
         </div>
       </main>
 
-      <!-- Footer -->
-      <footer class="site-footer">
-        <div class="container">
-          <div class="footer-content">
-            <div class="footer-section">
-              <p class="footer-text">
-                Built with care using <a href="https://astro.build">Astro</a>. 
-                No tracking, no analytics, just thoughtful content.
-              </p>
-            </div>
-            
-            <div class="footer-section">
-              <p class="license-info">
-                <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="license" class="cc-license">
-                  Content licensed under CC BY-SA 4.0
-                </a>
-              </p>
-            </div>
-            
-            <div class="footer-flourish">
-              <span aria-hidden="true">✿</span>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <!-- Illustrated Footer -->
+      <IllustratedFooter variant={footerVariant} />
     </div>
     
     <style>
@@ -235,51 +215,6 @@ const currentPath = Astro.url.pathname;
         padding: calc(50px + var(--space-md)) 0 var(--space-xl);
       }
 
-      /* Footer styles */
-      .site-footer {
-        background-color: var(--color-parchment-light);
-        border-top: 1px solid rgba(139, 90, 60, 0.1);
-        padding: var(--space-xl) 0 var(--space-lg);
-        margin-top: auto;
-      }
-
-      .footer-content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: var(--space-md);
-        text-align: center;
-      }
-
-      .footer-section {
-        margin: 0;
-      }
-
-      .footer-text,
-      .license-info {
-        margin: 0;
-        font-size: var(--text-sm);
-        color: var(--color-ink-light);
-        line-height: 1.5;
-      }
-
-      .cc-license {
-        color: var(--color-moss);
-        text-decoration: none;
-        font-weight: 500;
-      }
-
-      .cc-license:hover {
-        color: var(--color-walnut);
-        text-decoration: underline;
-      }
-
-      .footer-flourish {
-        color: var(--color-gold);
-        font-size: var(--text-lg);
-        margin-top: var(--space-sm);
-        opacity: 0.7;
-      }
 
       /* Mobile responsiveness */
       @media (max-width: 768px) {
