@@ -9,7 +9,8 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^5.12.2"
+    "astro": "^5.12.2",
+    "sharp": "^0.34.3"
   },
   "devDependencies": {
     "lighthouse": "^12.8.0"

@@ -4,6 +4,10 @@ import QuoteOfTheDay from '../components/QuoteOfTheDay.astro';
 import PaperTexture from '../components/PaperTexture.astro';
 import DropCap from '../components/DropCap.astro';
 import MarginNote from '../components/MarginNote.astro';
+import { Image } from 'astro:assets';
+
+// Import images for optimization
+import selfImage from '../../public/img/self.jpg';
 ---
 
 <BaseLayout 
@@ -33,10 +37,13 @@ import MarginNote from '../components/MarginNote.astro';
         
         <div class="portrait-section">
           <div class="portrait-frame">
-            <img 
-              src="/img/self.jpg" 
+            <Image 
+              src={selfImage}
               alt="A warm portrait photo" 
               class="portrait-image"
+              width={250}
+              height={250}
+              loading="lazy"
             />
             <div class="frame-ornament" aria-hidden="true">❦</div>
           </div>

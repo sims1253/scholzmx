@@ -42,6 +42,10 @@ const currentPath = Astro.url.pathname;
     <!-- Creative Commons License -->
     <link rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/" />
     
+    <!-- Preload critical local font files -->
+    <link rel="preload" href="/fonts/eb-garamond-400.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/cormorant-garamond-600.woff2" as="font" type="font/woff2" crossorigin />
+    
     <title>{title}</title>
     
   </head>
