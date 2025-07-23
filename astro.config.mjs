@@ -20,10 +20,10 @@ export default defineConfig({
   vite: {
     server: {
       host: true,
-      allowedHosts: [/.*\.ngrok-free\.app$/, /.*\.ngrok\.app$/, /.*\.ngrok\.io$/],
+      allowedHosts: ['all'],
     },
     preview: {
-      allowedHosts: [/.*\.ngrok-free\.app$/, /.*\.ngrok\.app$/, /.*\.ngrok\.io$/],
+      allowedHosts: ['all'],
     },
     build: {
       // Enable CSS code splitting
