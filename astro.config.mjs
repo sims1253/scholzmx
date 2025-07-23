@@ -18,6 +18,12 @@ export default defineConfig({
   
   // Reduce bundle size and improve loading
   vite: {
+    server: {
+      host: true,
+    },
+    preview: {
+      allowedHosts: ['4e42c85d6b81.ngrok-free.app'],
+    },
     build: {
       // Enable CSS code splitting
       cssCodeSplit: true,
