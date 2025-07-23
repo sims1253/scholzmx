@@ -1,50 +1,16 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PaperTexture from '../components/PaperTexture.astro';
 import DropCap from '../components/DropCap.astro';
 import MarginNote from '../components/MarginNote.astro';
 
-// Sample blog posts - in a real implementation, these would come from a content management system
-const posts = [
-  {
-    title: "On Digital Gardens and Slow Growth",
-    excerpt: "Thoughts on building spaces for ideas to grow naturally, without the pressure of performance metrics or the need to optimize for engagement. Sometimes the best things take time.",
-    date: "2025-07-20",
-    slug: "digital-gardens",
-    tags: ["web", "philosophy", "design"]
-  },
-  {
-    title: "The Art of Patient Cooking",
-    excerpt: "In a world of instant everything, there's profound satisfaction in slow-simmered broths, long-fermented breads, and vegetables that grow in their own sweet time.",
-    date: "2025-07-15",
-    slug: "patient-cooking",
-    tags: ["cooking", "mindfulness", "time"]
-  },
-  {
-    title: "Building Technology That Breathes",
-    excerpt: "Moving away from the frantic pace of modern software development toward tools and systems that respect both human attention and the natural world.",
-    date: "2025-07-10",
-    slug: "breathing-technology",
-    tags: ["technology", "sustainability", "philosophy"]
-  },
-  {
-    title: "Why I Left Social Media (Again)",
-    excerpt: "A reflection on the cycles of engagement and withdrawal, and what it means to be human in an attention-economy world.",
-    date: "2025-07-05",
-    slug: "leaving-social-media",
-    tags: ["social media", "attention", "wellbeing"]
-  },
-  {
-    title: "The Wisdom of Seasonal Eating",
-    excerpt: "Learning to eat with the rhythms of the earth, finding joy in anticipation, and rediscovering the taste of strawberries in June.",
-    date: "2025-06-28",
-    slug: "seasonal-eating",
-    tags: ["food", "seasons", "sustainability"]
-  }
-];
+const posts = await getCollection('blog', ({ data }) => !data.draft);
 
-const formatDate = (dateStr: string) => {
-  const date = new Date(dateStr);
+// Sort posts by date, newest first
+const sortedPosts = posts.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+
+const formatDate = (date: Date) => {
   return date.toLocaleDateString('en-US', { 
     year: 'numeric', 
     month: 'long', 
@@ -73,24 +39,24 @@ const formatDate = (dateStr: string) => {
 
     <main class="blog-content">
       <section class="posts-grid">
-        {posts.map((post, index) => (
+        {sortedPosts.map((post, index) => (
           <article class="post-card">
             <div class="post-meta">
-              <time class="post-date" datetime={post.date}>
-                {formatDate(post.date)}
+              <time class="post-date" datetime={post.data.date.toISOString()}>
+                {formatDate(post.data.date)}
               </time>
               <div class="post-tags">
-                {post.tags.map(tag => (
+                {post.data.tags?.map(tag => (
                   <span class="tag">#{tag}</span>
                 ))}
               </div>
             </div>
             
             <h2 class="post-title">
-              <a href={`/blog/${post.slug}`}>{post.title}</a>
+              <a href={`/blog/${post.slug}`}>{post.data.title}</a>
             </h2>
             
-            <p class="post-excerpt">{post.excerpt}</p>
+            <p class="post-excerpt">{post.data.description}</p>
             
             <footer class="post-footer">
               <a href={`/blog/${post.slug}`} class="read-more">
