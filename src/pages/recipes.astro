@@ -1,79 +1,23 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import PaperTexture from '../components/PaperTexture.astro';
-import DropCap from '../components/DropCap.astro';
-import MarginNote from '../components/MarginNote.astro';
+import { getCollection } from "astro:content";
+import { Image } from "astro:assets";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PaperTexture from "../components/PaperTexture.astro";
+import DropCap from "../components/DropCap.astro";
+import MarginNote from "../components/MarginNote.astro";
 
-// Sample recipes - in a real implementation, these would come from markdown files or a CMS
-const recipes = [
-  {
-    title: "Summer Gazpacho with Garden Herbs",
-    description: "A cooling soup that captures the essence of late summer afternoons, made with whatever the garden offers.",
-    image: "/img/portrait.jpg", // placeholder
-    servings: "4-6 people",
-    time: "30 minutes (plus chilling)",
-    season: "Summer",
-    tags: ["vegetarian", "vegan", "cold soup", "garden fresh"],
-    slug: "summer-gazpacho"
-  },
-  {
-    title: "Slow-Simmered White Bean Stew",
-    description: "A hearty, soul-warming stew that gets better with time. Perfect for cold evenings when you want something that feels like a hug.",
-    image: "/img/portrait.jpg", // placeholder
-    servings: "6-8 people", 
-    time: "2-3 hours",
-    season: "Winter",
-    tags: ["vegetarian", "comfort food", "slow cooking", "beans"],
-    slug: "white-bean-stew"
-  },
-  {
-    title: "Grandmother's Sourdough Starter",
-    description: "The living culture that has fed our family for generations, plus the knowledge of how to keep it happy and productive.",
-    image: "/img/portrait.jpg", // placeholder
-    servings: "Ongoing",
-    time: "7 days to establish",
-    season: "All seasons",
-    tags: ["bread", "fermentation", "tradition", "starter"],
-    slug: "sourdough-starter"
-  },
-  {
-    title: "Wild Mushroom Risotto",
-    description: "A meditation on patience and stirring, using whatever mushrooms the forest (or market) provides.",
-    image: "/img/portrait.jpg", // placeholder
-    servings: "4 people",
-    time: "45 minutes",
-    season: "Autumn",
-    tags: ["vegetarian", "mushrooms", "rice", "meditative"],
-    slug: "mushroom-risotto"
-  },
-  {
-    title: "Preserved Lemon Salt",
-    description: "Sunshine captured in salt - a simple preserve that adds brightness to everything it touches.",
-    image: "/img/portrait.jpg", // placeholder
-    servings: "Makes 1 jar",
-    time: "15 minutes (plus curing)",
-    season: "All seasons",
-    tags: ["preserves", "condiment", "lemon", "mediterranean"],
-    slug: "preserved-lemon-salt"
-  },
-  {
-    title: "Spring Nettle Soup",
-    description: "Foraging wisdom meets kitchen craft in this nourishing soup that celebrates the first green things of spring.",
-    image: "/img/portrait.jpg", // placeholder
-    servings: "4-6 people",
-    time: "1 hour",
-    season: "Spring", 
-    tags: ["foraged", "wild food", "spring", "nettles"],
-    slug: "nettle-soup"
-  }
-];
+// Import images for optimization
+import portraitImage from "../../public/img/portrait.jpg";
+
+const recipes = await getCollection("recipes", ({ data }) => !data.draft);
 
 const seasons = ["All seasons", "Spring", "Summer", "Autumn", "Winter"];
 ---
 
-<BaseLayout 
+<BaseLayout
   title="Kitchen Wisdom - Scholz MX"
   description="Cherished recipes collected over years of cooking with love - the kind that bring people together around a table. Seasonal, thoughtful, and made to nourish."
+  footerVariant="kitchen"
 >
   <PaperTexture pattern="parchment" intensity="medium" className="recipes-page">
     <header class="recipes-header">
@@ -81,12 +25,17 @@ const seasons = ["All seasons", "Spring", "Summer", "Autumn", "Winter"];
         <DropCap letter="K" color="ochre" style="botanical" />itchen Wisdom
       </h1>
       <p class="page-description">
-        Recipes gathered like wildflowers - some from family tradition, others discovered through
+        Recipes gathered like wildflowers - some from family tradition, others
+        discovered through
         <MarginNote>
-          <p>The best recipes are stories. They carry the memory of hands that made them, seasons that inspired them, and tables that welcomed them.</p>
+          <p>
+            The best recipes are stories. They carry the memory of hands that
+            made them, seasons that inspired them, and tables that welcomed
+            them.
+          </p>
         </MarginNote>
-        wandering and wondering. Each one tested by time, seasoned with love, and proven worthy 
-        of sharing around tables that matter.
+        wandering and wondering. Each one tested by time, seasoned with love, and
+        proven worthy of sharing around tables that matter.
       </p>
     </header>
 
@@ -95,60 +44,83 @@ const seasons = ["All seasons", "Spring", "Summer", "Autumn", "Winter"];
       <nav class="season-nav" aria-label="Filter by season">
         <h2 class="nav-title">Browse by Season</h2>
         <ul class="season-list">
-          {seasons.map(season => (
-            <li>
-              <button class="season-button" data-season={season.toLowerCase().replace(' ', '-')}>
-                {season}
-              </button>
-            </li>
-          ))}
+          {
+            seasons.map((season) => (
+              <li>
+                <button
+                  class="season-button"
+                  data-season={season.toLowerCase().replace(" ", "-")}
+                >
+                  {season}
+                </button>
+              </li>
+            ))
+          }
         </ul>
       </nav>
 
       <!-- Recipes Grid -->
       <section class="recipes-grid">
-        {recipes.map((recipe, index) => (
-          <article class="recipe-card" data-season={recipe.season.toLowerCase().replace(' ', '-')}>
-            <div class="recipe-image-container">
-              <img 
-                src={recipe.image} 
-                alt={`${recipe.title} - a delicious homemade recipe`}
-                class="recipe-image"
-                loading="lazy"
-              />
-              <div class="recipe-season-badge">{recipe.season}</div>
-            </div>
-            
-            <div class="recipe-content">
-              <header class="recipe-header">
-                <h3 class="recipe-title">
-                  <a href={`/recipes/${recipe.slug}`}>{recipe.title}</a>
-                </h3>
-                <div class="recipe-meta">
-                  <span class="recipe-servings" title="Servings">{recipe.servings}</span>
-                  <span class="recipe-time" title="Cooking time">{recipe.time}</span>
-                </div>
-              </header>
-              
-              <p class="recipe-description">{recipe.description}</p>
-              
-              <footer class="recipe-footer">
-                <div class="recipe-tags">
-                  {recipe.tags.slice(0, 3).map(tag => (
-                    <span class="recipe-tag">#{tag}</span>
-                  ))}
-                </div>
-                <a href={`/recipes/${recipe.slug}`} class="recipe-link">
-                  View Recipe <span aria-hidden="true">→</span>
-                </a>
-              </footer>
-            </div>
-            
-            <div class="recipe-ornament" aria-hidden="true">
-              {index % 4 === 0 ? '🌿' : index % 4 === 1 ? '🍄' : index % 4 === 2 ? '🌺' : '🥄'}
-            </div>
-          </article>
-        ))}
+        {
+          recipes.map((recipe, index) => (
+            <article
+              class="recipe-card"
+              data-season={recipe.data.season.toLowerCase().replace(" ", "-")}
+            >
+              <div class="recipe-image-container">
+                <Image
+                  src={portraitImage}
+                  alt={`${recipe.data.title} - a delicious homemade recipe`}
+                  class="recipe-image"
+                  loading="lazy"
+                  width={200}
+                  height={200}
+                  format="webp"
+                />
+                <div class="recipe-season-badge">{recipe.data.season}</div>
+              </div>
+
+              <div class="recipe-content">
+                <header class="recipe-header">
+                  <h3 class="recipe-title">
+                    <a href={`/recipes/${recipe.slug}`}>{recipe.data.title}</a>
+                  </h3>
+                  <div class="recipe-meta">
+                    <span class="recipe-servings" title="Servings">
+                      {recipe.data.servings}
+                    </span>
+                    <span class="recipe-time" title="Cooking time">
+                      {recipe.data.time}
+                    </span>
+                  </div>
+                </header>
+
+                <p class="recipe-description">{recipe.data.description}</p>
+
+                <footer class="recipe-footer">
+                  <div class="recipe-tags">
+                    {recipe.data.tags?.slice(0, 3).map((tag) => (
+                      <span class="recipe-tag">#{tag}</span>
+                    ))}
+                  </div>
+                  <a href={`/recipes/${recipe.slug}`} class="recipe-link">
+                    View Recipe <span aria-hidden="true">→</span>
+                  </a>
+                </footer>
+              </div>
+
+              <div class="recipe-ornament" aria-hidden="true">
+                {index % 4 === 0
+                  ? "🌿"
+                  : index % 4 === 1
+                    ? "🍄"
+                    : index % 4 === 2
+                      ? "🌺"
+                      : "🥄"}
+              </div>
+            </article>
+          ))
+        }
       </section>
 
       <!-- Kitchen Philosophy Sidebar -->
@@ -156,8 +128,8 @@ const seasons = ["All seasons", "Spring", "Summer", "Autumn", "Winter"];
         <section class="philosophy-card">
           <h3>Kitchen Philosophy</h3>
           <p>
-            Cook with the seasons. Buy from neighbors when you can. 
-            Waste nothing. Share everything. Trust your senses more than timers.
+            Cook with the seasons. Buy from neighbors when you can. Waste
+            nothing. Share everything. Trust your senses more than timers.
           </p>
         </section>
 
@@ -176,9 +148,9 @@ const seasons = ["All seasons", "Spring", "Summer", "Autumn", "Winter"];
         <section class="seasonal-card">
           <h3>What's in Season?</h3>
           <p class="seasonal-note">
-            Right now in late summer: tomatoes sing their sweetest song, 
-            corn reaches its peak, and the last berries offer their gifts 
-            before autumn's approach.
+            Right now in late summer: tomatoes sing their sweetest song, corn
+            reaches its peak, and the last berries offer their gifts before
+            autumn's approach.
           </p>
         </section>
       </aside>
@@ -188,36 +160,41 @@ const seasons = ["All seasons", "Spring", "Summer", "Autumn", "Winter"];
 
 <script>
   // Season filtering functionality
-  document.addEventListener('DOMContentLoaded', function() {
-    const seasonButtons = document.querySelectorAll('.season-button');
-    const recipeCards = document.querySelectorAll('.recipe-card');
+  document.addEventListener("DOMContentLoaded", function () {
+    const seasonButtons = document.querySelectorAll(".season-button");
+    const recipeCards = document.querySelectorAll(".recipe-card");
 
-    seasonButtons.forEach(button => {
-      button.addEventListener('click', function() {
+    seasonButtons.forEach((button) => {
+      button.addEventListener("click", function () {
         const selectedSeason = this.dataset.season;
-        
+
         // Update button states
-        seasonButtons.forEach(btn => btn.classList.remove('active'));
-        this.classList.add('active');
-        
+        seasonButtons.forEach((btn) => btn.classList.remove("active"));
+        this.classList.add("active");
+
         // Filter recipe cards
-        recipeCards.forEach(card => {
+        recipeCards.forEach((card) => {
           const cardSeason = card.dataset.season;
-          
-          if (selectedSeason === 'all-seasons' || cardSeason === selectedSeason) {
-            card.style.display = 'block';
-            card.style.opacity = '1';
+
+          if (
+            selectedSeason === "all-seasons" ||
+            cardSeason === selectedSeason
+          ) {
+            card.style.display = "block";
+            card.style.opacity = "1";
           } else {
-            card.style.opacity = '0.3';
+            card.style.opacity = "0.3";
           }
         });
       });
     });
 
     // Set "All seasons" as default active
-    const allSeasonsButton = document.querySelector('[data-season="all-seasons"]');
+    const allSeasonsButton = document.querySelector(
+      '[data-season="all-seasons"]',
+    );
     if (allSeasonsButton) {
-      allSeasonsButton.classList.add('active');
+      allSeasonsButton.classList.add("active");
     }
   });
 </script>
@@ -335,6 +312,7 @@ const seasons = ["All seasons", "Spring", "Summer", "Autumn", "Winter"];
     width: 100%;
     height: 100%;
     object-fit: cover;
+    aspect-ratio: 1;
   }
 
   .recipe-season-badge {
@@ -387,11 +365,11 @@ const seasons = ["All seasons", "Spring", "Summer", "Autumn", "Winter"];
   }
 
   .recipe-servings::before {
-    content: '👥';
+    content: "👥";
   }
 
   .recipe-time::before {
-    content: '⏱️';
+    content: "⏱️";
   }
 
   .recipe-description {
@@ -499,7 +477,7 @@ const seasons = ["All seasons", "Spring", "Summer", "Autumn", "Winter"];
   }
 
   .wisdom-list li::before {
-    content: '🥄';
+    content: "🥄";
     margin-right: var(--space-xs);
     font-size: 0.8em;
     opacity: 0.6;

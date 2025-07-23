@@ -1,0 +1,240 @@
+---
+export interface Props {
+  currentPath: string;
+  className?: string;
+}
+
+const { currentPath, className = '' } = Astro.props;
+
+const navItems = [
+  { href: '/', label: 'Garden', icon: '🌱' },
+  { href: '/research', label: 'Research', icon: '🔬' },
+  { href: '/blog', label: 'Writing', icon: '✍️' },
+  { href: '/recipes', label: 'Kitchen', icon: '🍲' },
+  { href: '/projects', label: 'Craft', icon: '🛠️' }
+];
+---
+
+<nav class={`integrated-nav ${className}`} role="navigation" aria-label="Main navigation">
+  <div class="nav-content">
+    <!-- Site identity -->
+    <div class="site-identity">
+      <a href="/" class="site-name" aria-label="Home">
+        <span class="name-text">Scholz MX</span>
+        <span class="site-tagline">Digital Garden</span>
+      </a>
+    </div>
+    
+    <!-- Navigation links -->
+    <div class="nav-links">
+      {navItems.map(item => (
+        <a 
+          href={item.href} 
+          class={`nav-item ${currentPath === item.href || (item.href !== '/' && currentPath.startsWith(item.href)) ? 'active' : ''}`}
+          aria-current={currentPath === item.href ? 'page' : undefined}
+        >
+          <span class="nav-icon" aria-hidden="true">{item.icon}</span>
+          <span class="nav-label">{item.label}</span>
+        </a>
+      ))}
+    </div>
+    
+    <!-- Decorative element -->
+    <div class="nav-ornament" aria-hidden="true">
+      <svg viewBox="0 0 100 20" class="ornament-svg">
+        <path 
+          d="M10,10 Q30,5 50,10 T90,10" 
+          stroke="rgba(139, 90, 60, 0.3)" 
+          stroke-width="2" 
+          fill="none"
+        />
+        <circle cx="25" cy="10" r="2" fill="rgba(90, 107, 71, 0.4)" />
+        <circle cx="75" cy="10" r="1.5" fill="rgba(168, 181, 160, 0.4)" />
+      </svg>
+    </div>
+  </div>
+</nav>
+
+<style>
+  .integrated-nav {
+    background: linear-gradient(to bottom, 
+      rgba(250, 247, 240, 0.95) 0%, 
+      rgba(250, 247, 240, 0.85) 100%);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(139, 90, 60, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    margin-bottom: var(--space-lg);
+  }
+
+  .nav-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--space-md) var(--space-lg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+  }
+
+  .site-identity {
+    flex-shrink: 0;
+  }
+
+  .site-name {
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    transition: all var(--transition-medium);
+  }
+
+  .site-name:hover {
+    transform: translateY(-1px);
+  }
+
+  .name-text {
+    font-family: var(--font-heading);
+    font-size: var(--text-lg);
+    font-weight: 700;
+    color: var(--color-ink-dark);
+    line-height: 1.1;
+  }
+
+  .site-tagline {
+    font-family: var(--font-serif);
+    font-size: var(--text-xs);
+    color: var(--color-ink-light);
+    font-style: italic;
+    text-transform: lowercase;
+    letter-spacing: 0.02em;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    flex: 1;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-sm);
+    text-decoration: none;
+    color: var(--color-ink-medium);
+    font-family: var(--font-serif);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    border-radius: var(--border-radius);
+    transition: all var(--transition-fast);
+    position: relative;
+    background: rgba(250, 247, 240, 0.5);
+    border: 1px solid transparent;
+  }
+
+  .nav-item:hover {
+    color: var(--color-walnut);
+    background: rgba(139, 90, 60, 0.05);
+    border-color: rgba(139, 90, 60, 0.1);
+    transform: translateY(-1px);
+  }
+
+  .nav-item.active {
+    color: var(--color-walnut);
+    background: rgba(139, 90, 60, 0.1);
+    border-color: rgba(139, 90, 60, 0.2);
+    font-weight: 600;
+  }
+
+  .nav-item.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 2px;
+    background: linear-gradient(to right, transparent, var(--color-gold), transparent);
+    border-radius: 1px;
+  }
+
+  .nav-icon {
+    font-size: var(--text-sm);
+    opacity: 0.8;
+  }
+
+  .nav-label {
+    line-height: 1;
+  }
+
+  .nav-ornament {
+    flex-shrink: 0;
+    width: 100px;
+    height: 20px;
+    opacity: 0.6;
+  }
+
+  .ornament-svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Mobile responsiveness */
+  @media (max-width: 768px) {
+    .nav-content {
+      flex-direction: column;
+      gap: var(--space-sm);
+      padding: var(--space-sm) var(--space-md);
+    }
+
+    .nav-links {
+      order: 2;
+      justify-content: center;
+      gap: var(--space-xs);
+    }
+
+    .nav-item {
+      padding: var(--space-xs);
+      font-size: var(--text-xs);
+    }
+
+    .nav-ornament {
+      order: 3;
+      width: 80px;
+      height: 16px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .nav-links {
+      flex-wrap: wrap;
+      gap: var(--space-xs);
+    }
+
+    .nav-item {
+      flex-direction: column;
+      gap: 2px;
+      padding: var(--space-xs);
+      min-width: 60px;
+      text-align: center;
+    }
+
+    .nav-icon {
+      font-size: var(--text-md);
+    }
+
+    .nav-label {
+      font-size: var(--text-xs);
+    }
+
+    .nav-ornament {
+      display: none;
+    }
+  }
+</style>

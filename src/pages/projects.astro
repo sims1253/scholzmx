@@ -5,37 +5,37 @@ import DropCap from '../components/DropCap.astro';
 import MarginNote from '../components/MarginNote.astro';
 import Slideshow from '../components/Slideshow.astro';
 
-// Sample projects - in a real implementation, these would come from markdown files or a CMS
+// Real projects from Maximilian Scholz's research and development work
 const projects = [
   {
-    title: "Minimal Web Components",
-    description: "A collection of web components built with vanilla JavaScript that prioritize accessibility, performance, and respect for user attention.",
-    longDescription: "Exploring how to build interactive elements that respect both users and the environment, using minimal dependencies and thoughtful design patterns.",
+    title: "huerd - Herding Hues",
+    description: "An R package for generating perceptually distinct color palettes optimized for both normal and color vision deficient viewers.",
+    longDescription: "Working in the perceptually uniform OKLAB color space, huerd generates discrete color palettes with advanced optimization and accessibility features. Uses nloptr-based optimization with CVD safety analysis and quality assessment tools.",
     status: "Active",
-    year: "2025",
-    tech: ["Vanilla JS", "Web Components", "CSS Grid", "Semantic HTML"],
+    year: "2024",
+    tech: ["R", "OKLAB Color Space", "nloptr", "colorspace", "farver"],
     links: [
-      { type: "GitHub", url: "https://github.com/username/minimal-components" },
-      { type: "Demo", url: "https://minimal-components.example.com" }
+      { type: "GitHub", url: "https://github.com/sims1253/huerd" },
+      { type: "Documentation", url: "https://github.com/sims1253/huerd#readme" }
     ],
-    category: "Web Development",
+    category: "Research Software",
     featured: true,
-    slug: "minimal-web-components"
+    slug: "huerd"
   },
   {
-    title: "Digital Garden Template",
-    description: "An Astro-based template for creating personal websites that embody slow web principles and botanical aesthetics.",
-    longDescription: "This very website serves as a template for others who want to create their own digital gardens - spaces for ideas to grow naturally.",
-    status: "Complete",
-    year: "2025", 
-    tech: ["Astro", "Vanilla CSS", "TypeScript", "Web Standards"],
+    title: "hrvester - Heart Rate Variability Toolkit",
+    description: "An R package for analyzing heart rate variability (HRV) data from .fit files, specialized for orthostatic testing and recovery assessment.",
+    longDescription: "Designed for athletes and researchers to analyze HRV data with advanced artifact detection algorithms, multiple RR interval correction methods, and automated recovery scoring. Integrates research-validated preprocessing techniques.",
+    status: "Active",
+    year: "2024",
+    tech: ["R", "ggplot2", "Artifact Detection", "Signal Processing"],
     links: [
-      { type: "GitHub", url: "https://github.com/username/digital-garden-template" },
-      { type: "Documentation", url: "/projects/digital-garden-template/docs" }
+      { type: "GitHub", url: "https://github.com/sims1253/hrvester" },
+      { type: "Documentation", url: "https://github.com/sims1253/hrvester#readme" }
     ],
-    category: "Web Development",
+    category: "Research Software",
     featured: true,
-    slug: "digital-garden-template"
+    slug: "hrvester"
   },
   {
     title: "Seasonal Cooking App",
@@ -94,18 +94,22 @@ const projects = [
   }
 ];
 
-const categories = ["All", "Web Development", "Mobile App", "Community", "Art"];
+const categories = ["All", "Research Software", "Web Development", "Mobile App", "Community", "Art"];
 const statuses = ["All", "Planning", "In Development", "Active", "Complete", "Ongoing"];
+
+// Import images for optimization
+import portraitImage from '../../public/img/portrait.jpg';
+import selfImage from '../../public/img/self.jpg';
 
 // Sample images for slideshow
 const projectImages = [
   {
-    src: "/img/portrait.jpg",
+    src: portraitImage,
     alt: "Screenshot of minimal web components in action",
     caption: "Clean, accessible components that respect user attention"
   },
   {
-    src: "/img/self.jpg", 
+    src: selfImage, 
     alt: "Digital garden template preview",
     caption: "A template for creating thoughtful digital spaces"
   }
@@ -115,6 +119,7 @@ const projectImages = [
 <BaseLayout 
   title="Creative Works - Scholz MX"
   description="Projects born from curiosity and built with care - code, art, experiments in making the world a little better. Each one crafted with intention and love."
+  footerVariant="craft"
 >
   <PaperTexture pattern="botanical" intensity="light" className="projects-page">
     <header class="projects-header">
@@ -193,7 +198,11 @@ const projectImages = [
 
             <div class="project-content">
               <h3 class="project-title">
-                <a href={`/projects/${project.slug}`}>{project.title}</a>
+                {project.links.find(link => link.type === "GitHub") ? (
+                  <a href={project.links.find(link => link.type === "GitHub").url} target="_blank" rel="noopener noreferrer">{project.title}</a>
+                ) : (
+                  <a href={`/projects/${project.slug}`}>{project.title}</a>
+                )}
               </h3>
               
               <p class="project-description">{project.description}</p>
@@ -569,19 +578,24 @@ const projectImages = [
 
   .project-category-badge {
     position: absolute;
-    bottom: var(--space-md);
-    right: var(--space-md);
+    top: var(--space-md);
+    left: var(--space-md);
     font-size: var(--text-xs);
     color: var(--color-ink-light);
-    background-color: rgba(250, 247, 240, 0.8);
+    background-color: rgba(250, 247, 240, 0.9);
     padding: 0.2em 0.4em;
     border-radius: calc(var(--border-radius) / 2);
     font-weight: 500;
+    max-width: calc(100% - var(--space-md) * 2 - 60px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    z-index: 1;
   }
 
   .project-ornament {
     position: absolute;
-    top: var(--space-md);
+    bottom: var(--space-md);
     right: var(--space-md);
     font-size: var(--text-md);
     opacity: 0.4;
