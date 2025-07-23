@@ -25,11 +25,16 @@ const dropCapLetter = letter.charAt(0).toUpperCase();
     font-family: var(--font-heading);
     font-weight: 700;
     line-height: 0.8;
-    margin: 0.1em 0.1em 0 0;
+    margin: 0.1em 0.15em 0 0;
     text-align: center;
     display: block;
     position: relative;
     user-select: none;
+    max-width: 1.1em;
+    
+    /* Prevent extending too far left */
+    margin-left: 0;
+    padding-left: 0;
   }
 
   /* Size variations */

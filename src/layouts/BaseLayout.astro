@@ -66,40 +66,36 @@ const currentPath = Astro.url.pathname;
           <BotanicalBorder position="top" variant="vine" intensity="light" />
           <BotanicalBorder position="left" variant="vine" intensity="light" />
           <BotanicalBorder position="right" variant="vine" intensity="light" />
-          <BotanicalBorder position="corner" />
-          <BotanicalBorder position="corner" />
-          <BotanicalBorder position="corner" />
-          <BotanicalBorder position="corner" />
         </>
       )}
-      
-      <!-- Integrated manuscript-style navigation -->
-      <nav class="manuscript-nav" role="navigation" aria-label="Main navigation">
-        <div class="nav-scroll">
-          <div class="nav-brand">
-            <a href="/" class="site-logo" aria-label="Home">
-              <span class="logo-text">Scholz MX</span>
-              <span class="logo-flourish">❦</span>
-            </a>
-          </div>
-          
-          <div class="nav-links">
-            <a href="/" class={currentPath === '/' ? 'nav-link active' : 'nav-link'}>Garden</a>
-            <span class="nav-separator">·</span>
-            <a href="/research" class={currentPath.startsWith('/research') ? 'nav-link active' : 'nav-link'}>Research</a>
-            <span class="nav-separator">·</span>
-            <a href="/blog" class={currentPath.startsWith('/blog') ? 'nav-link active' : 'nav-link'}>Writing</a>
-            <span class="nav-separator">·</span>
-            <a href="/recipes" class={currentPath.startsWith('/recipes') ? 'nav-link active' : 'nav-link'}>Kitchen</a>
-            <span class="nav-separator">·</span>
-            <a href="/projects" class={currentPath.startsWith('/projects') ? 'nav-link active' : 'nav-link'}>Craft</a>
-          </div>
-        </div>
-      </nav>
 
-      <!-- Main content area -->
+      <!-- Main content area with integrated navigation -->
       <main class="main-content">
         <div class="container">
+          <!-- Navigation integrated into page content -->
+          <nav class="page-nav" role="navigation" aria-label="Main navigation">
+            <div class="nav-content">
+              <div class="nav-brand">
+                <a href="/" class="site-logo" aria-label="Home">
+                  <span class="logo-text">Scholz MX</span>
+                  <span class="logo-flourish">❦</span>
+                </a>
+              </div>
+              
+              <div class="nav-links">
+                <a href="/" class={currentPath === '/' ? 'nav-link active' : 'nav-link'}>Garden</a>
+                <span class="nav-separator">·</span>
+                <a href="/research" class={currentPath.startsWith('/research') ? 'nav-link active' : 'nav-link'}>Research</a>
+                <span class="nav-separator">·</span>
+                <a href="/blog" class={currentPath.startsWith('/blog') ? 'nav-link active' : 'nav-link'}>Writing</a>
+                <span class="nav-separator">·</span>
+                <a href="/recipes" class={currentPath.startsWith('/recipes') ? 'nav-link active' : 'nav-link'}>Kitchen</a>
+                <span class="nav-separator">·</span>
+                <a href="/projects" class={currentPath.startsWith('/projects') ? 'nav-link active' : 'nav-link'}>Craft</a>
+              </div>
+            </div>
+          </nav>
+          
           <slot />
         </div>
       </main>
@@ -109,26 +105,18 @@ const currentPath = Astro.url.pathname;
     </div>
     
     <style>
-      /* Manuscript-style navigation */
-      .manuscript-nav {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 100;
-        background: linear-gradient(to bottom, rgba(250, 247, 240, 0.98), rgba(250, 247, 240, 0.92));
-        backdrop-filter: blur(8px);
-        border-bottom: 1px solid rgba(139, 90, 60, 0.08);
-        padding: var(--space-xs) 0;
+      /* In-page navigation */
+      .page-nav {
+        margin-bottom: var(--space-xl);
       }
 
-      .nav-scroll {
+      .nav-content {
         display: flex;
         justify-content: space-between;
         align-items: center;
         max-width: 1200px;
         margin: 0 auto;
-        padding: 0 var(--space-md);
+        padding: var(--space-md) var(--space-lg);
       }
 
       .nav-brand .site-logo {
@@ -212,7 +200,7 @@ const currentPath = Astro.url.pathname;
 
       .main-content {
         flex: 1;
-        padding: calc(50px + var(--space-md)) 0 var(--space-xl);
+        padding: var(--space-lg) 0 var(--space-xl);
       }
 
 

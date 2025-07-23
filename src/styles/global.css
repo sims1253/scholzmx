@@ -68,9 +68,12 @@
   --text-3xl: 2.5rem;
   
   /* Layout */
-  --content-width: 65ch;
+  --content-width: 72ch;
+  --main-content-width: 800px;
+  --main-content-width-large: 900px;
   --sidebar-width: 15rem;
   --border-radius: 0.25rem;
+  --border-radius-lg: 1rem;
   
   /* Transitions */
   --transition-fast: 0.15s ease;

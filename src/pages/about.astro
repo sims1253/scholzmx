@@ -5,15 +5,19 @@ import DropCap from '../components/DropCap.astro';
 import MarginNote from '../components/MarginNote.astro';
 import Slideshow from '../components/Slideshow.astro';
 
+// Import images for optimization
+import selfImage from '../../public/img/self.jpg';
+import portraitImage from '../../public/img/portrait.jpg';
+
 // Sample family/personal images for slideshow
 const personalImages = [
   {
-    src: "/img/self.jpg",
+    src: selfImage,
     alt: "A contemplative portrait",
     caption: "Finding quiet moments for reflection"
   },
   {
-    src: "/img/portrait.jpg", 
+    src: portraitImage, 
     alt: "Working in the garden",
     caption: "Hands in soil, thoughts in clouds"
   }
@@ -110,23 +114,30 @@ const personalImages = [
         <div class="personal-content">
           <div class="personal-text">
             <p>
-              I'm drawn to the intersection of technology and humanity, to questions about 
-              how we can build tools that serve human flourishing rather than extracting 
-              from it. By day, I work with code and systems. By evening, you'll often 
-              find me in the kitchen or garden, hands in soil or dough.
+              I'm Maximilian Scholz, a PhD researcher at the University of Stuttgart, 
+              working within the Cluster of Excellence SimTech. My academic journey has taken me 
+              through computational science, software engineering, and now into the fascinating 
+              world of Bayesian statistics, causality, and decision making.
             </p>
 
             <p>
-              I believe deeply in:
+              What drives me is the belief that <em>"I am prone to build infrastructure wherever I go, 
+              be it technical or social."</em> Whether I'm developing statistical tools, 
+              contributing to open source projects, or fostering collaborative research environments, 
+              I'm always looking for ways to create foundations that help others thrive.
+            </p>
+
+            <p>
+              My core interests revolve around:
             </p>
 
             <ul class="beliefs-list">
-              <li>The power of slow, thoughtful work over hustle culture</li>
-              <li>Local community and mutual aid over individual optimization</li>
-              <li>Seasonal eating and sustainable living practices</li>
-              <li>Technology that respects both human attention and the natural world</li>
-              <li>The revolutionary act of making things by hand</li>
-              <li>Poetry, beauty, and wonder as essential nutrients</li>
+              <li>Bayesian Statistics and probabilistic modeling</li>
+              <li>Causal inference and decision-making frameworks</li>
+              <li>Building robust software infrastructure for research</li>
+              <li>Open science and reproducible research practices</li>
+              <li>The intersection of statistics, computation, and human understanding</li>
+              <li>Collaborative tools that enable better scientific communication</li>
             </ul>
 
             <p>
@@ -140,33 +151,33 @@ const personalImages = [
             <div class="details-card">
               <h3>Currently</h3>
               <ul class="current-list">
-                <li>Building privacy-first web applications</li>
-                <li>Learning sourdough bread techniques</li>
-                <li>Reading about permaculture design</li>
-                <li>Sketching local wildflowers</li>
-                <li>Composting kitchen scraps</li>
+                <li>PhD research in Bayesian Statistics at SimTech</li>
+                <li>Developing the huerd R package for color palettes</li>
+                <li>Building heart rate variability analysis tools</li>
+                <li>Exploring causal inference methodologies</li>
+                <li>Contributing to open science initiatives</li>
               </ul>
             </div>
 
             <div class="details-card">
               <h3>Tools I Love</h3>
               <ul class="tools-list">
+                <li>R for statistical computing and analysis</li>
+                <li>Git for collaborative development</li>
                 <li>Astro for thoughtful web development</li>
-                <li>Fountain pens for analog thinking</li>
-                <li>Cast iron pans seasoned with time</li>
-                <li>Field notebooks for capturing ideas</li>
-                <li>Hand tools made to last generations</li>
+                <li>Python for machine learning workflows</li>
+                <li>LaTeX for scientific writing</li>
               </ul>
             </div>
 
             <div class="details-card">
-              <h3>Inspiration Sources</h3>
+              <h3>Education</h3>
               <ul class="inspiration-list">
-                <li>Ursula K. Le Guin's wisdom</li>
-                <li>Robin Wall Kimmerer's plant teachings</li>
-                <li>Adrienne Maree Brown's emergent strategy</li>
-                <li>The Whole Earth Catalog spirit</li>
-                <li>Medieval illuminated manuscripts</li>
+                <li>PhD Bayesian Statistics (In Progress)</li>
+                <li>M.Sc. Software Engineering (Chalmers, 2019)</li>
+                <li>B.Sc. Computational Science (TUHH, 2017)</li>
+                <li>Active on GitHub, GitLab, Mastodon</li>
+                <li>Contact: scholzmxb@gmail.com</li>
               </ul>
             </div>
           </aside>

@@ -7,7 +7,12 @@ export default defineConfig({
   image: {
     service: {
       entrypoint: 'astro/assets/services/sharp',
+      config: {
+        limitInputPixels: false,
+      },
     },
+    domains: [],
+    remotePatterns: [],
   },
   
   // Optimize performance

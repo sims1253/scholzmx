@@ -1,38 +1,39 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import QuoteOfTheDay from '../components/QuoteOfTheDay.astro';
-import PaperTexture from '../components/PaperTexture.astro';
-import DropCap from '../components/DropCap.astro';
-import MarginNote from '../components/MarginNote.astro';
-import Slideshow from '../components/Slideshow.astro';
-import HandDrawnDivider from '../components/HandDrawnDivider.astro';
-import { Image } from 'astro:assets';
-import SunlitEffect from '../components/SunlitEffect.astro';
+import BaseLayout from "../layouts/BaseLayout.astro";
+import QuoteOfTheDay from "../components/QuoteOfTheDay.astro";
+import PaperTexture from "../components/PaperTexture.astro";
+import DropCap from "../components/DropCap.astro";
+import MarginNote from "../components/MarginNote.astro";
+import Slideshow from "../components/Slideshow.astro";
+import HandDrawnDivider from "../components/HandDrawnDivider.astro";
+import { Image } from "astro:assets";
+import SunlitEffect from "../components/SunlitEffect.astro";
 
 // Import images for optimization
-import selfImage from '../../public/img/self.jpg';
+import selfImage from "../../public/img/self.jpg";
+import portraitImage from "../../public/img/portrait.jpg";
 
 // Sample images for easel slideshow
 const portfolioImages = [
   {
-    src: "/img/self.jpg",
+    src: selfImage,
     alt: "Botanical garden sketch - wild roses in summer bloom",
-    caption: "Wild roses captured during morning garden walks"
+    caption: "Wild roses captured during morning garden walks",
   },
   {
-    src: "/img/portrait.jpg",
+    src: portraitImage,
     alt: "Kitchen wisdom - homemade sourdough starter",
-    caption: "The living culture that feeds our family"
+    caption: "The living culture that feeds our family",
   },
   {
-    src: "/img/self.jpg",
+    src: selfImage,
     alt: "Statistical thinking coffee setup",
-    caption: "Every cup is an experiment in optimization"
-  }
+    caption: "Every cup is an experiment in optimization",
+  },
 ];
 ---
 
-<BaseLayout 
+<BaseLayout
   title="Scholz MX - Digital Garden & Personal Website"
   description="Welcome to my digital garden - a thoughtful space for ideas, recipes, projects, and musings. Built with slow web principles and a warm, botanical aesthetic."
   footerVariant="default"
@@ -44,37 +45,55 @@ const portfolioImages = [
       <main class="landing-main">
         <div class="welcome-section">
           <h1 class="site-title">
-            <DropCap letter="W" color="gold" style="ornate" />elcome to my digital garden
+            <DropCap letter="W" color="gold" style="ornate" />elcome to my
+            digital garden
           </h1>
           <p class="site-description">
-            A thoughtful space where ideas grow slowly, like plants in rich soil.
+            A thoughtful space where ideas grow slowly, like plants in rich
+            soil.
             <MarginNote>
-              <p>Think of this as a digital commonplace book - a collection of thoughts, discoveries, and creations that have meaning to me.</p>
+              <p>
+                Think of this as a digital commonplace book - a collection of
+                thoughts, discoveries, and creations that have meaning to me.
+              </p>
             </MarginNote>
-            Here you'll find musings on life, cherished recipes, creative projects, and quiet wisdom found in everyday moments.
+            Here you'll find musings on life, cherished recipes, creative projects,
+            and quiet wisdom found in everyday moments.
           </p>
-          
+
           <div class="about-preview">
             <div class="portrait-frame">
-              <Image 
+              <Image
                 src={selfImage}
-                alt="Maximilian Scholz - PhD researcher and digital gardener" 
+                alt="Maximilian Scholz - PhD researcher and digital gardener"
                 class="portrait-image"
-                width={180}
-                height={180}
+                width={120}
+                height={120}
+                format="webp"
                 loading="eager"
               />
             </div>
             <div class="intro-text">
-              <p>I'm <strong>Maximilian</strong>, a PhD researcher in Bayesian statistics at the University of Stuttgart, building tools for research and tending to this digital garden with slow web principles.</p>
+              <p>
+                I'm <strong>Maximilian</strong>, a PhD researcher in Bayesian
+                statistics at the University of Stuttgart, building tools for
+                research and tending to this digital garden with slow web
+                principles.
+              </p>
+              <p class="research-link">
+                <a href="/research">Explore my research & publications →</a>
+              </p>
               <p class="philosophy">
-                <em>No tracking, no analytics, no dark patterns. Just honest content and human connection.</em>
+                <em
+                  >No tracking, no analytics, no dark patterns. Just honest
+                  content and human connection.</em
+                >
               </p>
             </div>
           </div>
         </div>
       </main>
-      
+
       <!-- Easel slideshow sidebar -->
       <aside class="easel-section">
         <div class="easel-container">
@@ -84,7 +103,7 @@ const portfolioImages = [
             <div class="easel-legs"></div>
           </div>
           <div class="canvas-holder">
-            <Slideshow 
+            <Slideshow
               images={portfolioImages}
               autoPlay={true}
               interval={8000}
@@ -97,7 +116,7 @@ const portfolioImages = [
         </div>
       </aside>
     </div>
-    
+
     <!-- Quote section below main layout -->
     <div class="quote-container">
       <HandDrawnDivider variant="vine" width="wide" />
@@ -120,24 +139,44 @@ const portfolioImages = [
   }
 
   .landing-container {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 360px;
-    gap: var(--space-lg);
     width: 100%;
-    max-width: 1200px;
+    max-width: var(--main-content-width);
     margin: 0 auto;
     padding: 0 var(--space-lg);
-    align-items: center;
     flex: 1;
     min-height: 60vh;
+    position: relative;
+    
+    /* Uncomment for debugging alignment */
+    /* border: 1px dashed red; */
   }
+  
+
 
   .landing-main {
     /* Main content containing welcome section */
+    width: 100%;
   }
 
   .welcome-section {
     /* Welcome content */
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    
+    /* Create consistent text column */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .easel-section {
+    position: absolute;
+    right: -160px;
+    top: 38%;
+    width: 300px;
+    z-index: 10;
+    transform: translateY(-38%);
   }
 
   .site-title {
@@ -145,6 +184,12 @@ const portfolioImages = [
     line-height: 1.2;
     margin-bottom: var(--space-md);
     color: var(--color-ink-dark);
+    overflow: visible;
+    position: relative;
+    width: 100%;
+    
+    /* Ensure DropCap doesn't break alignment */
+    text-align: left;
   }
 
   .site-description {
@@ -152,13 +197,19 @@ const portfolioImages = [
     line-height: 1.6;
     margin-bottom: var(--space-lg);
     color: var(--color-ink-medium);
+    width: 100%;
+    text-align: left;
   }
 
   .about-preview {
     display: flex;
     gap: var(--space-md);
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: var(--space-lg);
+    width: 100%;
+    
+    /* Ensure consistent alignment */
+    justify-content: flex-start;
   }
 
   .intro-text {
@@ -174,6 +225,24 @@ const portfolioImages = [
 
   .intro-text p:last-child {
     margin-bottom: 0;
+  }
+
+  .research-link {
+    font-size: var(--text-sm);
+    margin-bottom: var(--space-sm);
+  }
+
+  .research-link a {
+    color: var(--color-sage);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid transparent;
+  }
+
+  .research-link a:hover {
+    color: var(--color-walnut);
+    border-bottom-color: var(--color-walnut);
   }
 
   .philosophy {
@@ -202,13 +271,24 @@ const portfolioImages = [
     height: 100%;
     object-fit: cover;
     display: block;
+    aspect-ratio: 1;
   }
 
   /* Quote container styling */
   .quote-container {
-    max-width: 1200px;
+    max-width: var(--main-content-width);
     margin: var(--space-xl) auto 0;
     padding: 0 var(--space-lg) var(--space-lg);
+    
+    /* Uncomment for debugging alignment */
+    /* border: 1px dashed blue; */
+  }
+
+  @media (min-width: 1600px) {
+    .quote-container {
+      max-width: var(--main-content-width-large);
+      padding: 0 var(--space-lg) var(--space-lg);
+    }
   }
 
   .quote-section {
@@ -217,34 +297,55 @@ const portfolioImages = [
 
   /* Easel slideshow section */
   .easel-section {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
+    padding-top: var(--space-md);
   }
 
-  /* Ensure grid layout on large screens */
-  @media (min-width: 769px) {
+  @media (min-width: 1600px) {
     .landing-container {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 360px;
+      max-width: var(--main-content-width-large);
+      padding: 0 var(--space-lg);
     }
-  }
-
-  @media (min-width: 1200px) {
-    .landing-container {
-      grid-template-columns: minmax(0, 1fr) 400px;
-      gap: var(--space-xl);
+    
+    .easel-section {
+      right: -360px;
+      width: 380px;
     }
 
     .easel-container {
-      width: 320px;
-      height: 380px;
+      width: 350px;
+      height: 420px;
     }
 
     .canvas-holder {
-      width: 280px;
-      height: 320px;
+      width: 310px;
+      height: 360px;
+    }
+  }
+
+
+
+    .easel-container {
+      width: 420px;
+      height: 500px;
+    }
+
+    .canvas-holder {
+      width: 380px;
+      height: 440px;
+    }
+
+    .easel-stand {
+      width: 200px;
+      height: 220px;
+    }
+
+    .easel-legs:nth-child(1) {
+      height: 180px;
+    }
+
+    .easel-legs:nth-child(2),
+    .easel-legs:nth-child(3) {
+      height: 160px;
     }
   }
 
@@ -269,7 +370,9 @@ const portfolioImages = [
     position: absolute;
     background: linear-gradient(to bottom, #8b5a3c, #6b4a2c);
     border-radius: 2px;
-    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.2), 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow:
+      inset 0 1px 2px rgba(255, 255, 255, 0.2),
+      0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
   .easel-legs:nth-child(1) {
@@ -305,14 +408,16 @@ const portfolioImages = [
     background: var(--color-parchment-light);
     border: 8px solid #8b5a3c;
     border-radius: 4px;
-    box-shadow: 0 8px 24px rgba(139, 90, 60, 0.2), inset 0 2px 4px rgba(255, 255, 255, 0.1);
+    box-shadow:
+      0 8px 24px rgba(139, 90, 60, 0.2),
+      inset 0 2px 4px rgba(255, 255, 255, 0.1);
     z-index: 2;
     margin: 0 auto;
     overflow: hidden;
   }
 
   .canvas-holder::before {
-    content: '';
+    content: "";
     position: absolute;
     top: -4px;
     left: -4px;
@@ -382,17 +487,6 @@ const portfolioImages = [
       padding: var(--space-lg) 0;
     }
 
-    .landing-container {
-      grid-template-columns: 1fr;
-      gap: var(--space-lg);
-      min-height: auto;
-    }
-
-    .easel-section {
-      order: 1;
-      margin-top: var(--space-lg);
-    }
-
     .easel-container {
       width: 260px;
       height: 340px;
@@ -405,34 +499,18 @@ const portfolioImages = [
     }
   }
 
-  @media (max-width: 1024px) {
-    .landing-container {
-      gap: var(--space-md);
-      grid-template-columns: minmax(0, 1fr) 280px;
-    }
 
-    .easel-container {
-      width: 240px;
-      height: 300px;
-    }
 
-    .canvas-holder {
-      width: 200px;
-      height: 220px;
+  @media (max-width: 1400px) {
+    .easel-section {
+      position: static;
+      margin-top: var(--space-lg);
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      transform: none;
     }
   }
-
-  @media (max-width: 768px) {
-    .landing-container {
-      grid-template-columns: 1fr;
-      min-height: auto;
-    }
-
-    .easel-section {
-      order: 1;
-      margin-top: var(--space-lg);
-      justify-self: center;
-    }
 
     .easel-container {
       width: 280px;
