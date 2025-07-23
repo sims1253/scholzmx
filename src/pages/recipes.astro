@@ -1,0 +1,564 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PaperTexture from '../components/PaperTexture.astro';
+import DropCap from '../components/DropCap.astro';
+import MarginNote from '../components/MarginNote.astro';
+
+// Sample recipes - in a real implementation, these would come from markdown files or a CMS
+const recipes = [
+  {
+    title: "Summer Gazpacho with Garden Herbs",
+    description: "A cooling soup that captures the essence of late summer afternoons, made with whatever the garden offers.",
+    image: "/img/portrait.jpg", // placeholder
+    servings: "4-6 people",
+    time: "30 minutes (plus chilling)",
+    season: "Summer",
+    tags: ["vegetarian", "vegan", "cold soup", "garden fresh"],
+    slug: "summer-gazpacho"
+  },
+  {
+    title: "Slow-Simmered White Bean Stew",
+    description: "A hearty, soul-warming stew that gets better with time. Perfect for cold evenings when you want something that feels like a hug.",
+    image: "/img/portrait.jpg", // placeholder
+    servings: "6-8 people", 
+    time: "2-3 hours",
+    season: "Winter",
+    tags: ["vegetarian", "comfort food", "slow cooking", "beans"],
+    slug: "white-bean-stew"
+  },
+  {
+    title: "Grandmother's Sourdough Starter",
+    description: "The living culture that has fed our family for generations, plus the knowledge of how to keep it happy and productive.",
+    image: "/img/portrait.jpg", // placeholder
+    servings: "Ongoing",
+    time: "7 days to establish",
+    season: "All seasons",
+    tags: ["bread", "fermentation", "tradition", "starter"],
+    slug: "sourdough-starter"
+  },
+  {
+    title: "Wild Mushroom Risotto",
+    description: "A meditation on patience and stirring, using whatever mushrooms the forest (or market) provides.",
+    image: "/img/portrait.jpg", // placeholder
+    servings: "4 people",
+    time: "45 minutes",
+    season: "Autumn",
+    tags: ["vegetarian", "mushrooms", "rice", "meditative"],
+    slug: "mushroom-risotto"
+  },
+  {
+    title: "Preserved Lemon Salt",
+    description: "Sunshine captured in salt - a simple preserve that adds brightness to everything it touches.",
+    image: "/img/portrait.jpg", // placeholder
+    servings: "Makes 1 jar",
+    time: "15 minutes (plus curing)",
+    season: "All seasons",
+    tags: ["preserves", "condiment", "lemon", "mediterranean"],
+    slug: "preserved-lemon-salt"
+  },
+  {
+    title: "Spring Nettle Soup",
+    description: "Foraging wisdom meets kitchen craft in this nourishing soup that celebrates the first green things of spring.",
+    image: "/img/portrait.jpg", // placeholder
+    servings: "4-6 people",
+    time: "1 hour",
+    season: "Spring", 
+    tags: ["foraged", "wild food", "spring", "nettles"],
+    slug: "nettle-soup"
+  }
+];
+
+const seasons = ["All seasons", "Spring", "Summer", "Autumn", "Winter"];
+---
+
+<BaseLayout 
+  title="Kitchen Wisdom - Scholz MX"
+  description="Cherished recipes collected over years of cooking with love - the kind that bring people together around a table. Seasonal, thoughtful, and made to nourish."
+>
+  <PaperTexture pattern="parchment" intensity="medium" className="recipes-page">
+    <header class="recipes-header">
+      <h1 class="page-title">
+        <DropCap letter="K" color="ochre" style="botanical" />itchen Wisdom
+      </h1>
+      <p class="page-description">
+        Recipes gathered like wildflowers - some from family tradition, others discovered through
+        <MarginNote>
+          <p>The best recipes are stories. They carry the memory of hands that made them, seasons that inspired them, and tables that welcomed them.</p>
+        </MarginNote>
+        wandering and wondering. Each one tested by time, seasoned with love, and proven worthy 
+        of sharing around tables that matter.
+      </p>
+    </header>
+
+    <main class="recipes-content">
+      <!-- Season Navigation -->
+      <nav class="season-nav" aria-label="Filter by season">
+        <h2 class="nav-title">Browse by Season</h2>
+        <ul class="season-list">
+          {seasons.map(season => (
+            <li>
+              <button class="season-button" data-season={season.toLowerCase().replace(' ', '-')}>
+                {season}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <!-- Recipes Grid -->
+      <section class="recipes-grid">
+        {recipes.map((recipe, index) => (
+          <article class="recipe-card" data-season={recipe.season.toLowerCase().replace(' ', '-')}>
+            <div class="recipe-image-container">
+              <img 
+                src={recipe.image} 
+                alt={`${recipe.title} - a delicious homemade recipe`}
+                class="recipe-image"
+                loading="lazy"
+              />
+              <div class="recipe-season-badge">{recipe.season}</div>
+            </div>
+            
+            <div class="recipe-content">
+              <header class="recipe-header">
+                <h3 class="recipe-title">
+                  <a href={`/recipes/${recipe.slug}`}>{recipe.title}</a>
+                </h3>
+                <div class="recipe-meta">
+                  <span class="recipe-servings" title="Servings">{recipe.servings}</span>
+                  <span class="recipe-time" title="Cooking time">{recipe.time}</span>
+                </div>
+              </header>
+              
+              <p class="recipe-description">{recipe.description}</p>
+              
+              <footer class="recipe-footer">
+                <div class="recipe-tags">
+                  {recipe.tags.slice(0, 3).map(tag => (
+                    <span class="recipe-tag">#{tag}</span>
+                  ))}
+                </div>
+                <a href={`/recipes/${recipe.slug}`} class="recipe-link">
+                  View Recipe <span aria-hidden="true">→</span>
+                </a>
+              </footer>
+            </div>
+            
+            <div class="recipe-ornament" aria-hidden="true">
+              {index % 4 === 0 ? '🌿' : index % 4 === 1 ? '🍄' : index % 4 === 2 ? '🌺' : '🥄'}
+            </div>
+          </article>
+        ))}
+      </section>
+
+      <!-- Kitchen Philosophy Sidebar -->
+      <aside class="kitchen-sidebar">
+        <section class="philosophy-card">
+          <h3>Kitchen Philosophy</h3>
+          <p>
+            Cook with the seasons. Buy from neighbors when you can. 
+            Waste nothing. Share everything. Trust your senses more than timers.
+          </p>
+        </section>
+
+        <section class="tips-card">
+          <h3>Essential Kitchen Wisdom</h3>
+          <ul class="wisdom-list">
+            <li>Salt early, taste often</li>
+            <li>Sharp knives are safer knives</li>
+            <li>Mise en place saves the day</li>
+            <li>When in doubt, add acid</li>
+            <li>Low and slow wins the race</li>
+            <li>Feed people like you love them</li>
+          </ul>
+        </section>
+
+        <section class="seasonal-card">
+          <h3>What's in Season?</h3>
+          <p class="seasonal-note">
+            Right now in late summer: tomatoes sing their sweetest song, 
+            corn reaches its peak, and the last berries offer their gifts 
+            before autumn's approach.
+          </p>
+        </section>
+      </aside>
+    </main>
+  </PaperTexture>
+</BaseLayout>
+
+<script>
+  // Season filtering functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    const seasonButtons = document.querySelectorAll('.season-button');
+    const recipeCards = document.querySelectorAll('.recipe-card');
+
+    seasonButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const selectedSeason = this.dataset.season;
+        
+        // Update button states
+        seasonButtons.forEach(btn => btn.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Filter recipe cards
+        recipeCards.forEach(card => {
+          const cardSeason = card.dataset.season;
+          
+          if (selectedSeason === 'all-seasons' || cardSeason === selectedSeason) {
+            card.style.display = 'block';
+            card.style.opacity = '1';
+          } else {
+            card.style.opacity = '0.3';
+          }
+        });
+      });
+    });
+
+    // Set "All seasons" as default active
+    const allSeasonsButton = document.querySelector('[data-season="all-seasons"]');
+    if (allSeasonsButton) {
+      allSeasonsButton.classList.add('active');
+    }
+  });
+</script>
+
+<style>
+  .recipes-page {
+    max-width: 100%;
+  }
+
+  .recipes-header {
+    text-align: center;
+    max-width: 60ch;
+    margin: 0 auto var(--space-xxl);
+  }
+
+  .page-title {
+    font-size: clamp(var(--text-2xl), 5vw, var(--text-3xl));
+    margin-bottom: var(--space-lg);
+    color: var(--color-ink-dark);
+  }
+
+  .page-description {
+    font-size: var(--text-lg);
+    line-height: 1.6;
+    color: var(--color-ink-medium);
+    font-style: italic;
+  }
+
+  .recipes-content {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: var(--space-xl);
+    align-items: start;
+  }
+
+  /* Season Navigation */
+  .season-nav {
+    position: sticky;
+    top: calc(var(--space-xl) + 80px);
+  }
+
+  .nav-title {
+    font-size: var(--text-md);
+    margin-bottom: var(--space-md);
+    color: var(--color-ink-dark);
+    font-weight: 600;
+  }
+
+  .season-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .season-button {
+    background: none;
+    border: 1px solid rgba(139, 90, 60, 0.2);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--border-radius);
+    font-size: var(--text-sm);
+    color: var(--color-ink-medium);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-align: left;
+    width: 100%;
+  }
+
+  .season-button:hover {
+    background-color: rgba(139, 90, 60, 0.05);
+    border-color: var(--color-walnut);
+    color: var(--color-ink-dark);
+  }
+
+  .season-button.active {
+    background-color: var(--color-walnut);
+    color: var(--color-parchment-light);
+    border-color: var(--color-walnut);
+  }
+
+  /* Recipes Grid */
+  .recipes-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-xl);
+  }
+
+  .recipe-card {
+    background-color: var(--color-parchment-light);
+    border: 1px solid rgba(139, 90, 60, 0.1);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    position: relative;
+    transition: all var(--transition-medium);
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: var(--space-md);
+  }
+
+  .recipe-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(139, 90, 60, 0.1);
+    border-color: var(--color-sage);
+  }
+
+  .recipe-image-container {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+  }
+
+  .recipe-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .recipe-season-badge {
+    position: absolute;
+    top: var(--space-xs);
+    left: var(--space-xs);
+    background-color: rgba(250, 247, 240, 0.9);
+    color: var(--color-ink-dark);
+    padding: 0.25em 0.5em;
+    border-radius: calc(var(--border-radius) / 2);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    backdrop-filter: blur(4px);
+  }
+
+  .recipe-content {
+    padding: var(--space-md);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .recipe-header {
+    margin-bottom: var(--space-sm);
+  }
+
+  .recipe-title {
+    margin: 0 0 var(--space-xs);
+    font-size: var(--text-lg);
+  }
+
+  .recipe-title a {
+    text-decoration: none;
+    color: var(--color-ink-dark);
+    font-weight: 600;
+  }
+
+  .recipe-title a:hover {
+    color: var(--color-walnut);
+  }
+
+  .recipe-meta {
+    display: flex;
+    gap: var(--space-md);
+    font-size: var(--text-xs);
+    color: var(--color-ink-light);
+  }
+
+  .recipe-meta span::before {
+    margin-right: 0.25em;
+  }
+
+  .recipe-servings::before {
+    content: '👥';
+  }
+
+  .recipe-time::before {
+    content: '⏱️';
+  }
+
+  .recipe-description {
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    color: var(--color-ink-medium);
+    margin-bottom: var(--space-md);
+    flex: 1;
+  }
+
+  .recipe-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+
+  .recipe-tags {
+    display: flex;
+    gap: var(--space-xs);
+    flex-wrap: wrap;
+  }
+
+  .recipe-tag {
+    font-size: var(--text-xs);
+    color: var(--color-moss);
+    background-color: rgba(90, 107, 71, 0.1);
+    padding: 0.2em 0.4em;
+    border-radius: calc(var(--border-radius) / 2);
+    font-weight: 500;
+  }
+
+  .recipe-link {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-walnut);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .recipe-link:hover {
+    color: var(--color-ochre);
+  }
+
+  .recipe-ornament {
+    position: absolute;
+    top: var(--space-md);
+    right: var(--space-md);
+    font-size: var(--text-md);
+    opacity: 0.4;
+  }
+
+  /* Kitchen Sidebar */
+  .kitchen-sidebar {
+    position: sticky;
+    top: calc(var(--space-xl) + 80px);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+
+  .philosophy-card,
+  .tips-card,
+  .seasonal-card {
+    background-color: var(--color-parchment-light);
+    border: 1px solid rgba(139, 90, 60, 0.1);
+    border-radius: var(--border-radius);
+    padding: var(--space-lg);
+  }
+
+  .philosophy-card h3,
+  .tips-card h3,
+  .seasonal-card h3 {
+    font-size: var(--text-md);
+    margin-bottom: var(--space-sm);
+    color: var(--color-ink-dark);
+    font-weight: 600;
+  }
+
+  .philosophy-card p,
+  .seasonal-note {
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    color: var(--color-ink-medium);
+    margin: 0;
+    font-style: italic;
+  }
+
+  .wisdom-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .wisdom-list li {
+    font-size: var(--text-sm);
+    padding: var(--space-xs) 0;
+    color: var(--color-ink-medium);
+    border-bottom: 1px solid rgba(139, 90, 60, 0.05);
+  }
+
+  .wisdom-list li:last-child {
+    border-bottom: none;
+  }
+
+  .wisdom-list li::before {
+    content: '🥄';
+    margin-right: var(--space-xs);
+    font-size: 0.8em;
+    opacity: 0.6;
+  }
+
+  /* Mobile responsiveness */
+  @media (max-width: 1024px) {
+    .recipes-content {
+      grid-template-columns: 1fr;
+      gap: var(--space-lg);
+    }
+
+    .season-nav,
+    .kitchen-sidebar {
+      position: static;
+    }
+
+    .season-list {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+
+    .kitchen-sidebar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--space-md);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .recipe-card {
+      grid-template-columns: 1fr;
+    }
+
+    .recipe-image-container {
+      aspect-ratio: 16/10;
+    }
+
+    .season-list {
+      flex-direction: column;
+    }
+
+    .kitchen-sidebar {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .recipe-content {
+      padding: var(--space-sm);
+    }
+
+    .recipe-footer {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .recipe-link {
+      text-align: center;
+    }
+  }
+</style>

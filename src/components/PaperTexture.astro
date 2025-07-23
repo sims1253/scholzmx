@@ -1,0 +1,188 @@
+---
+export interface Props {
+  intensity?: 'light' | 'medium' | 'heavy';
+  pattern?: 'paper' | 'linen' | 'parchment' | 'botanical';
+  className?: string;
+}
+
+const { 
+  intensity = 'medium',
+  pattern = 'paper',
+  className = ''
+} = Astro.props;
+---
+
+<div class={`paper-texture paper-texture--${intensity} paper-texture--${pattern} ${className}`}>
+  <slot />
+</div>
+
+<style>
+  .paper-texture {
+    position: relative;
+    isolation: isolate;
+  }
+
+  /* Base texture overlay */
+  .paper-texture::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: -1;
+    border-radius: inherit;
+  }
+
+  /* Intensity variations */
+  .paper-texture--light::before {
+    opacity: 0.02;
+  }
+
+  .paper-texture--medium::before {
+    opacity: 0.04;
+  }
+
+  .paper-texture--heavy::before {
+    opacity: 0.08;
+  }
+
+  /* Paper pattern - subtle fiber texture */
+  .paper-texture--paper::before {
+    background-image: 
+      linear-gradient(45deg, transparent 40%, rgba(139, 90, 60, 0.1) 41%, rgba(139, 90, 60, 0.1) 43%, transparent 44%),
+      linear-gradient(-45deg, transparent 40%, rgba(90, 107, 71, 0.1) 41%, rgba(90, 107, 71, 0.1) 43%, transparent 44%),
+      radial-gradient(circle at 30% 80%, rgba(204, 139, 92, 0.1) 1px, transparent 2px);
+    background-size: 12px 12px, 12px 12px, 8px 8px;
+  }
+
+  /* Linen pattern - crosshatch texture */
+  .paper-texture--linen::before {
+    background-image:
+      linear-gradient(0deg, rgba(139, 90, 60, 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(139, 90, 60, 0.1) 1px, transparent 1px),
+      linear-gradient(45deg, rgba(90, 107, 71, 0.05) 1px, transparent 1px);
+    background-size: 3px 3px, 3px 3px, 6px 6px;
+  }
+
+  /* Parchment pattern - aged and weathered */
+  .paper-texture--parchment::before {
+    background-image:
+      radial-gradient(circle at 20% 80%, rgba(139, 90, 60, 0.1) 2px, transparent 3px),
+      radial-gradient(circle at 80% 20%, rgba(204, 139, 92, 0.08) 1px, transparent 2px),
+      radial-gradient(circle at 40% 40%, rgba(90, 107, 71, 0.06) 1px, transparent 2px),
+      linear-gradient(90deg, rgba(139, 90, 60, 0.02) 50%, transparent 50%);
+    background-size: 20px 20px, 15px 15px, 25px 25px, 2px 2px;
+  }
+
+  /* Botanical pattern - nature-inspired subtle motifs */
+  .paper-texture--botanical::before {
+    background-image:
+      radial-gradient(ellipse at 25% 75%, rgba(90, 107, 71, 0.1) 1px, transparent 2px),
+      radial-gradient(ellipse at 75% 25%, rgba(168, 181, 160, 0.08) 1px, transparent 2px),
+      linear-gradient(60deg, transparent 48%, rgba(139, 90, 60, 0.05) 49%, rgba(139, 90, 60, 0.05) 51%, transparent 52%),
+      conic-gradient(from 0deg at 50% 50%, transparent 0deg, rgba(204, 139, 92, 0.03) 60deg, transparent 120deg);
+    background-size: 30px 30px, 25px 25px, 15px 15px, 40px 40px;
+  }
+
+  /* Additional overlay for depth */
+  .paper-texture::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      135deg,
+      rgba(250, 247, 240, 0.3) 0%,
+      rgba(252, 250, 245, 0.1) 25%,
+      rgba(250, 247, 240, 0.2) 50%,
+      rgba(252, 250, 245, 0.05) 75%,
+      rgba(250, 247, 240, 0.1) 100%
+    );
+    pointer-events: none;
+    z-index: -1;
+    border-radius: inherit;
+  }
+
+  .paper-texture--light::after {
+    opacity: 0.3;
+  }
+
+  .paper-texture--medium::after {
+    opacity: 0.5;
+  }
+
+  .paper-texture--heavy::after {
+    opacity: 0.7;
+  }
+
+  /* Hover effects for interactive elements */
+  .paper-texture:hover::before {
+    opacity: calc(var(--base-opacity) * 1.5);
+    transition: opacity var(--transition-medium);
+  }
+
+  .paper-texture--light:hover::before {
+    --base-opacity: 0.02;
+  }
+
+  .paper-texture--medium:hover::before {
+    --base-opacity: 0.04;
+  }
+
+  .paper-texture--heavy:hover::before {
+    --base-opacity: 0.08;
+  }
+
+  /* Ensure content remains accessible */
+  .paper-texture > :global(*) {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Special effects for different contexts */
+  .paper-texture--card {
+    background-color: var(--color-parchment-light);
+    border: 1px solid rgba(139, 90, 60, 0.1);
+    border-radius: var(--border-radius);
+    padding: var(--space-md);
+    box-shadow: 0 2px 8px rgba(139, 90, 60, 0.05);
+  }
+
+  .paper-texture--page {
+    background-color: var(--color-parchment);
+    min-height: 100vh;
+  }
+
+  .paper-texture--section {
+    background-color: var(--color-parchment-light);
+    padding: var(--space-lg);
+    margin: var(--space-lg) 0;
+    border-radius: var(--border-radius);
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .paper-texture--heavy::before {
+      opacity: 0.06;
+    }
+    
+    .paper-texture--medium::before {
+      opacity: 0.03;
+    }
+    
+    .paper-texture--light::before {
+      opacity: 0.015;
+    }
+  }
+
+  /* Reduce motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .paper-texture:hover::before {
+      transition: none;
+    }
+  }
+</style>

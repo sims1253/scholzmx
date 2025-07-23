@@ -1,0 +1,713 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PaperTexture from '../components/PaperTexture.astro';
+import DropCap from '../components/DropCap.astro';
+import MarginNote from '../components/MarginNote.astro';
+import Slideshow from '../components/Slideshow.astro';
+
+// Sample projects - in a real implementation, these would come from markdown files or a CMS
+const projects = [
+  {
+    title: "Minimal Web Components",
+    description: "A collection of web components built with vanilla JavaScript that prioritize accessibility, performance, and respect for user attention.",
+    longDescription: "Exploring how to build interactive elements that respect both users and the environment, using minimal dependencies and thoughtful design patterns.",
+    status: "Active",
+    year: "2025",
+    tech: ["Vanilla JS", "Web Components", "CSS Grid", "Semantic HTML"],
+    links: [
+      { type: "GitHub", url: "https://github.com/username/minimal-components" },
+      { type: "Demo", url: "https://minimal-components.example.com" }
+    ],
+    category: "Web Development",
+    featured: true,
+    slug: "minimal-web-components"
+  },
+  {
+    title: "Digital Garden Template",
+    description: "An Astro-based template for creating personal websites that embody slow web principles and botanical aesthetics.",
+    longDescription: "This very website serves as a template for others who want to create their own digital gardens - spaces for ideas to grow naturally.",
+    status: "Complete",
+    year: "2025", 
+    tech: ["Astro", "Vanilla CSS", "TypeScript", "Web Standards"],
+    links: [
+      { type: "GitHub", url: "https://github.com/username/digital-garden-template" },
+      { type: "Documentation", url: "/projects/digital-garden-template/docs" }
+    ],
+    category: "Web Development",
+    featured: true,
+    slug: "digital-garden-template"
+  },
+  {
+    title: "Seasonal Cooking App",
+    description: "A privacy-first mobile app that suggests recipes based on what's actually in season in your local area.",
+    longDescription: "No tracking, no data collection - just helpful suggestions for eating with the rhythms of your local food system.",
+    status: "In Development",
+    year: "2025",
+    tech: ["Progressive Web App", "Local Storage", "Geolocation API"],
+    links: [
+      { type: "Beta", url: "https://seasonal-cooking.example.com" }
+    ],
+    category: "Mobile App",
+    featured: false,
+    slug: "seasonal-cooking-app"
+  },
+  {
+    title: "Community Garden Network",
+    description: "A platform for connecting neighbors around shared growing spaces, tool lending, and knowledge exchange.",
+    longDescription: "Building technology that strengthens local communities rather than extracting value from them.",
+    status: "Planning",
+    year: "2025",
+    tech: ["Local-first", "P2P Network", "Community Tools"],
+    links: [],
+    category: "Community",
+    featured: false,
+    slug: "community-garden-network"
+  },
+  {
+    title: "Botanical Illustrations",
+    description: "Hand-drawn illustrations of local plants, flowers, and herbs, created during quiet morning walks.",
+    longDescription: "Art as observation, drawing as a way of really seeing the natural world that surrounds us.",
+    status: "Ongoing",
+    year: "2023-Present",
+    tech: ["Watercolor", "Pen & Ink", "Field Sketching"],
+    links: [
+      { type: "Gallery", url: "/projects/botanical-illustrations" }
+    ],
+    category: "Art",
+    featured: true,
+    slug: "botanical-illustrations"
+  },
+  {
+    title: "Privacy-First Analytics",
+    description: "A lightweight, self-hosted analytics solution that respects visitor privacy while providing useful insights.",
+    longDescription: "Because understanding your audience shouldn't require surveillance capitalism.",
+    status: "Complete",
+    year: "2024",
+    tech: ["Go", "SQLite", "No JavaScript", "Self-hosted"],
+    links: [
+      { type: "GitHub", url: "https://github.com/username/privacy-analytics" },
+      { type: "Demo", url: "https://analytics-demo.example.com" }
+    ],
+    category: "Web Development",
+    featured: false,
+    slug: "privacy-analytics"
+  }
+];
+
+const categories = ["All", "Web Development", "Mobile App", "Community", "Art"];
+const statuses = ["All", "Planning", "In Development", "Active", "Complete", "Ongoing"];
+
+// Sample images for slideshow
+const projectImages = [
+  {
+    src: "/img/portrait.jpg",
+    alt: "Screenshot of minimal web components in action",
+    caption: "Clean, accessible components that respect user attention"
+  },
+  {
+    src: "/img/self.jpg", 
+    alt: "Digital garden template preview",
+    caption: "A template for creating thoughtful digital spaces"
+  }
+];
+---
+
+<BaseLayout 
+  title="Creative Works - Scholz MX"
+  description="Projects born from curiosity and built with care - code, art, experiments in making the world a little better. Each one crafted with intention and love."
+>
+  <PaperTexture pattern="botanical" intensity="light" className="projects-page">
+    <header class="projects-header">
+      <h1 class="page-title">
+        <DropCap letter="C" color="moss" style="botanical" />reative Works
+      </h1>
+      <p class="page-description">
+        Projects born from curiosity and built with care. Some are experiments in code, 
+        others explorations in art.
+        <MarginNote>
+          <p>I believe in building things that serve humans rather than extracting from them. Technology should be a tool for flourishing, not surveillance.</p>
+        </MarginNote>
+        All are attempts to make the world a little more beautiful, a little more just, 
+        a little more connected to what matters.
+      </p>
+    </header>
+
+    <!-- Project Showcase -->
+    <section class="project-showcase">
+      <h2>Featured Work</h2>
+      <Slideshow 
+        images={projectImages}
+        autoPlay={true}
+        interval={6000}
+        showControls={true}
+        showIndicators={true}
+      />
+    </section>
+
+    <main class="projects-content">
+      <!-- Filters -->
+      <nav class="project-filters" aria-label="Filter projects">
+        <div class="filter-group">
+          <h3>Category</h3>
+          <ul class="filter-list">
+            {categories.map(category => (
+              <li>
+                <button class="filter-button" data-filter="category" data-value={category.toLowerCase().replace(' ', '-')}>
+                  {category}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div class="filter-group">
+          <h3>Status</h3>
+          <ul class="filter-list">
+            {statuses.map(status => (
+              <li>
+                <button class="filter-button" data-filter="status" data-value={status.toLowerCase().replace(' ', '-')}>
+                  {status}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </nav>
+
+      <!-- Projects Grid -->
+      <section class="projects-grid">
+        {projects.map((project, index) => (
+          <article class="project-card" 
+                   data-category={project.category.toLowerCase().replace(' ', '-')} 
+                   data-status={project.status.toLowerCase().replace(' ', '-')}
+                   data-featured={project.featured}>
+            <div class="project-header">
+              <div class="project-meta">
+                <span class="project-year">{project.year}</span>
+                <span class="project-status" data-status={project.status.toLowerCase().replace(' ', '-')}>
+                  {project.status}
+                </span>
+              </div>
+              {project.featured && <div class="featured-badge">Featured</div>}
+            </div>
+
+            <div class="project-content">
+              <h3 class="project-title">
+                <a href={`/projects/${project.slug}`}>{project.title}</a>
+              </h3>
+              
+              <p class="project-description">{project.description}</p>
+              
+              <p class="project-long-description">{project.longDescription}</p>
+
+              <div class="project-tech">
+                <h4>Built with</h4>
+                <ul class="tech-list">
+                  {project.tech.map(tech => (
+                    <li class="tech-item">{tech}</li>
+                  ))}
+                </ul>
+              </div>
+
+              {project.links.length > 0 && (
+                <div class="project-links">
+                  {project.links.map(link => (
+                    <a href={link.url} class="project-link" target="_blank" rel="noopener noreferrer">
+                      {link.type} <span aria-hidden="true">↗</span>
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div class="project-category-badge">{project.category}</div>
+            
+            <div class="project-ornament" aria-hidden="true">
+              {index % 5 === 0 ? '⚡' : index % 5 === 1 ? '🌱' : index % 5 === 2 ? '🎨' : index % 5 === 3 ? '🔧' : '✨'}
+            </div>
+          </article>
+        ))}
+      </section>
+
+      <!-- Project Philosophy -->
+      <aside class="project-philosophy">
+        <section class="philosophy-section">
+          <h3>Building Philosophy</h3>
+          <ul class="philosophy-list">
+            <li>Privacy by design, not afterthought</li>
+            <li>Accessible to all, regardless of ability</li>
+            <li>Lightweight and respectful of resources</li>
+            <li>Open source when possible</li>
+            <li>Sustainable and long-term thinking</li>
+            <li>Human-centered, not metric-driven</li>
+          </ul>
+        </section>
+
+        <section class="collaboration-section">
+          <h3>Open for Collaboration</h3>
+          <p>
+            Interested in working together on something meaningful? 
+            I'm always open to conversations about projects that align 
+            with values of sustainability, accessibility, and human flourishing.
+          </p>
+        </section>
+      </aside>
+    </main>
+  </PaperTexture>
+</BaseLayout>
+
+<script>
+  // Project filtering functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    const filterButtons = document.querySelectorAll('.filter-button');
+    const projectCards = document.querySelectorAll('.project-card');
+
+    let activeFilters = {
+      category: 'all',
+      status: 'all'
+    };
+
+    function updateProjectDisplay() {
+      projectCards.forEach(card => {
+        const cardCategory = card.dataset.category;
+        const cardStatus = card.dataset.status;
+        
+        const categoryMatch = activeFilters.category === 'all' || cardCategory === activeFilters.category;
+        const statusMatch = activeFilters.status === 'all' || cardStatus === activeFilters.status;
+        
+        if (categoryMatch && statusMatch) {
+          card.style.display = 'block';
+          card.style.opacity = '1';
+        } else {
+          card.style.opacity = '0.3';
+        }
+      });
+    }
+
+    filterButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const filterType = this.dataset.filter;
+        const filterValue = this.dataset.value;
+        
+        // Update active filters
+        activeFilters[filterType] = filterValue;
+        
+        // Update button states within the same filter group
+        const filterGroup = this.closest('.filter-group');
+        filterGroup.querySelectorAll('.filter-button').forEach(btn => {
+          btn.classList.remove('active');
+        });
+        this.classList.add('active');
+        
+        // Update project display
+        updateProjectDisplay();
+      });
+    });
+
+    // Set default active filters
+    document.querySelector('[data-filter="category"][data-value="all"]')?.classList.add('active');
+    document.querySelector('[data-filter="status"][data-value="all"]')?.classList.add('active');
+  });
+</script>
+
+<style>
+  .projects-page {
+    max-width: 100%;
+  }
+
+  .projects-header {
+    text-align: center;
+    max-width: 60ch;
+    margin: 0 auto var(--space-xxl);
+  }
+
+  .page-title {
+    font-size: clamp(var(--text-2xl), 5vw, var(--text-3xl));
+    margin-bottom: var(--space-lg);
+    color: var(--color-ink-dark);
+  }
+
+  .page-description {
+    font-size: var(--text-lg);
+    line-height: 1.6;
+    color: var(--color-ink-medium);
+    font-style: italic;
+  }
+
+  /* Project Showcase */
+  .project-showcase {
+    margin-bottom: var(--space-xxl);
+  }
+
+  .project-showcase h2 {
+    text-align: center;
+    margin-bottom: var(--space-lg);
+    color: var(--color-ink-dark);
+  }
+
+  .projects-content {
+    display: grid;
+    grid-template-columns: 250px 1fr 300px;
+    gap: var(--space-xl);
+    align-items: start;
+  }
+
+  /* Filters */
+  .project-filters {
+    position: sticky;
+    top: calc(var(--space-xl) + 80px);
+  }
+
+  .filter-group {
+    margin-bottom: var(--space-lg);
+  }
+
+  .filter-group h3 {
+    font-size: var(--text-md);
+    margin-bottom: var(--space-sm);
+    color: var(--color-ink-dark);
+    font-weight: 600;
+  }
+
+  .filter-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .filter-button {
+    background: none;
+    border: 1px solid rgba(139, 90, 60, 0.2);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--border-radius);
+    font-size: var(--text-sm);
+    color: var(--color-ink-medium);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-align: left;
+    width: 100%;
+  }
+
+  .filter-button:hover {
+    background-color: rgba(139, 90, 60, 0.05);
+    border-color: var(--color-walnut);
+    color: var(--color-ink-dark);
+  }
+
+  .filter-button.active {
+    background-color: var(--color-moss);
+    color: var(--color-parchment-light);
+    border-color: var(--color-moss);
+  }
+
+  /* Projects Grid */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-xl);
+  }
+
+  .project-card {
+    background-color: var(--color-parchment-light);
+    border: 1px solid rgba(139, 90, 60, 0.1);
+    border-radius: var(--border-radius);
+    padding: var(--space-lg);
+    position: relative;
+    transition: all var(--transition-medium);
+  }
+
+  .project-card[data-featured="true"] {
+    border-color: var(--color-gold);
+    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.1);
+  }
+
+  .project-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(139, 90, 60, 0.1);
+    border-color: var(--color-sage);
+  }
+
+  .project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: var(--space-md);
+  }
+
+  .project-meta {
+    display: flex;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+  }
+
+  .project-year {
+    font-size: var(--text-xs);
+    color: var(--color-ink-light);
+    font-weight: 500;
+  }
+
+  .project-status {
+    font-size: var(--text-xs);
+    padding: 0.2em 0.5em;
+    border-radius: calc(var(--border-radius) / 2);
+    font-weight: 500;
+    text-transform: capitalize;
+  }
+
+  .project-status[data-status="complete"] {
+    background-color: rgba(90, 107, 71, 0.2);
+    color: var(--color-moss);
+  }
+
+  .project-status[data-status="active"] {
+    background-color: rgba(204, 139, 92, 0.2);
+    color: var(--color-ochre);
+  }
+
+  .project-status[data-status="in-development"] {
+    background-color: rgba(212, 175, 55, 0.2);
+    color: var(--color-gold);
+  }
+
+  .project-status[data-status="planning"] {
+    background-color: rgba(139, 90, 60, 0.2);
+    color: var(--color-walnut);
+  }
+
+  .project-status[data-status="ongoing"] {
+    background-color: rgba(168, 181, 160, 0.2);
+    color: var(--color-sage);
+  }
+
+  .featured-badge {
+    font-size: var(--text-xs);
+    background-color: var(--color-gold);
+    color: var(--color-ink-dark);
+    padding: 0.2em 0.5em;
+    border-radius: calc(var(--border-radius) / 2);
+    font-weight: 600;
+  }
+
+  .project-title {
+    margin: 0 0 var(--space-sm);
+    font-size: var(--text-xl);
+  }
+
+  .project-title a {
+    text-decoration: none;
+    color: var(--color-ink-dark);
+    font-weight: 600;
+  }
+
+  .project-title a:hover {
+    color: var(--color-walnut);
+  }
+
+  .project-description {
+    font-size: var(--text-md);
+    font-weight: 500;
+    color: var(--color-ink-dark);
+    margin-bottom: var(--space-sm);
+  }
+
+  .project-long-description {
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    color: var(--color-ink-medium);
+    margin-bottom: var(--space-md);
+  }
+
+  .project-tech h4 {
+    font-size: var(--text-sm);
+    margin: 0 0 var(--space-xs);
+    color: var(--color-ink-dark);
+    font-weight: 600;
+  }
+
+  .tech-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--space-md);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+  }
+
+  .tech-item {
+    font-size: var(--text-xs);
+    background-color: rgba(90, 107, 71, 0.1);
+    color: var(--color-moss);
+    padding: 0.2em 0.4em;
+    border-radius: calc(var(--border-radius) / 2);
+    font-weight: 500;
+  }
+
+  .project-links {
+    display: flex;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+  }
+
+  .project-link {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-walnut);
+    text-decoration: none;
+    padding: var(--space-xs) var(--space-sm);
+    border: 1px solid var(--color-walnut);
+    border-radius: var(--border-radius);
+    transition: all var(--transition-fast);
+  }
+
+  .project-link:hover {
+    background-color: var(--color-walnut);
+    color: var(--color-parchment-light);
+  }
+
+  .project-category-badge {
+    position: absolute;
+    bottom: var(--space-md);
+    right: var(--space-md);
+    font-size: var(--text-xs);
+    color: var(--color-ink-light);
+    background-color: rgba(250, 247, 240, 0.8);
+    padding: 0.2em 0.4em;
+    border-radius: calc(var(--border-radius) / 2);
+    font-weight: 500;
+  }
+
+  .project-ornament {
+    position: absolute;
+    top: var(--space-md);
+    right: var(--space-md);
+    font-size: var(--text-md);
+    opacity: 0.4;
+  }
+
+  /* Philosophy Sidebar */
+  .project-philosophy {
+    position: sticky;
+    top: calc(var(--space-xl) + 80px);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+
+  .philosophy-section,
+  .collaboration-section {
+    background-color: var(--color-parchment-light);
+    border: 1px solid rgba(139, 90, 60, 0.1);
+    border-radius: var(--border-radius);
+    padding: var(--space-lg);
+  }
+
+  .philosophy-section h3,
+  .collaboration-section h3 {
+    font-size: var(--text-md);
+    margin-bottom: var(--space-sm);
+    color: var(--color-ink-dark);
+    font-weight: 600;
+  }
+
+  .philosophy-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .philosophy-list li {
+    font-size: var(--text-sm);
+    padding: var(--space-xs) 0;
+    color: var(--color-ink-medium);
+    border-bottom: 1px solid rgba(139, 90, 60, 0.05);
+  }
+
+  .philosophy-list li:last-child {
+    border-bottom: none;
+  }
+
+  .philosophy-list li::before {
+    content: '✓';
+    color: var(--color-moss);
+    margin-right: var(--space-xs);
+    font-weight: 600;
+  }
+
+  .collaboration-section p {
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    color: var(--color-ink-medium);
+    margin: 0;
+  }
+
+  /* Mobile responsiveness */
+  @media (max-width: 1024px) {
+    .projects-content {
+      grid-template-columns: 1fr;
+      gap: var(--space-lg);
+    }
+
+    .project-filters,
+    .project-philosophy {
+      position: static;
+    }
+
+    .project-filters .filter-group {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: start;
+      gap: var(--space-md);
+    }
+
+    .filter-list {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+
+    .project-philosophy {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--space-md);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .project-filters .filter-group {
+      grid-template-columns: 1fr;
+    }
+
+    .filter-list {
+      flex-direction: column;
+    }
+
+    .project-card {
+      padding: var(--space-md);
+    }
+
+    .project-header {
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .project-philosophy {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .project-links {
+      flex-direction: column;
+    }
+
+    .project-link {
+      text-align: center;
+    }
+
+    .tech-list {
+      justify-content: center;
+    }
+  }
+</style>

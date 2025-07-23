@@ -10,5 +10,8 @@
   },
   "dependencies": {
     "astro": "^5.12.2"
+  },
+  "devDependencies": {
+    "lighthouse": "^12.8.0"
   }
 }

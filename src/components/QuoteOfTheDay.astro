@@ -1,0 +1,157 @@
+---
+// Array of quotes for random daily selection
+const quotes = [
+  {
+    text: "The smell of kiwi vines and tansy on a sun-warmed wooden fence.",
+    author: "Personal Memory"
+  },
+  {
+    text: "In every walk with nature, one receives far more than they seek.",
+    author: "John Muir"
+  },
+  {
+    text: "The Earth does not belong to us; we belong to the Earth.",
+    author: "Chief Seattle"
+  },
+  {
+    text: "To see a world in a grain of sand and a heaven in a wild flower.",
+    author: "William Blake"
+  },
+  {
+    text: "The best time to plant a tree was 20 years ago. The second best time is now.",
+    author: "Chinese Proverb"
+  },
+  {
+    text: "In the depth of winter, I finally learned that within me there lay an invincible summer.",
+    author: "Albert Camus"
+  },
+  {
+    text: "The quieter you become, the more you are able to hear.",
+    author: "Rumi"
+  },
+  {
+    text: "We are all just walking each other home.",
+    author: "Ram Dass"
+  },
+  {
+    text: "Between stimulus and response there is a space. In that space is our power to choose.",
+    author: "Viktor Frankl"
+  },
+  {
+    text: "The secret to getting ahead is getting started.",
+    author: "Mark Twain"
+  }
+];
+
+// Use date as seed for consistent daily quote
+const today = new Date();
+const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+const quoteIndex = dayOfYear % quotes.length;
+const todaysQuote = quotes[quoteIndex];
+---
+
+<div class="quote-container">
+  <blockquote class="daily-quote">
+    <p class="quote-text">{todaysQuote.text}</p>
+    <footer class="quote-attribution">
+      <cite class="quote-author">— {todaysQuote.author}</cite>
+    </footer>
+  </blockquote>
+  <div class="quote-ornament" aria-hidden="true">❦</div>
+</div>
+
+<style>
+  .quote-container {
+    position: relative;
+    margin: var(--space-xl) 0;
+    padding: var(--space-lg);
+    background: linear-gradient(135deg, var(--color-parchment-light) 0%, var(--color-parchment) 100%);
+    border-radius: var(--border-radius);
+    border: 1px solid rgba(139, 90, 60, 0.1);
+    box-shadow: 0 2px 8px rgba(139, 90, 60, 0.05);
+  }
+
+  .daily-quote {
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    position: relative;
+  }
+
+  .daily-quote::before {
+    content: '"';
+    font-size: 3rem;
+    line-height: 1;
+    color: var(--color-gold);
+    position: absolute;
+    left: -0.5rem;
+    top: -0.5rem;
+    font-family: var(--font-heading);
+    opacity: 0.6;
+  }
+
+  .quote-text {
+    font-size: var(--text-lg);
+    font-style: italic;
+    line-height: 1.5;
+    color: var(--color-ink-dark);
+    margin: 0 0 var(--space-md);
+    padding-left: var(--space-md);
+  }
+
+  .quote-attribution {
+    text-align: right;
+    margin: 0;
+  }
+
+  .quote-author {
+    font-size: var(--text-sm);
+    font-style: normal;
+    font-weight: 500;
+    color: var(--color-ink-medium);
+    font-family: var(--font-heading);
+  }
+
+  .quote-ornament {
+    position: absolute;
+    bottom: var(--space-sm);
+    right: var(--space-md);
+    color: var(--color-gold);
+    font-size: var(--text-md);
+    opacity: 0.4;
+    transform: rotate(15deg);
+  }
+
+  /* Hover effect for subtle interactivity */
+  .quote-container:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(139, 90, 60, 0.08);
+    transition: all var(--transition-medium);
+  }
+
+  .quote-container:hover .quote-ornament {
+    opacity: 0.8;
+    transform: rotate(15deg) scale(1.1);
+    transition: all var(--transition-medium);
+  }
+
+  /* Mobile adjustments */
+  @media (max-width: 768px) {
+    .quote-container {
+      margin: var(--space-lg) 0;
+      padding: var(--space-md);
+    }
+
+    .quote-text {
+      font-size: var(--text-md);
+      padding-left: var(--space-sm);
+    }
+
+    .daily-quote::before {
+      font-size: 2rem;
+      left: -0.25rem;
+      top: -0.25rem;
+    }
+  }
+</style>

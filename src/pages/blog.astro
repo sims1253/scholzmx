@@ -1,0 +1,378 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PaperTexture from '../components/PaperTexture.astro';
+import DropCap from '../components/DropCap.astro';
+import MarginNote from '../components/MarginNote.astro';
+
+// Sample blog posts - in a real implementation, these would come from a content management system
+const posts = [
+  {
+    title: "On Digital Gardens and Slow Growth",
+    excerpt: "Thoughts on building spaces for ideas to grow naturally, without the pressure of performance metrics or the need to optimize for engagement. Sometimes the best things take time.",
+    date: "2025-07-20",
+    slug: "digital-gardens",
+    tags: ["web", "philosophy", "design"]
+  },
+  {
+    title: "The Art of Patient Cooking",
+    excerpt: "In a world of instant everything, there's profound satisfaction in slow-simmered broths, long-fermented breads, and vegetables that grow in their own sweet time.",
+    date: "2025-07-15",
+    slug: "patient-cooking",
+    tags: ["cooking", "mindfulness", "time"]
+  },
+  {
+    title: "Building Technology That Breathes",
+    excerpt: "Moving away from the frantic pace of modern software development toward tools and systems that respect both human attention and the natural world.",
+    date: "2025-07-10",
+    slug: "breathing-technology",
+    tags: ["technology", "sustainability", "philosophy"]
+  },
+  {
+    title: "Why I Left Social Media (Again)",
+    excerpt: "A reflection on the cycles of engagement and withdrawal, and what it means to be human in an attention-economy world.",
+    date: "2025-07-05",
+    slug: "leaving-social-media",
+    tags: ["social media", "attention", "wellbeing"]
+  },
+  {
+    title: "The Wisdom of Seasonal Eating",
+    excerpt: "Learning to eat with the rhythms of the earth, finding joy in anticipation, and rediscovering the taste of strawberries in June.",
+    date: "2025-06-28",
+    slug: "seasonal-eating",
+    tags: ["food", "seasons", "sustainability"]
+  }
+];
+
+const formatDate = (dateStr: string) => {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('en-US', { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  });
+};
+---
+
+<BaseLayout 
+  title="Writing & Thoughts - Scholz MX"
+  description="Essays, reflections, and musings on life, technology, cooking, and the art of being human in a complex world. Written with care and without rush."
+>
+  <PaperTexture pattern="linen" intensity="light" className="blog-page">
+    <header class="blog-header">
+      <h1 class="page-title">
+        <DropCap letter="W" color="walnut" style="botanical" />riting & Thoughts
+      </h1>
+      <p class="page-description">
+        Essays and reflections written without rush, in the spirit of slow thinking and careful observation. 
+        <MarginNote>
+          <p>I write when something moves me to write, not on a schedule. Quality over quantity, always.</p>
+        </MarginNote>
+        Here you'll find thoughts on technology, cooking, philosophy, and the quiet art of being human.
+      </p>
+    </header>
+
+    <main class="blog-content">
+      <section class="posts-grid">
+        {posts.map((post, index) => (
+          <article class="post-card">
+            <div class="post-meta">
+              <time class="post-date" datetime={post.date}>
+                {formatDate(post.date)}
+              </time>
+              <div class="post-tags">
+                {post.tags.map(tag => (
+                  <span class="tag">#{tag}</span>
+                ))}
+              </div>
+            </div>
+            
+            <h2 class="post-title">
+              <a href={`/blog/${post.slug}`}>{post.title}</a>
+            </h2>
+            
+            <p class="post-excerpt">{post.excerpt}</p>
+            
+            <footer class="post-footer">
+              <a href={`/blog/${post.slug}`} class="read-more">
+                Read more <span aria-hidden="true">→</span>
+              </a>
+            </footer>
+            
+            <div class="post-ornament" aria-hidden="true">
+              {index % 3 === 0 ? '❦' : index % 3 === 1 ? '✿' : '❋'}
+            </div>
+          </article>
+        ))}
+      </section>
+
+      <aside class="blog-sidebar">
+        <section class="sidebar-section">
+          <h3>Writing Philosophy</h3>
+          <p>
+            I believe in slow writing - taking time to let ideas mature, 
+            editing with care, and publishing only when something feels 
+            ready to meet the world.
+          </p>
+        </section>
+
+        <section class="sidebar-section">
+          <h3>Topics I Explore</h3>
+          <ul class="topic-list">
+            <li>Technology & Humanity</li>
+            <li>Sustainable Living</li>
+            <li>Food & Cooking</li>
+            <li>Digital Minimalism</li>
+            <li>Craft & Making</li>
+            <li>Time & Attention</li>
+          </ul>
+        </section>
+
+        <section class="sidebar-section">
+          <h3>Subscribe to Updates</h3>
+          <p>
+            No newsletter, no feeds - just bookmark this page and check back 
+            when you're moved to do so. Sometimes the best things are discovered 
+            by chance.
+          </p>
+        </section>
+      </aside>
+    </main>
+  </PaperTexture>
+</BaseLayout>
+
+<style>
+  .blog-page {
+    max-width: 100%;
+  }
+
+  .blog-header {
+    text-align: center;
+    max-width: 60ch;
+    margin: 0 auto var(--space-xxl);
+  }
+
+  .page-title {
+    font-size: clamp(var(--text-2xl), 5vw, var(--text-3xl));
+    margin-bottom: var(--space-lg);
+    color: var(--color-ink-dark);
+  }
+
+  .page-description {
+    font-size: var(--text-lg);
+    line-height: 1.6;
+    color: var(--color-ink-medium);
+    font-style: italic;
+  }
+
+  .blog-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: var(--space-xxl);
+    align-items: start;
+  }
+
+  .posts-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+  }
+
+  .post-card {
+    background-color: var(--color-parchment-light);
+    border: 1px solid rgba(139, 90, 60, 0.1);
+    border-radius: var(--border-radius);
+    padding: var(--space-lg);
+    position: relative;
+    transition: all var(--transition-medium);
+  }
+
+  .post-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(139, 90, 60, 0.1);
+    border-color: var(--color-sage);
+  }
+
+  .post-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-md);
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+
+  .post-date {
+    font-size: var(--text-xs);
+    color: var(--color-ink-light);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .post-tags {
+    display: flex;
+    gap: var(--space-xs);
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    font-size: var(--text-xs);
+    color: var(--color-moss);
+    background-color: rgba(90, 107, 71, 0.1);
+    padding: 0.2em 0.5em;
+    border-radius: calc(var(--border-radius) / 2);
+    font-weight: 500;
+  }
+
+  .post-title {
+    margin: 0 0 var(--space-md);
+    font-size: var(--text-xl);
+  }
+
+  .post-title a {
+    text-decoration: none;
+    color: var(--color-ink-dark);
+    font-weight: 600;
+  }
+
+  .post-title a:hover {
+    color: var(--color-walnut);
+  }
+
+  .post-excerpt {
+    font-size: var(--text-md);
+    line-height: 1.6;
+    color: var(--color-ink-medium);
+    margin-bottom: var(--space-lg);
+  }
+
+  .post-footer {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .read-more {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-walnut);
+    text-decoration: none;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--border-radius);
+    transition: all var(--transition-fast);
+  }
+
+  .read-more:hover {
+    background-color: rgba(139, 90, 60, 0.1);
+    color: var(--color-ochre);
+  }
+
+  .post-ornament {
+    position: absolute;
+    top: var(--space-md);
+    right: var(--space-md);
+    color: var(--color-gold);
+    font-size: var(--text-sm);
+    opacity: 0.4;
+  }
+
+  /* Sidebar */
+  .blog-sidebar {
+    position: sticky;
+    top: calc(var(--space-xl) + 80px);
+  }
+
+  .sidebar-section {
+    background-color: var(--color-parchment-light);
+    border: 1px solid rgba(139, 90, 60, 0.1);
+    border-radius: var(--border-radius);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-lg);
+  }
+
+  .sidebar-section h3 {
+    font-size: var(--text-md);
+    margin-bottom: var(--space-sm);
+    color: var(--color-ink-dark);
+    font-weight: 600;
+  }
+
+  .sidebar-section p {
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    color: var(--color-ink-medium);
+    margin: 0;
+  }
+
+  .topic-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .topic-list li {
+    font-size: var(--text-sm);
+    padding: var(--space-xs) 0;
+    color: var(--color-ink-medium);
+    border-bottom: 1px solid rgba(139, 90, 60, 0.05);
+  }
+
+  .topic-list li:last-child {
+    border-bottom: none;
+  }
+
+  .topic-list li::before {
+    content: '❦';
+    color: var(--color-gold);
+    margin-right: var(--space-xs);
+    font-size: 0.8em;
+    opacity: 0.6;
+  }
+
+  /* Mobile responsiveness */
+  @media (max-width: 1024px) {
+    .blog-content {
+      grid-template-columns: 1fr;
+      gap: var(--space-xl);
+    }
+
+    .blog-sidebar {
+      position: static;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--space-md);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .blog-header {
+      text-align: left;
+    }
+
+    .post-card {
+      padding: var(--space-md);
+    }
+
+    .post-meta {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .blog-sidebar {
+      grid-template-columns: 1fr;
+    }
+
+    .sidebar-section {
+      padding: var(--space-md);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .post-title {
+      font-size: var(--text-lg);
+    }
+
+    .post-excerpt {
+      font-size: var(--text-sm);
+    }
+  }
+</style>

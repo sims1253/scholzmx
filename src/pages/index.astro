@@ -1,16 +1,367 @@
 ---
-
+import BaseLayout from '../layouts/BaseLayout.astro';
+import QuoteOfTheDay from '../components/QuoteOfTheDay.astro';
+import PaperTexture from '../components/PaperTexture.astro';
+import DropCap from '../components/DropCap.astro';
+import MarginNote from '../components/MarginNote.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout 
+  title="Scholz MX - Digital Garden & Personal Website"
+  description="Welcome to my digital garden - a thoughtful space for ideas, recipes, projects, and musings. Built with slow web principles and a warm, botanical aesthetic."
+>
+  <PaperTexture pattern="botanical" intensity="light" className="page-content">
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-content">
+        <div class="welcome-text">
+          <h1 class="site-title">
+            <DropCap letter="W" color="gold" style="ornate" />elcome to my digital garden
+          </h1>
+          <p class="site-description">
+            A thoughtful space where ideas grow slowly, like plants in rich soil. Here you'll find 
+            <MarginNote>
+              <p>Think of this as a digital commonplace book - a collection of thoughts, discoveries, and creations that have meaning to me.</p>
+            </MarginNote>
+            musings on life, cherished recipes, creative projects, and the quiet wisdom found in everyday moments.
+          </p>
+          <p class="philosophy">
+            This is built with <em>slow web</em> principles - no tracking, no analytics, no dark patterns. 
+            Just honest content and human connection. Take your time here.
+          </p>
+        </div>
+        
+        <div class="portrait-section">
+          <div class="portrait-frame">
+            <img 
+              src="/img/self.jpg" 
+              alt="A warm portrait photo" 
+              class="portrait-image"
+            />
+            <div class="frame-ornament" aria-hidden="true">❦</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quote of the Day -->
+    <QuoteOfTheDay />
+
+    <!-- Navigation Cards -->
+    <section class="navigation-cards">
+      <h2>Explore the Garden</h2>
+      <div class="cards-grid">
+        <article class="nav-card">
+          <div class="card-icon" aria-hidden="true">✍️</div>
+          <h3><a href="/blog">Writing & Thoughts</a></h3>
+          <p>Essays, reflections, and musings on life, technology, and the art of being human in a complex world.</p>
+        </article>
+
+        <article class="nav-card">
+          <div class="card-icon" aria-hidden="true">🍲</div>
+          <h3><a href="/recipes">Kitchen Wisdom</a></h3>
+          <p>Cherished recipes collected over years of cooking with love - the kind that bring people together around a table.</p>
+        </article>
+
+        <article class="nav-card">
+          <div class="card-icon" aria-hidden="true">🛠️</div>
+          <h3><a href="/projects">Creative Works</a></h3>
+          <p>Projects born from curiosity and built with care - code, art, experiments in making the world a little better.</p>
+        </article>
+
+        <article class="nav-card">
+          <div class="card-icon" aria-hidden="true">🌱</div>
+          <h3><a href="/about">About This Garden</a></h3>
+          <p>The story behind this space, the philosophy that guides it, and the human who tends to its growth.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Latest Updates Preview -->
+    <section class="latest-updates">
+      <h2>Recently Planted</h2>
+      <div class="updates-list">
+        <article class="update-item">
+          <time class="update-date">July 2025</time>
+          <h3><a href="/blog/digital-gardens">On Digital Gardens and Slow Growth</a></h3>
+          <p>Thoughts on building spaces for ideas to grow naturally, without the pressure of performance metrics...</p>
+        </article>
+        
+        <article class="update-item">
+          <time class="update-date">June 2025</time>
+          <h3><a href="/recipes/summer-gazpacho">Summer Gazpacho with Garden Herbs</a></h3>
+          <p>A cooling soup that captures the essence of late summer afternoons, made with whatever the garden offers...</p>
+        </article>
+        
+        <article class="update-item">
+          <time class="update-date">May 2025</time>
+          <h3><a href="/projects/minimal-web-components">Minimal Web Components</a></h3>
+          <p>Exploring how to build interactive elements that respect both users and the environment...</p>
+        </article>
+      </div>
+    </section>
+  </PaperTexture>
+</BaseLayout>
+
+<style>
+  .page-content {
+    max-width: 100%;
+  }
+
+  /* Hero Section */
+  .hero-section {
+    margin-bottom: var(--space-xxl);
+  }
+
+  .hero-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: var(--space-xl);
+    align-items: start;
+    margin-bottom: var(--space-xl);
+  }
+
+  .welcome-text {
+    max-width: none;
+  }
+
+  .site-title {
+    font-size: clamp(var(--text-2xl), 4vw, var(--text-3xl));
+    line-height: 1.1;
+    margin-bottom: var(--space-lg);
+    color: var(--color-ink-dark);
+  }
+
+  .site-description {
+    font-size: var(--text-lg);
+    line-height: 1.6;
+    margin-bottom: var(--space-md);
+    color: var(--color-ink-medium);
+  }
+
+  .philosophy {
+    font-size: var(--text-md);
+    font-style: italic;
+    color: var(--color-ink-light);
+    border-left: 3px solid var(--color-sage);
+    padding-left: var(--space-md);
+    margin-top: var(--space-lg);
+  }
+
+  /* Portrait Section */
+  .portrait-section {
+    display: flex;
+    justify-content: center;
+    align-items: start;
+  }
+
+  .portrait-frame {
+    position: relative;
+    max-width: 250px;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(139, 90, 60, 0.15);
+    border: 3px solid var(--color-parchment-light);
+    background-color: var(--color-parchment-light);
+    padding: var(--space-sm);
+  }
+
+  .portrait-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: calc(var(--border-radius) - 2px);
+  }
+
+  .frame-ornament {
+    position: absolute;
+    bottom: var(--space-xs);
+    right: var(--space-xs);
+    color: var(--color-gold);
+    font-size: var(--text-sm);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Navigation Cards */
+  .navigation-cards {
+    margin: var(--space-xxl) 0;
+  }
+
+  .navigation-cards h2 {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+    color: var(--color-ink-dark);
+    font-size: var(--text-2xl);
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-lg);
+    margin-bottom: var(--space-xl);
+  }
+
+  .nav-card {
+    background-color: var(--color-parchment-light);
+    border: 1px solid rgba(139, 90, 60, 0.1);
+    border-radius: var(--border-radius);
+    padding: var(--space-lg);
+    text-align: center;
+    transition: all var(--transition-medium);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .nav-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.02) 0%, rgba(139, 90, 60, 0.02) 100%);
+    opacity: 0;
+    transition: opacity var(--transition-medium);
+  }
+
+  .nav-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(139, 90, 60, 0.12);
+    border-color: var(--color-sage);
+  }
+
+  .nav-card:hover::before {
+    opacity: 1;
+  }
+
+  .card-icon {
+    font-size: 2rem;
+    margin-bottom: var(--space-md);
+    display: block;
+  }
+
+  .nav-card h3 {
+    margin-bottom: var(--space-sm);
+    font-size: var(--text-lg);
+  }
+
+  .nav-card h3 a {
+    text-decoration: none;
+    color: var(--color-ink-dark);
+    font-weight: 600;
+  }
+
+  .nav-card h3 a:hover {
+    color: var(--color-walnut);
+  }
+
+  .nav-card p {
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    color: var(--color-ink-medium);
+    margin: 0;
+  }
+
+  /* Latest Updates */
+  .latest-updates {
+    margin-top: var(--space-xxl);
+    padding-top: var(--space-xl);
+    border-top: 1px solid rgba(139, 90, 60, 0.1);
+  }
+
+  .latest-updates h2 {
+    margin-bottom: var(--space-lg);
+    color: var(--color-ink-dark);
+  }
+
+  .updates-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+
+  .update-item {
+    padding: var(--space-md);
+    border-left: 3px solid var(--color-sage);
+    background-color: rgba(168, 181, 160, 0.03);
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+  }
+
+  .update-date {
+    font-size: var(--text-xs);
+    color: var(--color-ink-light);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .update-item h3 {
+    margin: var(--space-xs) 0 var(--space-sm);
+    font-size: var(--text-md);
+  }
+
+  .update-item h3 a {
+    text-decoration: none;
+    color: var(--color-ink-dark);
+  }
+
+  .update-item h3 a:hover {
+    color: var(--color-walnut);
+    text-decoration: underline;
+  }
+
+  .update-item p {
+    font-size: var(--text-sm);
+    color: var(--color-ink-medium);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  /* Mobile Responsiveness */
+  @media (max-width: 768px) {
+    .hero-content {
+      grid-template-columns: 1fr;
+      gap: var(--space-lg);
+      text-align: center;
+    }
+
+    .portrait-frame {
+      max-width: 200px;
+      margin: 0 auto;
+    }
+
+    .site-title {
+      text-align: left;
+    }
+
+    .welcome-text {
+      text-align: left;
+    }
+
+    .cards-grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-md);
+    }
+
+    .philosophy {
+      border-left: none;
+      border-top: 3px solid var(--color-sage);
+      padding-left: 0;
+      padding-top: var(--space-md);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .nav-card {
+      padding: var(--space-md);
+    }
+
+    .card-icon {
+      font-size: 1.5rem;
+    }
+
+    .portrait-frame {
+      max-width: 150px;
+    }
+  }
+</style>

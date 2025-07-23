@@ -1,0 +1,284 @@
+---
+import '../styles/global.css';
+
+export interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+}
+
+const { 
+  title, 
+  description = "A digital garden and personal website - thoughtful, slow web principles with a warm, botanical aesthetic.",
+  image = "/img/og-default.jpg"
+} = Astro.props;
+
+const currentPath = Astro.url.pathname;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={Astro.url} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={image} />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={Astro.url} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={image} />
+
+    <!-- Creative Commons License -->
+    <link rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/" />
+    
+    <title>{title}</title>
+    
+  </head>
+  
+  <body>
+    <div class="page-wrapper">
+      <!-- Header with navigation -->
+      <header class="site-header">
+        <div class="container">
+          <nav class="main-nav" role="navigation" aria-label="Main navigation">
+            <div class="nav-brand">
+              <a href="/" class="site-logo" aria-label="Home">
+                <span class="logo-text">Scholz MX</span>
+                <span class="logo-flourish">❦</span>
+              </a>
+            </div>
+            
+            <ul class="nav-links">
+              <li><a href="/" class={currentPath === '/' ? 'nav-link active' : 'nav-link'}>Home</a></li>
+              <li><a href="/blog" class={currentPath.startsWith('/blog') ? 'nav-link active' : 'nav-link'}>Blog</a></li>
+              <li><a href="/recipes" class={currentPath.startsWith('/recipes') ? 'nav-link active' : 'nav-link'}>Recipes</a></li>
+              <li><a href="/projects" class={currentPath.startsWith('/projects') ? 'nav-link active' : 'nav-link'}>Projects</a></li>
+              <li><a href="/about" class={currentPath === '/about' ? 'nav-link active' : 'nav-link'}>About</a></li>
+            </ul>
+          </nav>
+        </div>
+      </header>
+
+      <!-- Main content area -->
+      <main class="main-content">
+        <div class="container">
+          <slot />
+        </div>
+      </main>
+
+      <!-- Footer -->
+      <footer class="site-footer">
+        <div class="container">
+          <div class="footer-content">
+            <div class="footer-section">
+              <p class="footer-text">
+                Built with care using <a href="https://astro.build">Astro</a>. 
+                No tracking, no analytics, just thoughtful content.
+              </p>
+            </div>
+            
+            <div class="footer-section">
+              <p class="license-info">
+                <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="license" class="cc-license">
+                  Content licensed under CC BY-SA 4.0
+                </a>
+              </p>
+            </div>
+            
+            <div class="footer-flourish">
+              <span aria-hidden="true">✿</span>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <style>
+      /* Header and navigation styles */
+      .site-header {
+        background-color: var(--color-parchment-light);
+        border-bottom: 1px solid rgba(139, 90, 60, 0.1);
+        padding: var(--space-md) 0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        backdrop-filter: blur(8px);
+      }
+
+      .main-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: var(--space-md);
+      }
+
+      .nav-brand .site-logo {
+        display: flex;
+        align-items: center;
+        gap: var(--space-xs);
+        text-decoration: none;
+        font-family: var(--font-heading);
+        font-size: var(--text-xl);
+        font-weight: 700;
+        color: var(--color-ink-dark);
+        transition: all var(--transition-medium);
+      }
+
+      .nav-brand .site-logo:hover {
+        color: var(--color-walnut);
+        transform: translateY(-1px);
+      }
+
+      .logo-flourish {
+        color: var(--color-gold);
+        font-size: 1.2em;
+        transition: transform var(--transition-medium);
+      }
+
+      .site-logo:hover .logo-flourish {
+        transform: rotate(20deg) scale(1.1);
+      }
+
+      .nav-links {
+        display: flex;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        gap: var(--space-lg);
+        flex-wrap: wrap;
+      }
+
+      .nav-link {
+        font-weight: 500;
+        text-decoration: none;
+        color: var(--color-ink-medium);
+        padding: var(--space-xs) var(--space-sm);
+        border-radius: var(--border-radius);
+        transition: all var(--transition-fast);
+        position: relative;
+      }
+
+      .nav-link:hover {
+        color: var(--color-walnut);
+        background-color: rgba(139, 90, 60, 0.05);
+      }
+
+      .nav-link.active {
+        color: var(--color-walnut);
+        font-weight: 600;
+      }
+
+      .nav-link.active::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60%;
+        height: 2px;
+        background-color: var(--color-gold);
+        border-radius: 1px;
+      }
+
+      /* Main content */
+      .page-wrapper {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .main-content {
+        flex: 1;
+        padding: var(--space-xl) 0;
+      }
+
+      /* Footer styles */
+      .site-footer {
+        background-color: var(--color-parchment-light);
+        border-top: 1px solid rgba(139, 90, 60, 0.1);
+        padding: var(--space-xl) 0 var(--space-lg);
+        margin-top: var(--space-xxl);
+      }
+
+      .footer-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-md);
+        text-align: center;
+      }
+
+      .footer-section {
+        margin: 0;
+      }
+
+      .footer-text,
+      .license-info {
+        margin: 0;
+        font-size: var(--text-sm);
+        color: var(--color-ink-light);
+        line-height: 1.5;
+      }
+
+      .cc-license {
+        color: var(--color-moss);
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      .cc-license:hover {
+        color: var(--color-walnut);
+        text-decoration: underline;
+      }
+
+      .footer-flourish {
+        color: var(--color-gold);
+        font-size: var(--text-lg);
+        margin-top: var(--space-sm);
+        opacity: 0.7;
+      }
+
+      /* Mobile responsiveness */
+      @media (max-width: 768px) {
+        .main-nav {
+          flex-direction: column;
+          gap: var(--space-sm);
+        }
+
+        .nav-links {
+          gap: var(--space-md);
+          justify-content: center;
+        }
+
+        .nav-link {
+          padding: var(--space-xs);
+        }
+
+        .main-content {
+          padding: var(--space-lg) 0;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .nav-links {
+          flex-direction: column;
+          gap: var(--space-xs);
+          width: 100%;
+          text-align: center;
+        }
+      }
+    </style>
+  </body>
+</html>
