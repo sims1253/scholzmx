@@ -20,10 +20,6 @@ export default defineConfig({
   vite: {
     server: {
       host: true,
-      allowedHosts: ['all'],
-    },
-    preview: {
-      allowedHosts: ['all'],
     },
     build: {
       // Enable CSS code splitting
