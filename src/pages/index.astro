@@ -5,6 +5,7 @@ import PaperTexture from '../components/PaperTexture.astro';
 import DropCap from '../components/DropCap.astro';
 import MarginNote from '../components/MarginNote.astro';
 import Slideshow from '../components/Slideshow.astro';
+import HandDrawnDivider from '../components/HandDrawnDivider.astro';
 import { Image } from 'astro:assets';
 import SunlitEffect from '../components/SunlitEffect.astro';
 
@@ -71,6 +72,8 @@ const portfolioImages = [
             </div>
           </div>
         </div>
+        
+        <HandDrawnDivider variant="vine" width="wide" />
         
         <!-- Quote of the Day -->
         <div class="quote-section">
@@ -342,7 +345,7 @@ const portfolioImages = [
   }
 
   /* Mobile Responsiveness */
-  @media (max-width: 768px) {
+  @media (max-width: 640px) {
     .landing-page {
       height: auto;
       overflow: visible;
@@ -389,7 +392,7 @@ const portfolioImages = [
     }
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 640px) {
     .about-preview {
       flex-direction: column;
       text-align: center;
