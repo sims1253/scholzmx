@@ -1,16 +1,20 @@
 ---
 import '../styles/global.css';
+import BotanicalBorder from '../components/BotanicalBorder.astro';
+import PaperGrain from '../components/PaperGrain.astro';
 
 export interface Props {
   title: string;
   description?: string;
   image?: string;
+  addBorders?: boolean;
 }
 
 const { 
   title, 
   description = "A digital garden and personal website - thoughtful, slow web principles with a warm, botanical aesthetic.",
-  image = "/img/og-default.jpg"
+  image = "/img/og-default.jpg",
+  addBorders = true
 } = Astro.props;
 
 const currentPath = Astro.url.pathname;
@@ -52,27 +56,43 @@ const currentPath = Astro.url.pathname;
   
   <body>
     <div class="page-wrapper">
-      <!-- Header with navigation -->
-      <header class="site-header">
-        <div class="container">
-          <nav class="main-nav" role="navigation" aria-label="Main navigation">
-            <div class="nav-brand">
-              <a href="/" class="site-logo" aria-label="Home">
-                <span class="logo-text">Scholz MX</span>
-                <span class="logo-flourish">❦</span>
-              </a>
-            </div>
-            
-            <ul class="nav-links">
-              <li><a href="/" class={currentPath === '/' ? 'nav-link active' : 'nav-link'}>Home</a></li>
-              <li><a href="/blog" class={currentPath.startsWith('/blog') ? 'nav-link active' : 'nav-link'}>Blog</a></li>
-              <li><a href="/recipes" class={currentPath.startsWith('/recipes') ? 'nav-link active' : 'nav-link'}>Recipes</a></li>
-              <li><a href="/projects" class={currentPath.startsWith('/projects') ? 'nav-link active' : 'nav-link'}>Projects</a></li>
-              <li><a href="/about" class={currentPath === '/about' ? 'nav-link active' : 'nav-link'}>About</a></li>
-            </ul>
-          </nav>
+      <!-- Organic botanical borders and paper texture -->
+      {addBorders && (
+        <>
+          <PaperGrain pattern="grain" intensity="subtle" />
+          <BotanicalBorder position="top" variant="vine" intensity="light" />
+          <BotanicalBorder position="left" variant="vine" intensity="light" />
+          <BotanicalBorder position="right" variant="vine" intensity="light" />
+          <BotanicalBorder position="corner" />
+          <BotanicalBorder position="corner" />
+          <BotanicalBorder position="corner" />
+          <BotanicalBorder position="corner" />
+        </>
+      )}
+      
+      <!-- Integrated manuscript-style navigation -->
+      <nav class="manuscript-nav" role="navigation" aria-label="Main navigation">
+        <div class="nav-scroll">
+          <div class="nav-brand">
+            <a href="/" class="site-logo" aria-label="Home">
+              <span class="logo-text">Scholz MX</span>
+              <span class="logo-flourish">❦</span>
+            </a>
+          </div>
+          
+          <div class="nav-links">
+            <a href="/" class={currentPath === '/' ? 'nav-link active' : 'nav-link'}>Garden</a>
+            <span class="nav-separator">·</span>
+            <a href="/blog" class={currentPath.startsWith('/blog') ? 'nav-link active' : 'nav-link'}>Writing</a>
+            <span class="nav-separator">·</span>
+            <a href="/recipes" class={currentPath.startsWith('/recipes') ? 'nav-link active' : 'nav-link'}>Kitchen</a>
+            <span class="nav-separator">·</span>
+            <a href="/projects" class={currentPath.startsWith('/projects') ? 'nav-link active' : 'nav-link'}>Craft</a>
+            <span class="nav-separator">·</span>
+            <a href="/about" class={currentPath === '/about' ? 'nav-link active' : 'nav-link'}>About</a>
+          </div>
         </div>
-      </header>
+      </nav>
 
       <!-- Main content area -->
       <main class="main-content">
@@ -109,23 +129,26 @@ const currentPath = Astro.url.pathname;
     </div>
     
     <style>
-      /* Header and navigation styles */
-      .site-header {
-        background-color: var(--color-parchment-light);
-        border-bottom: 1px solid rgba(139, 90, 60, 0.1);
-        padding: var(--space-md) 0;
-        position: sticky;
+      /* Manuscript-style navigation */
+      .manuscript-nav {
+        position: fixed;
         top: 0;
+        left: 0;
+        right: 0;
         z-index: 100;
+        background: linear-gradient(to bottom, rgba(250, 247, 240, 0.98), rgba(250, 247, 240, 0.92));
         backdrop-filter: blur(8px);
+        border-bottom: 1px solid rgba(139, 90, 60, 0.08);
+        padding: var(--space-xs) 0;
       }
 
-      .main-nav {
+      .nav-scroll {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        flex-wrap: wrap;
-        gap: var(--space-md);
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 var(--space-md);
       }
 
       .nav-brand .site-logo {
@@ -157,31 +180,29 @@ const currentPath = Astro.url.pathname;
 
       .nav-links {
         display: flex;
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        gap: var(--space-lg);
-        flex-wrap: wrap;
+        align-items: center;
+        gap: 0;
+        font-size: var(--text-sm);
+        font-family: var(--font-heading);
       }
 
       .nav-link {
-        font-weight: 500;
         text-decoration: none;
-        color: var(--color-ink-medium);
+        color: var(--color-ink-light);
         padding: var(--space-xs) var(--space-sm);
-        border-radius: var(--border-radius);
         transition: all var(--transition-fast);
+        font-weight: 400;
+        letter-spacing: 0.01em;
         position: relative;
       }
 
       .nav-link:hover {
         color: var(--color-walnut);
-        background-color: rgba(139, 90, 60, 0.05);
       }
 
       .nav-link.active {
         color: var(--color-walnut);
-        font-weight: 600;
+        font-weight: 500;
       }
 
       .nav-link.active::after {
@@ -191,9 +212,15 @@ const currentPath = Astro.url.pathname;
         left: 50%;
         transform: translateX(-50%);
         width: 60%;
-        height: 2px;
+        height: 1px;
         background-color: var(--color-gold);
-        border-radius: 1px;
+      }
+
+      .nav-separator {
+        color: var(--color-ink-light);
+        opacity: 0.5;
+        margin: 0 var(--space-xs);
+        font-weight: 300;
       }
 
       /* Main content */
@@ -205,7 +232,7 @@ const currentPath = Astro.url.pathname;
 
       .main-content {
         flex: 1;
-        padding: var(--space-xl) 0;
+        padding: calc(50px + var(--space-md)) 0 var(--space-xl);
       }
 
       /* Footer styles */
@@ -213,7 +240,7 @@ const currentPath = Astro.url.pathname;
         background-color: var(--color-parchment-light);
         border-top: 1px solid rgba(139, 90, 60, 0.1);
         padding: var(--space-xl) 0 var(--space-lg);
-        margin-top: var(--space-xxl);
+        margin-top: auto;
       }
 
       .footer-content {
@@ -256,31 +283,38 @@ const currentPath = Astro.url.pathname;
 
       /* Mobile responsiveness */
       @media (max-width: 768px) {
-        .main-nav {
+        .nav-scroll {
           flex-direction: column;
-          gap: var(--space-sm);
+          gap: var(--space-xs);
+          padding: var(--space-xs) var(--space-md);
         }
 
         .nav-links {
-          gap: var(--space-md);
-          justify-content: center;
+          font-size: var(--text-xs);
         }
 
         .nav-link {
           padding: var(--space-xs);
         }
 
+        .nav-separator {
+          margin: 0 var(--space-xs);
+        }
+
         .main-content {
-          padding: var(--space-lg) 0;
+          padding: calc(70px + var(--space-md)) 0 var(--space-xl);
         }
       }
 
       @media (max-width: 480px) {
         .nav-links {
-          flex-direction: column;
+          flex-wrap: wrap;
+          justify-content: center;
           gap: var(--space-xs);
-          width: 100%;
-          text-align: center;
+        }
+
+        .nav-separator {
+          display: none;
         }
       }
     </style>
