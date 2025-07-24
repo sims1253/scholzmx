@@ -1,0 +1,111 @@
+---
+title: Custom Color Grouping in ggplot2
+description: >-
+  How to use custom color grouping in ggplot2 with meta-groups and custom color
+  mapping.
+date: '2023-06-01'
+categories:
+  - R
+  - ggplot2
+  - visualization
+tags:
+  - ggplot2
+  - R
+  - colors
+  - visualization
+author: Maximilian Scholz
+execute:
+  echo: true
+  eval: false
+  warning: false
+  message: false
+format:
+  md:
+    variant: gfm
+    preserve-yaml: true
+---
+
+
+# Custom Color Grouping in ggplot2
+Maximilian Scholz
+2023-06-01
+
+I have a model fitted on data from 5 groups and want to plot the conditional effects for them. However, I don’t want one color per group but instead want to color them according to meta-groups. If I use the meta-group as an argument for the color and fill, I get the zigzag lines. `group_by(group)` also doesn’t help here.
+
+Instead we have to fiddle with the legend and the color map.
+
+## Solution: Named Color Vectors
+
+Arrange the colors in the order we want them to be and, and this is the final trick needed, name the colors with their corresponding group. You also need a labeler to overwrite the actual groups in the legend later, but only for the things that will be in the breaks vector.
+
+``` r
+my_colors_2 <- c('#4477AA', '#4477AA', '#4477AA', '#EE6677', '#EE6677')
+
+names(my_colors_2) <- c("y ~ x + z1 + z2",
+                        "y ~ x + z1",
+                        "y ~ x + z1 + z2 + z3",
+                        "y ~ x + z2",
+                        "y ~ x + z1 + z2 + z4")
+
+formula.labs <- c("Unbiased",
+                  "Biased")
+names(formula.labs) <- c("y ~ x + z1 + z2",
+                         "y ~ x + z1 + z2 + z4")
+```
+
+You then plot your plot with the usual `color` and `fill = formula` as you would.
+
+Then, you mess with the scales/labels by adding the breaks argument. This only works with the named color map, as ggplot otherwise doesn’t seem to know how to color the formulas that are not part of the breaks vector:
+
+``` r
+scale_color_manual(
+  values = my_colors_2, 
+  labels = formula.labs, 
+  breaks = c("y ~ x + z1 + z2", "y ~ x + z1 + z2 + z4")
+) +
+scale_fill_manual(
+  values = my_colors_2, 
+  labels = formula.labs, 
+  breaks = c("y ~ x + z1 + z2", "y ~ x + z1 + z2 + z4")
+)
+```
+
+## Patchwork Tip
+
+If you want to collect guides below plots with patchwork, you can use `&` instead of `+` to add a theme element:
+
+``` r
+(tpr + theme(axis.title.x = element_blank())) / 
+fpr + theme(strip.text.x = element_blank()) +   
+plot_layout(guides = 'collect') & 
+theme(legend.position = "bottom")
+```
+
+## Color Palette Generation
+
+Sometimes you want to generate complementary colors programmatically:
+
+``` r
+library(colorspace)
+orange <- hex2RGB("#D2691E", gamma = FALSE)
+orange_hcl <- as(orange, "polarLUV")
+
+orange_h <- orange_hcl@coords[1, "H"]
+orange_c <- orange_hcl@coords[1, "C"]
+orange_l <- orange_hcl@coords[1, "L"]
+
+seq_60 <- seq(from = -300, to = 300, by = 60)
+orange_60 <- seq_60 + orange_h
+
+orange_h_lower <- orange_60[which((orange_60 >= 0 & orange_60 < 60))]
+orange_h_upper <- orange_60[which((orange_60 >= 300 & orange_60 < 360))]
+
+hcl_six <- qualitative_hcl(
+  6, 
+  h = c(orange_h_lower, orange_h_upper), 
+  c = orange_c, 
+  l = orange_l
+)
+```
+
+This approach gives you more control over color harmony while maintaining the flexibility of custom groupings.

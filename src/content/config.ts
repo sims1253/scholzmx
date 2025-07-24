@@ -2,18 +2,21 @@ import { defineCollection, z } from 'astro:content';
 
 const blog = defineCollection({
   type: 'content',
-  schema: z.object({
+  schema: ({ image }) => z.object({
     title: z.string(),
     description: z.string(),
-    date: z.date(),
+    date: z.coerce.date(),
     tags: z.array(z.string()).optional(),
+    categories: z.array(z.string()).optional(),
+    author: z.string().optional(),
+    heroImage: image().optional(),
     draft: z.boolean().optional().default(false),
   }),
 });
 
 const recipes = defineCollection({
   type: 'content',
-  schema: z.object({
+  schema: ({ image }) => z.object({
     title: z.string(),
     description: z.string(),
     servings: z.string(),
@@ -22,6 +25,7 @@ const recipes = defineCollection({
     tags: z.array(z.string()).optional(),
     ingredients: z.array(z.string()).optional(),
     equipment: z.array(z.string()).optional(),
+    heroImage: image().optional(),
     draft: z.boolean().optional().default(false),
   }),
 });

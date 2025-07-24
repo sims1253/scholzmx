@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PaperTexture from '../../components/PaperTexture.astro';
 import DropCap from '../../components/DropCap.astro';
+import { Image } from 'astro:assets';
 
 export async function getStaticPaths() {
   const recipes = await getCollection('recipes');
@@ -45,6 +46,19 @@ const { Content } = await recipe.render();
         </h1>
         
         <p class="recipe-description">{recipe.data.description}</p>
+        
+        {recipe.data.heroImage && (
+          <div class="hero-image">
+            <Image 
+              src={recipe.data.heroImage} 
+              alt={`Hero image for ${recipe.data.title}`}
+              width={600}
+              height={400}
+              format="webp"
+              class="recipe-hero"
+            />
+          </div>
+        )}
       </header>
       
       <div class="recipe-body">
@@ -130,6 +144,19 @@ const { Content } = await recipe.render();
     margin-bottom: var(--space-lg);
   }
 
+  .hero-image {
+    margin: var(--space-lg) 0;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(139, 90, 60, 0.15);
+  }
+
+  .recipe-hero {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
   .recipe-body {
     font-size: var(--text-lg);
     line-height: 1.6;
@@ -178,6 +205,14 @@ const { Content } = await recipe.render();
 
   .recipe-body :global(em) {
     color: var(--color-ink-medium);
+  }
+
+  .recipe-body :global(img) {
+    width: 100%;
+    height: auto;
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 12px rgba(139, 90, 60, 0.15);
+    margin: var(--space-lg) 0;
   }
 
   .recipe-footer {

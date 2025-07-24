@@ -1,0 +1,351 @@
+---
+title: "Understanding MCMC Diagnostics: A Practical Guide"
+description: "A comprehensive guide to diagnosing MCMC convergence issues and what to do when things go wrong."
+date: "2024-04-08"
+categories: [Tutorial, Bayesian Statistics, MCMC]
+tags: ["MCMC", "diagnostics", "Stan", "convergence", "R-hat"]
+author: "Maximilian Scholz"
+execute:
+  echo: true
+  eval: true
+  warning: false
+  message: false
+format:
+  md:
+    variant: gfm
+    preserve-yaml: true
+---
+
+Markov Chain Monte Carlo (MCMC) methods are powerful tools for Bayesian inference, but they come with a catch: you need to verify that your chains have converged to the target distribution. In this tutorial, I'll walk you through the essential diagnostics and what to do when things go wrong.
+
+## Why MCMC Diagnostics Matter
+
+MCMC algorithms generate samples from complex posterior distributions, but there's no guarantee that your samples actually represent the distribution you're interested in. Poor convergence can lead to:
+
+- Biased parameter estimates
+- Incorrect uncertainty quantification
+- Invalid inferences and predictions
+
+Think of MCMC diagnostics as your early warning system—they tell you when your results might be unreliable.
+
+## Essential Diagnostics
+
+### 1. R-hat (Potential Scale Reduction Factor)
+
+R-hat compares the between-chain variance to the within-chain variance. Values close to 1.0 indicate good convergence.
+
+```{r}
+#| label: rhat-example
+#| caption: "Computing R-hat statistics for convergence assessment"
+
+library(rstan)
+library(bayesplot)
+
+# Fit a simple model
+model_code <- "
+  data {
+    int<lower=0> N;
+    vector[N] y;
+  }
+  parameters {
+    real mu;
+    real<lower=0> sigma;
+  }
+  model {
+    mu ~ normal(0, 10);
+    sigma ~ exponential(1);
+    y ~ normal(mu, sigma);
+  }
+"
+
+# Simulate some data
+set.seed(123)
+y <- rnorm(100, 5, 2)
+
+# Fit the model
+fit <- stan(model_code = model_code, 
+            data = list(N = length(y), y = y),
+            chains = 4, iter = 2000)
+
+# Check R-hat
+print(fit, pars = c("mu", "sigma"))
+```
+
+**Interpretation:**
+- R-hat < 1.01: Excellent convergence
+- 1.01 < R-hat < 1.05: Good convergence
+- R-hat > 1.05: Potential convergence issues
+
+### 2. Effective Sample Size (ESS)
+
+ESS tells you how many independent samples your chains provide after accounting for autocorrelation.
+
+```{r}
+#| label: ess-calculation
+#| caption: "Calculating effective sample sizes"
+
+# Extract samples and calculate ESS
+samples <- extract(fit, permuted = FALSE)
+ess <- summary(fit)$summary[, "n_eff"]
+print(ess)
+
+# Rule of thumb: ESS > 100 per chain for reliable inference
+# ESS > 400 total for tail quantiles
+```
+
+### 3. Trace Plots
+
+Visual inspection of chain behavior over iterations.
+
+```{r}
+#| label: trace-plots
+#| caption: "Creating trace plots for visual convergence assessment"
+
+# Create trace plots
+mcmc_trace(samples, pars = c("mu", "sigma"))
+
+# Look for:
+# - Good mixing between chains
+# - No trends or drifts
+# - Stationary behavior after warmup
+```
+
+### 4. Autocorrelation Plots
+
+Show how correlated successive samples are.
+
+```{r}
+#| label: autocorrelation-plots
+#| caption: "Examining autocorrelation in MCMC chains"
+
+# Plot autocorrelation
+mcmc_acf(samples, pars = c("mu", "sigma"))
+
+# High autocorrelation = lower effective sample size
+# Ideally drops to near zero quickly
+```
+
+## Common Convergence Problems
+
+### Problem 1: High R-hat Values
+
+```{r}
+#| label: high-rhat-example
+#| caption: "Example of poor convergence with high R-hat"
+
+# Problematic model with poor parameterization
+bad_model <- "
+  parameters {
+    real alpha;
+    real beta;
+    real<lower=0> sigma;
+  }
+  model {
+    // Highly correlated parameters
+    alpha ~ normal(0, 100);
+    beta ~ normal(alpha, 0.1);  // Creates strong dependency
+    // ... rest of model
+  }
+"
+
+# Solutions:
+# 1. Reparameterize the model
+# 2. Use better priors
+# 3. Increase iterations
+# 4. Use non-centered parameterization
+```
+
+### Problem 2: Low Effective Sample Size
+
+```{r}
+#| label: low-ess-solutions
+#| caption: "Addressing low effective sample size"
+
+# When ESS is low:
+# 1. Run more iterations
+fit_longer <- stan(model_code, data = data, 
+                   chains = 4, iter = 4000)
+
+# 2. Thin the chains (usually not recommended)
+fit_thinned <- stan(model_code, data = data,
+                   chains = 4, iter = 2000, thin = 2)
+
+# 3. Reparameterize to reduce autocorrelation
+# 4. Use better proposals (automatic in Stan)
+```
+
+## Advanced Diagnostics
+
+### Energy Diagnostics (HMC/NUTS specific)
+
+```{r}
+#| label: energy-diagnostics
+#| caption: "Energy diagnostics for HMC samplers"
+
+# Check energy statistics
+sampler_params <- get_sampler_params(fit, inc_warmup = FALSE)
+mcmc_nuts_energy(nuts_params(fit))
+
+# Look for:
+# - E-BFMI > 0.2 (good)
+# - Low number of divergent transitions
+# - Reasonable step sizes
+```
+
+### Divergent Transitions
+
+```{r}
+#| label: divergent-transitions
+#| caption: "Handling divergent transitions"
+
+# Check for divergent transitions
+divergent <- get_divergent_iterations(fit)
+print(paste("Number of divergent transitions:", sum(divergent)))
+
+# Solutions:
+# 1. Increase adapt_delta
+fit_better <- stan(model_code, data = data,
+                  control = list(adapt_delta = 0.95))
+
+# 2. Reparameterize the model
+# 3. Use more informative priors
+```
+
+## Practical Workflow
+
+### Step 1: Quick Check
+
+```{r}
+#| label: quick-diagnostic-check
+#| caption: "Quick convergence check workflow"
+
+check_convergence <- function(fit) {
+  # Get summary statistics
+  summary_stats <- summary(fit)$summary
+  
+  # Check R-hat
+  max_rhat <- max(summary_stats[, "Rhat"], na.rm = TRUE)
+  
+  # Check ESS
+  min_ess <- min(summary_stats[, "n_eff"], na.rm = TRUE)
+  
+  # Check divergent transitions
+  divergent <- sum(get_divergent_iterations(fit))
+  
+  cat("Max R-hat:", max_rhat, "\n")
+  cat("Min ESS:", min_ess, "\n") 
+  cat("Divergent transitions:", divergent, "\n")
+  
+  # Overall assessment
+  if (max_rhat < 1.01 && min_ess > 400 && divergent == 0) {
+    cat("✓ Chains appear to have converged well!\n")
+  } else {
+    cat("⚠ Potential convergence issues detected.\n")
+  }
+}
+
+check_convergence(fit)
+```
+
+### Step 2: Visual Inspection
+
+```{r}
+#| label: visual-inspection
+#| caption: "Comprehensive visual diagnostics"
+
+# Create diagnostic plots
+posterior <- as.array(fit)
+
+# Combined plot
+mcmc_combo(posterior, pars = c("mu", "sigma"))
+
+# Individual diagnostic plots
+p1 <- mcmc_trace(posterior, pars = c("mu", "sigma"))
+p2 <- mcmc_rank_overlay(posterior, pars = c("mu", "sigma"))
+p3 <- mcmc_acf(posterior, pars = c("mu", "sigma"))
+
+# Arrange plots
+library(patchwork)
+(p1 / p2) | p3
+```
+
+### Step 3: Address Issues
+
+```{r}
+#| label: addressing-issues
+#| caption: "Common solutions for convergence problems"
+
+# If convergence is poor:
+
+# Option 1: Longer chains
+fit_long <- stan(model_code, data = data,
+               chains = 4, iter = 4000, warmup = 2000)
+
+# Option 2: More chains
+fit_more_chains <- stan(model_code, data = data,
+                      chains = 8, iter = 2000)
+
+# Option 3: Better control parameters
+fit_tuned <- stan(model_code, data = data,
+                control = list(adapt_delta = 0.99,
+                              max_treedepth = 15))
+```
+
+## Model-Specific Tips
+
+### Hierarchical Models
+
+```{r}
+#| label: hierarchical-diagnostics
+#| caption: "Special considerations for hierarchical models"
+
+# Common issues in hierarchical models:
+# 1. Funnel geometry - use non-centered parameterization
+# 2. Label switching - use ordered constraints
+# 3. Identification issues - use proper priors
+
+# Non-centered parameterization example
+hierarchical_model <- "
+  data {
+    int N;
+    int J;
+    vector[N] y;
+    int group[N];
+  }
+  parameters {
+    real mu;
+    real<lower=0> sigma;
+    real<lower=0> tau;
+    vector[J] theta_raw;  // Non-centered
+  }
+  transformed parameters {
+    vector[J] theta = mu + tau * theta_raw;  // Centered version
+  }
+  model {
+    mu ~ normal(0, 5);
+    sigma ~ exponential(1);
+    tau ~ exponential(1);
+    theta_raw ~ normal(0, 1);  // Standard normal
+    
+    for (n in 1:N) {
+      y[n] ~ normal(theta[group[n]], sigma);
+    }
+  }
+"
+```
+
+## Conclusion
+
+MCMC diagnostics are essential for reliable Bayesian inference. Remember:
+
+1. **Always check convergence** before interpreting results
+2. **R-hat and ESS are your friends** - use them routinely
+3. **Visual inspection matters** - plots can reveal issues numbers miss
+4. **When in doubt, run longer** - computational resources are cheaper than wrong conclusions
+5. **Model reparameterization** often solves persistent convergence issues
+
+The goal isn't perfect diagnostics—it's reliable inference. Use these tools to build confidence in your results and catch problems before they lead you astray.
+
+---
+
+*What MCMC convergence challenges have you encountered? I'd love to hear about your diagnostic strategies and solutions.*
