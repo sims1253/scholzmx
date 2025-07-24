@@ -14,41 +14,7 @@ const {
   includeQuoteSection = false
 } = Astro.props;
 
-// Different illustrations based on page type
-const illustrations = {
-  garden: {
-    title: "Tending the digital garden",
-    quote: "In every walk with nature, one receives far more than they seek.",
-    attribution: "— John Muir",
-    elements: ['botanical', 'growth', 'seasons']
-  },
-  kitchen: {
-    title: "From the kitchen",
-    quote: "Cooking is love made visible.",
-    attribution: "— Traditional",
-    elements: ['herbs', 'warmth', 'nourishment']
-  },
-  craft: {
-    title: "Tools and making",
-    quote: "The best way to find out if you can trust somebody is to trust them.",
-    attribution: "— Ernest Hemingway",
-    elements: ['tools', 'creation', 'craft']
-  },
-  writing: {
-    title: "Words and thoughts",
-    quote: "Writing is thinking on paper.",
-    attribution: "— William Zinsser",
-    elements: ['ink', 'manuscript', 'reflection']
-  },
-  default: {
-    title: "Digital garden",
-    quote: "",
-    attribution: "",
-    elements: ['botanical', 'patience', 'wisdom']
-  }
-};
-
-const currentIllustration = illustrations[variant];
+// Simplified - we only use the QuoteOfTheDay component now
 ---
 
 <footer class={`illustrated-footer ${variant} ${className}`}>
@@ -152,13 +118,6 @@ const currentIllustration = illustrations[variant];
   <!-- Footer content -->
   <div class="footer-content">
     <div class="footer-text">
-      {currentIllustration.quote && (
-        <blockquote class="footer-quote">
-          <p>"{currentIllustration.quote}"</p>
-          <cite>{currentIllustration.attribution}</cite>
-        </blockquote>
-      )}
-      
       <div class="footer-meta">
         <p>
           Built with care using <a href="https://astro.build" class="astro-link">Astro</a>. 
@@ -216,37 +175,6 @@ const currentIllustration = illustrations[variant];
     justify-content: center;
   }
 
-  .footer-attribution {
-    font-family: var(--font-heading);
-    font-size: var(--text-sm);
-    color: var(--color-ink-medium);
-    margin-bottom: var(--space-sm);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-weight: 500;
-  }
-
-  .footer-quote {
-    margin: 0 auto var(--space-md);
-    max-width: 500px;
-    position: relative;
-  }
-
-  .footer-quote p {
-    font-family: var(--font-serif);
-    font-size: var(--text-md);
-    font-style: italic;
-    color: var(--color-ink-dark);
-    margin-bottom: var(--space-xs);
-    line-height: 1.6;
-  }
-
-  .footer-quote cite {
-    font-size: var(--text-sm);
-    color: var(--color-ink-light);
-    font-style: normal;
-    font-weight: 500;
-  }
 
   .footer-meta {
     font-size: var(--text-sm);
