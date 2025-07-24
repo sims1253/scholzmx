@@ -66,44 +66,48 @@ const todaysQuote = quotes[quoteIndex];
 <script>
   const quotes = [
     {
-      text: "The smell of kiwi vines and tansy on a sun-warmed wooden fence.",
-      author: "Personal Memory"
+      text: "I am scared! I want to live. I am begging you.",
+      author: "Kara"
     },
     {
-      text: "In every walk with nature, one receives far more than they seek.",
-      author: "John Muir"
+      text: "I try to speak, but some thoughts are too loud for words.",
+      author: "Garret Russell"
     },
     {
-      text: "The Earth does not belong to us; we belong to the Earth.",
-      author: "Chief Seattle"
+      text: "A red sky at night, a shepherd's flashlight, his beam sweeps like brush strokes across the sky.",
+      author: "Rou Reynolds"
     },
     {
-      text: "To see a world in a grain of sand and a heaven in a wild flower.",
-      author: "William Blake"
+      text: "I think it's time you had a punk cloud summer.",
+      author: "Will Yip"
     },
     {
-      text: "The best time to plant a tree was 20 years ago. The second best time is now.",
-      author: "Chinese Proverb"
+      text: "And you will always be here.",
+      author: "Baby J, Tom Barber"
     },
     {
-      text: "In the depth of winter, I finally learned that within me there lay an invincible summer.",
-      author: "Albert Camus"
+      text: "Gravity, hold on to me.",
+      author: "Tom Searle"
     },
     {
-      text: "The quieter you become, the more you are able to hear.",
-      author: "Rumi"
+      text: "Mine is the path of mutilation.",
+      author: "Allison Ruth (Tom Bloom)"
     },
     {
-      text: "We are all just walking each other home.",
-      author: "Ram Dass"
+      text: "Royalty is a continuous cutting motion.",
+      author: "Intra (Tom Bloom)"
     },
     {
-      text: "Between stimulus and response there is a space. In that space is our power to choose.",
-      author: "Viktor Frankl"
+      text: "All things have a right to grow.",
+      author: "Ventari"
     },
     {
-      text: "The secret to getting ahead is getting started.",
-      author: "Mark Twain"
+      text: "May you find a cozy spot by the fire where the door never closes, the owner runs credit, the taps never run dry and the piano is always playing.",
+      author: "John Ringo"
+    },
+    {
+      text: "Do not go gentle into that good night, old age should burn and rave at close of day; Rage, rage against the dying of the light.",
+      author: "Dylan Thomas"
     }
   ];
 
@@ -153,12 +157,11 @@ const todaysQuote = quotes[quoteIndex];
 <style>
   .quote-container {
     position: relative;
-    margin: var(--space-lg) 0;
-    padding: var(--space-lg);
-    background: linear-gradient(135deg, var(--color-parchment-light) 0%, var(--color-parchment) 100%);
-    border-radius: var(--border-radius);
-    border: 1px solid rgba(139, 90, 60, 0.1);
-    box-shadow: 0 2px 8px rgba(139, 90, 60, 0.05);
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
   }
 
   .daily-quote {
@@ -186,7 +189,7 @@ const todaysQuote = quotes[quoteIndex];
     font-style: italic;
     line-height: 1.5;
     color: var(--color-ink-dark);
-    margin: 0 0 var(--space-md);
+    margin: 0 0 0;
     padding-left: var(--space-md);
   }
 

@@ -24,13 +24,17 @@ const dropCapLetter = letter.charAt(0).toUpperCase();
     float: left;
     font-family: var(--font-heading);
     font-weight: 700;
-    line-height: 0.8;
-    margin: 0.1em 0.15em 0 0;
+    line-height: 0.75;
+    margin: 0.05em 0.1em 0.05em 0;
     text-align: center;
     display: block;
     position: relative;
     user-select: none;
     max-width: 1.1em;
+    
+    /* Better text flow around drop cap */
+    shape-outside: margin-box;
+    shape-margin: 0.05em;
     
     /* Prevent extending too far left */
     margin-left: 0;
@@ -94,13 +98,7 @@ const dropCapLetter = letter.charAt(0).toUpperCase();
   }
 
   .drop-cap--ornate::after {
-    content: '❦';
-    position: absolute;
-    bottom: -0.3em;
-    right: -0.2em;
-    font-size: 0.4em;
-    opacity: 0.6;
-    transform: rotate(15deg);
+    display: none;
   }
 
   .drop-cap--botanical::before {
@@ -118,13 +116,7 @@ const dropCapLetter = letter.charAt(0).toUpperCase();
   }
 
   .drop-cap--botanical::after {
-    content: '✿';
-    position: absolute;
-    top: -0.1em;
-    right: -0.1em;
-    font-size: 0.3em;
-    opacity: 0.7;
-    transform: rotate(-10deg);
+    display: none;
   }
 
   /* Hover effects for interactivity */
@@ -136,10 +128,10 @@ const dropCapLetter = letter.charAt(0).toUpperCase();
     transform: scale(1.05) rotate(1deg);
   }
 
+  /* Remove emoji hover effects since emojis are disabled */
   .drop-cap--ornate:hover::after,
   .drop-cap--botanical:hover::after {
-    transform: rotate(25deg) scale(1.2);
-    opacity: 1;
+    display: none;
   }
 
   /* Responsive adjustments */

@@ -10,6 +10,7 @@ export interface Props {
   image?: string;
   addBorders?: boolean;
   footerVariant?: 'garden' | 'kitchen' | 'craft' | 'writing' | 'default';
+  includeQuoteSection?: boolean;
 }
 
 const { 
@@ -17,7 +18,8 @@ const {
   description = "A digital garden and personal website - thoughtful, slow web principles with a warm, botanical aesthetic.",
   image = "/img/og-default.jpg",
   addBorders = true,
-  footerVariant = 'default'
+  footerVariant = 'default',
+  includeQuoteSection = false
 } = Astro.props;
 
 const currentPath = Astro.url.pathname;
@@ -78,8 +80,7 @@ const currentPath = Astro.url.pathname;
             <div class="nav-content">
               <div class="nav-brand">
                 <a href="/" class="site-logo" aria-label="Home">
-                  <span class="logo-text">Scholz MX</span>
-                  <span class="logo-flourish">❦</span>
+                  <span class="logo-text">Grotto</span>
                 </a>
               </div>
               
@@ -102,7 +103,7 @@ const currentPath = Astro.url.pathname;
       </main>
 
       <!-- Illustrated Footer -->
-      <IllustratedFooter variant={footerVariant} />
+      <IllustratedFooter variant={footerVariant} includeQuoteSection={includeQuoteSection} />
     </div>
     
     <style>

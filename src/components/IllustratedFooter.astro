@@ -1,12 +1,17 @@
 ---
+import QuoteOfTheDay from './QuoteOfTheDay.astro';
+import SmoothVineFrame from './SmoothVineFrame.astro';
+
 export interface Props {
   variant?: 'garden' | 'kitchen' | 'craft' | 'writing' | 'default';
   className?: string;
+  includeQuoteSection?: boolean;
 }
 
 const { 
   variant = 'default',
-  className = ''
+  className = '',
+  includeQuoteSection = false
 } = Astro.props;
 
 // Different illustrations based on page type
@@ -47,6 +52,15 @@ const currentIllustration = illustrations[variant];
 ---
 
 <footer class={`illustrated-footer ${variant} ${className}`}>
+  <!-- Quote section above footer -->
+  {includeQuoteSection && (
+    <div class="footer-quote-section">
+      <SmoothVineFrame>
+        <QuoteOfTheDay />
+      </SmoothVineFrame>
+    </div>
+  )}
+  
   <!-- Botanical illustration divider -->
   <div class="footer-illustration">
     <svg class="footer-artwork" viewBox="0 0 800 120" preserveAspectRatio="xMidYMid meet">
@@ -170,6 +184,12 @@ const currentIllustration = illustrations[variant];
     margin-top: var(--space-xs);
     margin-bottom: var(--space-xs);
     width: 100%;
+  }
+
+  .footer-quote-section {
+    max-width: var(--main-content-width);
+    margin: 0 auto var(--space-lg);
+    padding: var(--space-lg) var(--space-lg) 0;
   }
 
   .footer-illustration {

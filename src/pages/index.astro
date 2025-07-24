@@ -7,6 +7,7 @@ import MarginNote from "../components/MarginNote.astro";
 import Slideshow from "../components/Slideshow.astro";
 import HandDrawnDivider from "../components/HandDrawnDivider.astro";
 import VineFrame from "../components/VineFrame.astro";
+import SmoothVineFrame from "../components/SmoothVineFrame.astro";
 import { Image } from "astro:assets";
 import SunlitEffect from "../components/SunlitEffect.astro";
 
@@ -35,9 +36,10 @@ const portfolioImages = [
 ---
 
 <BaseLayout
-  title="Scholz MX - Digital Garden & Personal Website"
-  description="Welcome to my digital garden - a thoughtful space for ideas, recipes, projects, and musings. Built with slow web principles and a warm, botanical aesthetic."
+  title="Grotto - Digital Garden & Personal Website"
+  description="Welcome to Grotto - a thoughtful space for ideas, recipes, projects, and musings. Built with slow web principles and a warm, botanical aesthetic."
   footerVariant="default"
+  includeQuoteSection={true}
 >
   <PaperTexture pattern="botanical" intensity="light" className="landing-page">
     <!-- Single screen layout -->
@@ -45,28 +47,30 @@ const portfolioImages = [
       <!-- Main content area -->
       <main class="landing-main">
         <div class="welcome-section">
-          <h1 class="site-title">
-            <DropCap letter="W" color="gold" style="ornate" />elcome to my
-            digital garden
-          </h1>
-          <p class="site-description">
-            A thoughtful space where ideas grow slowly, like plants in rich
-            soil.
-            <MarginNote>
-              <p>
-                Think of this as a digital commonplace book - a collection of
-                thoughts, discoveries, and creations that have meaning to me.
-              </p>
-            </MarginNote>
-            Here you'll find musings on life, cherished recipes, creative projects,
-            and quiet wisdom found in everyday moments.
-          </p>
+          <div class="manuscript-text">
+            <h1 class="site-title">
+              <DropCap letter="W" color="gold" style="ornate" />elcome to Grotto
+            </h1>
+            <p class="site-description constrained-text">
+              a place where I try to cultivate the feeling of watching the shadows dance through
+              vines, while insects are humming and tansy is making everything smell like summer.
+            </p>
+          </div>
 
           <div class="about-preview">
+            <div class="garden-note">
+              <MarginNote>
+                <p>
+                  Think of this as a digital commonplace book - a collection of
+                  thoughts, discoveries, and creations that have meaning to me.
+                  And maybe have some fun while browsing.
+                </p>
+              </MarginNote>
+            </div>
             <div class="portrait-frame">
               <Image
                 src={selfImage}
-                alt="Maximilian Scholz - PhD researcher and digital gardener"
+                alt="Maximilian Scholz - Herder of cat herders"
                 class="portrait-image"
                 width={120}
                 height={120}
@@ -76,32 +80,27 @@ const portfolioImages = [
             </div>
             <div class="intro-text">
               <p>
-                I'm <strong>Maximilian</strong>, a PhD researcher in Bayesian
-                statistics at the University of Stuttgart, building tools for
-                research and tending to this digital garden with slow web
-                principles.
-              </p>
-              <p class="research-link">
-                <a href="/research">Explore my research & publications →</a>
-              </p>
-              <p class="philosophy">
-                <em
-                  >No tracking, no analytics, no dark patterns. Just honest
-                  content and human connection.</em
-                >
+                I'm Maximilian.
+                My music taste was
+                once described as "The Atmospheric Futurist with a Nostalgic
+                Heart" and my favourite feedback described me as a "herder
+                of cat herders".
+                I create things. Whether that's software infrastructure,
+                harsh vocals over guitar riffs, elaborate Call of Cthulhu campaigns
+                for players to inevitably ignore, or dinner experiments that
+                occasionally don't poison anyone. When I'm not building things,
+                you'll find me on the mats failing my triangle escape... again!
+                I have a B.Sc. in Computer Science in Engineering, a M.Sc. in
+                Software Engineering and Technology and, if the gods of bureaucracy 
+                eventually show some mercy, will hold a Dr. rer. nat. in Bayesian statistics.
               </p>
             </div>
-          </div>
-
-          <!-- Quote section integrated with main content -->
-          <div class="quote-section">
-            <QuoteOfTheDay />
           </div>
         </div>
       </main>
 
       <!-- Easel slideshow sidebar -->
-      <aside class="easel-section">
+      <!-- <aside class="easel-section">
         <div class="easel-container">
           <div class="easel-stand">
             <div class="easel-legs"></div>
@@ -120,8 +119,9 @@ const portfolioImages = [
             <div class="canvas-label">Recent works</div>
           </div>
         </div>
-      </aside>
+      </aside> -->
     </div>
+
   </PaperTexture>
 
   <!-- Sunlit streaming light effect -->
@@ -134,6 +134,7 @@ const portfolioImages = [
     display: flex;
     flex-direction: column;
     padding-top: 20px;
+    justify-content: space-between;
   }
 
   .landing-container {
@@ -141,10 +142,9 @@ const portfolioImages = [
     max-width: var(--main-content-width);
     margin: 0 auto;
     padding: 0 var(--space-lg);
-    flex: 1;
-    min-height: 60vh;
     position: relative;
     
+    /* Remove flex: 1 and min-height to reduce empty space */
     /* Uncomment for debugging alignment */
     /* border: 1px dashed red; */
   }
@@ -177,26 +177,52 @@ const portfolioImages = [
     transform: translateY(-38%);
   }
 
+  .manuscript-text {
+    /* Container for flowing manuscript-style text */
+    margin-bottom: var(--space-md);
+    max-width: 75ch; /* Optimal reading width */
+    margin-left: auto;
+    margin-right: auto;
+  }
+
   .site-title {
     font-size: clamp(var(--text-xl), 3.5vw, var(--text-2xl));
-    line-height: 1.2;
-    margin-bottom: var(--space-sm);
+    line-height: 1.4;
+    margin-bottom: 0;
     color: var(--color-ink-dark);
     overflow: visible;
     position: relative;
-    width: 100%;
+    display: inline;
     
-    /* Ensure DropCap doesn't break alignment */
-    text-align: left;
+    /* Make title flow with description */
+    font-weight: 600;
   }
 
   .site-description {
     font-size: var(--text-md);
     line-height: 1.6;
-    margin-bottom: var(--space-md);
+    margin-top: 0;
+    margin-bottom: 0;
     color: var(--color-ink-medium);
-    width: 100%;
     text-align: left;
+    display: block;
+    
+    /* Continue the flow from title - now as block */
+    margin-top: 0.3em;
+  }
+
+  .constrained-text {
+    max-width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
+  .garden-note {
+    position: absolute;
+    top: 0;
+    right: -40px;
+    width: 20px;
+    height: 20px;
   }
 
   .about-preview {
@@ -204,7 +230,10 @@ const portfolioImages = [
     gap: var(--space-md);
     align-items: flex-start;
     margin-bottom: var(--space-md);
-    width: 100%;
+    margin-top: var(--space-xl); /* Add space above this specific section */
+    max-width: 75ch; /* Match manuscript text width */
+    margin-left: auto;
+    margin-right: auto;
     
     /* Ensure consistent alignment */
     justify-content: flex-start;
@@ -272,15 +301,7 @@ const portfolioImages = [
     aspect-ratio: 1;
   }
 
-  .quote-section {
-    margin-top: var(--space-lg);
-  }
 
-  /* Override QuoteOfTheDay component's built-in margin */
-  .quote-section :global(.quote-container) {
-    margin-top: 100px;
-    margin-bottom: 0;
-  }
 
   /* Easel slideshow section */
   .easel-section {
