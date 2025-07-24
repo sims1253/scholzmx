@@ -25,6 +25,10 @@ export default defineConfig({
   vite: {
     server: {
       host: true,
+      watch: {
+        usePolling: true,
+        interval: 1000,
+      },
     },
     build: {
       // Enable CSS code splitting

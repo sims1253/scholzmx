@@ -6,6 +6,7 @@ import DropCap from "../components/DropCap.astro";
 import MarginNote from "../components/MarginNote.astro";
 import Slideshow from "../components/Slideshow.astro";
 import HandDrawnDivider from "../components/HandDrawnDivider.astro";
+import VineFrame from "../components/VineFrame.astro";
 import { Image } from "astro:assets";
 import SunlitEffect from "../components/SunlitEffect.astro";
 
@@ -91,6 +92,11 @@ const portfolioImages = [
               </p>
             </div>
           </div>
+
+          <!-- Quote section integrated with main content -->
+          <div class="quote-section">
+            <QuoteOfTheDay />
+          </div>
         </div>
       </main>
 
@@ -116,14 +122,6 @@ const portfolioImages = [
         </div>
       </aside>
     </div>
-
-    <!-- Quote section below main layout -->
-    <div class="quote-container">
-      <HandDrawnDivider variant="vine" width="wide" />
-      <div class="quote-section">
-        <QuoteOfTheDay />
-      </div>
-    </div>
   </PaperTexture>
 
   <!-- Sunlit streaming light effect -->
@@ -135,7 +133,7 @@ const portfolioImages = [
     min-height: calc(100vh - 50px);
     display: flex;
     flex-direction: column;
-    padding-top: 50px;
+    padding-top: 20px;
   }
 
   .landing-container {
@@ -182,7 +180,7 @@ const portfolioImages = [
   .site-title {
     font-size: clamp(var(--text-xl), 3.5vw, var(--text-2xl));
     line-height: 1.2;
-    margin-bottom: var(--space-md);
+    margin-bottom: var(--space-sm);
     color: var(--color-ink-dark);
     overflow: visible;
     position: relative;
@@ -195,7 +193,7 @@ const portfolioImages = [
   .site-description {
     font-size: var(--text-md);
     line-height: 1.6;
-    margin-bottom: var(--space-lg);
+    margin-bottom: var(--space-md);
     color: var(--color-ink-medium);
     width: 100%;
     text-align: left;
@@ -205,7 +203,7 @@ const portfolioImages = [
     display: flex;
     gap: var(--space-md);
     align-items: flex-start;
-    margin-bottom: var(--space-lg);
+    margin-bottom: var(--space-md);
     width: 100%;
     
     /* Ensure consistent alignment */
@@ -274,25 +272,14 @@ const portfolioImages = [
     aspect-ratio: 1;
   }
 
-  /* Quote container styling */
-  .quote-container {
-    max-width: var(--main-content-width);
-    margin: var(--space-xl) auto 0;
-    padding: 0 var(--space-lg) var(--space-lg);
-    
-    /* Uncomment for debugging alignment */
-    /* border: 1px dashed blue; */
-  }
-
-  @media (min-width: 1600px) {
-    .quote-container {
-      max-width: var(--main-content-width-large);
-      padding: 0 var(--space-lg) var(--space-lg);
-    }
-  }
-
   .quote-section {
-    /* QuoteOfTheDay component will handle its own styling */
+    margin-top: var(--space-lg);
+  }
+
+  /* Override QuoteOfTheDay component's built-in margin */
+  .quote-section :global(.quote-container) {
+    margin-top: 100px;
+    margin-bottom: 0;
   }
 
   /* Easel slideshow section */
