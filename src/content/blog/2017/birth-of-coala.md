@@ -2,18 +2,16 @@
 title: The Birth of a coala
 description: My first entry on the coala blog.
 date: 2017-01-30
-tags: ["coala", "community"]
+tags: ['coala']
 draft: false
 ---
 
-This is my first entry on the coala blog. Welcome everyone.
+<span class="dropcap dropcap--ornate dropcap--serious" data-first-letter="T" aria-hidden="true">T</span>his is my first entry on the coala blog. Welcome everyone.
 My name is Maximilian and I am the community team leader for coala since
 December. In this post I want to talk about the teams in coala and
 especially about the community team, its members and our work so far.
 
-
-Teams in coala
---------------
+## Teams in coala
 
 I had the idea for the teams around EuroPython 2016 as a way to take part of
 the organisatory burden from Lasse. At that time he was making almost all the
@@ -31,9 +29,7 @@ Monolythic management can only get you so far. If you want to read more about
 the structure of teams in coala you can take a look at the
 [teams cEP](https://github.com/coala/cEPs/blob/master/cEP-0003.md)
 
-
-Meet the community Team
------------------------
+## Meet the community Team
 
 I started recruiting members right after the election was over and found
 a number of like-minded coalians that were interested in community work in
@@ -50,9 +46,7 @@ Creating a welcoming environment where everyone feels welcome, a place where
 we can teach and learn from each other, a place where we can exchange mutual
 interests, a place to grow as professionals and humans.
 
-
-What we achieved so far
------------------------
+## What we achieved so far
 
 This section is part of a activity report we wanted to implement for all
 teams. Partly to create a mechanism of control for the rest of the coala
@@ -84,9 +78,7 @@ that all your page are belong to us.
 You should definitely check out all the cool stuff created and give some love
 to the members of this awesome team.
 
-
-What's coming up next
----------------------
+## What's coming up next
 
 We are in the process of finalizing our GSoC application but there will be a
 blog post about that in the future I guess. Let's just say that the new

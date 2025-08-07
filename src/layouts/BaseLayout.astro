@@ -1,7 +1,5 @@
 ---
-import '../styles/global.css';
 import BotanicalBorder from '../components/BotanicalBorder.astro';
-import PaperGrain from '../components/PaperGrain.astro';
 import IllustratedFooter from '../components/IllustratedFooter.astro';
 
 export interface Props {
@@ -9,23 +7,27 @@ export interface Props {
   description?: string;
   image?: string;
   addBorders?: boolean;
-  footerVariant?: 'garden' | 'kitchen' | 'craft' | 'writing' | 'default';
+  footerVariant?: 'projects' | 'writing' | 'research' | 'default';
   includeQuoteSection?: boolean;
+  longform?: boolean;
+  personal?: boolean;
 }
 
-const { 
-  title, 
-  description = "A digital garden and personal website - thoughtful, slow web principles with a warm, botanical aesthetic.",
-  image = "/img/og-default.jpg",
+const {
+  title,
+  description = 'A digital garden and personal website - thoughtful, slow web principles with a warm, botanical aesthetic.',
+  image = '/img/portrait-DY3LVcsu_ZVN2ds.webp',
   addBorders = true,
   footerVariant = 'default',
-  includeQuoteSection = false
+  includeQuoteSection = false,
+  longform = false,
+  personal = true,
 } = Astro.props;
 
 const currentPath = Astro.url.pathname;
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -33,215 +35,681 @@ const currentPath = Astro.url.pathname;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href={`https://www.scholzmx.com${Astro.url.pathname}`} />
+
+    <!-- RSS Feed autodiscovery -->
+    <link rel="alternate" type="application/rss+xml" title="Grotto RSS Feed" href={new URL('rss.xml', Astro.site)} />
+
+    <!-- Critical resource hints for performance -->
+
+    <slot name="head" />
+
+    <link
+      rel="preload"
+      href="/katex/fonts/KaTeX_Main-Regular.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/katex/katex.min.css"
+      as="style"
+      onload="this.onload=null;this.rel='stylesheet'"
+    />
+    <noscript><link rel="stylesheet" href="/katex/katex.min.css" /></noscript>
+
+    <!-- Fira Code for code blocks -->
+    <link
+      rel="preload"
+      href="/fonts/FiraCode-Regular.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/FiraCode-Medium.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <!-- Always load initials (dropcaps) CSS, small footprint -->
+    <link rel="stylesheet" href="/fonts/et-initials.css" />
+
+    <!-- Load critical font CSS synchronously -->
+    <link rel="stylesheet" href="/fonts/cormorant.css" />
+
+    <!-- Load token files directly for better hot-reloading -->
+    <link rel="stylesheet" href="/src/styles/tokens.colors.css" />
+    <link rel="stylesheet" href="/src/styles/tokens.typography.css" />
     
+    <!-- Load component styles -->
+    <link rel="stylesheet" href="/src/styles/layout.css" />
+    <link rel="stylesheet" href="/src/styles/base.css" />
+    <link rel="stylesheet" href="/src/styles/dropcap.css" />
+    
+    <!-- Load non-critical fonts asynchronously -->
+    <link
+      rel="preload"
+      href="/fonts/alegreya.css"
+      as="style"
+      onload="this.onload=null;this.rel='stylesheet'"
+    />
+    <noscript><link rel="stylesheet" href="/fonts/alegreya.css" /></noscript>
+    
+    <!-- Only preload fonts critical for initial render -->
+    <link
+      rel="preload"
+      href="/fonts/et-book-roman-old-style-figures.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/cormorant-garamond-600.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/cormorant-garamond-400.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+
+    <!-- Performance hints - will be updated by theme toggle -->
+    <meta name="theme-color" content="#f9f6f2" />
+    <meta name="color-scheme" content="light dark" />
+
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content={Astro.url} />
+    <meta property="og:url" content={Astro.url.href} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={image} />
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content={Astro.url} />
+    <meta property="twitter:url" content={Astro.url.href} />
     <meta property="twitter:title" content={title} />
     <meta property="twitter:description" content={description} />
     <meta property="twitter:image" content={image} />
 
     <!-- Creative Commons License -->
     <link rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/" />
-    
-    <!-- Preload critical local font files -->
-    <link rel="preload" href="/fonts/eb-garamond-400.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/cormorant-garamond-600.woff2" as="font" type="font/woff2" crossorigin />
-    
+
     <title>{title}</title>
-    
   </head>
-  
-  <body>
+
+  <body
+    class={longform
+      ? personal
+        ? 'longform personal-content'
+        : 'longform serious-content'
+      : undefined}
+  >
     <div class="page-wrapper">
-      <!-- Organic botanical borders and paper texture -->
-      {addBorders && (
-        <>
-          <PaperGrain pattern="grain" intensity="subtle" />
-          <BotanicalBorder position="top" variant="vine" intensity="light" />
-          <BotanicalBorder position="left" variant="vine" intensity="light" />
-          <BotanicalBorder position="right" variant="vine" intensity="light" />
-          <BotanicalBorder position="bottom" variant="vine" intensity="light" />
-        </>
-      )}
+      <!-- Organic botanical borders -->
+      {
+        addBorders && (
+          <div>
+            <BotanicalBorder position="top" variant="vine" intensity="light" />
+            <BotanicalBorder position="left" variant="vine" intensity="light" />
+            <BotanicalBorder position="right" variant="vine" intensity="light" />
+          </div>
+        )
+      }
 
-      <!-- Main content area with integrated navigation -->
-      <main class="main-content">
-        <div class="container">
-          <!-- Navigation integrated into page content -->
-          <nav class="page-nav" role="navigation" aria-label="Main navigation">
-            <div class="nav-content">
-              <div class="nav-brand">
-                <a href="/" class="site-logo" aria-label="Home">
-                  <span class="logo-text">Grotto</span>
-                </a>
-              </div>
-              
-              <div class="nav-links">
-                <a href="/" class={currentPath === '/' ? 'nav-link active' : 'nav-link'}>Garden</a>
-                <span class="nav-separator">·</span>
-                <a href="/research" class={currentPath.startsWith('/research') ? 'nav-link active' : 'nav-link'}>Research</a>
-                <span class="nav-separator">·</span>
-                <a href="/blog" class={currentPath.startsWith('/blog') ? 'nav-link active' : 'nav-link'}>Writing</a>
-                <span class="nav-separator">·</span>
-                <a href="/recipes" class={currentPath.startsWith('/recipes') ? 'nav-link active' : 'nav-link'}>Kitchen</a>
-                <span class="nav-separator">·</span>
-                <a href="/projects" class={currentPath.startsWith('/projects') ? 'nav-link active' : 'nav-link'}>Craft</a>
-              </div>
+      <!-- Navigation and Content in scrollable area -->
+      <div class="nav-and-content-area">
+        <nav class="page-nav" role="navigation" aria-label="Main navigation">
+          <div class="nav-content">
+            <div class="nav-brand">
+              <a href="/" class="site-logo" aria-label="Home">
+                <span class="logo-text" aria-hidden="false">Grotto</span>
+              </a>
             </div>
-          </nav>
-          
-          <slot />
+
+            <div class="nav-links">
+              <a
+                href="/blog"
+                class={currentPath.startsWith('/blog') ? 'nav-link active' : 'nav-link'}>Blog</a
+              >
+              <span class="nav-separator">·</span>
+              <a
+                href="/projects"
+                class={currentPath.startsWith('/projects') ? 'nav-link active' : 'nav-link'}
+                >Projects</a
+              >
+              <span class="nav-separator">·</span>
+              <a
+                href="/research"
+                class={currentPath.startsWith('/research') ? 'nav-link active' : 'nav-link'}
+                >Research</a
+              >
+              <button
+                id="nav-theme-toggle"
+                class="torch-toggle"
+                aria-label="Toggle theme"
+                title="Toggle day/night"
+                type="button"
+              >
+                <svg
+                  class="torch-icon"
+                  viewBox="0 0 64 64"
+                  width="22"
+                  height="22"
+                  aria-hidden="true"
+                >
+                  <defs>
+                    <linearGradient id="flame" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="var(--color-ochre)"></stop>
+                      <stop offset="60%" stop-color="var(--color-walnut)"></stop>
+                      <stop offset="100%" stop-color="var(--color-tansy)"></stop>
+                    </linearGradient>
+                  </defs>
+                  <path
+                    d="M32 8c6 7 4 13-1 18 5-1 8-5 8-10 5 5 7 13 2 19-4 5-12 6-18 3-7-4-7-12-2-17 0 6 6 9 10 7-3-2-5-6-5-9 0-2 1-5 6-11z"
+                    fill="url(#flame)"
+                    stroke="var(--color-ink-medium)"
+                    stroke-width="1"></path>
+                  <rect x="28" y="44" width="8" height="10" rx="2" fill="var(--color-ink-medium)"
+                  ></rect>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Main content area -->
+          <main class="main-content">
+            <div class={personal ? "container personal" : "container"}>
+              <slot />
+            </div>
+          </main>
+        </nav>
+
+        <!-- Illustrated Footer -->
+        <div class="footer-area">
+          <IllustratedFooter variant={footerVariant} includeQuoteSection={includeQuoteSection} />
         </div>
-      </main>
+      </div>
 
-      <!-- Illustrated Footer -->
-      <IllustratedFooter variant={footerVariant} includeQuoteSection={includeQuoteSection} />
-    </div>
-    
-    <style>
-      /* In-page navigation */
-      .page-nav {
-        margin-bottom: var(--space-sm);
-      }
+      <style is:global>
+        
+        /* Global blog post styles - needed for Quarto-generated content that doesn't get scoped */
+        
 
-      .nav-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: var(--space-md) var(--space-lg);
-      }
+        
+        /* Images should respect the content width constraint */
+        .post-content img {
+          max-width: 100% !important;
+          border-radius: var(--border-radius);
+          box-shadow: 0 8px 24px color-mix(in srgb, var(--color-walnut) 6%, transparent), 0 2px 6px color-mix(in srgb, var(--color-sage) 10%, transparent);
+        }
 
-      .nav-brand .site-logo {
-        display: flex;
-        align-items: center;
-        gap: var(--space-xs);
-        text-decoration: none;
-        font-family: var(--font-heading);
-        font-size: var(--text-xl);
-        font-weight: 700;
-        color: var(--color-ink-dark);
-        transition: all var(--transition-medium);
-      }
+        /* Inline code styling for blog posts */
+        .post-content code:not([class]):not(.katex) {
+          font-family: var(--font-mono);
+          background: color-mix(in srgb, var(--color-surface) 95%, var(--color-sage));
+          border: 1px solid color-mix(in srgb, var(--color-lichen) 30%, transparent);
+          padding: 1px 4px;
+          border-radius: 3px;
+          font-size: 0.875em;
+          font-weight: 400;
+        }
 
-      .nav-brand .site-logo:hover {
-        color: var(--color-walnut);
-        transform: translateY(-1px);
-      }
+        /* Blockquotes with medieval manuscript styling */
+        .post-content blockquote {
+          margin: var(--space-lg) 0;
+          padding: var(--space-md) var(--space-lg);
+          border-left: 4px solid var(--color-tansy);
+          background: linear-gradient(0deg, var(--color-parchment-light) 0%, var(--color-parchment-light) 65%, var(--wash-sage) 100%);
+          font-style: italic;
+          position: relative;
+          max-width: var(--content-width-serious);
+        }
 
-      .logo-flourish {
-        color: var(--color-gold);
-        font-size: 1.2em;
-        transition: transform var(--transition-medium);
-      }
+        .post-content blockquote::before {
+          content: '"';
+          font-size: 4rem;
+          line-height: 1;
+          color: var(--color-tansy);
+          position: absolute;
+          left: var(--space-sm);
+          top: 0;
+          font-family: var(--font-heading);
+        }
 
-      .site-logo:hover .logo-flourish {
-        transform: rotate(20deg) scale(1.1);
-      }
+        .post-content blockquote p:last-child {
+          margin-bottom: 0;
+        }
 
-      .nav-links {
-        display: flex;
-        align-items: center;
-        gap: 0;
-        font-size: var(--text-sm);
-        font-family: var(--font-heading);
-      }
+        /* Tables for blog posts */
+        .post-content table {
+          width: 100%;
+          border-collapse: collapse;
+          margin: var(--space-lg) 0;
+        }
 
-      .nav-link {
-        text-decoration: none;
-        color: var(--color-ink-light);
-        padding: var(--space-xs) var(--space-sm);
-        transition: all var(--transition-fast);
-        font-weight: 400;
-        letter-spacing: 0.01em;
-        position: relative;
-      }
+        .post-content th, .post-content td {
+          padding: var(--space-sm);
+          text-align: left;
+          border-bottom: 1px solid rgba(139, 90, 60, 0.2);
+        }
 
-      .nav-link:hover {
-        color: var(--color-walnut);
-      }
+        .post-content th {
+          font-weight: 600;
+          color: var(--color-ink-dark);
+          background-color: var(--color-parchment-light);
+        }
 
-      .nav-link.active {
-        color: var(--color-walnut);
-        font-weight: 500;
-      }
+        /* Link styling with theme colors - ported from global.css */
+        .post-content a {
+          color: var(--color-link);
+          text-decoration: underline;
+          text-decoration-color: var(--color-underline);
+          text-underline-offset: 2px;
+          text-decoration-thickness: 1.6px;
+          transition: color var(--transition-fast), text-decoration-color var(--transition-fast);
+        }
 
-      .nav-link.active::after {
-        content: '';
-        position: absolute;
-        bottom: -2px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 60%;
-        height: 1px;
-        background-color: var(--color-gold);
-      }
+        .post-content a:hover {
+          color: var(--color-link-hover);
+          text-decoration-color: var(--color-underline-hover);
+          text-decoration-thickness: 2px;
+        }
 
-      .nav-separator {
-        color: var(--color-ink-light);
-        opacity: 0.5;
-        margin: 0 var(--space-xs);
-        font-weight: 300;
-      }
+        .post-content a:focus {
+          outline: none;
+          box-shadow: 
+            0 0 0 1px color-mix(in srgb, var(--color-moss) 40%, transparent),
+            0 0 8px color-mix(in srgb, var(--color-sage) 20%, transparent);
+          border-radius: 3px;
+          background: color-mix(in srgb, var(--color-parchment-light) 60%, transparent);
+        }
+        
+        /* All child elements will naturally inherit this constraint */
 
-      /* Main content */
-      .page-wrapper {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-      }
+        /* Code block styling with manuscript aesthetics */
+        .astro-code {
+          font-family: var(--font-mono) !important;
+          padding: var(--space-sm) !important;
+          border-radius: 10px !important;
+          margin: var(--space-sm) 0 !important;
+          position: relative;
+          
+          /* Manuscript-inspired frame - override Shiki inline styles */
+          border: 1px solid color-mix(in srgb, var(--color-lichen) 30%, transparent) !important;
+          box-shadow:
+            0 8px 22px color-mix(in srgb, var(--color-walnut) 5%, transparent),
+            0 2px 6px color-mix(in srgb, var(--color-sage) 12%, transparent),
+            inset 0 1px 0 color-mix(in srgb, var(--color-parchment-light) 70%, white) !important;
+          
+          font-size: 18px !important;
+          line-height: 1.25 !important;
+          overflow-x: auto;
+          
+          /* Gentle transition for theme changes */
+          transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
 
-      .main-content {
-        flex: 1;
-        padding: var(--space-lg) 0 var(--space-xl);
-      }
+        /* Copy button styling */
+        .astro-code .copy-button {
+          position: absolute;
+          top: var(--space-sm);
+          right: var(--space-sm);
+          background: color-mix(in srgb, var(--color-surface) 92%, var(--color-walnut));
+          border: 1px solid var(--color-lichen) !important;
+          border-radius: 999px;
+          padding: 6px 10px;
+          font-size: 18px;
+          font-family: var(--font-heading);
+          color: var(--color-walnut);
+          cursor: pointer;
+          opacity: 0.08;
+          transition: opacity 0.15s ease, transform 0.15s ease, background 0.2s ease, color 0.2s ease;
+          user-select: none;
+          pointer-events: auto;
+          z-index: 1;
+          
+          box-shadow: 0 2px 6px color-mix(in srgb, var(--color-sage) 20%, transparent);
+        }
 
+        .astro-code:hover .copy-button { opacity: 0.5; }
 
-      /* Mobile responsiveness */
-      @media (max-width: 768px) {
-        .nav-scroll {
-          flex-direction: column;
+        .astro-code .copy-button:hover {
+          background: color-mix(in srgb, var(--color-surface) 96%, var(--color-walnut));
+          color: var(--color-ochre);
+          border-color: var(--color-lichen);
+          transform: translateY(-1px);
+          box-shadow: 0 3px 8px color-mix(in srgb, var(--color-sage) 18%, transparent);
+          opacity: 1;
+        }
+
+        .astro-code .copy-button:focus-visible { outline-color: var(--color-lichen); }
+
+        .astro-code .copy-button:active {
+          transform: translateY(0);
+          box-shadow: 0 1px 3px color-mix(in srgb, var(--color-sage) 18%, transparent);
+        }
+
+        .astro-code .copy-button.copied {
+          background: color-mix(in srgb, var(--color-surface) 96%, var(--color-moss));
+          color: var(--color-moss);
+          border-color: var(--color-moss);
+        }
+
+        /* Collapsible code sections with botanical styling */
+        details.code-collapse {
+          margin: var(--space-md) 0;
+          border: 1px solid var(--color-lichen);
+          border-radius: 10px;
+          overflow: hidden;
+          
+          /* Subtle manuscript frame */
+          box-shadow: 0 6px 14px color-mix(in srgb, var(--color-sage) 10%, transparent), 0 2px 4px color-mix(in srgb, var(--color-walnut) 6%, transparent);
+          background: var(--color-surface);
+        }
+
+        details.code-collapse summary {
+          position: relative;
+          padding: var(--space-xs) var(--space-lg);
+          padding-left: calc(var(--space-lg) + 10px);
+          background: var(--color-surface);
+          font-family: var(--font-heading);
+          font-weight: 500;
+          font-size: var(--text-md);
+          line-height: 1.2;
+          color: var(--color-walnut);
+          cursor: pointer;
+          user-select: none;
+          list-style: none;
+          display: flex;
+          align-items: center;
           gap: var(--space-xs);
-          padding: var(--space-xs) var(--space-md);
+          min-height: auto;
+          transition: all 0.2s ease;
+          border-bottom: 1px solid color-mix(in srgb, var(--color-lichen) 40%, transparent);
+          box-shadow: 0 1px 2px color-mix(in srgb, var(--color-walnut) 6%, transparent);
         }
 
-        .nav-links {
-          font-size: var(--text-xs);
+        details.code-collapse summary p { margin: 0; line-height: inherit; }
+
+        details.code-collapse summary::-webkit-details-marker { display: none; }
+
+        details.code-collapse summary::before {
+          content: '▸';
+          color: var(--color-moss);
+          font-size: 0.85em;
+          line-height: 1;
+          transition: transform 0.2s ease;
+          transform-origin: center;
+          flex-shrink: 0;
         }
 
-        .nav-link {
+        details.code-collapse[open] summary::before { transform: rotate(90deg); }
+
+        details.code-collapse summary::after {
+          content: '';
+          position: absolute;
+          left: var(--space-sm);
+          top: 50%;
+          transform: translateY(-50%);
+          width: 6px;
+          height: 22px;
+          border-radius: 3px;
+          background: color-mix(in srgb, var(--color-walnut) 15%, transparent);
+        }
+
+        details.code-collapse summary:hover {
+          background: color-mix(in srgb, var(--color-surface) 98%, var(--color-walnut));
+          color: var(--color-ochre);
+        }
+
+        details.code-collapse summary:hover::before { color: var(--color-ochre); }
+
+        details.code-collapse[open] summary { border-bottom-color: var(--color-lichen); margin-bottom: 0; }
+
+        /* Content area styling */
+        details.code-collapse .astro-code {
+          margin: 0 !important;
+          padding: var(--space-sm) !important;
+          border: none !important;
+          border-radius: 0 !important;
+          box-shadow: none !important;
+        }
+        
+        /* Ensure no extra spacing in the collapsible container */
+        details.code-collapse[open] {
+          padding: 0;
+        }
+
+        /* Remove selection-style highlights from code content */
+        .astro-code *,
+        .astro-code span,
+        .astro-code .line {
+          background: transparent !important;
+          outline: none !important;
+          border: none !important;
+          box-shadow: none !important;
+        }
+
+        /* Ensure no pseudo-element backgrounds interfere */
+        .astro-code *::before,
+        .astro-code *::after {
+          background: transparent !important;
+          outline: none !important;
+          border: none !important;
+          box-shadow: none !important;
+        }
+
+        /* Smooth opening animation */
+        details.code-collapse[open] {
+          animation: expand 0.3s ease-out;
+        }
+
+        @keyframes expand {
+          from {
+            max-height: 3rem;
+          }
+          to {
+            max-height: 100vh;
+          }
+        }
+
+        /* Shiki dual theme switching - ported from global.css */
+        /* Default: light theme, then dark based on system preference or manual toggle */
+        [data-theme="dark"] .astro-code,
+        [data-theme="dark"] .astro-code span {
+          color: var(--shiki-dark) !important;
+          background-color: var(--shiki-dark-bg) !important;
+          font-style: var(--shiki-dark-font-style) !important;
+          font-weight: var(--shiki-dark-font-weight) !important;
+          text-decoration: var(--shiki-dark-text-decoration) !important;
+        }
+
+        @media (prefers-color-scheme: dark) {
+          /* Only apply dark theme if no manual theme is set */
+          :not([data-theme]) .astro-code,
+          :not([data-theme]) .astro-code span {
+            color: var(--shiki-dark) !important;
+            background-color: var(--shiki-dark-bg) !important;
+            font-style: var(--shiki-dark-font-style) !important;
+            font-weight: var(--shiki-dark-font-weight) !important;
+            text-decoration: var(--shiki-dark-text-decoration) !important;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .astro-code .copy-button { display: none; }
+        }
+
+        /* Margin Notes Styling - Applied via JavaScript */
+        .post-body.longform .margin-note {
+          position: absolute !important;
+          right: -240px;
+          width: 200px;
+          font-size: var(--text-sm);
+          color: var(--color-text-muted);
           padding: var(--space-xs);
+          border-radius: 0 var(--border-radius) var(--border-radius) 0;
+          line-height: 1.4;
+          border-left: 2px solid var(--color-sage) !important;
+          background: rgba(248, 248, 242, 0.9) !important;
+          box-shadow: 0 2px 8px rgba(168, 181, 160, 0.1);
+          font-style: normal !important;
+          margin: 0 !important;
         }
 
-        .nav-separator {
-          margin: 0 var(--space-xs);
+        /* Remove the decorative quote from margin notes */
+        .post-body.longform .margin-note::before {
+          display: none !important;
         }
 
-        .main-content {
-          padding: calc(70px + var(--space-md)) 0 var(--space-xl);
+        @media (max-width: 1400px) {
+          .post-body.longform .margin-note {
+            display: none !important;
+          }
         }
-      }
+      </style>
 
-      @media (max-width: 480px) {
-        .nav-links {
-          flex-wrap: wrap;
-          justify-content: center;
-          gap: var(--space-xs);
-        }
+      <script>
+        // Add copy buttons to code blocks
+        document.addEventListener('DOMContentLoaded', function() {
+          const codeBlocks = document.querySelectorAll('.astro-code');
+          
+          codeBlocks.forEach(function(codeBlock) {
+            const copyButton = document.createElement('button');
+            copyButton.className = 'copy-button';
+            copyButton.textContent = 'Copy';
+            copyButton.setAttribute('aria-label', 'Copy code to clipboard');
+            
+            copyButton.addEventListener('click', function() {
+              const code = codeBlock.textContent;
+              
+              if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(code).then(function() {
+                  copyButton.textContent = 'Copied!';
+                  copyButton.classList.add('copied');
+                  
+                  setTimeout(function() {
+                    copyButton.textContent = 'Copy';
+                    copyButton.classList.remove('copied');
+                  }, 2000);
+                });
+              } else {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = code;
+                document.body.appendChild(textArea);
+                textArea.select();
+                
+                try {
+                  document.execCommand('copy');
+                  copyButton.textContent = 'Copied!';
+                  copyButton.classList.add('copied');
+                  
+                  setTimeout(function() {
+                    copyButton.textContent = 'Copy';
+                    copyButton.classList.remove('copied');
+                  }, 2000);
+                } catch (err) {
+                  console.error('Could not copy text: ', err);
+                }
+                
+                document.body.removeChild(textArea);
+              }
+            });
+            
+            codeBlock.appendChild(copyButton);
+          });
+        });
 
-        .nav-separator {
-          display: none;
-        }
-      }
-    </style>
+        (function () {
+          const KEY = 'theme-preference';
+          const root = document.documentElement;
+          const btn = document.getElementById('nav-theme-toggle');
+          function apply(v) {
+            if (!v) {
+              root.removeAttribute('data-theme');
+              return;
+            }
+            root.setAttribute('data-theme', v);
+          }
+          function get() {
+            return localStorage.getItem(KEY);
+          }
+          function set(v) {
+            if (v) localStorage.setItem(KEY, v);
+            else localStorage.removeItem(KEY);
+          }
+          function systemPref() {
+            return matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          }
+          function effective() {
+            return get() || systemPref();
+          }
+          function toggle() {
+            const cur = effective();
+            const next = cur === 'dark' ? 'light' : 'dark';
+            set(next);
+            apply(next);
+          }
+          apply(get());
+          btn && btn.addEventListener('click', toggle);
+        })();
+
+        // Copy button functionality for code blocks
+        document.addEventListener('DOMContentLoaded', function () {
+          document.querySelectorAll('.astro-code').forEach(function (codeBlock) {
+            const button = document.createElement('button');
+            button.className = 'copy-button';
+            button.type = 'button';
+            button.textContent = 'Copy';
+            button.setAttribute('aria-label', 'Copy code to clipboard');
+
+            button.addEventListener('click', async function (e) {
+              e.stopPropagation();
+              try {
+                const codeElement = codeBlock.querySelector('code');
+                const codeContent = codeElement ? codeElement.textContent || '' : '';
+                await navigator.clipboard.writeText(codeContent);
+                button.textContent = 'Copied!';
+                button.classList.add('copied');
+                setTimeout(function () {
+                  button.textContent = 'Copy';
+                  button.classList.remove('copied');
+                }, 2000);
+              } catch (err) {
+                const codeElement = codeBlock.querySelector('code');
+                const codeContent = codeElement ? codeElement.textContent || '' : '';
+                const textArea = document.createElement('textarea');
+                textArea.value = codeContent;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                button.textContent = 'Copied!';
+                button.classList.add('copied');
+                setTimeout(function () {
+                  button.textContent = 'Copy';
+                  button.classList.remove('copied');
+                }, 2000);
+              }
+            });
+
+            codeBlock.appendChild(button);
+          });
+        });
+      </script>
+    </div>
   </body>
 </html>

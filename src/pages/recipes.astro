@@ -1,41 +1,37 @@
 ---
-import { getCollection } from "astro:content";
-import { Image } from "astro:assets";
-import BaseLayout from "../layouts/BaseLayout.astro";
-import PaperTexture from "../components/PaperTexture.astro";
-import DropCap from "../components/DropCap.astro";
-import MarginNote from "../components/MarginNote.astro";
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import DropCap from '../components/DropCap.astro';
 
-// Import images for optimization
-import portraitImage from "../../public/img/portrait.jpg";
+/* Import optimized asset from src to enable Astro Image pipeline */
+import portraitImage from '../assets/images/homepage/portrait.jpg';
 
-const recipes = await getCollection("recipes", ({ data }) => !data.draft);
+const recipes = await getCollection('recipes', ({ data }) => !data.draft);
 
-const seasons = ["All seasons", "Spring", "Summer", "Autumn", "Winter"];
+const seasons = ['All seasons', 'Spring', 'Summer', 'Autumn', 'Winter'];
 ---
 
 <BaseLayout
   title="Kitchen Wisdom - Scholz MX"
   description="Cherished recipes collected over years of cooking with love - the kind that bring people together around a table. Seasonal, thoughtful, and made to nourish."
   footerVariant="kitchen"
+  longform={true}
+  personal={true}
 >
-  <PaperTexture pattern="parchment" intensity="medium" className="recipes-page">
+  <div class="recipes-page">
     <header class="recipes-header">
-      <h1 class="page-title">
-        <DropCap letter="K" color="ochre" style="botanical" />itchen Wisdom
-      </h1>
+      <h1 class="page-title">Kitchen Wisdom</h1>
       <p class="page-description">
-        Recipes gathered like wildflowers - some from family tradition, others
-        discovered through
-        <MarginNote>
+        Recipes gathered like wildflowers - some from family tradition, others discovered through
+        <span>
           <p>
-            The best recipes are stories. They carry the memory of hands that
-            made them, seasons that inspired them, and tables that welcomed
-            them.
+            The best recipes are stories. They carry the memory of hands that made them, seasons
+            that inspired them, and tables that welcomed them.
           </p>
-        </MarginNote>
-        wandering and wondering. Each one tested by time, seasoned with love, and
-        proven worthy of sharing around tables that matter.
+        </span>
+        wandering and wondering. Each one tested by time, seasoned with love, and proven worthy of sharing
+        around tables that matter.
       </p>
     </header>
 
@@ -47,10 +43,7 @@ const seasons = ["All seasons", "Spring", "Summer", "Autumn", "Winter"];
           {
             seasons.map((season) => (
               <li>
-                <button
-                  class="season-button"
-                  data-season={season.toLowerCase().replace(" ", "-")}
-                >
+                <button class="season-button" data-season={season.toLowerCase().replace(' ', '-')}>
                   {season}
                 </button>
               </li>
@@ -65,7 +58,7 @@ const seasons = ["All seasons", "Spring", "Summer", "Autumn", "Winter"];
           recipes.map((recipe, index) => (
             <article
               class="recipe-card"
-              data-season={recipe.data.season.toLowerCase().replace(" ", "-")}
+              data-season={recipe.data.season.toLowerCase().replace(' ', '-')}
             >
               <div class="recipe-image-container">
                 <Image
@@ -110,13 +103,7 @@ const seasons = ["All seasons", "Spring", "Summer", "Autumn", "Winter"];
               </div>
 
               <div class="recipe-ornament" aria-hidden="true">
-                {index % 4 === 0
-                  ? "🌿"
-                  : index % 4 === 1
-                    ? "🍄"
-                    : index % 4 === 2
-                      ? "🌺"
-                      : "🥄"}
+                {index % 4 === 0 ? '🌿' : index % 4 === 1 ? '🍄' : index % 4 === 2 ? '🌺' : '🥄'}
               </div>
             </article>
           ))
@@ -128,8 +115,8 @@ const seasons = ["All seasons", "Spring", "Summer", "Autumn", "Winter"];
         <section class="philosophy-card">
           <h3>Kitchen Philosophy</h3>
           <p>
-            Cook with the seasons. Buy from neighbors when you can. Waste
-            nothing. Share everything. Trust your senses more than timers.
+            Cook with the seasons. Buy from neighbors when you can. Waste nothing. Share everything.
+            Trust your senses more than timers.
           </p>
         </section>
 
@@ -148,53 +135,54 @@ const seasons = ["All seasons", "Spring", "Summer", "Autumn", "Winter"];
         <section class="seasonal-card">
           <h3>What's in Season?</h3>
           <p class="seasonal-note">
-            Right now in late summer: tomatoes sing their sweetest song, corn
-            reaches its peak, and the last berries offer their gifts before
-            autumn's approach.
+            Right now in late summer: tomatoes sing their sweetest song, corn reaches its peak, and
+            the last berries offer their gifts before autumn's approach.
           </p>
         </section>
       </aside>
     </main>
-  </PaperTexture>
+  </div>
 </BaseLayout>
 
-<script>
-  // Season filtering functionality
-  document.addEventListener("DOMContentLoaded", function () {
-    const seasonButtons = document.querySelectorAll(".season-button");
-    const recipeCards = document.querySelectorAll(".recipe-card");
+<script type="module">
+  // Season filtering functionality with proper typing and minimal layout thrash
+  document.addEventListener('DOMContentLoaded', () => {
+    const seasonButtons = Array.from(
+      document.querySelectorAll < HTMLButtonElement > '.season-button'
+    );
+    const recipeCards = Array.from(document.querySelectorAll < HTMLElement > '.recipe-card');
 
     seasonButtons.forEach((button) => {
-      button.addEventListener("click", function () {
-        const selectedSeason = this.dataset.season;
+      button.addEventListener(
+        'click',
+        () => {
+          const selectedSeason = button.dataset.season ?? 'all-seasons';
 
-        // Update button states
-        seasonButtons.forEach((btn) => btn.classList.remove("active"));
-        this.classList.add("active");
+          // Update button states
+          seasonButtons.forEach((btn) => btn.classList.remove('active'));
+          button.classList.add('active');
 
-        // Filter recipe cards
-        recipeCards.forEach((card) => {
-          const cardSeason = card.dataset.season;
-
-          if (
-            selectedSeason === "all-seasons" ||
-            cardSeason === selectedSeason
-          ) {
-            card.style.display = "block";
-            card.style.opacity = "1";
-          } else {
-            card.style.opacity = "0.3";
-          }
-        });
-      });
+          // Filter recipe cards (use classes for perf)
+          recipeCards.forEach((card) => {
+            const cardSeason = card.dataset.season ?? '';
+            const show = selectedSeason === 'all-seasons' || cardSeason === selectedSeason;
+            if (show) {
+              card.style.removeProperty('display');
+              card.style.opacity = '1';
+            } else {
+              card.style.opacity = '0.3';
+            }
+          });
+        },
+        { passive: true }
+      );
     });
 
     // Set "All seasons" as default active
-    const allSeasonsButton = document.querySelector(
-      '[data-season="all-seasons"]',
-    );
+    const allSeasonsButton =
+      document.querySelector < HTMLButtonElement > '[data-season="all-seasons"]';
     if (allSeasonsButton) {
-      allSeasonsButton.classList.add("active");
+      allSeasonsButton.classList.add('active');
     }
   });
 </script>
@@ -206,11 +194,12 @@ const seasons = ["All seasons", "Spring", "Summer", "Autumn", "Winter"];
 
   .recipes-header {
     text-align: center;
-    max-width: 60ch;
+    max-width: var(--content-width-personal); /* Use personal content width */
     margin: 0 auto var(--space-xxl);
   }
 
   .page-title {
+    font-family: var(--font-body-personal); /* Alegreya */
     font-size: clamp(var(--text-2xl), 5vw, var(--text-3xl));
     margin-bottom: var(--space-lg);
     color: var(--color-ink-dark);
@@ -365,11 +354,11 @@ const seasons = ["All seasons", "Spring", "Summer", "Autumn", "Winter"];
   }
 
   .recipe-servings::before {
-    content: "👥";
+    content: '👥';
   }
 
   .recipe-time::before {
-    content: "⏱️";
+    content: '⏱️';
   }
 
   .recipe-description {
@@ -477,7 +466,7 @@ const seasons = ["All seasons", "Spring", "Summer", "Autumn", "Winter"];
   }
 
   .wisdom-list li::before {
-    content: "🥄";
+    content: '🥄';
     margin-right: var(--space-xs);
     font-size: 0.8em;
     opacity: 0.6;
@@ -496,8 +485,7 @@ const seasons = ["All seasons", "Spring", "Summer", "Autumn", "Winter"];
     }
 
     .season-list {
-      flex-direction: row;
-      flex-wrap: wrap;
+      flex-flow: row wrap;
     }
 
     .kitchen-sidebar {

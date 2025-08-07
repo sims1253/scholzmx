@@ -1,5 +1,5 @@
 ---
-import { Image } from "astro:assets";
+import { Image } from 'astro:assets';
 
 export interface Props {
   images: Array<{
@@ -31,24 +31,24 @@ const slideshowId = `slideshow-${Math.random().toString(36).substr(2, 9)}`;
       {
         images.map((image, index) => (
           <div
-            class={`slide ${index === 0 ? "active" : ""}`}
+            class={`slide ${index === 0 ? 'active' : ''}`}
             data-slide={index}
             role="img"
             aria-label={image.alt}
           >
-            {typeof image.src === "string" ? (
+            {typeof image.src === 'string' ? (
               <img
                 src={image.src}
                 alt={image.alt}
                 title={image.title || image.alt}
-                loading={index === 0 ? "eager" : "lazy"}
+                loading={index === 0 ? 'eager' : 'lazy'}
               />
             ) : (
               <Image
                 src={image.src}
                 alt={image.alt}
                 title={image.title || image.alt}
-                loading={index === 0 ? "eager" : "lazy"}
+                loading={index === 0 ? 'eager' : 'lazy'}
                 width={640}
                 height={480}
                 widths={[200, 280, 320, 400, 480, 640]}
@@ -70,18 +70,10 @@ const slideshowId = `slideshow-${Math.random().toString(36).substr(2, 9)}`;
     {
       showControls && images.length > 1 && (
         <div class="slideshow-controls">
-          <button
-            class="control-btn prev-btn"
-            aria-label="Previous image"
-            data-action="prev"
-          >
+          <button class="control-btn prev-btn" aria-label="Previous image" data-action="prev">
             <span aria-hidden="true">‹</span>
           </button>
-          <button
-            class="control-btn next-btn"
-            aria-label="Next image"
-            data-action="next"
-          >
+          <button class="control-btn next-btn" aria-label="Next image" data-action="next">
             <span aria-hidden="true">›</span>
           </button>
         </div>
@@ -91,18 +83,14 @@ const slideshowId = `slideshow-${Math.random().toString(36).substr(2, 9)}`;
 
   {
     showIndicators && images.length > 1 && (
-      <div
-        class="slideshow-indicators"
-        role="tablist"
-        aria-label="Slide indicators"
-      >
+      <div class="slideshow-indicators" role="tablist" aria-label="Slide indicators">
         {images.map((_, index) => (
           <button
-            class={`indicator ${index === 0 ? "active" : ""}`}
+            class={`indicator ${index === 0 ? 'active' : ''}`}
             data-slide-to={index}
             role="tab"
             aria-label={`Go to slide ${index + 1}`}
-            aria-selected={index === 0 ? "true" : "false"}
+            aria-selected={index === 0 ? 'true' : 'false'}
           >
             <span aria-hidden="true">❦</span>
           </button>
@@ -116,34 +104,32 @@ const slideshowId = `slideshow-${Math.random().toString(36).substr(2, 9)}`;
 
 <script define:vars={{ autoPlay, interval, slideshowId }}>
   // Slideshow functionality with vanilla JavaScript
-  document.addEventListener("DOMContentLoaded", function () {
-    const container = document.querySelector(
-      `[data-slideshow-id="${slideshowId}"]`,
-    );
+  document.addEventListener('DOMContentLoaded', function () {
+    const container = document.querySelector(`[data-slideshow-id="${slideshowId}"]`);
     if (!container) return;
 
-    const slides = container.querySelectorAll(".slide");
-    const indicators = container.querySelectorAll(".indicator");
-    const prevBtn = container.querySelector(".prev-btn");
-    const nextBtn = container.querySelector(".next-btn");
+    const slides = container.querySelectorAll('.slide');
+    const indicators = container.querySelectorAll('.indicator');
+    const prevBtn = container.querySelector('.prev-btn');
+    const nextBtn = container.querySelector('.next-btn');
 
     let currentSlide = 0;
     let autoPlayTimer = null;
 
     function showSlide(index) {
       // Hide all slides
-      slides.forEach((slide) => slide.classList.remove("active"));
+      slides.forEach((slide) => slide.classList.remove('active'));
       indicators.forEach((indicator) => {
-        indicator.classList.remove("active");
-        indicator.setAttribute("aria-selected", "false");
+        indicator.classList.remove('active');
+        indicator.setAttribute('aria-selected', 'false');
       });
 
       // Show current slide
       if (slides[index]) {
-        slides[index].classList.add("active");
+        slides[index].classList.add('active');
         if (indicators[index]) {
-          indicators[index].classList.add("active");
-          indicators[index].setAttribute("aria-selected", "true");
+          indicators[index].classList.add('active');
+          indicators[index].setAttribute('aria-selected', 'true');
         }
       }
 
@@ -174,7 +160,7 @@ const slideshowId = `slideshow-${Math.random().toString(36).substr(2, 9)}`;
 
     // Event listeners
     if (nextBtn) {
-      nextBtn.addEventListener("click", () => {
+      nextBtn.addEventListener('click', () => {
         stopAutoPlay();
         nextSlide();
         startAutoPlay();
@@ -182,7 +168,7 @@ const slideshowId = `slideshow-${Math.random().toString(36).substr(2, 9)}`;
     }
 
     if (prevBtn) {
-      prevBtn.addEventListener("click", () => {
+      prevBtn.addEventListener('click', () => {
         stopAutoPlay();
         prevSlide();
         startAutoPlay();
@@ -190,7 +176,7 @@ const slideshowId = `slideshow-${Math.random().toString(36).substr(2, 9)}`;
     }
 
     indicators.forEach((indicator, index) => {
-      indicator.addEventListener("click", () => {
+      indicator.addEventListener('click', () => {
         stopAutoPlay();
         showSlide(index);
         startAutoPlay();
@@ -198,13 +184,13 @@ const slideshowId = `slideshow-${Math.random().toString(36).substr(2, 9)}`;
     });
 
     // Keyboard navigation
-    container.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowLeft") {
+    container.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') {
         e.preventDefault();
         stopAutoPlay();
         prevSlide();
         startAutoPlay();
-      } else if (e.key === "ArrowRight") {
+      } else if (e.key === 'ArrowRight') {
         e.preventDefault();
         stopAutoPlay();
         nextSlide();
@@ -213,8 +199,8 @@ const slideshowId = `slideshow-${Math.random().toString(36).substr(2, 9)}`;
     });
 
     // Pause on hover
-    container.addEventListener("mouseenter", stopAutoPlay);
-    container.addEventListener("mouseleave", startAutoPlay);
+    container.addEventListener('mouseenter', stopAutoPlay);
+    container.addEventListener('mouseleave', startAutoPlay);
 
     // Start autoplay if enabled
     startAutoPlay();

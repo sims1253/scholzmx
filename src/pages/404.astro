@@ -1,0 +1,53 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Page not found · scholzmx"
+  description="The page you were looking for doesn't exist."
+  addBorders={true}
+  footerVariant="default"
+  includeQuoteSection={false}
+  longform={false}
+  personal={true}
+>
+  <section
+    style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:55vh;text-align:center;gap:var(--space-md);"
+  >
+    <h1
+      style="font-family:var(--font-heading);font-size:clamp(2rem,4vw,3rem);margin:0;color:var(--color-ink-dark);"
+    >
+      It is getting late...
+    </h1>
+    <p style="max-width:50ch;color:var(--color-ink-medium);margin:0;">
+      This page has wandered off the path. It may have been moved, renamed, or never existed.
+    </p>
+    <div
+      style="display:flex;gap:var(--space-sm);flex-wrap:wrap;justify-content:center;margin-top:var(--space-sm);"
+    >
+      <a href="/" class="btn">Go home</a>
+    </div>
+  </section>
+
+  <style>
+    .btn {
+      display: inline-block;
+      padding: 0.6rem 1rem;
+      border-radius: 6px;
+      text-decoration: none;
+      font-family: var(--font-heading);
+      color: var(--color-background);
+      background: var(--color-walnut);
+      transition:
+        transform var(--transition-fast),
+        opacity var(--transition-fast);
+    }
+    .btn:hover {
+      transform: translateY(-1px);
+      opacity: 0.95;
+    }
+    .btn-secondary {
+      background: color-mix(in srgb, var(--color-walnut) 70%, var(--color-tansy));
+    }
+  </style>
+</BaseLayout>

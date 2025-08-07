@@ -1,11 +1,41 @@
 #!/bin/bash
 
-# Enhanced build script for Quarto to Astro blog posts
-# Features: incremental builds, caching, complete markdown optimization
+# New simplified build script for organized blog structure
+# Usage:
+#   ./build-blog-new.sh                                    # Build all posts
+#   ./build-blog-new.sh path/to/post-folder/index.qmd      # Build specific post
+#   ./build-blog-new.sh --force                            # Force rebuild all
+#   ./build-blog-new.sh --force path/to/post-folder/index.qmd # Force rebuild specific
 
 set -e  # Exit on any error
 
-echo "🚀 Building blog posts from Quarto with caching..."
+# Parse arguments
+FORCE_REBUILD=false
+SPECIFIC_FILE=""
+
+for arg in "$@"; do
+    case $arg in
+        --force)
+            FORCE_REBUILD=true
+            shift
+            ;;
+        */index.qmd)
+            SPECIFIC_FILE="$arg"
+            shift
+            ;;
+        *)
+            echo "Unknown argument: $arg"
+            echo "Usage: $0 [--force] [path/to/post-folder/index.qmd]"
+            exit 1
+            ;;
+    esac
+done
+
+if [ -n "$SPECIFIC_FILE" ]; then
+    echo "🎯 Building specific post: $SPECIFIC_FILE"
+else
+    echo "🚀 Building all blog posts..."
+fi
 
 # Create cache directory
 mkdir -p .blog-cache
@@ -15,6 +45,11 @@ needs_rendering() {
     local qmd_file="$1"
     local md_file="${qmd_file%.qmd}.md"
     local cache_file=".blog-cache/$(echo "$qmd_file" | sed 's|/|_|g').timestamp"
+    
+    # Force rebuild if requested
+    if [ "$FORCE_REBUILD" = true ]; then
+        return 0
+    fi
     
     # If markdown doesn't exist, needs rendering
     if [ ! -f "$md_file" ]; then
@@ -31,12 +66,6 @@ needs_rendering() {
         return 0
     fi
     
-    # Check if any _files directory was modified
-    local files_dir="${qmd_file%.qmd}_files"
-    if [ -d "$files_dir" ] && [ "$files_dir" -nt "$cache_file" ]; then
-        return 0
-    fi
-    
     return 1
 }
 
@@ -47,21 +76,153 @@ update_cache() {
     touch "$cache_file"
 }
 
+# Function to move code block output outside of code-collapse details blocks
+extract_output_from_details() {
+    local md_file="$1"
+    
+    # Use awk to process the file and extract output after code blocks from code-collapse details blocks
+    awk '
+    BEGIN { 
+        in_details = 0
+        details_content = ""
+        extracted_output = ""
+        in_code_block = 0
+        found_code_block = 0
+    }
+    
+    # Start of code-collapse details block
+    /^<details class="code-collapse">/ {
+        in_details = 1
+        details_content = $0 "\n"
+        found_code_block = 0
+        next
+    }
+    
+    # End of details block
+    /^<\/details>$/ && in_details == 1 {
+        # Print the details block without extracted output
+        printf "%s", details_content
+        print "</details>"
+        
+        # Print any extracted output after the details block
+        if (extracted_output != "") {
+            print ""
+            printf "%s", extracted_output
+        }
+        
+        # Reset variables
+        in_details = 0
+        details_content = ""
+        extracted_output = ""
+        in_code_block = 0
+        found_code_block = 0
+        next
+    }
+    
+    # Inside details block
+    in_details == 1 {
+        # Track code blocks
+        if ($0 ~ /^```/) {
+            if (in_code_block == 0) {
+                # Starting a code block
+                in_code_block = 1
+                found_code_block = 1
+                details_content = details_content $0 "\n"
+            } else {
+                # Ending a code block
+                in_code_block = 0
+                details_content = details_content $0 "\n"
+            }
+            next
+        }
+        
+        # Inside a code block - keep in details
+        if (in_code_block == 1) {
+            details_content = details_content $0 "\n"
+            next
+        }
+        
+        # After code block has been found and we are outside code block
+        if (found_code_block == 1 && in_code_block == 0) {
+            # This is output after the code block - extract it
+            extracted_output = extracted_output $0 "\n"
+            next
+        }
+        
+        # Before any code block or other content - keep in details
+        details_content = details_content $0 "\n"
+        next
+    }
+    
+    # Outside details block - print as-is
+    { print }
+    ' "$md_file" > "${md_file}.tmp" && mv "${md_file}.tmp" "$md_file"
+}
+
 rendered_count=0
 cached_count=0
 
-# Find and render Quarto files (with caching)
-find src/content/blog -name "*.qmd" -type f | while read qmd_file; do
-    dir=$(dirname "$qmd_file")
-    filename=$(basename "$qmd_file" .qmd)
+# Function to process a single qmd file
+process_qmd_file() {
+    local qmd_file="$1"
+    local dir=$(dirname "$qmd_file")
     
     if needs_rendering "$qmd_file"; then
         echo "📝 Rendering $qmd_file"
         
-        # Render using quarto
+        # Change to the post directory and render
         cd "$dir"
-        quarto render "$(basename "$qmd_file")" --to gfm --output-dir . --quiet
+        mkdir -p .blog-cache
+        if ! quarto render "index.qmd" --to gfm --output-dir . --execute-daemon=false 2> .blog-cache/last-error.log; then
+          echo "❌ Quarto render failed. See $dir/.blog-cache/last-error.log" >&2
+          quarto render "index.qmd" --to gfm --output-dir . --execute-daemon=false || true
+          cd - > /dev/null
+          return 0
+        fi
         cd - > /dev/null
+        
+        # Post-processing: clean up Quarto output for Astro  
+        local md_file="${qmd_file%.qmd}.md"
+        if [ -f "$md_file" ]; then
+            # Extract year and folder name for image path fixing
+            year=$(echo "$qmd_file" | sed 's|.*/\([0-9]\{4\}\)/.*|\1|')
+            post_folder=$(basename "$(dirname "$qmd_file")")
+            
+            # Move Quarto index_files assets to src/assets and rewrite refs
+            assets_dir="src/assets/images/blog/${year}/${post_folder}"
+            mkdir -p "$assets_dir"
+            post_dir=$(dirname "$md_file")
+            if [ -d "$post_dir/index_files" ]; then
+              find "$post_dir/index_files" -type f \( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.gif" -o -name "*.svg" -o -name "*.webp" \) | while read img; do
+                base=$(basename "$img")
+                cp -f "$img" "$assets_dir/$base"
+                rel_index_path=$(echo "$img" | sed "s|$post_dir/||")
+                # Replace both markdown and HTML refs
+                sed -i "s|$rel_index_path|$base|g" "$md_file"
+              done
+              rm -rf "$post_dir/index_files"
+            fi
+
+            # 1. Fix markdown body image paths: use proper relative paths to src/assets
+            sed -i "s|src/assets/images/blog/${year}/${post_folder}/|../../../../assets/images/blog/${year}/${post_folder}/|g" "$md_file"
+            # Convert plain image references to relative paths 
+            sed -i "s|!\[\](\([^/]*\.png\))|![](../../../../assets/images/blog/${year}/${post_folder}/\1)|g" "$md_file"
+            # Keep ../../../../assets paths as-is (they're correct for our nested structure)
+            
+            # 2. Fix frontmatter images: convert to proper src/assets paths for Astro content collections
+            sed -i '/^images:$/,/^[^ ]/ {
+                # Convert multiline YAML "- >-" + next line to single line format
+                /^  - >-$/N
+                s/^  - >-\n    /  - /
+                # Convert ../../../../assets to src/assets in frontmatter
+                s|../../../../assets/|src/assets/|g
+            }' "$md_file"
+            
+            # 3. Extract code block output from code-collapse details blocks
+            extract_output_from_details "$md_file"
+            
+            echo "  ✨ Fixed image paths and extracted code output from collapsible blocks in: $md_file"
+        fi
         
         update_cache "$qmd_file"
         rendered_count=$((rendered_count + 1))
@@ -69,108 +230,25 @@ find src/content/blog -name "*.qmd" -type f | while read qmd_file; do
         echo "✅ Cached: $qmd_file"
         cached_count=$((cached_count + 1))
     fi
-done
+}
+
+# Process either specific file or all files
+if [ -n "$SPECIFIC_FILE" ]; then
+    # Build specific file
+    if [ ! -f "$SPECIFIC_FILE" ]; then
+        echo "❌ Error: File $SPECIFIC_FILE not found"
+        exit 1
+    fi
+    process_qmd_file "$SPECIFIC_FILE"
+else
+    # Find and render all index.qmd files in the new structure
+    find src/content/blog -name "index.qmd" -path "*/[0-9][0-9][0-9][0-9]/*/*" -type f | while read qmd_file; do
+        process_qmd_file "$qmd_file"
+    done
+fi
 
 echo "📊 Rendered: $rendered_count, Cached: $cached_count"
-
-echo "🖼️  Organizing images for Astro optimization..."
-
-# Create assets directory structure
-mkdir -p src/assets/images/blog/{2017,2022,2023,2024,2025}
-
-# Move generated images to year-organized structure
-find src/content/blog -name "*_files" -type d | while read -r dir; do
-    if [ -d "$dir/figure-commonmark" ]; then
-        # Extract year and post name
-        year=$(echo "$dir" | sed 's|.*blog/\([0-9]\{4\}\)/.*|\1|')
-        post_name=$(basename "$dir" | sed 's|_files$||')
-        
-        target_dir="src/assets/images/blog/$year"
-        mkdir -p "$target_dir"
-        
-        echo "  📁 $year/$post_name images"
-        
-        # Copy images with post prefix
-        for img in "$dir/figure-commonmark"/*; do
-            if [ -f "$img" ]; then
-                img_name=$(basename "$img")
-                target_file="$target_dir/${post_name}-${img_name}"
-                
-                # Only copy if image is newer or doesn't exist
-                if [ ! -f "$target_file" ] || [ "$img" -nt "$target_file" ]; then
-                    cp "$img" "$target_file"
-                fi
-            fi
-        done
-    fi
-done
-
-echo "🔧 Optimizing markdown for Astro..."
-
-# Optimize markdown files for Astro
-find src/content/blog -name "*.md" -type f | while read -r file; do
-    # Extract year and post name
-    year=$(echo "$file" | sed 's|.*blog/\([0-9]\{4\}\)/.*|\1|')
-    post_name=$(basename "$file" .md)
-    
-    # Create a temporary file for processing
-    temp_file=$(mktemp)
-    
-    # Process the markdown file
-    {
-        # 1. Update image paths for Astro optimization
-        sed "s|[^/]*_files/figure-commonmark/\([^)]*\)|../../assets/images/blog/$year/${post_name}-\1|g" "$file" |
-        
-        # 2. Remove duplicate title (Quarto adds title as H1, but we have it in frontmatter)
-        awk '
-        BEGIN { in_frontmatter = 0; frontmatter_ended = 0; title_removed = 0 }
-        /^---$/ { 
-            if (in_frontmatter == 0) in_frontmatter = 1
-            else if (in_frontmatter == 1) { frontmatter_ended = 1; in_frontmatter = 0 }
-            print; next 
-        }
-        in_frontmatter == 1 { print; next }
-        frontmatter_ended == 1 && /^# / && title_removed == 0 { 
-            title_removed = 1; next 
-        }
-        { print }
-        ' |
-        
-        # 3. Remove author/date lines that Quarto adds after title
-        awk '
-        BEGIN { skip_next = 0 }
-        /^# / { print; skip_next = 2; next }
-        skip_next > 0 && /^[A-Z]/ && length($0) < 50 { skip_next--; next }
-        skip_next > 0 && /^[0-9]{4}-[0-9]{2}-[0-9]{2}/ { skip_next = 0; next }
-        { skip_next = 0; print }
-        ' |
-        
-        # 4. Clean up any extra blank lines
-        awk '
-        BEGIN { blank_count = 0 }
-        /^$/ { blank_count++; if (blank_count <= 2) print; next }
-        { blank_count = 0; print }
-        '
-    } > "$temp_file"
-    
-    # Replace original file if it changed
-    if ! cmp -s "$file" "$temp_file"; then
-        mv "$temp_file" "$file"
-        echo "  ✨ Optimized: $file"
-    else
-        rm "$temp_file"
-    fi
-done
-
-echo "🧹 Cleaning up temporary files..."
-
-# Clean up _files directories after processing
-find src/content/blog -name "*_files" -type d -exec rm -rf {} + 2>/dev/null || true
-
-# Clean up any .quarto directories
-find src/content/blog -name ".quarto" -type d -exec rm -rf {} + 2>/dev/null || true
-
 echo "✅ Blog build complete!"
-echo "   All Quarto files processed with caching and Astro optimization"
-echo "   Images organized in src/assets/images/blog/YEAR/"
-echo "   Markdown files optimized for Astro content collections"
+echo "   All posts processed with organized structure"
+echo "   Images automatically placed in correct directories"
+echo "   🚀 Ready for Astro dev server"

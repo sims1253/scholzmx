@@ -11,7 +11,7 @@ export interface Props {
 const { 
   variant = 'default',
   className = '',
-  includeQuoteSection = false
+  includeQuoteSection = false,
 } = Astro.props;
 
 // Simplified - we only use the QuoteOfTheDay component now
@@ -31,30 +31,81 @@ const {
   <div class="footer-illustration">
     <svg class="footer-artwork" viewBox="0 0 800 120" preserveAspectRatio="xMidYMid meet">
       <defs>
-        <filter id="footerTexture" x="0%" y="0%" width="100%" height="100%">
-          <feTurbulence baseFrequency="0.02" numOctaves="2" result="noise" seed="4" />
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale="1" />
-        </filter>
         <linearGradient id="earthGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" style="stop-color:rgba(139, 90, 60, 0.4);stop-opacity:1" />
-          <stop offset="30%" style="stop-color:rgba(90, 107, 71, 0.3);stop-opacity:1" />
-          <stop offset="70%" style="stop-color:rgba(168, 181, 160, 0.3);stop-opacity:1" />
-          <stop offset="100%" style="stop-color:rgba(139, 90, 60, 0.4);stop-opacity:1" />
+          <stop offset="0%" style="stop-color:rgba(139, 90, 60, 0.12);stop-opacity:1" />
+          <stop offset="30%" style="stop-color:rgba(90, 107, 71, 0.09);stop-opacity:1" />
+          <stop offset="70%" style="stop-color:rgba(168, 181, 160, 0.07);stop-opacity:1" />
+          <stop offset="100%" style="stop-color:rgba(139, 90, 60, 0.12);stop-opacity:1" />
         </linearGradient>
+
+         <filter id="blur" x="-25%" y="-25%" width="150%" height="150%">
+            <feGaussianBlur stdDeviation="1" />
+          </filter>
+          
+          <filter id="pathVar" x="-50%" y="-50%" width="200%" height="200%">
+           <feTurbulence baseFrequency="0.002" numOctaves="2" result="noise" seed="13" />
+            <feGaussianBlur in="noise" stdDeviation="10" result="smoothed" />
+            <feDisplacementMap in="SourceGraphic" in2="smoothed" scale="15" result="displaced" />
+             <feGaussianBlur in="displaced" stdDeviation="1" result="finalSmooth" />
+          </filter>
+
+          
+          <filter id="fillTexture" x="-100%" y="-100%" width="400%" height="400%">
+            <feTurbulence baseFrequency="0.002" numOctaves="3" result="noise" seed="5" />
+            <feGaussianBlur in="noise" stdDeviation="5" result="smoothed" />
+            <feDisplacementMap in="SourceGraphic" in2="smoothed" scale="25" result="displaced" />
+            <feGaussianBlur in="displaced" stdDeviation="5" result="finalSmooth" />
+          </filter>
+
       </defs>
       
       <!-- Ground line with organic texture -->
-      <path
+      <!-- <path
         d="M0,60 Q200,45 400,55 T800,50"
         stroke="url(#earthGradient)"
-        stroke-width="3"
+        stroke-width="5"
+        stroke-linecap="round"
         fill="none"
-        filter="url(#footerTexture)"
+      /> -->
+
+      <path
+        d="M50,60 Q200,35 400,65 T750,55"
+        stroke="rgba(99, 123, 103, 0.12)"
+        stroke-width="8"
+        fill="none"
+        filter="url(#blur)"
+        stroke-linecap="round"
+      />
+
+      <path
+        d="M50,60 Q200,35 400,65 T750,55"
+        stroke="rgba(99, 123, 103, 0.08)"
+        stroke-width="8"
+        fill="none"
+        filter="url(#pathVar)"
+        stroke-linecap="round"
+      />
+
+       <!-- <path
+        d="M50,60 Q200,35 400,65 T750,55"
+        stroke="rgba(99, 123, 103, 0.12)"
+        stroke-width="26"
+        fill="none"
+        filter="url(#fillTexture)"
+      /> -->
+
+      <path
+        d="M60,62 Q220,37 420,67 T754,50"
+        stroke="url(#earthGradient)"
+        stroke-width="6"
+        fill="none"
+        filter="url(#blur)"
+        stroke-linecap="round"
       />
       
       <!-- Botanical elements based on variant -->
       {variant === 'garden' && (
-        <g fill="rgba(90, 107, 71, 0.4)" filter="url(#footerTexture)">
+        <g fill="rgba(90, 107, 71, 0.4)">
           <!-- Growing plants -->
           <path d="M150,60 Q155,40 160,45 Q165,35 170,50 L175,60" stroke="rgba(90, 107, 71, 0.5)" stroke-width="2" fill="none" />
           <path d="M350,55 Q355,35 360,40 Q365,25 370,45 L375,55" stroke="rgba(90, 107, 71, 0.5)" stroke-width="2" fill="none" />
@@ -68,7 +119,7 @@ const {
       )}
       
       {variant === 'kitchen' && (
-        <g fill="rgba(139, 90, 60, 0.4)" filter="url(#footerTexture)">
+        <g fill="rgba(139, 90, 60, 0.4)">
           <!-- Herb sprigs -->
           <path d="M200,55 L205,35 M210,55 L215,30 M220,55 L225,35" stroke="rgba(90, 107, 71, 0.6)" stroke-width="1.5" />
           <path d="M400,50 L405,30 M410,50 L415,25 M420,50 L425,30" stroke="rgba(90, 107, 71, 0.6)" stroke-width="1.5" />
@@ -82,7 +133,7 @@ const {
       )}
       
       {variant === 'writing' && (
-        <g filter="url(#footerTexture)">
+        <g>
           <!-- Ink well and quill suggestion -->
           <circle cx="300" cy="55" r="8" fill="rgba(139, 90, 60, 0.3)" />
           <circle cx="300" cy="55" r="5" fill="rgba(68, 45, 30, 0.4)" />
@@ -94,24 +145,62 @@ const {
       )}
       
       {(variant === 'craft' || variant === 'default') && (
-        <g fill="rgba(139, 90, 60, 0.4)" filter="url(#footerTexture)">
+        <g fill="rgba(139, 90, 60, 0.4)">
           <!-- Simple botanical elements -->
           <path d="M250,55 Q255,40 260,50 Q265,35 270,45" stroke="rgba(90, 107, 71, 0.5)" stroke-width="2" fill="none" />
-          <path d="M450,50 Q455,35 460,45 Q465,30 470,40" stroke="rgba(90, 107, 71, 0.5)" stroke-width="2" fill="none" />
+          <path d="M520,77 Q525,65 530,75 Q535,60 540,80" stroke="rgba(90, 107, 71, 0.5)" stroke-width="2" fill="none" />
           
           <!-- Small flowers -->
           <circle cx="260" cy="45" r="3" fill="rgba(168, 181, 160, 0.4)" />
-          <circle cx="460" cy="40" r="2.5" fill="rgba(168, 181, 160, 0.4)" />
+          <circle cx="530" cy="70" r="2.5" fill="rgba(168, 181, 160, 0.4)" />
         </g>
       )}
       
       <!-- Scattered small elements for texture -->
       <g fill="rgba(139, 90, 60, 0.2)">
-        <circle cx="100" cy="58" r="1" />
-        <circle cx="280" cy="52" r="0.8" />
-        <circle cx="520" cy="56" r="1.2" />
-        <circle cx="680" cy="54" r="0.9" />
+        <circle cx="58" cy="55" r="0.53" />
+        <circle cx="100" cy="52" r="1.6" />
+        <circle cx="207" cy="53" r="2.5" />
+        <circle cx="280" cy="54" r="1" />
+        <circle cx="372" cy="58" r="1.1" />
+        <circle cx="500" cy="77" r="0.26" />
+        <circle cx="558" cy="70" r="0.48" />
+        <circle cx="680" cy="65" r="1.4" />
       </g>
+
+        <g fill="rgba(139, 90, 60, 0.1)">
+        <circle cx="58" cy="55" r="2" />
+        <circle cx="100" cy="52" r="2" />
+        <circle cx="207" cy="53" r="2" />
+        <circle cx="280" cy="54" r="2" />
+        <circle cx="372" cy="58" r="2" />
+        <circle cx="500" cy="77" r="2" />
+        <circle cx="558" cy="70" r="2" />
+        <circle cx="680" cy="65" r="2" />
+      </g>
+
+      <g filter="url(#fusionSepA)">
+          <!-- Leaf 1 -->
+          <ellipse cx="180" cy="39" rx="12" ry="7" fill="rgba(99, 123, 103, 0.18)" transform="rotate(25 180 45)" />
+          <ellipse cx="182" cy="41" rx="10" ry="6" fill="rgba(126, 153, 129, 0.15)" transform="rotate(27 182 47)" />
+          <ellipse cx="178" cy="37" rx="8" ry="5" fill="rgba(189, 191, 165, 0.12)" transform="rotate(23 178 43)" />
+          
+          <!-- Leaf 2 -->
+          <ellipse cx="420" cy="55" rx="14" ry="8" fill="rgba(132, 155, 170, 0.16)" transform="rotate(-35 420 55)" />
+          <ellipse cx="422" cy="57" rx="12" ry="7" fill="rgba(156, 174, 186, 0.13)" transform="rotate(-33 422 57)" />
+          <ellipse cx="418" cy="53" rx="10" ry="6" fill="rgba(253, 238, 203, 0.10)" transform="rotate(-37 418 53)" />
+          
+          <!-- Leaf 3 -->
+          <ellipse cx="620" cy="63" rx="13" ry="7.5" fill="rgba(189, 191, 165, 0.17)" transform="rotate(45 620 63)" />
+          <ellipse cx="622" cy="65" rx="11" ry="6.5" fill="rgba(99, 123, 103, 0.14)" transform="rotate(47 622 65)" />
+          <ellipse cx="618" cy="61" rx="9" ry="5.5" fill="rgba(253, 238, 203, 0.11)" transform="rotate(43 618 61)" />
+        </g>
+        
+        <!-- Professional variation elements -->
+        <circle cx="120" cy="58" r="2.5" fill="rgba(153, 138, 103, 0.12)" filter="url(#fusionSepA)" />
+        <circle cx="310" cy="58" r="2.2" fill="rgba(99, 123, 103, 0.12)" filter="url(#fusionSepA)" />
+        <ellipse cx="470" cy="68" rx="3.5" ry="2" fill="rgba(189, 191, 165, 0.20)" filter="url(#fusionSepA)" />
+        <circle cx="720" cy="68" r="2.4" fill="rgba(162, 185, 200, 0.14)" filter="url(#fusionSepA)" />
     </svg>
   </div>
   
@@ -119,10 +208,6 @@ const {
   <div class="footer-content">
     <div class="footer-text">
       <div class="footer-meta">
-        <p>
-          Built with care using <a href="https://astro.build" class="astro-link">Astro</a>. 
-          No tracking, no analytics, just thoughtful content.
-        </p>
         <p class="license-info">
           <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="license" class="cc-license">
             Content licensed under CC BY-SA 4.0
@@ -135,20 +220,17 @@ const {
 
 <style>
   .illustrated-footer {
-    background: linear-gradient(to bottom, 
-      rgba(250, 247, 240, 0.98) 0%, 
-      rgba(243, 238, 226, 1) 100%);
+    background: var(--color-background);
     position: relative;
     overflow: hidden;
-    margin-top: var(--space-xs);
-    margin-bottom: var(--space-xs);
+    margin: 0; /* Remove all margins */
     width: 100%;
   }
 
   .footer-quote-section {
-    max-width: var(--main-content-width);
-    margin: 0 auto var(--space-lg);
-    padding: var(--space-lg) var(--space-lg) 0;
+    max-width: var(--content-width-personal);
+    margin: 0 auto clamp(0px, 3vh, var(--space-xs));
+    padding: 0 var(--space-lg) 0;
   }
 
   .footer-illustration {
@@ -166,8 +248,8 @@ const {
 
   .footer-content {
     max-width: 800px;
-    margin: calc(-1 * var(--space-xl)) auto 0;   /* Distance between separator and footer text */
-    padding: 0 var(--space-md) var(--space-md);
+    margin: calc(-1 * var(--space-lg)) auto 0;
+    padding: 0 var(--space-md) var(--space-sm);
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -177,7 +259,7 @@ const {
 
 
   .footer-meta {
-    font-size: var(--text-sm);
+    font-size: var(--text-xs);
     color: var(--color-ink-light);
     line-height: 1.5;
     margin-top: var(--space-md);
@@ -212,7 +294,7 @@ const {
     }
 
     .footer-quote p {
-      font-size: var(--text-sm);
+      font-size: var(--text-xs);
     }
 
     .footer-meta {

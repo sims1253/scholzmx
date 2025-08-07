@@ -1,7 +1,11 @@
-project:
-  type: website
-
 format:
   gfm:
     preserve-yaml: true
     wrap: preserve
+    title-block-banner: false
+    title-block-style: none
+knitr:
+  opts_chunk:
+    echo: true
+    warning: false
+    message: false

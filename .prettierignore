@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.astro/
+public/katex/
+public/fonts/
+*.min.css
+*.min.js
+inspiration/
+bun.lock
+pnpm-lock.yaml
+_quarto.yml
+COMPONENT-USAGE.md
+DOCS-COLOR-TOKENS.md
+QUARTO-TO-ASTRO-PIPELINE.md
+README.md
+LICENSE.md

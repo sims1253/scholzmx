@@ -1,0 +1,136 @@
+:root {
+  /* ===== Color Tokens — Final Proposed Palette ===== */
+
+  /* Papers */
+  --color-parchment: #fdfbf6; /* Primary background - eggshell parchment */
+  --color-parchment-light: #fbf7f0; /* Panel background for quotes/cards */
+
+  /* Inks */
+  --color-ink-dark: #2a2318; /* Primary text ink (warm) */
+  --color-ink-medium: #3a3022; /* Secondary text / rules */
+  --color-ink-light: #6b6252; /* Tertiary text (legacy muted) */
+  --color-ink-plate: #1f1912; /* Deep plate for initials/rare contrast */
+
+  /* Warms */
+  --color-walnut: #5b4639; /* Primary warm accent */
+  --color-ochre: #b06e49; /* Hover/active warm */
+  --color-clay: #9a5748; /* Selective warm highlight */
+
+  /* Botanicals */
+  --color-moss: #586a51; /* Structural green (frames/secondary) */
+  --color-sage: #aeb7a8; /* Quiet substrate */
+  --color-lichen: #cfd7cb; /* Underlines/keylines */
+
+  /* Cool/meta */
+  --color-iron: #424a56; /* Sparse cool anchor */
+  --color-tansy: #b0922c; /* Antique metallic accent */
+  --color-verdigris: #6b8c7a; /* Patina for SVG/borders */
+
+  /* Semantic mappings */
+  --color-text-primary: var(--color-ink-dark);
+  --color-text-secondary: var(--color-ink-medium);
+  --color-text-muted: var(--color-ink-light);
+
+  --color-link: var(--color-walnut);
+  --color-link-hover: var(--color-ochre);
+  --color-underline: var(--color-lichen);
+  --color-underline-hover: var(--color-ochre);
+
+  --color-accent-primary: var(--color-walnut);
+  --color-accent-secondary: var(--color-moss);
+  --color-decorative: var(--color-tansy);
+
+  --color-background: var(--color-parchment);
+  --color-surface: var(--color-parchment-light);
+
+  /* Derived utility mixes */
+  --rule-ink: color-mix(in srgb, var(--color-ink-dark) 18%, var(--color-parchment));
+  --wash-sage: color-mix(in srgb, var(--color-sage) 6%, var(--color-parchment-light));
+  --btn-walnut-hover: color-mix(in srgb, var(--color-walnut) 88%, black);
+}
+
+/* Torchlight Night Theme — same vibe, dusk parchment, ember inks, moss shadows */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --color-parchment: #120f0d;
+    --color-parchment-light: #171310;
+
+    --color-ink-dark: #f2ebdf;
+    --color-ink-medium: #ded3c4;
+    --color-ink-light: #b6aa98;
+    --color-ink-plate: #fff6e6;
+
+    --color-walnut: #caa27f; /* torch-warmed walnut */
+    --color-ochre: #d99746; /* ember/amber hover (softer) */
+    --color-clay: #c7846a;
+
+    --color-moss: #7c916f; /* moonlit moss (slight lift) */
+    --color-sage: #747866; /* warmer sage */
+    --color-lichen: #586055; /* lighter keylines to avoid muddiness */
+
+    --color-iron: #8da0b6;
+    --color-tansy: #cfad54; /* brass by torchlight */
+    --color-verdigris: #7aa695;
+
+    --color-text-primary: var(--color-ink-dark);
+    --color-text-secondary: var(--color-ink-medium);
+    --color-text-muted: var(--color-ink-light);
+
+    --color-link: var(--color-walnut);
+    --color-link-hover: var(--color-ochre);
+    --color-underline: color-mix(in srgb, var(--color-lichen) 65%, var(--color-ink-dark));
+    --color-underline-hover: var(--color-ochre);
+
+    --color-accent-primary: var(--color-walnut);
+    --color-accent-secondary: var(--color-moss);
+    --color-decorative: var(--color-tansy);
+
+    --color-background: var(--color-parchment);
+    --color-surface: var(--color-parchment-light);
+
+    --rule-ink: color-mix(in srgb, var(--color-ink-light) 20%, var(--color-parchment));
+    --wash-sage: color-mix(in srgb, var(--color-sage) 10%, var(--color-parchment-light));
+  }
+}
+
+/* Explicit opt-in/override via data-theme on <html> */
+:root[data-theme='dark'] {
+  --color-parchment: #120f0d;
+  --color-parchment-light: #171310;
+
+  --color-ink-dark: #f2ebdf;
+  --color-ink-medium: #ded3c4;
+  --color-ink-light: #b6aa98;
+  --color-ink-plate: #fff6e6;
+
+  --color-walnut: #caa27f;
+  --color-ochre: #d99746;
+  --color-clay: #c7846a;
+
+  --color-moss: #7c916f;
+  --color-sage: #747866;
+  --color-lichen: #586055;
+
+  --color-iron: #8da0b6;
+  --color-tansy: #cfad54;
+  --color-verdigris: #7aa695;
+
+  --color-text-primary: var(--color-ink-dark);
+  --color-text-secondary: var(--color-ink-medium);
+  --color-text-muted: var(--color-ink-light);
+
+  --color-link: var(--color-walnut);
+  --color-link-hover: var(--color-ochre);
+  --color-underline: color-mix(in srgb, var(--color-lichen) 65%, var(--color-ink-dark));
+  --color-underline-hover: var(--color-ochre);
+
+  --color-accent-primary: var(--color-walnut);
+  --color-accent-secondary: var(--color-moss);
+  --color-decorative: var(--color-tansy);
+
+  --color-background: var(--color-parchment);
+  --color-surface: var(--color-parchment-light);
+
+  --rule-ink: color-mix(in srgb, var(--color-ink-light) 20%, var(--color-parchment));
+  --wash-sage: color-mix(in srgb, var(--color-sage) 10%, var(--color-parchment-light));
+}

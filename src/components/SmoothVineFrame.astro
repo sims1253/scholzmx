@@ -1,0 +1,408 @@
+---
+export interface Props {
+  className?: string;
+}
+
+const { className = '' } = Astro.props;
+---
+
+<div class={`smooth-vine-frame ${className}`}>
+  <svg class="vine-border" viewBox="0 0 400 120" preserveAspectRatio="none">
+    <!-- Professional watercolor-inspired vine border -->
+    <defs>
+      <!-- Subtle organic edge filter inspired by professional analysis -->
+      <filter id="professionalOrganic" x="-20%" y="-20%" width="140%" height="140%">
+        <feTurbulence baseFrequency="1.8" numOctaves="1" result="fine-noise"></feTurbulence>
+        <feDisplacementMap in="SourceGraphic" in2="fine-noise" scale="0.4"></feDisplacementMap>
+        <feGaussianBlur stdDeviation="0.15"></feGaussianBlur>
+      </filter>
+
+      <!-- Professional color palettes from analysis -->
+      <linearGradient id="vineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="rgba(99, 123, 103, 0.12)"></stop>
+        <!-- Deep sage -->
+        <stop offset="25%" stop-color="rgba(126, 153, 129, 0.15)"></stop>
+        <!-- Light sage -->
+        <stop offset="50%" stop-color="rgba(133, 148, 103, 0.10)"></stop>
+        <!-- Forest accent -->
+        <stop offset="75%" stop-color="rgba(189, 191, 165, 0.12)"></stop>
+        <!-- Earth warm -->
+        <stop offset="100%" stop-color="rgba(99, 123, 103, 0.12)"></stop>
+        <!-- Deep sage -->
+      </linearGradient>
+    </defs>
+
+    <!-- Primary vine structure - segmented approach -->
+    <!-- Segment 1: Left section (0-33%) -->
+    <path
+      d="M15,15 Q50,9 85,16 Q120,11 135,18"
+      stroke="rgba(99, 123, 103, 0.15)"
+      stroke-width="3"
+      fill="none"
+      stroke-linecap="round"
+      filter="url(#professionalOrganic)"></path>
+    <path
+      d="M15,105 Q50,108 85,103 Q120,107 135,102"
+      stroke="rgba(99, 123, 103, 0.15)"
+      stroke-width="3"
+      fill="none"
+      stroke-linecap="round"
+      filter="url(#professionalOrganic)"></path>
+    <path
+      d="M15,15 Q13,35 16,55 Q12,75 16,95 Q14,102 15,105"
+      stroke="rgba(99, 123, 103, 0.15)"
+      stroke-width="3"
+      fill="none"
+      stroke-linecap="round"
+      filter="url(#professionalOrganic)"></path>
+
+    <!-- Segment 2: Center section (25-75%) -->
+    <path
+      d="M120,16 Q155,12 190,18 Q225,14 260,19 Q280,17 285,18"
+      stroke="rgba(126, 153, 129, 0.12)"
+      stroke-width="2.5"
+      fill="none"
+      stroke-linecap="round"
+      filter="url(#professionalOrganic)"></path>
+    <path
+      d="M120,104 Q155,107 190,102 Q225,106 260,101 Q280,103 285,102"
+      stroke="rgba(126, 153, 129, 0.12)"
+      stroke-width="2.5"
+      fill="none"
+      stroke-linecap="round"
+      filter="url(#professionalOrganic)"></path>
+
+    <!-- Segment 3: Right section (65-100%) -->
+    <path
+      d="M270,19 Q305,15 340,20 Q375,16 390,20"
+      stroke="rgba(133, 148, 103, 0.10)"
+      stroke-width="2.8"
+      fill="none"
+      stroke-linecap="round"
+      filter="url(#professionalOrganic)"></path>
+    <path
+      d="M270,101 Q305,104 340,100 Q375,103 390,100"
+      stroke="rgba(133, 148, 103, 0.10)"
+      stroke-width="2.8"
+      fill="none"
+      stroke-linecap="round"
+      filter="url(#professionalOrganic)"></path>
+    <path
+      d="M390,20 Q392,40 389,60 Q393,80 389,100 Q388,102 387,105"
+      stroke="rgba(133, 148, 103, 0.10)"
+      stroke-width="2.8"
+      fill="none"
+      stroke-linecap="round"
+      filter="url(#professionalOrganic)"></path>
+
+    <!-- Secondary accent vines with professional color variations -->
+    <path
+      d="M18,18 Q85,13 150,19 Q215,15 280,20 Q345,16 375,19"
+      stroke="rgba(189, 191, 165, 0.08)"
+      stroke-width="1.5"
+      fill="none"
+      stroke-linecap="round"
+      filter="url(#professionalOrganic)"></path>
+    <path
+      d="M18,102 Q85,106 150,101 Q215,104 280,100 Q345,102 375,101"
+      stroke="rgba(189, 191, 165, 0.08)"
+      stroke-width="1.5"
+      fill="none"
+      stroke-linecap="round"
+      filter="url(#professionalOrganic)"></path>
+
+    <!-- Tertiary detail vines -->
+    <path
+      d="M22,20 Q90,16 160,21 Q230,17 300,22 Q350,18 370,21"
+      stroke="rgba(142, 156, 148, 0.06)"
+      stroke-width="1"
+      fill="none"
+      stroke-linecap="round"
+      filter="url(#professionalOrganic)"></path>
+
+    <!-- Professional-inspired leaf clusters -->
+    <!-- Cluster 1: Left side -->
+    <ellipse
+      cx="45"
+      cy="13"
+      rx="6"
+      ry="3"
+      fill="rgba(99, 123, 103, 0.12)"
+      transform="rotate(20 45 13)"
+      filter="url(#professionalOrganic)"></ellipse>
+    <ellipse
+      cx="43"
+      cy="15"
+      rx="4"
+      ry="2"
+      fill="rgba(126, 153, 129, 0.10)"
+      transform="rotate(25 43 15)"></ellipse>
+    <ellipse
+      cx="47"
+      cy="11"
+      rx="3"
+      ry="1.5"
+      fill="rgba(133, 148, 103, 0.08)"
+      transform="rotate(15 47 11)"></ellipse>
+
+    <!-- Cluster 2: Top center -->
+    <ellipse
+      cx="160"
+      cy="15"
+      rx="7"
+      ry="3.5"
+      fill="rgba(126, 153, 129, 0.12)"
+      transform="rotate(-15 160 15)"
+      filter="url(#professionalOrganic)"></ellipse>
+    <ellipse
+      cx="158"
+      cy="17"
+      rx="5"
+      ry="2.5"
+      fill="rgba(189, 191, 165, 0.10)"
+      transform="rotate(-10 158 17)"></ellipse>
+    <ellipse
+      cx="162"
+      cy="13"
+      rx="3.5"
+      ry="1.8"
+      fill="rgba(99, 123, 103, 0.08)"
+      transform="rotate(-20 162 13)"></ellipse>
+
+    <!-- Cluster 3: Top right -->
+    <ellipse
+      cx="320"
+      cy="16"
+      rx="6.5"
+      ry="3.2"
+      fill="rgba(133, 148, 103, 0.12)"
+      transform="rotate(35 320 16)"
+      filter="url(#professionalOrganic)"></ellipse>
+    <ellipse
+      cx="318"
+      cy="18"
+      rx="4.5"
+      ry="2.2"
+      fill="rgba(99, 123, 103, 0.10)"
+      transform="rotate(40 318 18)"></ellipse>
+    <ellipse
+      cx="322"
+      cy="14"
+      rx="3"
+      ry="1.5"
+      fill="rgba(126, 153, 129, 0.08)"
+      transform="rotate(30 322 14)"></ellipse>
+
+    <!-- Right side organic clusters -->
+    <ellipse
+      cx="391"
+      cy="40"
+      rx="5.5"
+      ry="2.8"
+      fill="rgba(99, 123, 103, 0.12)"
+      transform="rotate(85 391 40)"
+      filter="url(#professionalOrganic)"></ellipse>
+    <ellipse
+      cx="391"
+      cy="60"
+      rx="6"
+      ry="3"
+      fill="rgba(126, 153, 129, 0.12)"
+      transform="rotate(95 391 60)"
+      filter="url(#professionalOrganic)"></ellipse>
+    <ellipse
+      cx="391"
+      cy="80"
+      rx="5"
+      ry="2.5"
+      fill="rgba(133, 148, 103, 0.10)"
+      transform="rotate(75 391 80)"
+      filter="url(#professionalOrganic)"></ellipse>
+
+    <!-- Bottom clusters -->
+    <ellipse
+      cx="300"
+      cy="104"
+      rx="6.5"
+      ry="3.2"
+      fill="rgba(189, 191, 165, 0.12)"
+      transform="rotate(-40 300 104)"
+      filter="url(#professionalOrganic)"></ellipse>
+    <ellipse
+      cx="298"
+      cy="106"
+      rx="4.5"
+      ry="2.2"
+      fill="rgba(99, 123, 103, 0.10)"
+      transform="rotate(-35 298 106)"></ellipse>
+
+    <ellipse
+      cx="180"
+      cy="106"
+      rx="7"
+      ry="3.5"
+      fill="rgba(126, 153, 129, 0.12)"
+      transform="rotate(25 180 106)"
+      filter="url(#professionalOrganic)"></ellipse>
+    <ellipse
+      cx="178"
+      cy="104"
+      rx="5"
+      ry="2.5"
+      fill="rgba(133, 148, 103, 0.10)"
+      transform="rotate(30 178 104)"></ellipse>
+
+    <ellipse
+      cx="80"
+      cy="107"
+      rx="6"
+      ry="3"
+      fill="rgba(99, 123, 103, 0.12)"
+      transform="rotate(-25 80 107)"
+      filter="url(#professionalOrganic)"></ellipse>
+    <ellipse
+      cx="82"
+      cy="105"
+      rx="4"
+      ry="2"
+      fill="rgba(189, 191, 165, 0.10)"
+      transform="rotate(-20 82 105)"></ellipse>
+
+    <!-- Left side clusters -->
+    <ellipse
+      cx="13"
+      cy="35"
+      rx="5.5"
+      ry="2.8"
+      fill="rgba(126, 153, 129, 0.12)"
+      transform="rotate(-85 13 35)"
+      filter="url(#professionalOrganic)"></ellipse>
+    <ellipse
+      cx="13"
+      cy="55"
+      rx="6"
+      ry="3"
+      fill="rgba(99, 123, 103, 0.12)"
+      transform="rotate(-75 13 55)"
+      filter="url(#professionalOrganic)"></ellipse>
+    <ellipse
+      cx="13"
+      cy="75"
+      rx="5"
+      ry="2.5"
+      fill="rgba(133, 148, 103, 0.10)"
+      transform="rotate(-95 13 75)"
+      filter="url(#professionalOrganic)"></ellipse>
+
+    <!-- Professional-inspired organic imperfections -->
+    <circle
+      cx="70"
+      cy="16"
+      r="1.2"
+      fill="rgba(99, 123, 103, 0.08)"
+      filter="url(#professionalOrganic)"></circle>
+    <circle cx="200" cy="14" r="1" fill="rgba(126, 153, 129, 0.06)"></circle>
+    <circle
+      cx="270"
+      cy="18"
+      r="1.5"
+      fill="rgba(133, 148, 103, 0.08)"
+      filter="url(#professionalOrganic)"></circle>
+    <circle cx="30" cy="60" r="0.8" fill="rgba(189, 191, 165, 0.06)"></circle>
+    <circle
+      cx="370"
+      cy="85"
+      r="1.3"
+      fill="rgba(99, 123, 103, 0.08)"
+      filter="url(#professionalOrganic)"></circle>
+    <circle cx="120" cy="105" r="1" fill="rgba(126, 153, 129, 0.06)"></circle>
+    <circle
+      cx="250"
+      cy="103"
+      r="1.4"
+      fill="rgba(133, 148, 103, 0.08)"
+      filter="url(#professionalOrganic)"></circle>
+
+    <!-- Small textural variations -->
+    <ellipse
+      cx="110"
+      cy="17"
+      rx="2"
+      ry="1"
+      fill="rgba(189, 191, 165, 0.06)"
+      transform="rotate(45 110 17)"></ellipse>
+    <ellipse
+      cx="290"
+      cy="21"
+      rx="1.5"
+      ry="0.8"
+      fill="rgba(142, 156, 148, 0.05)"
+      transform="rotate(-30 290 21)"></ellipse>
+    <ellipse
+      cx="60"
+      cy="104"
+      rx="2.2"
+      ry="1.1"
+      fill="rgba(99, 123, 103, 0.06)"
+      transform="rotate(60 60 104)"></ellipse>
+  </svg>
+
+  <div class="vine-content">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .smooth-vine-frame {
+    position: relative;
+    margin: var(--space-lg) 0;
+    padding: 25px 30px;
+    background: transparent;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    min-height: fit-content;
+  }
+
+  .vine-border {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+    overflow: visible;
+  }
+
+  .vine-content {
+    position: relative;
+    z-index: 2;
+    padding: 0;
+    background: transparent;
+  }
+
+  /* Hover effect */
+  .smooth-vine-frame:hover {
+    transform: translateY(-1px);
+    transition: all var(--transition-medium);
+  }
+
+  .smooth-vine-frame:hover .vine-border {
+    filter: brightness(1.1);
+    transition: all var(--transition-medium);
+  }
+
+  /* Mobile adjustments */
+  @media (max-width: 768px) {
+    .smooth-vine-frame {
+      margin: var(--space-md) 0;
+      padding: var(--space-sm);
+    }
+
+    .vine-content {
+      padding: var(--space-xs);
+    }
+  }
+</style>

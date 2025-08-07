@@ -5,11 +5,7 @@ export interface Props {
   className?: string;
 }
 
-const { 
-  intensity = 'medium',
-  pattern = 'paper',
-  className = ''
-} = Astro.props;
+const { intensity = 'medium', pattern = 'paper', className = '' } = Astro.props;
 ---
 
 <div class={`paper-texture paper-texture--${intensity} paper-texture--${pattern} ${className}`}>
@@ -26,10 +22,7 @@ const {
   .paper-texture::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     pointer-events: none;
     z-index: -1;
     border-radius: inherit;
@@ -50,11 +43,26 @@ const {
 
   /* Paper pattern - subtle fiber texture */
   .paper-texture--paper::before {
-    background-image: 
-      linear-gradient(45deg, transparent 40%, rgba(139, 90, 60, 0.1) 41%, rgba(139, 90, 60, 0.1) 43%, transparent 44%),
-      linear-gradient(-45deg, transparent 40%, rgba(90, 107, 71, 0.1) 41%, rgba(90, 107, 71, 0.1) 43%, transparent 44%),
+    background-image:
+      linear-gradient(
+        45deg,
+        transparent 40%,
+        rgba(139, 90, 60, 0.1) 41%,
+        rgba(139, 90, 60, 0.1) 43%,
+        transparent 44%
+      ),
+      linear-gradient(
+        -45deg,
+        transparent 40%,
+        rgba(90, 107, 71, 0.1) 41%,
+        rgba(90, 107, 71, 0.1) 43%,
+        transparent 44%
+      ),
       radial-gradient(circle at 30% 80%, rgba(204, 139, 92, 0.1) 1px, transparent 2px);
-    background-size: 12px 12px, 12px 12px, 8px 8px;
+    background-size:
+      12px 12px,
+      12px 12px,
+      8px 8px;
   }
 
   /* Linen pattern - crosshatch texture */
@@ -63,7 +71,10 @@ const {
       linear-gradient(0deg, rgba(139, 90, 60, 0.1) 1px, transparent 1px),
       linear-gradient(90deg, rgba(139, 90, 60, 0.1) 1px, transparent 1px),
       linear-gradient(45deg, rgba(90, 107, 71, 0.05) 1px, transparent 1px);
-    background-size: 3px 3px, 3px 3px, 6px 6px;
+    background-size:
+      3px 3px,
+      3px 3px,
+      6px 6px;
   }
 
   /* Parchment pattern - aged and weathered */
@@ -73,7 +84,11 @@ const {
       radial-gradient(circle at 80% 20%, rgba(204, 139, 92, 0.08) 1px, transparent 2px),
       radial-gradient(circle at 40% 40%, rgba(90, 107, 71, 0.06) 1px, transparent 2px),
       linear-gradient(90deg, rgba(139, 90, 60, 0.02) 50%, transparent 50%);
-    background-size: 20px 20px, 15px 15px, 25px 25px, 2px 2px;
+    background-size:
+      20px 20px,
+      15px 15px,
+      25px 25px,
+      2px 2px;
   }
 
   /* Botanical pattern - nature-inspired subtle motifs */
@@ -81,19 +96,31 @@ const {
     background-image:
       radial-gradient(ellipse at 25% 75%, rgba(90, 107, 71, 0.1) 1px, transparent 2px),
       radial-gradient(ellipse at 75% 25%, rgba(168, 181, 160, 0.08) 1px, transparent 2px),
-      linear-gradient(60deg, transparent 48%, rgba(139, 90, 60, 0.05) 49%, rgba(139, 90, 60, 0.05) 51%, transparent 52%),
-      conic-gradient(from 0deg at 50% 50%, transparent 0deg, rgba(204, 139, 92, 0.03) 60deg, transparent 120deg);
-    background-size: 30px 30px, 25px 25px, 15px 15px, 40px 40px;
+      linear-gradient(
+        60deg,
+        transparent 48%,
+        rgba(139, 90, 60, 0.05) 49%,
+        rgba(139, 90, 60, 0.05) 51%,
+        transparent 52%
+      ),
+      conic-gradient(
+        from 0deg at 50% 50%,
+        transparent 0deg,
+        rgba(204, 139, 92, 0.03) 60deg,
+        transparent 120deg
+      );
+    background-size:
+      30px 30px,
+      25px 25px,
+      15px 15px,
+      40px 40px;
   }
 
   /* Additional overlay for depth */
   .paper-texture::after {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     background: linear-gradient(
       135deg,
       rgba(250, 247, 240, 0.3) 0%,
@@ -169,11 +196,11 @@ const {
     .paper-texture--heavy::before {
       opacity: 0.06;
     }
-    
+
     .paper-texture--medium::before {
       opacity: 0.03;
     }
-    
+
     .paper-texture--light::before {
       opacity: 0.015;
     }

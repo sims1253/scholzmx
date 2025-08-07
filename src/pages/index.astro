@@ -1,36 +1,33 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-import QuoteOfTheDay from "../components/QuoteOfTheDay.astro";
-import PaperTexture from "../components/PaperTexture.astro";
-import DropCap from "../components/DropCap.astro";
-import MarginNote from "../components/MarginNote.astro";
-import Slideshow from "../components/Slideshow.astro";
-import HandDrawnDivider from "../components/HandDrawnDivider.astro";
-import VineFrame from "../components/VineFrame.astro";
-import SmoothVineFrame from "../components/SmoothVineFrame.astro";
-import { Image } from "astro:assets";
-import SunlitEffect from "../components/SunlitEffect.astro";
+import BaseLayout from '../layouts/BaseLayout.astro';
+import QuoteOfTheDay from '../components/QuoteOfTheDay.astro';
+import DropCap from '../components/DropCap.astro';
+import Slideshow from '../components/Slideshow.astro';
+import HandDrawnDivider from '../components/HandDrawnDivider.astro';
+import VineFrame from '../components/VineFrame.astro';
+import SmoothVineFrame from '../components/SmoothVineFrame.astro';
+import PortraitFrame from '../components/PortraitFrame.astro';
 
-// Import images for optimization
-import selfImage from "../../public/img/self.jpg";
-import portraitImage from "../../public/img/portrait.jpg";
+/* Optimized local images */
+import selfImage from '../assets/images/homepage/self.jpg';
+import portraitImage from '../assets/images/homepage/portrait.jpg';
 
-// Sample images for easel slideshow
+/* Sample images for easel slideshow */
 const portfolioImages = [
   {
     src: selfImage,
-    alt: "Botanical garden sketch - wild roses in summer bloom",
-    caption: "Wild roses captured during morning garden walks",
+    alt: 'Botanical garden sketch - wild roses in summer bloom',
+    caption: 'Wild roses captured during morning garden walks',
   },
   {
     src: portraitImage,
-    alt: "Kitchen wisdom - homemade sourdough starter",
-    caption: "The living culture that feeds our family",
+    alt: 'Kitchen wisdom - homemade sourdough starter',
+    caption: 'The living culture that feeds our family',
   },
   {
     src: selfImage,
-    alt: "Statistical thinking coffee setup",
-    caption: "Every cup is an experiment in optimization",
+    alt: 'Statistical thinking coffee setup',
+    caption: 'Every cup is an experiment in optimization',
   },
 ];
 ---
@@ -40,149 +37,84 @@ const portfolioImages = [
   description="Welcome to Grotto - a thoughtful space for ideas, recipes, projects, and musings. Built with slow web principles and a warm, botanical aesthetic."
   footerVariant="default"
   includeQuoteSection={true}
+  addBorders={true}
+  longform={true}
+  personal={true}
 >
-  <PaperTexture pattern="botanical" intensity="light" className="landing-page">
-    <!-- Single screen layout -->
-    <div class="landing-container">
-      <!-- Main content area -->
-      <main class="landing-main">
-        <div class="welcome-section">
-          <div class="manuscript-text">
-            <h1 class="site-title">
-              <DropCap letter="W" color="gold" style="ornate" />elcome to Grotto
-            </h1>
-            <p class="site-description constrained-text">
-              a place where I try to cultivate the feeling of watching the shadows dance through
-              vines, while insects are humming and tansy is making everything smell like summer.
-            </p>
-          </div>
-
-          <div class="about-preview">
-            <div class="garden-note">
-              <MarginNote>
-                <p>
-                  Think of this as a digital commonplace book - a collection of
-                  thoughts, discoveries, and creations that have meaning to me.
-                  And maybe have some fun while browsing.
-                </p>
-              </MarginNote>
-            </div>
-            <div class="portrait-frame">
-              <Image
-                src={selfImage}
-                alt="Maximilian Scholz - Herder of cat herders"
-                class="portrait-image"
-                width={120}
-                height={120}
-                format="webp"
-                loading="eager"
-              />
-            </div>
-            <div class="intro-text">
-              <p>
-                I'm Maximilian.
-                My music taste was
-                once described as "The Atmospheric Futurist with a Nostalgic
-                Heart" and my favourite feedback described me as a "herder
-                of cat herders".
-                I create things. Whether that's software infrastructure,
-                harsh vocals over guitar riffs, elaborate Call of Cthulhu campaigns
-                for players to inevitably ignore, or dinner experiments that
-                occasionally don't poison anyone. When I'm not building things,
-                you'll find me on the mats failing my triangle escape... again!
-                I have a B.Sc. in Computer Science in Engineering, a M.Sc. in
-                Software Engineering and Technology and, if the gods of bureaucracy 
-                eventually show some mercy, will hold a Dr. rer. nat. in Bayesian statistics.
-              </p>
-            </div>
-          </div>
-        </div>
-      </main>
-
-      <!-- Easel slideshow sidebar -->
-      <!-- <aside class="easel-section">
-        <div class="easel-container">
-          <div class="easel-stand">
-            <div class="easel-legs"></div>
-            <div class="easel-legs"></div>
-            <div class="easel-legs"></div>
-          </div>
-          <div class="canvas-holder">
-            <Slideshow
-              images={portfolioImages}
-              autoPlay={true}
-              interval={8000}
-              showControls={false}
-              showIndicators={true}
-              className="easel-slideshow"
-            />
-            <div class="canvas-label">Recent works</div>
-          </div>
-        </div>
-      </aside> -->
+  <div class="welcome-section">
+    <div class="welcome-header">
+      <div class="manuscript-text">
+        <h1 class="site-title">Welcome to Grotto</h1>
+        <p class="site-description constrained-text longform personal-content">
+          a place where I try to cultivate the feeling of watching the shadows dance through vines,
+          while insects are humming and tansy is making everything smell like summer.
+        </p>
+      </div>
+      <PortraitFrame
+        src={portraitImage}
+        alt="Professional portrait of me"
+        alternateSrc={selfImage}
+        alternateAlt="More cool portrait of me"
+        style="gentle-oval"
+        size="large"
+        loading="eager"
+        positionX={0}
+        positionY={2}
+        scale={1.4}
+        alternatePositionX={-5}
+        alternatePositionY={15}
+        alternateScale={1.5}
+      />
     </div>
 
-  </PaperTexture>
-
-  <!-- Sunlit streaming light effect -->
-  <SunlitEffect intensity="subtle" />
+    <div class="about-preview">
+      <!-- <div class="garden-note">
+        <span>
+          <p>
+            Think of this as a digital commonplace book - a collection of
+            thoughts, discoveries, and creations that have meaning to me.
+            And maybe have some fun while browsing.
+          </p>
+        </span>
+      </div> -->
+      <div class="longform personal-content content">
+        <p class="longform personal-content">
+          <DropCap letter="I" variant="personal" />'m Maximilian. My music taste was once described as "The Atmospheric
+          Futurist with a Nostalgic Heart" and my favourite feedback described me as a "herder of
+          cat herders". I create things. Whether that's software infrastructure, harsh vocals over
+          guitar riffs, elaborate Call of Cthulhu campaigns for players to inevitably ignore, or
+          dinner experiments that occasionally don't poison anyone. When I'm not building things,
+          you'll find me on the mats failing my triangle escape... again! I have a B.Sc. in Computer
+          Science in Engineering, a M.Sc. in Software Engineering and Technology and, if the gods of
+          bureaucracy eventually show some mercy, will hold a Dr. rer. nat. in Bayesian statistics.
+        </p>
+      </div>
+    </div>
+  </div>
 </BaseLayout>
 
 <style>
-  .landing-page {
-    min-height: calc(100vh - 50px);
-    display: flex;
-    flex-direction: column;
-    padding-top: 20px;
-    justify-content: space-between;
-  }
-
-  .landing-container {
-    width: 100%;
-    max-width: var(--main-content-width);
-    margin: 0 auto;
-    padding: 0 var(--space-lg);
-    position: relative;
-    
-    /* Remove flex: 1 and min-height to reduce empty space */
-    /* Uncomment for debugging alignment */
-    /* border: 1px dashed red; */
-  }
-  
-
-
-  .landing-main {
-    /* Main content containing welcome section */
-    width: 100%;
-  }
+  /* Simplified welcome page - let BaseLayout grid control overall structure */
 
   .welcome-section {
-    /* Welcome content */
     position: relative;
     width: 100%;
     max-width: 100%;
-    
-    /* Create consistent text column */
     display: flex;
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .easel-section {
-    position: absolute;
-    right: -160px;
-    top: 38%;
-    width: 300px;
-    z-index: 10;
-    transform: translateY(-38%);
+  .welcome-header {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-xl);
+    margin: 0 auto var(--space-xs);
   }
 
   .manuscript-text {
-    /* Container for flowing manuscript-style text */
+    flex: 1;
     margin-bottom: var(--space-md);
-    max-width: 75ch; /* Optimal reading width */
-    margin-left: auto;
-    margin-right: auto;
   }
 
   .site-title {
@@ -190,25 +122,12 @@ const portfolioImages = [
     line-height: 1.4;
     margin-bottom: 0;
     color: var(--color-ink-dark);
-    overflow: visible;
-    position: relative;
-    display: inline;
-    
-    /* Make title flow with description */
     font-weight: 600;
   }
 
   .site-description {
-    font-size: var(--text-md);
-    line-height: 1.6;
-    margin-top: 0;
+    margin-top: var(--space-xs);
     margin-bottom: 0;
-    color: var(--color-ink-medium);
-    text-align: left;
-    display: block;
-    
-    /* Continue the flow from title - now as block */
-    margin-top: 0.3em;
   }
 
   .constrained-text {
@@ -217,316 +136,27 @@ const portfolioImages = [
     box-sizing: border-box;
   }
 
-  .garden-note {
-    position: absolute;
-    top: 0;
-    right: -40px;
-    width: 20px;
-    height: 20px;
-  }
-
   .about-preview {
-    display: flex;
-    gap: var(--space-md);
-    align-items: flex-start;
-    margin-bottom: var(--space-md);
-    margin-top: var(--space-xl); /* Add space above this specific section */
-    max-width: 75ch; /* Match manuscript text width */
+    margin-bottom: var(--space-xs);
+    margin-top: var(--space-xs);
     margin-left: auto;
     margin-right: auto;
-    
-    /* Ensure consistent alignment */
-    justify-content: flex-start;
-  }
-
-  .intro-text {
-    flex: 1;
-  }
-
-  .intro-text p {
-    font-size: var(--text-sm);
-    line-height: 1.5;
-    margin-bottom: var(--space-sm);
-    color: var(--color-ink-medium);
-  }
-
-  .intro-text p:last-child {
-    margin-bottom: 0;
-  }
-
-  .research-link {
-    font-size: var(--text-sm);
-    margin-bottom: var(--space-sm);
-  }
-
-  .research-link a {
-    color: var(--color-sage);
-    text-decoration: none;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    border-bottom: 1px solid transparent;
-  }
-
-  .research-link a:hover {
-    color: var(--color-walnut);
-    border-bottom-color: var(--color-walnut);
-  }
-
-  .philosophy {
-    font-size: var(--text-xs);
-    font-style: italic;
-    color: var(--color-ink-light);
-    border-left: 2px solid var(--color-sage);
-    padding-left: var(--space-sm);
-  }
-
-  /* Portrait in about preview */
-  .portrait-frame {
-    position: relative;
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(139, 90, 60, 0.15);
-    border: 3px solid var(--color-parchment-light);
-    background-color: var(--color-parchment-light);
-    flex-shrink: 0;
-  }
-
-  .portrait-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    aspect-ratio: 1;
-  }
-
-
-
-  /* Easel slideshow section */
-  .easel-section {
-    padding-top: var(--space-md);
-  }
-
-  @media (min-width: 1600px) {
-    .landing-container {
-      max-width: var(--main-content-width-large);
-      padding: 0 var(--space-lg);
-    }
-    
-    .easel-section {
-      right: -360px;
-      width: 380px;
-    }
-
-    .easel-container {
-      width: 350px;
-      height: 420px;
-    }
-
-    .canvas-holder {
-      width: 310px;
-      height: 360px;
-    }
-  }
-
-  @media (min-width: 1800px) {
-    .easel-container {
-      width: 420px;
-      height: 500px;
-    }
-
-    .canvas-holder {
-      width: 380px;
-      height: 440px;
-    }
-
-    .easel-stand {
-      width: 200px;
-      height: 220px;
-    }
-
-    .easel-legs:nth-child(1) {
-      height: 180px;
-    }
-
-    .easel-legs:nth-child(2),
-    .easel-legs:nth-child(3) {
-      height: 160px;
-    }
-  }
-
-  .easel-container {
-    position: relative;
-    width: 280px;
-    height: 350px;
-    margin-top: var(--space-md);
-  }
-
-  .easel-stand {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 160px;
-    height: 180px;
-    z-index: 1;
-  }
-
-  .easel-legs {
-    position: absolute;
-    background: linear-gradient(to bottom, #8b5a3c, #6b4a2c);
-    border-radius: 2px;
-    box-shadow:
-      inset 0 1px 2px rgba(255, 255, 255, 0.2),
-      0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-
-  .easel-legs:nth-child(1) {
-    width: 4px;
-    height: 140px;
-    left: 50%;
-    transform: translateX(-50%);
-    top: 0;
-  }
-
-  .easel-legs:nth-child(2) {
-    width: 4px;
-    height: 120px;
-    left: 20px;
-    bottom: 0;
-    transform: rotate(-15deg);
-    transform-origin: bottom center;
-  }
-
-  .easel-legs:nth-child(3) {
-    width: 4px;
-    height: 120px;
-    right: 20px;
-    bottom: 0;
-    transform: rotate(15deg);
-    transform-origin: bottom center;
-  }
-
-  .canvas-holder {
-    position: relative;
-    width: 240px;
-    height: 280px;
-    background: var(--color-parchment-light);
-    border: 8px solid #8b5a3c;
-    border-radius: 4px;
-    box-shadow:
-      0 8px 24px rgba(139, 90, 60, 0.2),
-      inset 0 2px 4px rgba(255, 255, 255, 0.1);
-    z-index: 2;
-    margin: 0 auto;
-    overflow: hidden;
-  }
-
-  .canvas-holder::before {
-    content: "";
-    position: absolute;
-    top: -4px;
-    left: -4px;
-    right: -4px;
-    bottom: -4px;
-    background: linear-gradient(135deg, #a0723c 0%, #8b5a3c 50%, #6b4a2c 100%);
-    border-radius: 8px;
-    z-index: -1;
-  }
-
-  .canvas-label {
-    position: absolute;
-    bottom: -32px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: var(--text-xs);
-    color: var(--color-ink-light);
-    font-style: italic;
-    background: rgba(250, 247, 240, 0.9);
-    padding: 2px 8px;
-    border-radius: 2px;
-    white-space: nowrap;
-  }
-
-  /* Style for the slideshow inside easel */
-  .easel-slideshow {
-    width: 100%;
-    height: 100%;
-    border-radius: 0;
-  }
-
-  /* Override slideshow component styles */
-  :global(.easel-slideshow .slideshow-container) {
-    border-radius: 0;
-    height: 100%;
-  }
-
-  :global(.easel-slideshow .slideshow-image) {
-    object-fit: cover;
-    border-radius: 0;
-  }
-
-  :global(.easel-slideshow .slideshow-caption) {
-    background: rgba(250, 247, 240, 0.95);
-    color: var(--color-ink-dark);
-    font-size: var(--text-xs);
-    padding: var(--space-xs);
-  }
-
-  :global(.easel-slideshow .slideshow-indicators) {
-    bottom: 8px;
-  }
-
-  :global(.easel-slideshow .indicator) {
-    background: rgba(139, 90, 60, 0.4);
-  }
-
-  :global(.easel-slideshow .indicator.active) {
-    background: var(--color-walnut);
   }
 
   /* Mobile Responsiveness */
-  @media (max-width: 640px) {
-    .landing-page {
-      height: auto;
-      overflow: visible;
-      padding: var(--space-lg) 0;
+  @media (max-width: 768px) {
+    .welcome-header {
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-md);
     }
 
-    .easel-container {
-      width: 260px;
-      height: 340px;
-      margin: 0 auto;
+    .manuscript-text {
+      text-align: center;
     }
 
-    .canvas-holder {
-      width: 220px;
-      height: 260px;
-    }
-  }
-
-
-
-  @media (max-width: 1400px) {
-    .easel-section {
-      position: static;
-      margin-top: var(--space-lg);
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      transform: none;
-    }
-
-    .easel-container {
-      width: 280px;
-      height: 340px;
-      margin: 0 auto;
-    }
-
-    .canvas-holder {
-      width: 240px;
-      height: 280px;
+    .portrait-frame {
+      order: -1;
     }
   }
 
@@ -537,54 +167,20 @@ const portfolioImages = [
       gap: var(--space-sm);
     }
 
+    .about-preview .longform p {
+      text-align: left;
+    }
+
     .portrait-frame {
       width: 100px;
       height: 100px;
       margin: 0 auto;
     }
-
-    .easel-container {
-      width: 240px;
-      height: 320px;
-    }
-
-    .canvas-holder {
-      width: 200px;
-      height: 240px;
-    }
-
-    .easel-stand {
-      width: 120px;
-      height: 140px;
-    }
-
-    .easel-legs:nth-child(1) {
-      height: 100px;
-    }
-
-    .easel-legs:nth-child(2),
-    .easel-legs:nth-child(3) {
-      height: 80px;
-    }
   }
 
   @media (max-width: 480px) {
-    .landing-container {
-      padding: 0 var(--space-md);
-    }
-
     .site-title {
       font-size: var(--text-lg);
-    }
-
-    .easel-container {
-      width: 200px;
-      height: 280px;
-    }
-
-    .canvas-holder {
-      width: 160px;
-      height: 200px;
     }
   }
 </style>

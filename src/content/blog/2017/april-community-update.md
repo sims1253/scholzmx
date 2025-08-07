@@ -2,24 +2,25 @@
 title: April Community Team Update
 description: Community team update covering GSoC 2017, projects page development, and member guidelines.
 date: 2017-04-19
-tags: ["coala", "community", "gsoc"]
+tags: ['coala', 'community', 'gsoc']
 draft: false
 ---
 
-The last time you heard something from the community team was almost 3 month
+<span class="dropcap dropcap--ornate dropcap--serious" data-first-letter="T" aria-hidden="true">T</span>he last time you heard something from the community team was almost 3 month
 ago.
 Long long time ago...
 
 So what have we been up to?
 And where were all those monthly updates?
 
-GSoC 2017
----------
+<!--more-->
+
+## GSoC 2017
 
 So yea. coala is in. We are our own organization and might even serve as an
 umbrella for some smaller projects.
 
-*How awesome is that!?!*
+_How awesome is that!?!_
 
 We received 54 applications and the average quality is very high compared to
 what other orgs get.
@@ -27,13 +28,12 @@ At least that is what I hear from admins and mentors.
 We have 22 Mentors and three admins, two of whom would also be willing to mentor
 students.
 
-*79 people who would like to GSoC at coala. Wow!*
+_79 people who would like to GSoC at coala. Wow!_
 
 I won't mentor anyone as we feel like a designated admin with no student ties
 might be a good idea if any conflict come up.
 This also keeps me available as a backup mentor if everything else fails and
 generally let's me keep eyes on the hoard with less distraction.
-
 
 ### Projects Page
 
@@ -63,9 +63,7 @@ path laid out in front of you.
 This is something for us to keep in mind and I bet that there will be a lot more
 of these ideas in the resume post of GSoC that surely will come.
 
-
-Members cEP and Updates to the Newcomer Guide
----------------------------------------------
+## Members cEP and Updates to the Newcomer Guide
 
 The rewrite is essentially done but blocked by the additions to the newcomer
 guide that need to happen.
@@ -84,9 +82,7 @@ To make things easier, I combined this with a lot of changes I wanted to do to
 the guide and so the PR is now huge and will probably take another few weeks to
 get merged.
 
-
-Why the silence?
-----------------
+## Why the silence?
 
 Basically GSoC happened.
 
@@ -111,14 +107,14 @@ I did during the last few month. Probably.
 Essentially we all got eaten by GSoC and now that I have some breathing room
 again, I try to collect everyone to get rolling again.
 
-
-Outlook
--------
+## Outlook
 
 So what is coming up?
 
 - There will be a lot of GSoC work for sure.
-- I just wrote the intro for our Call for Chefs cooking competition,
+- I just wrote the intro for our
+  [Call for Chefs](http://blog.solyoution.io/coala/coala-call-for-chefs.html)
+  cooking competition,
   that essentially was born over a ramen pep talk with Asnel half a year ago.
 - I am updating our ideas page and will try to get more stuff into the works
 - We held our first maintainer meeting today. The idea is quite old but

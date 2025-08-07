@@ -1,0 +1,331 @@
+---
+// Reusable portrait frame component with multiple style options
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+export interface Props {
+  src: string | ImageMetadata;
+  alt: string;
+  style: 'botanical' | 'polaroid' | 'gentle-oval';
+  size?: 'small' | 'medium' | 'large';
+  className?: string;
+  width?: number | string;
+  height?: number | string;
+  loading?: 'lazy' | 'eager';
+  positionX?: number; // Horizontal position as percentage (-50 to 50, where 0 is center)
+  positionY?: number; // Vertical position as percentage (-50 to 50, where 0 is center)
+  scale?: number; // Scale/zoom factor (e.g., 1.2 for 20% zoom in, 0.8 for 20% zoom out)
+  fillMode?: 'cover' | 'contain' | 'fill'; // How to handle image fitting when no scale/position given
+  // Dual image support
+  alternateSrc?: string | ImageMetadata; // Second image to toggle to
+  alternateAlt?: string; // Alt text for second image
+  alternatePositionX?: number; // Position for second image
+  alternatePositionY?: number; // Position for second image  
+  alternateScale?: number; // Scale for second image
+  alternateFillMode?: 'cover' | 'contain' | 'fill'; // Fill mode for second image
+  clickable?: boolean; // Whether the frame should be clickable (auto-enabled if alternateSrc provided)
+}
+
+const { 
+  src, 
+  alt, 
+  style, 
+  size = 'medium',
+  className = '',
+  width,
+  height,
+  loading = 'lazy',
+  positionX,
+  positionY,
+  scale,
+  fillMode = 'cover',
+  alternateSrc,
+  alternateAlt,
+  alternatePositionX,
+  alternatePositionY,
+  alternateScale,
+  alternateFillMode,
+  clickable
+} = Astro.props;
+
+// Smart defaults: if no positioning/scaling is provided, use simple fill mode
+const useCustomPositioning = positionX !== undefined || positionY !== undefined || scale !== undefined;
+const finalPositionX = positionX || 0;
+const finalPositionY = positionY || 0;
+const finalScale = scale || 1;
+
+// Dual image support
+const isClickable = clickable || alternateSrc !== undefined;
+const useAlternateCustomPositioning = alternatePositionX !== undefined || alternatePositionY !== undefined || alternateScale !== undefined;
+const finalAlternatePositionX = alternatePositionX || 0;
+const finalAlternatePositionY = alternatePositionY || 0;  
+const finalAlternateScale = alternateScale || 1;
+const finalAlternateFillMode = alternateFillMode || fillMode;
+
+// Size mappings for different frame styles
+const sizeMap = {
+  small: {
+    botanical: { width: '120px', height: '120px' },
+    polaroid: { width: '120px', height: '120px' },
+    'gentle-oval': { width: '110px', height: '130px' }
+  },
+  medium: {
+    botanical: { width: '160px', height: '160px' },
+    polaroid: { width: '160px', height: '160px' },
+    'gentle-oval': { width: '150px', height: '170px' }
+  },
+  large: {
+    botanical: { width: '200px', height: '200px' },
+    polaroid: { width: '200px', height: '200px' },
+    'gentle-oval': { width: '180px', height: '210px' }
+  }
+};
+
+const frameSize = sizeMap[size][style];
+const finalWidth = width || frameSize.width;
+const finalHeight = height || frameSize.height;
+
+// Parse dimensions for Image component
+const imageWidth = typeof finalWidth === 'string' ? parseInt(finalWidth) : finalWidth;
+const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) : finalHeight;
+---
+
+<div 
+  class={`portrait-frame portrait-frame-${style} ${className} ${isClickable ? 'clickable' : ''}`} 
+  style={`width: ${finalWidth}; height: ${finalHeight};`}
+  role={isClickable ? 'button' : undefined}
+  tabindex={isClickable ? '0' : undefined}
+  aria-label={isClickable ? `Click to toggle between ${alt} and ${alternateAlt || 'alternate image'}` : undefined}
+>
+  {useCustomPositioning ? (
+    <div class="image-wrapper primary-image" style={`transform: scale(${finalScale}) translate(${finalPositionX}%, ${finalPositionY}%);`}>
+      <div class="portrait-image custom-positioning">
+        <Image
+          src={src}
+          alt={alt}
+          width={imageWidth}
+          height={imageHeight}
+        />
+      </div>
+    </div>
+  ) : (
+    <div class={`portrait-image simple-fill fill-${fillMode} primary-image`}>
+      <Image
+        src={src}
+        alt={alt}
+        width={imageWidth}
+        height={imageHeight}
+      />
+    </div>
+  )}
+  
+  {alternateSrc && (
+    useAlternateCustomPositioning ? (
+      <div class="image-wrapper alternate-image" style={`transform: scale(${finalAlternateScale}) translate(${finalAlternatePositionX}%, ${finalAlternatePositionY}%);`}>
+        <div class="portrait-image custom-positioning">
+          <Image
+            src={alternateSrc}
+            alt={alternateAlt || alt}
+            width={imageWidth}
+            height={imageHeight}
+            loading="lazy"
+          />
+        </div>
+      </div>
+    ) : (
+      <div class={`portrait-image simple-fill fill-${finalAlternateFillMode} alternate-image`}>
+        <Image
+          src={alternateSrc}
+          alt={alternateAlt || alt}
+          width={imageWidth}
+          height={imageHeight}
+          loading="lazy"
+        />
+      </div>
+    )
+  )}
+</div>
+
+<style>
+  /* Base portrait frame styles */
+  .portrait-frame {
+    position: relative;
+    margin: 0 auto;
+    overflow: hidden;
+    border: 3px solid var(--color-parchment-light);
+    background-color: var(--color-parchment-light);
+    box-shadow: 0 6px 16px rgba(139, 90, 60, 0.2);
+  }
+
+  .image-wrapper {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    transform-origin: center center;
+    position: relative;
+  }
+
+  /* Custom positioning mode - for precise control */
+  .portrait-image.custom-positioning {
+    width: 100%;
+    height: 100%;
+    display: block;
+    transform: translate(-50%, -50%);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    overflow: hidden;
+  }
+
+  .portrait-image.custom-positioning img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  /* Simple fill modes - for easy default usage */
+  .portrait-image.simple-fill {
+    width: 100%;
+    height: 100%;
+    display: block;
+    overflow: hidden;
+  }
+
+  .portrait-image.simple-fill img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .portrait-image.fill-cover img {
+    object-fit: cover; /* Fill frame, crop excess */
+  }
+
+  .portrait-image.fill-contain img {
+    object-fit: contain; /* Show full image, letterbox if needed */
+  }
+
+  .portrait-image.fill-fill img {
+    object-fit: fill; /* Stretch to fit frame exactly */
+  }
+
+  /* Clickable frame styles */
+  .portrait-frame.clickable {
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .portrait-frame.clickable:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(139, 90, 60, 0.25);
+  }
+
+  .portrait-frame.clickable:active {
+    transform: translateY(-1px);
+  }
+
+  .portrait-frame.clickable:focus {
+    outline: none; /* Remove focus outline */
+  }
+
+  /* Only show focus outline when navigating with keyboard */
+  .portrait-frame.clickable:focus-visible {
+    outline: 2px solid var(--color-moss);
+    outline-offset: 2px;
+  }
+
+  /* Dual image toggle */
+  .alternate-image {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .portrait-frame.show-alternate .primary-image {
+    opacity: 0;
+  }
+
+  .portrait-frame.show-alternate .alternate-image {
+    opacity: 1;
+  }
+
+  /* Enhanced shadows for clickable frames */
+  .portrait-frame-botanical.clickable:hover {
+    box-shadow: 0 10px 22px rgba(139, 90, 60, 0.28);
+  }
+
+  .portrait-frame-polaroid.clickable:hover {
+    box-shadow: 0 10px 24px rgba(139, 90, 60, 0.3);
+  }
+
+  .portrait-frame-gentle-oval.clickable:hover {
+    box-shadow: 0 8px 20px rgba(139, 90, 60, 0.25);
+  }
+
+  /* Botanical Scallops Style */
+  .portrait-frame-botanical {
+    clip-path: polygon(
+      20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 
+      20% 100%, 0% 80%, 0% 20%
+    );
+    border-radius: 0;
+    box-shadow: 0 8px 18px rgba(139, 90, 60, 0.22);
+  }
+
+  /* Vintage Polaroid Style */
+  .portrait-frame-polaroid {
+    border-radius: 8px;
+    border: 12px solid #fff;
+    border-bottom: 24px solid #fff;
+    box-shadow: 0 8px 20px rgba(139, 90, 60, 0.25);
+    background: #fff;
+  }
+
+  /* Gentle Oval Style */
+  .portrait-frame-gentle-oval {
+    border-radius: 50%;
+    box-shadow: 0 6px 16px rgba(139, 90, 60, 0.2);
+  }
+
+  /* Mobile responsiveness */
+  @media (max-width: 768px) {
+    .portrait-frame {
+      max-width: 140px;
+      max-height: 140px;
+    }
+
+    .portrait-frame-gentle-oval {
+      max-width: 120px;
+      max-height: 140px;
+    }
+  }
+</style>
+
+{isClickable && (
+  <script>
+    // Portrait frame toggle functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const clickableFrames = document.querySelectorAll('.portrait-frame.clickable');
+      
+      clickableFrames.forEach(frame => {
+        const toggleImage = () => {
+          frame.classList.toggle('show-alternate');
+        };
+        
+        // Click handler
+        frame.addEventListener('click', toggleImage);
+        
+        // Keyboard handler for accessibility
+        frame.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggleImage();
+          }
+        });
+      });
+    });
+  </script>
+)}

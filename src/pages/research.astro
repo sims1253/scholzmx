@@ -1,35 +1,32 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import PaperTexture from '../components/PaperTexture.astro';
-import DropCap from '../components/DropCap.astro';
-import MarginNote from '../components/MarginNote.astro';
-import HandDrawnDivider from '../components/HandDrawnDivider.astro';
 
-// Publication data extracted from your live site
 const publications = [
   {
     year: 2022,
     type: 'preprint',
-    title: 'Some models are useful, but how do we know which ones? Towards a unified Bayesian model taxonomy',
+    title:
+      'Some models are useful, but how do we know which ones? Towards a unified Bayesian model taxonomy',
     authors: ['Paul-Christian Bürkner', 'Maximilian Scholz', 'Stefan T. Radev'],
     venue: 'arXiv',
     links: {
       pdf: 'https://arxiv.org/pdf/2209.02439.pdf',
-      doi: 'https://doi.org/10.48550/ARXIV.2209.02439'
-    }
+      doi: 'https://doi.org/10.48550/ARXIV.2209.02439',
+    },
   },
   {
     year: 2022,
     type: 'preprint',
-    title: 'Prediction can be safely used as a proxy for explanation in causally consistent Bayesian generalized linear models',
+    title:
+      'Prediction can be safely used as a proxy for explanation in causally consistent Bayesian generalized linear models',
     authors: ['Maximilian Scholz', 'Paul-Christian Bürkner'],
     venue: 'arXiv',
     links: {
       pdf: 'https://arxiv.org/pdf/2210.06927.pdf',
       code: 'https://doi.org/10.5281/zenodo.7099513',
       data: 'https://doi.org/10.17605/OSF.IO/XGKZV',
-      doi: 'https://doi.org/10.48550/ARXIV.2210.06927'
-    }
+      doi: 'https://doi.org/10.48550/ARXIV.2210.06927',
+    },
   },
   {
     year: 2021,
@@ -40,353 +37,379 @@ const publications = [
     links: {
       pdf: 'https://arxiv.org/pdf/2007.09394.pdf',
       code: 'https://github.com/sims1253/linespots-analysis/',
-      doi: 'https://doi.org/10.1002/stvr.1787'
-    }
+      doi: 'https://doi.org/10.1002/stvr.1787',
+    },
   },
   {
     year: 2019,
     type: 'thesis',
     title: 'An Analysis of Linespots and its Utility in Realistic Scenarios',
     authors: ['Maximilian Scholz'],
-    venue: 'Master\'s Thesis, Chalmers University of Technology',
-    links: {
-      code: 'https://github.com/sims1253/linespots-analysis/'
-    }
+    venue: "Master's Thesis, Chalmers University of Technology",
+    links: { code: 'https://github.com/sims1253/linespots-analysis/' },
   },
   {
     year: 2016,
     type: 'thesis',
     title: 'A Line Based Approach for Bugspots',
     authors: ['Maximilian Scholz'],
-    venue: 'Bachelor\'s Thesis, Hamburg University of Technology',
-    links: {
-      code: 'https://github.com/sims1253/linespots-analysis/'
-    }
-  }
+    venue: "Bachelor's Thesis, Hamburg University of Technology",
+    links: { code: 'https://github.com/sims1253/linespots-analysis/' },
+  },
 ];
 
-// Group publications by year
-const publicationsByYear = publications.reduce((acc, pub) => {
-  if (!acc[pub.year]) acc[pub.year] = [];
-  acc[pub.year].push(pub);
-  return acc;
-}, {});
-
-const years = Object.keys(publicationsByYear).sort((a, b) => b - a);
+const publicationsByYear = publications.reduce(
+  (acc, pub) => {
+    (acc[pub.year] ||= []).push(pub);
+    return acc;
+  },
+  {} as Record<number, (typeof publications)[number][]>
+);
+const years = Object.keys(publicationsByYear).sort((a, b) => Number(b) - Number(a));
+const types = Array.from(new Set(publications.map((p) => p.type))).sort();
 ---
 
-<BaseLayout 
-  title="Research & Publications - Scholz MX"
-  description="Academic publications and research work by Maximilian Scholz, PhD researcher in Bayesian statistics at the University of Stuttgart."
-  footerVariant="default"
+<BaseLayout
+  title="Publications"
+  description="Publications by Maximilian Scholz"
+  footerVariant="writing"
+  longform={true}
+  personal={false}
 >
-  <PaperTexture pattern="botanical" intensity="light" className="research-page">
+  <div class="research-page">
+    <header class="research-header">
+      <h1 class="page-title">Publications</h1>
+      <p class="page-description">
+        I work at the intersection of software engineering and Bayesian methods—with a focus on
+        simulation-based workflows—and more recently on color accessibility and perceptual design
+        systems.
+      </p>
+    </header>
+
     <div class="research-container">
-      <header class="research-header">
-        <h1 class="page-title">
-          <DropCap letter="R" color="sage" style="ornate" />esearch & Publications
-        </h1>
-        <p class="research-intro">
-          My research focuses on Bayesian statistics, model selection, and software engineering. 
-          <MarginNote>
-            <p>Currently pursuing a PhD at the University of Stuttgart, working on Bayesian methods and their applications.</p>
-          </MarginNote>
-          I'm particularly interested in the intersection of statistical modeling and practical applications in software quality and reliability.
-        </p>
-      </header>
+      <aside class="research-sidebar">
+        <section class="sidebar-section">
+          <h3>Profiles</h3>
+          <a
+            class="chip-link"
+            href="https://scholar.google.com/citations?user=JhwHgX4AAAAJ"
+            target="_blank"
+            rel="noopener">Google Scholar</a
+          >
+          <a
+            class="chip-link"
+            href="https://orcid.org/0000-0002-4486-1393"
+            target="_blank"
+            rel="noopener">ORCID</a
+          >
+        </section>
+      </aside>
 
-      <HandDrawnDivider variant="vine" width="medium" />
-
-      <section class="publications-section">
-        <h2 class="section-title">Publications</h2>
-        
-        {years.map(year => (
-          <div class="year-group">
-            <h3 class="year-header">{year}</h3>
-            <div class="publications-list">
-              {publicationsByYear[year].map(pub => (
-                <article class="publication-item">
-                  <div class="publication-content">
-                    <h4 class="publication-title">{pub.title}</h4>
-                    <p class="publication-authors">
-                      {pub.authors.map((author, index) => (
-                        <span class={author === 'Maximilian Scholz' ? 'author-self' : 'author'}>
-                          {author}{index < pub.authors.length - 1 ? ', ' : ''}
-                        </span>
-                      ))}
-                    </p>
-                    <p class="publication-venue">
-                      <span class={`publication-type type-${pub.type}`}>
-                        {pub.type === 'preprint' ? 'Preprint' : 
-                         pub.type === 'journal' ? 'Journal Article' : 
-                         pub.type === 'thesis' ? 'Thesis' : pub.type}
-                      </span>
-                      {pub.venue}
-                    </p>
-                    
-                    {pub.links && (
-                      <div class="publication-links">
-                        {pub.links.pdf && (
-                          <a href={pub.links.pdf} target="_blank" rel="noopener" class="pub-link pdf">
-                            <span class="link-icon">📄</span> PDF
-                          </a>
-                        )}
-                        {pub.links.code && (
-                          <a href={pub.links.code} target="_blank" rel="noopener" class="pub-link code">
-                            <span class="link-icon">💻</span> Code
-                          </a>
-                        )}
-                        {pub.links.data && (
-                          <a href={pub.links.data} target="_blank" rel="noopener" class="pub-link data">
-                            <span class="link-icon">📊</span> Data
-                          </a>
-                        )}
-                        {pub.links.doi && (
-                          <a href={pub.links.doi} target="_blank" rel="noopener" class="pub-link doi">
-                            <span class="link-icon">🔗</span> DOI
-                          </a>
+      <main class="research-content">
+        <section class="cards-grid" aria-label="Publications">
+          {
+            years.map((year) => (
+              <div class="year-group" data-year-group={year}>
+                <h2 class="year-heading" id={`year-${year}`}>
+                  <>
+                    <span class="vine" />
+                    <span class="year-text">{year}</span>
+                    <span class="vine" />
+                  </>
+                </h2>
+                <div class="cards">
+                  {publicationsByYear[Number(year)].map((pub) => (
+                    <article class="pub-card" data-year={year} data-type={pub.type}>
+                      <div class="card-body">
+                        <div class="card-meta-top">
+                          <span class={`type-badge type-${pub.type}`}>
+                            {pub.type === 'preprint'
+                              ? 'Preprint'
+                              : pub.type === 'journal'
+                                ? 'Journal'
+                                : pub.type === 'thesis'
+                                  ? 'Thesis'
+                                  : pub.type}
+                          </span>
+                        </div>
+                        <h3 class="card-title">
+                          <a href="#" class="title-link">{pub.title}</a>
+                        </h3>
+                        <p class="card-authors">
+                          {pub.authors.map((a, i) => (
+                            <span class={a === 'Maximilian Scholz' ? 'author-self' : 'author'}>
+                              {a}
+                              {i < pub.authors.length - 1 ? ', ' : ''}
+                            </span>
+                          ))}
+                        </p>
+                        <p class="card-venue">{pub.venue}</p>
+                        {pub.links && (
+                          <div class="pub-links">
+                            {pub.links.pdf && (
+                              <a
+                                class="link-chip"
+                                href={pub.links.pdf}
+                                target="_blank"
+                                rel="noopener"
+                              >
+                                PDF
+                              </a>
+                            )}
+                            {pub.links.code && (
+                              <a
+                                class="link-chip"
+                                href={pub.links.code}
+                                target="_blank"
+                                rel="noopener"
+                              >
+                                Code
+                              </a>
+                            )}
+                            {pub.links.data && (
+                              <a
+                                class="link-chip"
+                                href={pub.links.data}
+                                target="_blank"
+                                rel="noopener"
+                              >
+                                Data
+                              </a>
+                            )}
+                            {pub.links.doi && (
+                              <a
+                                class="link-chip"
+                                href={pub.links.doi}
+                                target="_blank"
+                                rel="noopener"
+                              >
+                                DOI
+                              </a>
+                            )}
+                          </div>
                         )}
                       </div>
-                    )}
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-        ))}
-      </section>
-
-      <HandDrawnDivider variant="botanical" width="medium" />
-
-      <section class="research-interests">
-        <h2 class="section-title">Research Interests</h2>
-        <div class="interests-grid">
-          <div class="interest-item">
-            <h3>Bayesian Statistics</h3>
-            <p>Model selection, taxonomy, and unified approaches to Bayesian modeling</p>
-          </div>
-          <div class="interest-item">
-            <h3>Causal Inference</h3>
-            <p>Prediction as explanation in causally consistent statistical models</p>
-          </div>
-          <div class="interest-item">
-            <h3>Software Engineering</h3>
-            <p>Fault prediction algorithms and software quality metrics</p>
-          </div>
-        </div>
-      </section>
+                    </article>
+                  ))}
+                </div>
+              </div>
+            ))
+          }
+        </section>
+      </main>
     </div>
-  </PaperTexture>
+  </div>
 </BaseLayout>
 
 <style>
   .research-page {
-    min-height: 100vh;
-    padding-top: 50px;
-  }
-
-  .research-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: var(--space-xl) var(--space-lg);
+    max-width: 100%;
   }
 
   .research-header {
-    margin-bottom: var(--space-xl);
+    text-align: center;
+    max-width: var(--content-width-serious);
+    margin: 0 auto var(--space-xs);
   }
 
   .page-title {
-    font-size: clamp(var(--text-xl), 3vw, var(--text-2xl));
-    line-height: 1.2;
-    margin-bottom: var(--space-md);
+    font-size: clamp(var(--text-2xl), 5vw, var(--text-3xl));
+    margin-bottom: var(--space-xs);
     color: var(--color-ink-dark);
   }
 
-  .research-intro {
-    font-size: var(--text-md);
+  .page-description {
+    font-size: var(--text-lg);
     line-height: 1.6;
     color: var(--color-ink-medium);
-    margin-bottom: var(--space-lg);
-  }
-
-  .section-title {
-    font-size: var(--text-lg);
-    color: var(--color-ink-dark);
-    margin-bottom: var(--space-md);
-    font-weight: 600;
-  }
-
-  .publications-section {
-    margin-bottom: var(--space-xl);
-  }
-
-  .year-group {
-    margin-bottom: var(--space-lg);
-  }
-
-  .year-header {
-    font-size: var(--text-md);
-    font-weight: 700;
-    color: var(--color-sage);
-    margin-bottom: var(--space-md);
-    padding-bottom: var(--space-xs);
-    border-bottom: 2px solid var(--color-sage-light);
-  }
-
-  .publications-list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-lg);
-  }
-
-  .publication-item {
-    background: rgba(250, 247, 240, 0.6);
-    border: 1px solid var(--color-parchment);
-    border-radius: 8px;
-    padding: var(--space-md);
-    box-shadow: 0 2px 8px rgba(139, 90, 60, 0.1);
-    transition: box-shadow 0.2s ease;
-  }
-
-  .publication-item:hover {
-    box-shadow: 0 4px 16px rgba(139, 90, 60, 0.15);
-  }
-
-  .publication-title {
-    font-size: var(--text-md);
-    font-weight: 600;
-    color: var(--color-ink-dark);
-    margin-bottom: var(--space-xs);
-    line-height: 1.4;
-  }
-
-  .publication-authors {
-    font-size: var(--text-sm);
-    margin-bottom: var(--space-xs);
-    color: var(--color-ink-medium);
-  }
-
-  .author-self {
-    font-weight: 600;
-    color: var(--color-ink-dark);
-  }
-
-  .author {
-    color: var(--color-ink-medium);
-  }
-
-  .publication-venue {
-    font-size: var(--text-sm);
-    color: var(--color-ink-light);
-    margin-bottom: var(--space-sm);
     font-style: italic;
   }
 
-  .publication-type {
+  .research-container {
+    position: relative;
+    max-width: var(--content-width-serious);
+    margin: 0 auto;
+  }
+  .research-content {
+    position: relative;
+  }
+  .research-sidebar {
+    position: absolute;
+    right: calc(-12.5rem - var(--space-lg));
+    top: calc(var(--space-xl) + 4px);
+    width: 13rem;
+  }
+  .sidebar-section {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-lichen);
+    border-radius: var(--border-radius);
+    padding: 0 var(--space-sm) var(--space-xs);
+    margin-bottom: var(--space-sm);
+  }
+  .sidebar-section h3 {
+    font-size: var(--text-md);
+    margin: var(--space-xs) 0 var(--space-xs) 0;
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .chip-link {
     display: inline-block;
-    padding: 2px 6px;
-    border-radius: 4px;
     font-size: var(--text-xs);
-    font-weight: 600;
-    font-style: normal;
-    margin-right: var(--space-xs);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .type-preprint {
-    background: rgba(255, 193, 7, 0.2);
-    color: #b8860b;
-  }
-
-  .type-journal {
-    background: rgba(40, 167, 69, 0.2);
-    color: #155724;
-  }
-
-  .type-thesis {
-    background: rgba(108, 117, 125, 0.2);
-    color: #495057;
-  }
-
-  .publication-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-xs);
-    margin-top: var(--space-sm);
-  }
-
-  .pub-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 8px;
-    background: var(--color-parchment-light);
-    border: 1px solid var(--color-sage-light);
-    border-radius: 4px;
+    color: var(--color-text-primary);
     text-decoration: none;
-    font-size: var(--text-xs);
-    color: var(--color-ink-dark);
-    transition: all 0.2s ease;
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-lichen);
+    background: var(--color-surface);
+    margin-right: var(--space-xs);
+    margin-bottom: var(--space-xxs);
   }
-
-  .pub-link:hover {
-    background: var(--color-sage-light);
+  .chip-link:hover {
+    color: var(--color-link-hover);
+    background: var(--wash-sage);
     border-color: var(--color-sage);
-    transform: translateY(-1px);
   }
 
-  .link-icon {
-    font-size: 12px;
-  }
-
-  .research-interests {
-    margin-top: var(--space-xl);
-  }
-
-  .interests-grid {
+  .cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: var(--space-md);
-    margin-top: var(--space-md);
+    gap: var(--space-xs);
   }
-
-  .interest-item {
-    background: rgba(250, 247, 240, 0.4);
-    border: 1px solid var(--color-parchment);
-    border-radius: 8px;
-    padding: var(--space-md);
-  }
-
-  .interest-item h3 {
-    font-size: var(--text-sm);
+  .year-heading {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: var(--space-sm);
+    margin: var(--space-xs) 0 var(--space-sm);
+    color: var(--color-walnut);
+    font-family: var(--font-heading);
     font-weight: 600;
-    color: var(--color-sage);
+    font-size: var(--text-lg);
+  }
+  .year-heading .vine {
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      color-mix(in srgb, var(--color-lichen) 60%, transparent),
+      transparent
+    );
+  }
+  .year-heading .year-text {
+    font-variant-caps: small-caps;
+    letter-spacing: 0.06em;
+  }
+  .cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+  }
+
+  .pub-card {
+    position: relative;
+    background: var(--color-surface);
+    border: 1px solid var(--color-lichen);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    transition:
+      transform var(--transition-medium),
+      box-shadow var(--transition-medium),
+      border-color var(--transition-medium);
+    box-shadow: 0 4px 10px color-mix(in srgb, var(--color-walnut) 5%, transparent);
+  }
+  .pub-card:hover {
+    transform: translateY(-1px);
+    border-color: var(--color-sage);
+    box-shadow: 0 6px 16px color-mix(in srgb, var(--color-walnut) 7%, transparent);
+  }
+  .card-body {
+    padding: var(--space-xs) var(--space-sm);
+  }
+  .card-meta-top {
     margin-bottom: var(--space-xs);
   }
-
-  .interest-item p {
+  .type-badge {
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.1rem 0.4rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-lichen);
+    background: var(--wash-sage);
+    color: var(--color-accent-secondary);
+    white-space: nowrap;
+  }
+  .card-title {
+    margin: 0 0 var(--space-xs);
+    font-size: var(--text-md);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    line-height: 1.3;
+  }
+  .title-link {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--transition-medium);
+  }
+  .title-link:hover {
+    color: var(--color-link-hover);
+    text-decoration: underline;
+  }
+  .card-authors {
+    margin: 0 0 var(--space-xxs);
     font-size: var(--text-sm);
-    color: var(--color-ink-medium);
-    line-height: 1.5;
+    color: var(--color-text-secondary);
+  }
+  .author-self {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+  }
+  .author {
+    color: var(--color-text-secondary);
+  }
+  .card-venue {
+    margin: 0 0 var(--space-xs);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    font-style: italic;
   }
 
-  /* Mobile responsiveness */
-  @media (max-width: 640px) {
-    .research-container {
-      padding: var(--space-lg) var(--space-md);
-    }
+  .pub-links {
+    display: flex;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+  }
+  .link-chip {
+    font-size: var(--text-xs);
+    color: var(--color-text-primary);
+    text-decoration: none;
+    padding: 0.15rem 0.45rem;
+    border-radius: 6px;
+    border: 1px solid var(--color-lichen);
+    background: var(--color-surface);
+  }
+  .link-chip:hover {
+    color: var(--color-link-hover);
+    background: var(--wash-sage);
+    border-color: var(--color-sage);
+  }
 
-    .publication-links {
-      flex-direction: column;
-      align-items: flex-start;
+  @media (max-width: 1024px) {
+    .research-content {
+      position: static;
     }
-
-    .pub-link {
-      align-self: flex-start;
+    .research-sidebar {
+      position: static;
+      width: auto;
+      margin-top: var(--space-lg);
     }
-
-    .interests-grid {
+  }
+  @media (max-width: 480px) {
+    .card-title {
+      font-size: var(--text-md);
+    }
+    .cards {
       grid-template-columns: 1fr;
     }
   }

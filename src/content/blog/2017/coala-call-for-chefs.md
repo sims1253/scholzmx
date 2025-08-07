@@ -2,15 +2,17 @@
 title: "coala's Call for Chefs"
 description: A story about building community through food.
 date: 2017-04-15
-tags: ["coala", "community"]
+tags: ['coala', 'community']
 draft: false
 ---
 
-A story I like to tell to showcase the welcoming atmosphere at coala is one
+<span class="dropcap dropcap--ornate dropcap--serious" data-first-letter="A" aria-hidden="true">A</span> story I like to tell to showcase the welcoming atmosphere at coala is one
 about ramen.
 Some time last year I was talking with [Asnel](https://github.com/Asnelchristian)
 about how to improve a bowl of instant ramen until you get a healthy (and also
 very tasty) meal.
+
+<!--more-->
 
 Because it was a rather quiet evening we did so in our main channel, when suddenly
 a wild newcomer appeared (I sadly don't remember the name).
@@ -19,8 +21,8 @@ some vegetables and a soft-boiled egg could make all the difference between a
 cheap snack and a fulfilling meal.
 
 Later that evening, the newcomer just found their way into our offtopic channel,
-they voiced their amazement about how we, "the gods of programming, the wise
-elders of this awesome open source project" could discuss such profanities as
+they voiced their amazement about how we, “the gods of programming, the wise
+elders of this awesome open source project” could discuss such profanities as
 upgrading your ramen game.
 Surely we had more important, ground breaking, work to do.
 I am pretty sure those weren't the exact words but the idea was the same.
@@ -32,25 +34,23 @@ guessed.
 This taught me some things.
 
 1. The welcoming culture in other open source projects must be horrible if such
-a simple thing would blow someone's mind. From my point of view, we didn't do
-anything impressive. We talked about food...
+   a simple thing would blow someone's mind. From my point of view, we didn't do
+   anything impressive. We talked about food...
 
 2. A lot of people don't know how to cook nice meals. Or even just how to get
-a little more out of your instant ramen.
+   a little more out of your instant ramen.
 
 3. Including newcomers in your offtopic fun is a way to help them get accustomed
-to the new environment they ventured into.
+   to the new environment they ventured into.
 
-It was the last realization that made me embrace the "Secretary of Offtopic"
+It was the last realization that made me embrace the “Secretary of Offtopic”
 title (which I gave to myself to be honest).
 Offtopic interaction seems to be something people love and it can connect
 complete strangers over something all sides know about.
 
-
 In comes:
 
-Call for Chefs
---------------
+## Call for Chefs
 
 Right. In an attempt to get more offtopic fun going and to get more people to
 cook real food, we will start a cooking competition.
@@ -80,6 +80,5 @@ the coala blog.~~
 with your entry as a .md file and blog post format.  
 The first round will mostly be an idea finding time to figure out how we can
 organize this and how it is supposed to work. :)
-
 
 Finally, have fun cooking!

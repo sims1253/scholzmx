@@ -1,345 +1,542 @@
 ---
 import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import PaperTexture from '../components/PaperTexture.astro';
-import DropCap from '../components/DropCap.astro';
-import MarginNote from '../components/MarginNote.astro';
 
-const posts = await getCollection('blog', ({ data }) => !data.draft);
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const posts = allPosts.sort(
+  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
+const years = Array.from(new Set(posts.map((p) => new Date(p.data.date).getFullYear()))).sort(
+  (a, b) => b - a
+);
+const tags = Array.from(new Set(posts.flatMap((p) => p.data.tags ?? []))).sort();
 
-// Sort posts by date, newest first
-const sortedPosts = posts.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
-
-const formatDate = (date: Date) => {
-  return date.toLocaleDateString('en-US', { 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
-  });
-};
+const formatDate = (date: Date) => date.toISOString().slice(0, 10);
 ---
 
-<BaseLayout 
-  title="Writing & Thoughts - Scholz MX"
-  description="Essays, reflections, and musings on life, technology, cooking, and the art of being human in a complex world. Written with care and without rush."
+<BaseLayout
+  title="Writing"
+  description="My long-form writing."
   footerVariant="writing"
+  longform={true}
+  personal={false}
 >
-  <PaperTexture pattern="linen" intensity="light" className="blog-page">
+  <div class="blog-page">
     <header class="blog-header">
-      <h1 class="page-title">
-        <DropCap letter="W" color="walnut" style="botanical" />riting & Thoughts
-      </h1>
-      <p class="page-description">
-        Essays and reflections written without rush, in the spirit of slow thinking and careful observation. 
-        <MarginNote>
-          <p>I write when something moves me to write, not on a schedule. Quality over quantity, always.</p>
-        </MarginNote>
-        Here you'll find thoughts on technology, cooking, philosophy, and the quiet art of being human.
-      </p>
+      <h1 class="page-title" id="blog-title">Writing</h1>
+      <!-- <p class="page-description">
+        My long-form writing. 
+        <span>
+          <p>Quality over quantity. Write when there is something worth saying.</p>
+        </span>
+      </p> -->
     </header>
 
-    <main class="blog-content">
-      <section class="posts-grid">
-        {sortedPosts.map((post, index) => (
-          <article class="post-card">
-            <div class="post-meta">
-              <time class="post-date" datetime={post.data.date.toISOString()}>
-                {formatDate(post.data.date)}
-              </time>
-              <div class="post-tags">
-                {post.data.tags?.map(tag => (
-                  <span class="tag">#{tag}</span>
-                ))}
-              </div>
-            </div>
-            
-            <h2 class="post-title">
-              <a href={`/blog/${post.slug}`}>{post.data.title}</a>
-            </h2>
-            
-            <p class="post-excerpt">{post.data.description}</p>
-            
-            <footer class="post-footer">
-              <a href={`/blog/${post.slug}`} class="read-more">
-                Read more <span aria-hidden="true">→</span>
-              </a>
-            </footer>
-            
-            <div class="post-ornament" aria-hidden="true">
-              {index % 3 === 0 ? '❦' : index % 3 === 1 ? '✿' : '❋'}
-            </div>
-          </article>
-        ))}
-      </section>
-
+    <div class="blog-container">
       <aside class="blog-sidebar">
         <section class="sidebar-section">
-          <h3>Writing Philosophy</h3>
-          <p>
-            I believe in slow writing - taking time to let ideas mature, 
-            editing with care, and publishing only when something feels 
-            ready to meet the world.
-          </p>
-        </section>
-
-        <section class="sidebar-section">
-          <h3>Topics I Explore</h3>
-          <ul class="topic-list">
-            <li>Technology & Humanity</li>
-            <li>Sustainable Living</li>
-            <li>Food & Cooking</li>
-            <li>Digital Minimalism</li>
-            <li>Craft & Making</li>
-            <li>Time & Attention</li>
+          <h3>Filter by year</h3>
+          <ul class="filter-list">
+            <li><button class="filter-btn active" data-filter-year="">All</button></li>
+            {
+              years.map((y) => (
+                <li>
+                  <button class="filter-btn" data-filter-year={y}>
+                    {y}
+                  </button>
+                </li>
+              ))
+            }
           </ul>
         </section>
 
         <section class="sidebar-section">
-          <h3>Subscribe to Updates</h3>
-          <p>
-            No newsletter, no feeds - just bookmark this page and check back 
-            when you're moved to do so. Sometimes the best things are discovered 
-            by chance.
-          </p>
+          <h3>Filter by tag</h3>
+          <ul class="filter-list">
+            <li><button class="filter-btn active" data-filter-tag="">All</button></li>
+            {
+              tags.map((t) => (
+                <li>
+                  <button class="filter-btn" data-filter-tag={t}>
+                    #{t}
+                  </button>
+                </li>
+              ))
+            }
+          </ul>
         </section>
       </aside>
-    </main>
-  </PaperTexture>
-</BaseLayout>
 
-<style>
-  .blog-page {
-    max-width: 100%;
-  }
+      <main class="blog-content">
+        <section class="cards-grid" aria-label="Posts">
+          {
+            years.map((year) => (
+              <div class="year-group" data-year-group={year}>
+                <h2 class="year-heading" id={`year-${year}`}>
+                  <>
+                    <span class="vine" />
+                    <span class="year-text">{year}</span>
+                    <span class="vine" />
+                  </>
+                </h2>
+                <div class="cards">
+                  {posts
+                    .filter((p) => new Date(p.data.date).getFullYear() === year)
+                    .map((post) => (
+                      <article
+                        class="post-card"
+                        data-year={year}
+                        data-tags={post.data.tags?.join(',') || ''}
+                        data-href={`/blog/${post.slug}`}
+                      >
+                        <a
+                          class="card-link"
+                          href={`/blog/${post.slug}`}
+                          aria-label={post.data.title}
+                        />
+                        {post.data.heroImage && (
+                          <figure class="thumb">
+                            <div
+                              class="thumb-wrapper"
+                              style={`transform: scale(${post.data.heroImageScale || 1}) translate(${(post.data.heroImagePositionX || 0) * 100}%, ${(post.data.heroImagePositionY || 0) * 100}%);`}
+                            >
+                              <div class="thumb-inner">
+                                <Image src={post.data.heroImage} alt="" loading="lazy" />
+                              </div>
+                            </div>
+                          </figure>
+                        )}
+                        <div class="card-body">
+                          <h3 class="card-title">
+                            <a href={`/blog/${post.slug}`}>{post.data.title}</a>
+                          </h3>
+                          <p class="card-excerpt">{post.data.description}</p>
+                          <div class="card-meta">
+                            <div class="card-dates">
+                              <div class="card-date-item">
+                                <span class="card-date-label">Written:</span>
+                                <time datetime={post.data.date.toISOString()} class="meta-date">
+                                  {formatDate(post.data.date)}
+                                </time>
+                              </div>
+                              {post.data.lastUpdated && (
+                                <div class="card-date-item">
+                                  <span class="card-date-label">Updated:</span>
+                                  <time
+                                    datetime={post.data.lastUpdated.toISOString()}
+                                    class="meta-date"
+                                  >
+                                    {formatDate(post.data.lastUpdated)}
+                                  </time>
+                                </div>
+                              )}
+                            </div>
+                            <div class="meta-tags">
+                              {post.data.tags?.map((tag) => (
+                                <a class="chip" href={`/blog?tag=${encodeURIComponent(tag)}`}>
+                                  #{tag}
+                                </a>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </article>
+                    ))}
+                </div>
+              </div>
+            ))
+          }
+        </section>
+      </main>
+    </div>
+  </div>
 
-  .blog-header {
-    text-align: center;
-    max-width: 60ch;
-    margin: 0 auto var(--space-xxl);
-  }
-
-  .page-title {
-    font-size: clamp(var(--text-2xl), 5vw, var(--text-3xl));
-    margin-bottom: var(--space-lg);
-    color: var(--color-ink-dark);
-  }
-
-  .page-description {
-    font-size: var(--text-lg);
-    line-height: 1.6;
-    color: var(--color-ink-medium);
-    font-style: italic;
-  }
-
-  .blog-content {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: var(--space-xxl);
-    align-items: start;
-  }
-
-  .posts-grid {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-xl);
-  }
-
-  .post-card {
-    background-color: var(--color-parchment-light);
-    border: 1px solid rgba(139, 90, 60, 0.1);
-    border-radius: var(--border-radius);
-    padding: var(--space-lg);
-    position: relative;
-    transition: all var(--transition-medium);
-  }
-
-  .post-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(139, 90, 60, 0.1);
-    border-color: var(--color-sage);
-  }
-
-  .post-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--space-md);
-    flex-wrap: wrap;
-    gap: var(--space-sm);
-  }
-
-  .post-date {
-    font-size: var(--text-xs);
-    color: var(--color-ink-light);
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  .post-tags {
-    display: flex;
-    gap: var(--space-xs);
-    flex-wrap: wrap;
-  }
-
-  .tag {
-    font-size: var(--text-xs);
-    color: var(--color-moss);
-    background-color: rgba(90, 107, 71, 0.1);
-    padding: 0.2em 0.5em;
-    border-radius: calc(var(--border-radius) / 2);
-    font-weight: 500;
-  }
-
-  .post-title {
-    margin: 0 0 var(--space-md);
-    font-size: var(--text-xl);
-  }
-
-  .post-title a {
-    text-decoration: none;
-    color: var(--color-ink-dark);
-    font-weight: 600;
-  }
-
-  .post-title a:hover {
-    color: var(--color-walnut);
-  }
-
-  .post-excerpt {
-    font-size: var(--text-md);
-    line-height: 1.6;
-    color: var(--color-ink-medium);
-    margin-bottom: var(--space-lg);
-  }
-
-  .post-footer {
-    display: flex;
-    justify-content: flex-end;
-  }
-
-  .read-more {
-    font-size: var(--text-sm);
-    font-weight: 600;
-    color: var(--color-walnut);
-    text-decoration: none;
-    padding: var(--space-xs) var(--space-sm);
-    border-radius: var(--border-radius);
-    transition: all var(--transition-fast);
-  }
-
-  .read-more:hover {
-    background-color: rgba(139, 90, 60, 0.1);
-    color: var(--color-ochre);
-  }
-
-  .post-ornament {
-    position: absolute;
-    top: var(--space-md);
-    right: var(--space-md);
-    color: var(--color-gold);
-    font-size: var(--text-sm);
-    opacity: 0.4;
-  }
-
-  /* Sidebar */
-  .blog-sidebar {
-    position: sticky;
-    top: calc(var(--space-xl) + 80px);
-  }
-
-  .sidebar-section {
-    background-color: var(--color-parchment-light);
-    border: 1px solid rgba(139, 90, 60, 0.1);
-    border-radius: var(--border-radius);
-    padding: var(--space-lg);
-    margin-bottom: var(--space-lg);
-  }
-
-  .sidebar-section h3 {
-    font-size: var(--text-md);
-    margin-bottom: var(--space-sm);
-    color: var(--color-ink-dark);
-    font-weight: 600;
-  }
-
-  .sidebar-section p {
-    font-size: var(--text-sm);
-    line-height: 1.5;
-    color: var(--color-ink-medium);
-    margin: 0;
-  }
-
-  .topic-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  .topic-list li {
-    font-size: var(--text-sm);
-    padding: var(--space-xs) 0;
-    color: var(--color-ink-medium);
-    border-bottom: 1px solid rgba(139, 90, 60, 0.05);
-  }
-
-  .topic-list li:last-child {
-    border-bottom: none;
-  }
-
-  .topic-list li::before {
-    content: '❦';
-    color: var(--color-gold);
-    margin-right: var(--space-xs);
-    font-size: 0.8em;
-    opacity: 0.6;
-  }
-
-  /* Mobile responsiveness */
-  @media (max-width: 1024px) {
-    .blog-content {
-      grid-template-columns: 1fr;
-      gap: var(--space-xl);
+  <style>
+    .blog-page {
+      max-width: 100%;
     }
 
-    .blog-sidebar {
-      position: static;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: var(--space-md);
-    }
-  }
-
-  @media (max-width: 768px) {
     .blog-header {
-      text-align: left;
+      text-align: center;
+      max-width: var(--content-width-serious);
+      margin: 0 auto var(--space-xs);
+    }
+
+    .page-title {
+      font-size: clamp(var(--text-2xl), 5vw, var(--text-3xl));
+      margin-bottom: var(--space-xs);
+      color: var(--color-ink-dark);
+    }
+
+    .page-description {
+      font-size: var(--text-lg);
+      line-height: 1.6;
+      color: var(--color-ink-medium);
+      font-style: italic;
+    }
+
+    .blog-container {
+      position: relative;
+      max-width: var(--content-width-serious);
+      margin: 0 auto;
+    }
+    .blog-content {
+      position: relative;
+    }
+    .blog-sidebar {
+      position: absolute;
+      right: calc(-12.5rem - var(--space-lg));
+      top: calc(var(--space-xl) + 1px);
+      width: 13rem;
+    }
+    .sidebar-section {
+      background-color: var(--color-surface);
+      border: 1px solid var(--color-lichen);
+      border-radius: var(--border-radius);
+      padding: 0 var(--space-sm) var(--space-xs);
+      margin-bottom: var(--space-sm);
+    }
+    .sidebar-section h3 {
+      font-size: var(--text-md);
+      margin: var(--space-xs) 0 var(--space-xs) 0;
+      color: var(--color-text-primary);
+      font-weight: var(--font-weight-semibold);
+    }
+    .filter-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.025rem 0.25rem;
+    }
+    .filter-btn {
+      color: var(--color-text-secondary);
+      background: var(--color-surface);
+      border: 1px solid var(--color-lichen);
+      font-size: var(--text-xs);
+      font-family: inherit;
+      padding: 0.1rem 0.35rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .filter-btn:hover {
+      color: var(--color-link-hover);
+      background: var(--wash-sage);
+      border-color: var(--color-sage);
+    }
+    .filter-btn.active {
+      color: var(--color-text-primary);
+      font-weight: var(--font-weight-semibold);
+      border-color: var(--color-link);
+    }
+
+    .cards-grid {
+      display: grid;
+      gap: var(--space-xs);
+    }
+    .year-heading {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: var(--space-sm);
+      margin: var(--space-xs) 0 var(--space-sm);
+      color: var(--color-walnut);
+      font-family: var(--font-heading);
+      font-weight: 600;
+      font-size: var(--text-lg);
+    }
+    .year-heading .vine {
+      height: 1px;
+      background: linear-gradient(
+        to right,
+        transparent,
+        color-mix(in srgb, var(--color-lichen) 60%, transparent),
+        transparent
+      );
+    }
+    .year-heading .year-text {
+      font-variant-caps: small-caps;
+      letter-spacing: 0.06em;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--space-sm);
+      margin-bottom: var(--space-sm);
     }
 
     .post-card {
-      padding: var(--space-md);
+      position: relative;
+      background: var(--color-surface);
+      border: 1px solid var(--color-lichen);
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      transition:
+        transform var(--transition-medium),
+        box-shadow var(--transition-medium),
+        border-color var(--transition-medium);
+      box-shadow: 0 4px 10px color-mix(in srgb, var(--color-walnut) 5%, transparent);
+    }
+    .post-card:hover {
+      transform: translateY(-1px);
+      border-color: var(--color-sage);
+      box-shadow: 0 6px 16px color-mix(in srgb, var(--color-walnut) 7%, transparent);
+      cursor: pointer;
+    }
+    .post-card .card-link {
+      display: block;
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .post-card .card-body,
+    .post-card .thumb {
+      position: relative;
+      z-index: 2;
+      pointer-events: auto;
+    }
+    .post-card .card-title a,
+    .post-card .meta-tags a {
+      position: relative;
+      z-index: 3;
+      pointer-events: auto;
+    }
+    .thumb {
+      margin: 0;
+      aspect-ratio: 8/3;
+      width: 100%;
+      background: var(--color-surface);
+      position: relative;
+      overflow: hidden;
     }
 
-    .post-meta {
-      flex-direction: column;
-      align-items: flex-start;
+    .thumb-wrapper {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      transform-origin: center center;
+      position: relative;
     }
 
-    .blog-sidebar {
-      grid-template-columns: 1fr;
+    .thumb-inner {
+      width: 100%;
+      height: 100%;
+      display: block;
+      transform: translate(-50%, -50%);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      overflow: hidden;
     }
 
-    .sidebar-section {
-      padding: var(--space-md);
+    .thumb-inner img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: saturate(0.85) contrast(0.95);
+      opacity: 0.9;
     }
-  }
-
-  @media (max-width: 480px) {
-    .post-title {
-      font-size: var(--text-lg);
+    .card-body {
+      padding: var(--space-xs) var(--space-sm);
     }
-
-    .post-excerpt {
+    .card-title {
+      margin: 0 0 var(--space-xxs, 0.25rem);
+      font-size: var(--text-md);
+    }
+    .card-excerpt {
+      color: var(--color-text-secondary);
+      margin: 0 0 var(--space-xs);
+      display: -webkit-box;
+      -webkit-line-clamp: 5;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
       font-size: var(--text-sm);
+      line-height: 1.4;
     }
-  }
-</style>
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: var(--space-xxs, 0.25rem);
+      flex-wrap: wrap;
+    }
+
+    .card-dates {
+      display: flex;
+      gap: var(--space-sm);
+      align-items: baseline;
+      flex-wrap: wrap;
+    }
+
+    .card-date-item {
+      display: flex;
+      gap: 0.25rem;
+      align-items: baseline;
+      white-space: nowrap;
+    }
+
+    .card-date-label {
+      font-size: calc(var(--text-xs, 0.7rem) * 0.85);
+      color: var(--color-text-muted);
+      letter-spacing: 0.05em;
+      opacity: 0.8;
+    }
+
+    .meta-date {
+      font-size: var(--text-xxs, 0.7rem);
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .meta-tags {
+      display: flex;
+      gap: var(--space-xxs, 0.25rem);
+      flex-wrap: wrap;
+    }
+    .chip {
+      position: relative;
+      font-size: var(--text-xxs, 0.7rem);
+      color: var(--color-accent-secondary);
+      background: var(--wash-sage);
+      padding: 0.15em 0.55em;
+      border-radius: 999px;
+      text-decoration: none;
+      border: 1px solid var(--color-lichen);
+      letter-spacing: 0.02em;
+    }
+
+    .chip:hover {
+      color: var(--color-link-hover);
+      background: color-mix(in srgb, var(--wash-sage) 60%, transparent);
+      border-color: var(--color-sage);
+    }
+
+    @media (max-width: 1024px) {
+      .blog-content {
+        position: static;
+      }
+      .blog-sidebar {
+        position: static;
+        width: auto;
+        margin-top: var(--space-lg);
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: var(--space-md);
+      }
+    }
+    @media (max-width: 480px) {
+      .card-title {
+        font-size: var(--text-md);
+      }
+    }
+
+    .post-card.hidden {
+      display: none;
+    }
+    .year-group.hidden {
+      display: none;
+    }
+  </style>
+
+  <script>
+    // Make whole card clickable except on interactive elements
+    document.addEventListener('click', function (e) {
+      const card = (e.target as HTMLElement).closest?.('.post-card');
+      if (!card) return;
+      const isInteractive = (e.target as HTMLElement).closest?.('a, button');
+      if (isInteractive) return;
+      const href = card.getAttribute('data-href');
+      if (href) window.location.href = href;
+    });
+    // Client-side filtering with JSDoc types
+    /** @type {string} */
+    let activeYear = '';
+    /** @type {string} */
+    let activeTag = '';
+
+    /**
+     * Filter posts based on active year and tag
+     * @returns {void}
+     */
+    function filterPosts() {
+      /** @type {NodeListOf<HTMLElement>} */
+      const posts = document.querySelectorAll('.post-card');
+      /** @type {NodeListOf<HTMLElement>} */
+      const yearGroups = document.querySelectorAll('.year-group');
+
+      posts.forEach((post) => {
+        const postYear = post.getAttribute('data-year');
+        const postTagsAttr = post.getAttribute('data-tags');
+        const postTags = postTagsAttr ? postTagsAttr.split(',') : [];
+
+        const yearMatch = !activeYear || postYear === activeYear;
+        const tagMatch = !activeTag || postTags.includes(activeTag);
+
+        if (yearMatch && tagMatch) {
+          post.classList.remove('hidden');
+        } else {
+          post.classList.add('hidden');
+        }
+      });
+
+      // Hide year groups that have no visible posts
+      yearGroups.forEach((yearGroup) => {
+        const visiblePosts = yearGroup.querySelectorAll('.post-card:not(.hidden)');
+        if (visiblePosts.length === 0) {
+          yearGroup.classList.add('hidden');
+        } else {
+          yearGroup.classList.remove('hidden');
+        }
+      });
+    }
+
+    /**
+     * Update active states of filter buttons
+     * @returns {void}
+     */
+    function updateActiveStates() {
+      // Update year buttons
+      document.querySelectorAll('[data-filter-year]').forEach((btn) => {
+        const year = btn.getAttribute('data-filter-year');
+        btn.classList.toggle('active', year === activeYear);
+      });
+
+      // Update tag buttons
+      document.querySelectorAll('[data-filter-tag]').forEach((btn) => {
+        const tag = btn.getAttribute('data-filter-tag');
+        btn.classList.toggle('active', tag === activeTag);
+      });
+    }
+
+    // Year filter event listeners
+    document.querySelectorAll('[data-filter-year]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        activeYear = btn.getAttribute('data-filter-year') || '';
+        filterPosts();
+        updateActiveStates();
+      });
+    });
+
+    // Tag filter event listeners
+    document.querySelectorAll('[data-filter-tag]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        activeTag = btn.getAttribute('data-filter-tag') || '';
+        filterPosts();
+        updateActiveStates();
+      });
+    });
+
+    // Initialize from query params
+    const params = new URLSearchParams(location.search);
+    const qYear = params.get('year') || '';
+    const qTag = params.get('tag') || '';
+    if (qYear) activeYear = qYear;
+    if (qTag) activeTag = qTag;
+    filterPosts();
+    updateActiveStates();
+  </script>
+</BaseLayout>

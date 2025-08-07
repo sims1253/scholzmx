@@ -1,0 +1,14 @@
+@font-face{
+  font-family:'EBGaramond-InitialsF1';
+  src:url('/fonts/EBGaramond-InitialsF1.woff2') format('woff2');
+  font-weight:400;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:'EBGaramond-InitialsF2';
+  src:url('/fonts/EBGaramond-InitialsF2.woff2') format('woff2');
+  font-weight:400;
+  font-style:normal;
+  font-display:swap;
+}

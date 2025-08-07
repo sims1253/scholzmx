@@ -1,9 +1,12 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import PaperTexture from '../../components/PaperTexture.astro';
 import DropCap from '../../components/DropCap.astro';
 import { Image } from 'astro:assets';
+
+/* Note: Content markdown cannot render Astro components by default.
+   To allow components inside markdown, pass them via the 'components' prop on <Content />. */
+// import { Image } from 'astro:assets';
 
 export async function getStaticPaths() {
   const recipes = await getCollection('recipes');
@@ -17,12 +20,14 @@ const { recipe } = Astro.props;
 const { Content } = await recipe.render();
 ---
 
-<BaseLayout 
+<BaseLayout
   title={`${recipe.data.title} - Scholz MX`}
   description={recipe.data.description}
   footerVariant="kitchen"
+  longform={true}
+  personal={true}
 >
-  <PaperTexture pattern="parchment" intensity="medium" className="recipe-post">
+  <div class="recipe-post">
     <article class="recipe-content">
       <header class="recipe-header">
         <div class="recipe-meta">
@@ -31,47 +36,62 @@ const { Content } = await recipe.render();
             <span class="recipe-time" title="Total time">⏱️ {recipe.data.time}</span>
             <span class="recipe-season" title="Season">🌿 {recipe.data.season}</span>
           </div>
-          {recipe.data.tags && (
-            <div class="recipe-tags">
-              {recipe.data.tags.map(tag => (
-                <span class="tag">#{tag}</span>
-              ))}
-            </div>
-          )}
+          {
+            recipe.data.tags && (
+              <div class="recipe-tags">
+                {recipe.data.tags.map((tag) => (
+                  <span class="tag">#{tag}</span>
+                ))}
+              </div>
+            )
+          }
         </div>
-        
+
         <h1 class="recipe-title">
-          <DropCap letter={recipe.data.title.charAt(0)} color="ochre" style="botanical" />
-          {recipe.data.title.slice(1)}
+          {recipe.data.title}
         </h1>
-        
+
         <p class="recipe-description">{recipe.data.description}</p>
-        
-        {recipe.data.heroImage && (
-          <div class="hero-image">
-            <Image 
-              src={recipe.data.heroImage} 
-              alt={`Hero image for ${recipe.data.title}`}
-              width={600}
-              height={400}
-              format="webp"
-              class="recipe-hero"
-            />
-          </div>
-        )}
+
+        {
+          recipe.data.heroImage && (
+            <div class="hero-image">
+              <img
+                src={
+                  typeof recipe.data.heroImage === 'string'
+                    ? recipe.data.heroImage
+                    : recipe.data.heroImage.src
+                }
+                alt={`Hero image for ${recipe.data.title}`}
+                width={
+                  typeof recipe.data.heroImage === 'string' ? 600 : recipe.data.heroImage.width
+                }
+                height={
+                  typeof recipe.data.heroImage === 'string' ? 400 : recipe.data.heroImage.height
+                }
+                loading="lazy"
+                decoding="async"
+                class="recipe-hero"
+              />
+            </div>
+          )
+        }
       </header>
-      
-      <div class="recipe-body">
-        <Content />
+
+      <div class="recipe-body longform personal-content">
+        <!-- Allow markdown to use MarginNote and DropCap components -->
+        <Content components={{ DropCap }} />
+        <!-- Fallback for plain HTML margin note markup in Markdown (no components mapping needed) -->
+        <!-- If Markdown contains <span class="margin-note-container">..., it will render as-is -->
       </div>
-      
+
       <footer class="recipe-footer">
         <nav class="recipe-navigation">
           <a href="/recipes" class="back-link">← Back to Kitchen</a>
         </nav>
       </footer>
     </article>
-  </PaperTexture>
+  </div>
 </BaseLayout>
 
 <style>
@@ -80,7 +100,7 @@ const { Content } = await recipe.render();
   }
 
   .recipe-content {
-    max-width: 70ch;
+    max-width: var(--content-width-personal); /* Use personal content width (65ch) */
     margin: 0 auto;
     padding: var(--space-xl) var(--space-lg);
   }
@@ -107,6 +127,7 @@ const { Content } = await recipe.render();
   .recipe-servings,
   .recipe-time,
   .recipe-season {
+    font-family: var(--font-body-personal); /* Alegreya */
     font-size: var(--text-sm);
     color: var(--color-ink-medium);
     font-weight: 500;
@@ -120,6 +141,7 @@ const { Content } = await recipe.render();
   }
 
   .tag {
+    font-family: var(--font-body-personal); /* Alegreya */
     font-size: var(--text-xs);
     color: var(--color-moss);
     background-color: rgba(90, 107, 71, 0.1);
@@ -129,6 +151,7 @@ const { Content } = await recipe.render();
   }
 
   .recipe-title {
+    font-family: var(--font-body-personal); /* Alegreya */
     font-size: clamp(var(--text-xl), 4vw, var(--text-2xl));
     line-height: 1.2;
     margin-bottom: var(--space-md);
@@ -137,6 +160,7 @@ const { Content } = await recipe.render();
   }
 
   .recipe-description {
+    font-family: var(--font-body-personal); /* Alegreya */
     font-size: var(--text-lg);
     font-style: italic;
     color: var(--color-ink-medium);
@@ -157,46 +181,7 @@ const { Content } = await recipe.render();
     display: block;
   }
 
-  .recipe-body {
-    font-size: var(--text-lg);
-    line-height: 1.6;
-    color: var(--color-ink-dark);
-    font-feature-settings: 'liga' 1, 'kern' 1, 'calt' 1;
-    text-rendering: optimizeLegibility;
-  }
-
-  .recipe-body :global(h2) {
-    font-size: var(--text-xl);
-    margin-top: 2em;
-    margin-bottom: 0.8em;
-    color: var(--color-walnut);
-    font-weight: 600;
-    line-height: 1.3;
-  }
-
-  .recipe-body :global(h3) {
-    font-size: var(--text-lg);
-    margin-top: 1.6em;
-    margin-bottom: 0.6em;
-    color: var(--color-ink-dark);
-    font-weight: 600;
-    line-height: 1.4;
-  }
-
-  .recipe-body :global(p) {
-    margin-bottom: 1.5em;
-  }
-
-  .recipe-body :global(ul),
-  .recipe-body :global(ol) {
-    margin-bottom: var(--space-md);
-    padding-left: var(--space-lg);
-  }
-
-  .recipe-body :global(li) {
-    margin-bottom: var(--space-xs);
-    line-height: 1.6;
-  }
+  /* Typography now handled by global .longform class */
 
   .recipe-body :global(strong) {
     color: var(--color-walnut);
@@ -226,6 +211,7 @@ const { Content } = await recipe.render();
   }
 
   .back-link {
+    font-family: var(--font-body-personal); /* Alegreya */
     font-size: var(--text-sm);
     color: var(--color-walnut);
     text-decoration: none;

@@ -1,0 +1,622 @@
+/* Base styles - shared across all pages */
+
+/* Global base styles */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 21px;
+  line-height: var(--spacing-line-height);
+  scroll-behavior: smooth;
+}
+
+/* Respect user motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-text-primary);
+  background-color: var(--color-background);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "liga" 1, "kern" 1;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Print styles */
+@media print {
+  a {
+    color: #000;
+    text-decoration: underline;
+  }
+  
+  .page-nav,
+  .nav-separator {
+    color: #000;
+    text-shadow: none;
+  }
+}
+
+/* Typography */
+h1, h2, h3 {
+  margin: 0 0 var(--space-md);
+  color: var(--color-text-primary);
+  line-height: 1.25;
+  font-family: var(--font-heading);
+  font-weight: var(--heading-weight-strong);
+  font-feature-settings: "liga" 1, "kern" 1;
+  text-rendering: optimizeLegibility;
+}
+
+h1 {
+  font-size: var(--text-3xl);
+  font-weight: var(--heading-weight-strong);
+  margin-bottom: var(--space-lg);
+  letter-spacing: 0.005em;
+}
+
+h2 {
+  font-size: var(--text-2xl);
+  margin-top: var(--space-xl);
+  letter-spacing: 0.002em;
+}
+
+h3 {
+  font-size: var(--text-xl);
+  margin-top: var(--space-lg);
+}
+
+
+p {
+  max-width: var(--content-width);
+  margin: 0 0 1.25em;
+}
+
+.longform.personal-content p,
+.container.personal p,
+.personal-content .content p {
+  max-width: var(--content-width-personal) !important;
+}
+
+a {
+  color: var(--color-link);
+  text-decoration: underline;
+  text-decoration-color: var(--color-underline);
+  text-underline-offset: 2px;
+  transition: color var(--transition-fast), text-decoration-color var(--transition-fast);
+  text-decoration-thickness: 1.6px;
+}
+
+a:hover {
+  color: var(--color-link-hover);
+  text-decoration-color: var(--color-underline-hover);
+  text-decoration-thickness: 2px;
+}
+
+a:focus {
+  box-shadow: 
+    0 0 0 1px color-mix(in srgb, var(--color-moss) 40%, transparent),
+    0 0 8px color-mix(in srgb, var(--color-sage) 20%, transparent);
+  background: color-mix(in srgb, var(--color-parchment-light) 60%, transparent);
+  border-radius: 3px;
+  outline: none;
+}
+
+/* Lists */
+ul, ol {
+  margin: 0 0 var(--space-md);
+  padding-left: var(--space-lg);
+}
+
+li {
+  margin-bottom: var(--space-xs);
+}
+
+/* Images */
+img {
+  border-radius: var(--border-radius);
+  max-width: 100%;
+  height: auto;
+  box-shadow: 
+    0 8px 24px color-mix(in srgb, var(--color-walnut) 6%, transparent),
+    0 2px 6px color-mix(in srgb, var(--color-sage) 10%, transparent);
+}
+
+/* Blockquotes */
+blockquote {
+  margin: var(--space-lg) 0;
+  padding: var(--space-md) var(--space-lg);
+  border-left: 4px solid var(--color-tansy);
+  background: linear-gradient(
+    0deg,
+    var(--color-parchment-light) 0%,
+    var(--color-parchment-light) 65%,
+    var(--wash-sage) 100%
+  );
+  max-width: var(--content-width);
+  font-style: italic;
+  position: relative;
+}
+
+blockquote::before {
+  content: '"';
+  color: var(--color-tansy);
+  position: absolute;
+  left: var(--space-sm);
+  top: 0;
+  font-size: 4rem;
+  line-height: 1;
+  font-family: var(--font-heading);
+}
+
+blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* Tables */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: var(--space-lg) 0;
+}
+
+th, td {
+  padding: var(--space-sm);
+  text-align: left;
+  border-bottom: 1px solid rgba(139, 90, 60, 0.2);
+}
+
+th {
+  color: var(--color-ink-dark);
+  background-color: var(--color-parchment-light);
+  font-weight: 600;
+}
+
+/* Performance optimizations */
+img {
+  /* Reduce layout shift */
+  height: auto;
+  max-width: 100%;
+}
+
+/* Optimize code block rendering */
+pre {
+  contain: layout style;
+  white-space: pre;
+  word-break: normal;
+}
+
+/* Optimize KaTeX math rendering */
+.katex {
+  /* Improve font rendering */
+  font-feature-settings: 'liga' 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.katex-display {
+  /* Better spacing and performance */
+  contain: layout style;
+  margin: 1.5em 0;
+}
+
+/* Self-hosted fonts */
+@font-face {
+  font-family: 'Fira Code';
+  src: url('/fonts/FiraCode-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Fira Code';
+  src: url('/fonts/FiraCode-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Utility classes */
+.logo-text {
+  letter-spacing: 0.03em;
+  font-variant-caps: small-caps;
+}
+
+.container {
+  max-width: 1200px;
+  padding: 0 var(--space-md);
+  margin: 0 auto;
+}
+
+/* Personal content variant - constrained to 65ch for optimal readability */
+.container.personal {
+  max-width: var(--content-width-personal);
+}
+
+.content {
+  max-width: var(--content-width);
+  margin: 0 auto;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  html {
+    font-size: 18px;
+  }
+  
+  :root {
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --space-xxl: 2.5rem;
+  }
+  
+  .container {
+    padding: 0 var(--space-sm);
+  }
+  
+  h1 {
+    font-size: var(--text-2xl);
+  }
+  
+  h2 {
+    font-size: var(--text-xl);
+  }
+}
+
+/* Code block styling with manuscript aesthetics */
+.code-with-copy { display: flow-root; }
+.astro-code {
+  font-family: var(--font-mono) !important;
+  padding: var(--space-sm) !important;
+  border-radius: 10px !important;
+  margin: var(--space-sm) 0 !important;
+  position: relative;
+  
+  /* Manuscript-inspired frame - override Shiki inline styles */
+  border: 1px solid color-mix(in srgb, var(--color-lichen) 30%, transparent) !important;
+  box-shadow:
+    0 8px 22px color-mix(in srgb, var(--color-walnut) 5%, transparent),
+    0 2px 6px color-mix(in srgb, var(--color-sage) 12%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--color-parchment-light) 70%, white) !important;
+  
+  font-size: 18px !important;
+  line-height: 1.25 !important;
+  overflow-x: auto;
+  
+  /* Gentle transition for theme changes */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+@media (max-width: 640px) {
+  .astro-code {
+    padding: var(--space-md);
+  }
+}
+
+/* Copy button styling */
+.astro-code .copy-button {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  background: color-mix(in srgb, var(--color-surface) 92%, var(--color-walnut));
+  border: 1px solid var(--color-lichen) !important;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 18px;
+  font-family: var(--font-heading);
+  color: var(--color-walnut);
+  cursor: pointer;
+  opacity: 0.08;
+  transition: opacity 0.15s ease, transform 0.15s ease, background 0.2s ease, color 0.2s ease;
+  user-select: none;
+  pointer-events: auto;
+  z-index: 1;
+  
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--color-sage) 20%, transparent);
+}
+
+@media (max-width: 640px) {
+  .astro-code .copy-button { display: none; }
+}
+
+.astro-code:hover .copy-button { opacity: 0.5; }
+
+.astro-code .copy-button:hover {
+  background: color-mix(in srgb, var(--color-surface) 96%, var(--color-walnut));
+  color: var(--color-ochre);
+  border-color: var(--color-lichen);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px color-mix(in srgb, var(--color-sage) 18%, transparent);
+  opacity: 1;
+}
+
+.astro-code .copy-button:focus-visible { outline-color: var(--color-lichen); }
+
+.astro-code .copy-button:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--color-sage) 18%, transparent);
+}
+
+.astro-code .copy-button.copied {
+  background: color-mix(in srgb, var(--color-surface) 96%, var(--color-moss));
+  color: var(--color-moss);
+  border-color: var(--color-moss);
+}
+
+/* Collapsible code sections with botanical styling */
+details.code-collapse {
+  margin: var(--space-md) 0;
+  border: 1px solid var(--color-lichen);
+  border-radius: 10px;
+  overflow: hidden;
+  
+  /* Subtle manuscript frame */
+  box-shadow: 0 6px 14px color-mix(in srgb, var(--color-sage) 10%, transparent), 0 2px 4px color-mix(in srgb, var(--color-walnut) 6%, transparent);
+  background: var(--color-surface);
+}
+
+details.code-collapse summary {
+  position: relative;
+  padding: var(--space-xs) var(--space-lg);
+  padding-left: calc(var(--space-lg) + 10px);
+  background: var(--color-surface);
+  font-family: var(--font-heading);
+  font-weight: 500;
+  font-size: var(--text-md);
+  line-height: 1.2;
+  color: var(--color-walnut);
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  min-height: auto;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-lichen) 40%, transparent);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--color-walnut) 6%, transparent);
+}
+
+details.code-collapse summary p { margin: 0; line-height: inherit; }
+
+details.code-collapse summary::-webkit-details-marker { display: none; }
+
+details.code-collapse summary::before {
+  content: '▸';
+  color: var(--color-moss);
+  font-size: 0.85em;
+  line-height: 1;
+  transition: transform 0.2s ease;
+  transform-origin: center;
+  flex-shrink: 0;
+}
+
+details.code-collapse[open] summary::before { transform: rotate(90deg); }
+
+details.code-collapse summary::after {
+  content: '';
+  position: absolute;
+  left: var(--space-sm);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 22px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--color-walnut) 15%, transparent);
+}
+
+details.code-collapse summary:hover {
+  background: color-mix(in srgb, var(--color-surface) 98%, var(--color-walnut));
+  color: var(--color-ochre);
+}
+
+details.code-collapse summary:hover::before { color: var(--color-ochre); }
+
+details.code-collapse[open] summary { border-bottom-color: var(--color-lichen); margin-bottom: 0; }
+
+/* Content area styling */
+details.code-collapse .astro-code {
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* Remove selection-style highlights from code content */
+.astro-code *,
+.astro-code span,
+.astro-code .line {
+  background: transparent !important;
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Ensure no pseudo-element backgrounds interfere */
+.astro-code *::before,
+.astro-code *::after {
+  background: transparent !important;
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Smooth opening animation */
+details.code-collapse[open] {
+  animation: expand 0.3s ease-out;
+}
+
+@keyframes expand {
+  from {
+    max-height: 3rem;
+  }
+  to {
+    max-height: 100vh;
+  }
+}
+
+/* Inline code with subtle handcrafted styling */
+code:not([class]):not(.katex) {
+  font-family: var(--font-mono);
+  background: color-mix(in srgb, var(--color-surface) 95%, var(--color-sage));
+  border: 1px solid color-mix(in srgb, var(--color-lichen) 30%, transparent);
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 0.875em;
+  font-weight: 400;
+}
+
+/* Even lighter styling for inline code in headings */
+h1 code:not([class]):not(.katex),
+h2 code:not([class]):not(.katex),
+h3 code:not([class]):not(.katex),
+h4 code:not([class]):not(.katex),
+h5 code:not([class]):not(.katex),
+h6 code:not([class]):not(.katex) {
+  background: color-mix(in srgb, var(--color-surface) 98%, var(--color-sage));
+  border-color: color-mix(in srgb, var(--color-lichen) 20%, transparent);
+  padding: 1px 3px;
+}
+
+/* ===== LONGFORM TYPOGRAPHY SYSTEM ===== */
+/* Dual typography system: serious vs personal content */
+
+/* Default longform baseline */
+.longform {
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  line-height: 1.35;
+  color: var(--color-text-primary);
+  font-feature-settings: 'liga' 1, 'kern' 1, 'calt' 1;
+  text-rendering: optimizeLegibility;
+  max-width: var(--content-width-serious) !important;
+  margin: 0 auto;
+}
+
+/* Ensure blog posts use serious content width */
+.post-body.longform {
+  max-width: var(--content-width-serious) !important;
+}
+
+.post-body.longform > * {
+  max-width: 100%;
+}
+
+/* Personal content typography (welcome, recipes) */
+.longform.personal-content {
+  line-height: 1.4;
+  max-width: var(--content-width-personal);
+}
+
+.longform p {
+  margin-bottom: 1.25em;
+  line-height: inherit;
+}
+
+.longform h2 {
+  font-size: var(--text-xl);
+  margin-top: 1.6em;
+  margin-bottom: 0.6em;
+  color: var(--color-walnut);
+  font-weight: var(--heading-weight-strong);
+  line-height: 1.3;
+}
+
+.longform h3 {
+  font-size: var(--text-lg);
+  margin-top: 1.4em;
+  margin-bottom: 0.5em;
+  color: var(--color-text-primary);
+  font-weight: var(--heading-weight-strong);
+  line-height: 1.4;
+}
+
+.longform blockquote {
+  border-left: 3px solid var(--color-sage);
+  padding-left: var(--space-md);
+  margin: var(--space-lg) 0;
+  font-style: italic;
+  color: var(--color-text-secondary);
+  background: rgba(168, 181, 160, 0.08);
+  border-radius: 0 var(--border-radius) var(--border-radius) 0;
+}
+
+.longform ul, .longform ol {
+  margin: 0 0 1.25em;
+  padding-left: var(--space-lg);
+}
+
+.longform li {
+  margin-bottom: var(--space-xs);
+  line-height: inherit;
+}
+
+/* Shiki dual theme switching - override inline styles */
+[data-theme="dark"] .astro-code,
+[data-theme="dark"] .astro-code span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+  text-decoration: var(--shiki-dark-text-decoration) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  :not([data-theme]) .astro-code,
+  :not([data-theme]) .astro-code span {
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg) !important;
+    font-style: var(--shiki-dark-font-style) !important;
+    font-weight: var(--shiki-dark-font-weight) !important;
+    text-decoration: var(--shiki-dark-text-decoration) !important;
+  }
+}
+
+/* Force light theme colors in light mode */
+[data-theme="light"] .astro-code,
+[data-theme="light"] .astro-code span,
+:not([data-theme]) .astro-code,
+:not([data-theme]) .astro-code span {
+  color: var(--shiki-light, #657b83) !important;
+}
+
+@media (prefers-color-scheme: light) {
+  .astro-code,
+  .astro-code span {
+    color: var(--shiki-light, #657b83) !important;
+  }
+}
+
+/* Print styles */
+@media print {
+  body {
+    color: #000;
+    background: #fff;
+  }
+  
+  body::before {
+    display: none;
+  }
+  
+  a {
+    color: #000;
+    text-decoration: underline;
+  }
+}

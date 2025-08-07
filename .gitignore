@@ -22,8 +22,9 @@ pnpm-debug.log*
 .idea/
 .vscode/
 
-# Quarto temporary files
-*_files/
+# Quarto temporary/cache files (keep .qmd and .md sources)
+*_cache/**
+*_files/**
 /.quarto/
 _site/
 
@@ -46,3 +47,20 @@ design_guide.md
 
 # Claude AI assistant files
 .claude/
+
+# Crush agent working directory
+.crush/
+
+watercolor/
+water-svg/
+svg-export/
+
+**.rmarkdown
+crush.md
+_freeze
+
+
+**.rdx
+**.RData
+**.rdb
+**__packages

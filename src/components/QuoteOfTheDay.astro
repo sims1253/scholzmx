@@ -1,114 +1,133 @@
 ---
-// Array of quotes for random daily selection
-const quotes = [
+// Personal quotes collection - song lyrics, video game references, and meaningful thoughts
+const personalQuotes = [
   {
-    text: "The smell of kiwi vines and tansy on a sun-warmed wooden fence.",
-    author: "Personal Memory"
+    text: 'I am scared! I want to live. I am begging you.',
+    author: 'Kara',
   },
   {
-    text: "In every walk with nature, one receives far more than they seek.",
-    author: "John Muir"
+    text: 'I try to speak, but some thoughts are too loud for words.',
+    author: 'Garret Russell',
   },
   {
-    text: "The Earth does not belong to us; we belong to the Earth.",
-    author: "Chief Seattle"
+    text: "A red sky at night, a shepherd's flashlight, his beam sweeps like brush strokes across the sky.",
+    author: 'Rou Reynolds',
   },
   {
-    text: "To see a world in a grain of sand and a heaven in a wild flower.",
-    author: "William Blake"
+    text: "I think it's time you had a pink cloud summer.",
+    author: 'Will Yip',
   },
   {
-    text: "The best time to plant a tree was 20 years ago. The second best time is now.",
-    author: "Chinese Proverb"
+    text: 'And you will always be here.',
+    author: 'Baby J, Tom Barber',
   },
   {
-    text: "In the depth of winter, I finally learned that within me there lay an invincible summer.",
-    author: "Albert Camus"
+    text: 'Gravity, hold on to me.',
+    author: 'Tom Searle',
   },
   {
-    text: "The quieter you become, the more you are able to hear.",
-    author: "Rumi"
+    text: 'Mine is the path of mutilation.',
+    author: 'Allison Ruth (Tom Bloom)',
   },
   {
-    text: "We are all just walking each other home.",
-    author: "Ram Dass"
+    text: 'Royalty is a continuous cutting motion.',
+    author: 'Intra (Tom Bloom)',
   },
   {
-    text: "Between stimulus and response there is a space. In that space is our power to choose.",
-    author: "Viktor Frankl"
+    text: 'All things have a right to grow.',
+    author: 'Ventari',
   },
   {
-    text: "The secret to getting ahead is getting started.",
-    author: "Mark Twain"
-  }
+    text: 'May you find a cozy spot by the fire where the door never closes, the owner runs credit, the taps never run dry and the piano is always playing.',
+    author: 'John Ringo',
+  },
+  {
+    text: 'Do not go gentle into that good night, old age should burn and rave at close of day; Rage, rage against the dying of the light.',
+    author: 'Dylan Thomas',
+  },
+  {
+    text: 'The smell of kiwi vines and tansy over sun-baked stones.',
+    author: 'Memories',
+  },
+  {
+    text: 'How do I smell, to be the king of dragonflies and bees?',
+    author: 'Memories',
+  },
 ];
 
-// Use date as seed for consistent daily quote
-const today = new Date();
-const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
-const quoteIndex = dayOfYear % quotes.length;
-const todaysQuote = quotes[quoteIndex];
+// Get random quote for initial display
+const getRandomQuote = () => personalQuotes[Math.floor(Math.random() * personalQuotes.length)];
+const initialQuote = getRandomQuote();
 ---
 
 <div class="quote-container" id="quote-container">
   <blockquote class="daily-quote">
-    <p class="quote-text" id="quote-text">{todaysQuote.text}</p>
+    <p class="quote-text" id="quote-text">{initialQuote.text}</p>
     <footer class="quote-attribution">
-      <cite class="quote-author" id="quote-author">— {todaysQuote.author}</cite>
+      <cite class="quote-author" id="quote-author">— {initialQuote.author}</cite>
     </footer>
   </blockquote>
-  <div class="quote-ornament" aria-hidden="true">❦</div>
-  <button class="refresh-quote" id="refresh-quote" title="Get a new quote" aria-label="Get a new quote">
+  <button
+    class="refresh-quote"
+    id="refresh-quote"
+    title="Get a new quote"
+    aria-label="Get a new quote"
+  >
     <span class="refresh-icon">↻</span>
   </button>
 </div>
 
 <script>
+  // Same personal quotes collection used in both server and client
   const quotes = [
     {
-      text: "I am scared! I want to live. I am begging you.",
-      author: "Kara"
+      text: 'I am scared! I want to live. I am begging you.',
+      author: 'Kara',
     },
     {
-      text: "I try to speak, but some thoughts are too loud for words.",
-      author: "Garret Russell"
+      text: 'I try to speak, but some thoughts are too loud for words.',
+      author: 'Garret Russell',
     },
     {
       text: "A red sky at night, a shepherd's flashlight, his beam sweeps like brush strokes across the sky.",
-      author: "Rou Reynolds"
+      author: 'Rou Reynolds',
     },
     {
       text: "I think it's time you had a punk cloud summer.",
-      author: "Will Yip"
+      author: 'Will Yip',
     },
     {
-      text: "And you will always be here.",
-      author: "Baby J, Tom Barber"
+      text: 'And you will always be here.',
+      author: 'Baby J, Tom Barber',
     },
     {
-      text: "Gravity, hold on to me.",
-      author: "Tom Searle"
+      text: 'Gravity, hold on to me.',
+      author: 'Tom Searle',
     },
     {
-      text: "Mine is the path of mutilation.",
-      author: "Allison Ruth (Tom Bloom)"
+      text: 'Mine is the path of mutilation.',
+      author: 'Allison Ruth (Tom Bloom)',
     },
     {
-      text: "Royalty is a continuous cutting motion.",
-      author: "Intra (Tom Bloom)"
+      text: 'Royalty is a continuous cutting motion.',
+      author: 'Intra (Tom Bloom)',
     },
     {
-      text: "All things have a right to grow.",
-      author: "Ventari"
+      text: 'All things have a right to grow.',
+      author: 'Ventari',
     },
     {
-      text: "May you find a cozy spot by the fire where the door never closes, the owner runs credit, the taps never run dry and the piano is always playing.",
-      author: "John Ringo"
+      text: 'May you find a cozy spot by the fire where the door never closes, the owner runs credit, the taps never run dry and the piano is always playing.',
+      author: 'John Ringo',
     },
     {
-      text: "Do not go gentle into that good night, old age should burn and rave at close of day; Rage, rage against the dying of the light.",
-      author: "Dylan Thomas"
-    }
+      text: 'Do not go gentle into that good night, old age should burn and rave at close of day; Rage, rage against the dying of the light.',
+      author: 'Dylan Thomas',
+    },
+    {
+      text: 'The smell of kiwi vines and tansy on a sun-warmed wooden fence.',
+      author: 'Personal Memory',
+    },
   ];
 
   function getRandomQuote() {
@@ -120,16 +139,16 @@ const todaysQuote = quotes[quoteIndex];
     const quoteText = document.getElementById('quote-text');
     const quoteAuthor = document.getElementById('quote-author');
     const container = document.getElementById('quote-container');
-    
+
     if (quoteText && quoteAuthor && container) {
       // Add fade out class
       container.style.opacity = '0.5';
       container.style.transform = 'translateY(5px)';
-      
+
       setTimeout(() => {
         quoteText.textContent = newQuote.text;
         quoteAuthor.textContent = `— ${newQuote.author}`;
-        
+
         // Fade back in
         container.style.opacity = '1';
         container.style.transform = 'translateY(0)';
@@ -141,11 +160,11 @@ const todaysQuote = quotes[quoteIndex];
   document.addEventListener('DOMContentLoaded', () => {
     const refreshButton = document.getElementById('refresh-quote');
     const container = document.getElementById('quote-container');
-    
+
     if (refreshButton) {
       refreshButton.addEventListener('click', updateQuote);
     }
-    
+
     // Also allow clicking the whole quote container
     if (container) {
       container.addEventListener('click', updateQuote);
@@ -172,25 +191,19 @@ const todaysQuote = quotes[quoteIndex];
     position: relative;
   }
 
+  /* Override global blockquote quotation mark */
   .daily-quote::before {
-    content: '"';
-    font-size: 3rem;
-    line-height: 1;
-    color: var(--color-gold);
-    position: absolute;
-    left: -0.5rem;
-    top: -0.5rem;
-    font-family: var(--font-heading);
-    opacity: 0.6;
+    display: none;
   }
 
   .quote-text {
-    font-size: var(--text-lg);
+    font-size: var(--text-sm);
     font-style: italic;
-    line-height: 1.5;
+    line-height: var(--spacing-line-height);
     color: var(--color-ink-dark);
-    margin: 0 0 0;
-    padding-left: var(--space-md);
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-body-personal); /* Ensure consistent Alegreya usage */
   }
 
   .quote-attribution {
@@ -199,33 +212,17 @@ const todaysQuote = quotes[quoteIndex];
   }
 
   .quote-author {
-    font-size: var(--text-sm);
+    font-size: var(--text-xs);
     font-style: normal;
     font-weight: 500;
     color: var(--color-ink-medium);
-    font-family: var(--font-heading);
-  }
-
-  .quote-ornament {
-    position: absolute;
-    bottom: var(--space-sm);
-    right: var(--space-md);
-    color: var(--color-gold);
-    font-size: var(--text-md);
-    opacity: 0.4;
-    transform: rotate(15deg);
+    font-family: var(--font-body-personal); /* Alegreya for footer vibes */
   }
 
   /* Hover effect for subtle interactivity */
   .quote-container:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(139, 90, 60, 0.08);
-    transition: all var(--transition-medium);
-  }
-
-  .quote-container:hover .quote-ornament {
-    opacity: 0.8;
-    transform: rotate(15deg) scale(1.1);
     transition: all var(--transition-medium);
   }
 
@@ -274,12 +271,6 @@ const todaysQuote = quotes[quoteIndex];
     .quote-text {
       font-size: var(--text-md);
       padding-left: var(--space-sm);
-    }
-
-    .daily-quote::before {
-      font-size: 2rem;
-      left: -0.25rem;
-      top: -0.25rem;
     }
   }
 </style>
