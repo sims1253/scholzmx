@@ -357,56 +357,6 @@ const currentPath = Astro.url.pathname;
       </style>
 
       <script>
-        // Add copy buttons to code blocks
-        document.addEventListener('DOMContentLoaded', function() {
-          const codeBlocks = document.querySelectorAll('.astro-code');
-
-          codeBlocks.forEach(function(codeBlock) {
-            const copyButton = document.createElement('button');
-            copyButton.className = 'copy-button';
-            copyButton.textContent = 'Copy';
-            copyButton.setAttribute('aria-label', 'Copy code to clipboard');
-
-            copyButton.addEventListener('click', function() {
-              const code = codeBlock.textContent;
-
-              if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(code).then(function() {
-                  copyButton.textContent = 'Copied!';
-                  copyButton.classList.add('copied');
-
-                  setTimeout(function() {
-                    copyButton.textContent = 'Copy';
-                    copyButton.classList.remove('copied');
-                  }, 2000);
-                });
-              } else {
-                // Fallback for older browsers
-                const textArea = document.createElement('textarea');
-                textArea.value = code;
-                document.body.appendChild(textArea);
-                textArea.select();
-
-                try {
-                  document.execCommand('copy');
-                  copyButton.textContent = 'Copied!';
-                  copyButton.classList.add('copied');
-
-                  setTimeout(function() {
-                    copyButton.textContent = 'Copy';
-                    copyButton.classList.remove('copied');
-                  }, 2000);
-                } catch (err) {
-                  console.error('Could not copy text: ', err);
-                }
-
-                document.body.removeChild(textArea);
-              }
-            });
-
-            codeBlock.appendChild(copyButton);
-          });
-        });
 
         (function () {
           const KEY = 'theme-preference';
