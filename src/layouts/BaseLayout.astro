@@ -2,6 +2,13 @@
 import BotanicalBorder from '../components/BotanicalBorder.astro';
 import IllustratedFooter from '../components/IllustratedFooter.astro';
 
+// Import CSS files
+import '../styles/tokens.colors.css';
+import '../styles/tokens.typography.css';
+import '../styles/layout.css';
+import '../styles/base.css';
+import '../styles/dropcap.css';
+
 export interface Props {
   title: string;
   description?: string;
@@ -83,15 +90,6 @@ const currentPath = Astro.url.pathname;
     <!-- Load critical font CSS synchronously -->
     <link rel="stylesheet" href="/fonts/cormorant.css" />
 
-    <!-- Load token files directly for better hot-reloading -->
-    <link rel="stylesheet" href="/src/styles/tokens.colors.css" />
-    <link rel="stylesheet" href="/src/styles/tokens.typography.css" />
-    
-    <!-- Load component styles -->
-    <link rel="stylesheet" href="/src/styles/layout.css" />
-    <link rel="stylesheet" href="/src/styles/base.css" />
-    <link rel="stylesheet" href="/src/styles/dropcap.css" />
-    
     <!-- Load non-critical fonts asynchronously -->
     <link
       rel="preload"
@@ -100,7 +98,7 @@ const currentPath = Astro.url.pathname;
       onload="this.onload=null;this.rel='stylesheet'"
     />
     <noscript><link rel="stylesheet" href="/fonts/alegreya.css" /></noscript>
-    
+
     <!-- Only preload fonts critical for initial render -->
     <link
       rel="preload"
@@ -243,11 +241,11 @@ const currentPath = Astro.url.pathname;
       </div>
 
       <style is:global>
-        
-        /* Global blog post styles - needed for Quarto-generated content that doesn't get scoped */
-        
 
-        
+        /* Global blog post styles - needed for Quarto-generated content that doesn't get scoped */
+
+
+
         /* Images should respect the content width constraint */
         .post-content img {
           max-width: 100% !important;
@@ -329,204 +327,14 @@ const currentPath = Astro.url.pathname;
 
         .post-content a:focus {
           outline: none;
-          box-shadow: 
+          box-shadow:
             0 0 0 1px color-mix(in srgb, var(--color-moss) 40%, transparent),
             0 0 8px color-mix(in srgb, var(--color-sage) 20%, transparent);
           border-radius: 3px;
           background: color-mix(in srgb, var(--color-parchment-light) 60%, transparent);
         }
-        
-        /* All child elements will naturally inherit this constraint */
 
-        /* Code block styling with manuscript aesthetics */
-        .astro-code {
-          font-family: var(--font-mono) !important;
-          padding: var(--space-sm) !important;
-          border-radius: 10px !important;
-          margin: var(--space-sm) 0 !important;
-          position: relative;
-          
-          /* Manuscript-inspired frame - override Shiki inline styles */
-          border: 1px solid color-mix(in srgb, var(--color-lichen) 30%, transparent) !important;
-          box-shadow:
-            0 8px 22px color-mix(in srgb, var(--color-walnut) 5%, transparent),
-            0 2px 6px color-mix(in srgb, var(--color-sage) 12%, transparent),
-            inset 0 1px 0 color-mix(in srgb, var(--color-parchment-light) 70%, white) !important;
-          
-          font-size: 18px !important;
-          line-height: 1.25 !important;
-          overflow-x: auto;
-          
-          /* Gentle transition for theme changes */
-          transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        /* Copy button styling */
-        .astro-code .copy-button {
-          position: absolute;
-          top: var(--space-sm);
-          right: var(--space-sm);
-          background: color-mix(in srgb, var(--color-surface) 92%, var(--color-walnut));
-          border: 1px solid var(--color-lichen) !important;
-          border-radius: 999px;
-          padding: 6px 10px;
-          font-size: 18px;
-          font-family: var(--font-heading);
-          color: var(--color-walnut);
-          cursor: pointer;
-          opacity: 0.08;
-          transition: opacity 0.15s ease, transform 0.15s ease, background 0.2s ease, color 0.2s ease;
-          user-select: none;
-          pointer-events: auto;
-          z-index: 1;
-          
-          box-shadow: 0 2px 6px color-mix(in srgb, var(--color-sage) 20%, transparent);
-        }
-
-        .astro-code:hover .copy-button { opacity: 0.5; }
-
-        .astro-code .copy-button:hover {
-          background: color-mix(in srgb, var(--color-surface) 96%, var(--color-walnut));
-          color: var(--color-ochre);
-          border-color: var(--color-lichen);
-          transform: translateY(-1px);
-          box-shadow: 0 3px 8px color-mix(in srgb, var(--color-sage) 18%, transparent);
-          opacity: 1;
-        }
-
-        .astro-code .copy-button:focus-visible { outline-color: var(--color-lichen); }
-
-        .astro-code .copy-button:active {
-          transform: translateY(0);
-          box-shadow: 0 1px 3px color-mix(in srgb, var(--color-sage) 18%, transparent);
-        }
-
-        .astro-code .copy-button.copied {
-          background: color-mix(in srgb, var(--color-surface) 96%, var(--color-moss));
-          color: var(--color-moss);
-          border-color: var(--color-moss);
-        }
-
-        /* Collapsible code sections with botanical styling */
-        details.code-collapse {
-          margin: var(--space-md) 0;
-          border: 1px solid var(--color-lichen);
-          border-radius: 10px;
-          overflow: hidden;
-          
-          /* Subtle manuscript frame */
-          box-shadow: 0 6px 14px color-mix(in srgb, var(--color-sage) 10%, transparent), 0 2px 4px color-mix(in srgb, var(--color-walnut) 6%, transparent);
-          background: var(--color-surface);
-        }
-
-        details.code-collapse summary {
-          position: relative;
-          padding: var(--space-xs) var(--space-lg);
-          padding-left: calc(var(--space-lg) + 10px);
-          background: var(--color-surface);
-          font-family: var(--font-heading);
-          font-weight: 500;
-          font-size: var(--text-md);
-          line-height: 1.2;
-          color: var(--color-walnut);
-          cursor: pointer;
-          user-select: none;
-          list-style: none;
-          display: flex;
-          align-items: center;
-          gap: var(--space-xs);
-          min-height: auto;
-          transition: all 0.2s ease;
-          border-bottom: 1px solid color-mix(in srgb, var(--color-lichen) 40%, transparent);
-          box-shadow: 0 1px 2px color-mix(in srgb, var(--color-walnut) 6%, transparent);
-        }
-
-        details.code-collapse summary p { margin: 0; line-height: inherit; }
-
-        details.code-collapse summary::-webkit-details-marker { display: none; }
-
-        details.code-collapse summary::before {
-          content: '▸';
-          color: var(--color-moss);
-          font-size: 0.85em;
-          line-height: 1;
-          transition: transform 0.2s ease;
-          transform-origin: center;
-          flex-shrink: 0;
-        }
-
-        details.code-collapse[open] summary::before { transform: rotate(90deg); }
-
-        details.code-collapse summary::after {
-          content: '';
-          position: absolute;
-          left: var(--space-sm);
-          top: 50%;
-          transform: translateY(-50%);
-          width: 6px;
-          height: 22px;
-          border-radius: 3px;
-          background: color-mix(in srgb, var(--color-walnut) 15%, transparent);
-        }
-
-        details.code-collapse summary:hover {
-          background: color-mix(in srgb, var(--color-surface) 98%, var(--color-walnut));
-          color: var(--color-ochre);
-        }
-
-        details.code-collapse summary:hover::before { color: var(--color-ochre); }
-
-        details.code-collapse[open] summary { border-bottom-color: var(--color-lichen); margin-bottom: 0; }
-
-        /* Content area styling */
-        details.code-collapse .astro-code {
-          margin: 0 !important;
-          padding: var(--space-sm) !important;
-          border: none !important;
-          border-radius: 0 !important;
-          box-shadow: none !important;
-        }
-        
-        /* Ensure no extra spacing in the collapsible container */
-        details.code-collapse[open] {
-          padding: 0;
-        }
-
-        /* Remove selection-style highlights from code content */
-        .astro-code *,
-        .astro-code span,
-        .astro-code .line {
-          background: transparent !important;
-          outline: none !important;
-          border: none !important;
-          box-shadow: none !important;
-        }
-
-        /* Ensure no pseudo-element backgrounds interfere */
-        .astro-code *::before,
-        .astro-code *::after {
-          background: transparent !important;
-          outline: none !important;
-          border: none !important;
-          box-shadow: none !important;
-        }
-
-        /* Smooth opening animation */
-        details.code-collapse[open] {
-          animation: expand 0.3s ease-out;
-        }
-
-        @keyframes expand {
-          from {
-            max-height: 3rem;
-          }
-          to {
-            max-height: 100vh;
-          }
-        }
-
-        /* Shiki dual theme switching - ported from global.css */
-        /* Default: light theme, then dark based on system preference or manual toggle */
+        /* Shiki dual theme switching - works with Astro's inline style generation */
         [data-theme="dark"] .astro-code,
         [data-theme="dark"] .astro-code span {
           color: var(--shiki-dark) !important;
@@ -537,7 +345,6 @@ const currentPath = Astro.url.pathname;
         }
 
         @media (prefers-color-scheme: dark) {
-          /* Only apply dark theme if no manual theme is set */
           :not([data-theme]) .astro-code,
           :not([data-theme]) .astro-code span {
             color: var(--shiki-dark) !important;
@@ -547,59 +354,27 @@ const currentPath = Astro.url.pathname;
             text-decoration: var(--shiki-dark-text-decoration) !important;
           }
         }
-
-        @media (max-width: 640px) {
-          .astro-code .copy-button { display: none; }
-        }
-
-        /* Margin Notes Styling - Applied via JavaScript */
-        .post-body.longform .margin-note {
-          position: absolute !important;
-          right: -240px;
-          width: 200px;
-          font-size: var(--text-sm);
-          color: var(--color-text-muted);
-          padding: var(--space-xs);
-          border-radius: 0 var(--border-radius) var(--border-radius) 0;
-          line-height: 1.4;
-          border-left: 2px solid var(--color-sage) !important;
-          background: rgba(248, 248, 242, 0.9) !important;
-          box-shadow: 0 2px 8px rgba(168, 181, 160, 0.1);
-          font-style: normal !important;
-          margin: 0 !important;
-        }
-
-        /* Remove the decorative quote from margin notes */
-        .post-body.longform .margin-note::before {
-          display: none !important;
-        }
-
-        @media (max-width: 1400px) {
-          .post-body.longform .margin-note {
-            display: none !important;
-          }
-        }
       </style>
 
       <script>
         // Add copy buttons to code blocks
         document.addEventListener('DOMContentLoaded', function() {
           const codeBlocks = document.querySelectorAll('.astro-code');
-          
+
           codeBlocks.forEach(function(codeBlock) {
             const copyButton = document.createElement('button');
             copyButton.className = 'copy-button';
             copyButton.textContent = 'Copy';
             copyButton.setAttribute('aria-label', 'Copy code to clipboard');
-            
+
             copyButton.addEventListener('click', function() {
               const code = codeBlock.textContent;
-              
+
               if (navigator.clipboard && window.isSecureContext) {
                 navigator.clipboard.writeText(code).then(function() {
                   copyButton.textContent = 'Copied!';
                   copyButton.classList.add('copied');
-                  
+
                   setTimeout(function() {
                     copyButton.textContent = 'Copy';
                     copyButton.classList.remove('copied');
@@ -611,12 +386,12 @@ const currentPath = Astro.url.pathname;
                 textArea.value = code;
                 document.body.appendChild(textArea);
                 textArea.select();
-                
+
                 try {
                   document.execCommand('copy');
                   copyButton.textContent = 'Copied!';
                   copyButton.classList.add('copied');
-                  
+
                   setTimeout(function() {
                     copyButton.textContent = 'Copy';
                     copyButton.classList.remove('copied');
@@ -624,11 +399,11 @@ const currentPath = Astro.url.pathname;
                 } catch (err) {
                   console.error('Could not copy text: ', err);
                 }
-                
+
                 document.body.removeChild(textArea);
               }
             });
-            
+
             codeBlock.appendChild(copyButton);
           });
         });
