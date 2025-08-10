@@ -58,12 +58,12 @@ Inspired by:
 
 2. **Install dependencies**
    ```bash
-   pnpm install
+   bun install
    ```
 
 3. **Start development server**
    ```bash
-   pnpm run dev
+   bun run dev
    ```
 
 4. **Customize for your own garden**
@@ -96,9 +96,9 @@ Inspired by:
 
 ## 📋 Scripts
 
-- `pnpm run dev`: Start development server
-- `pnpm run build`: Build for production  
-- `pnpm run preview`: Preview production build
+- `bun run dev`: Start development server
+- `bun run build`: Build for production  
+- `bun run preview`: Preview production build
 
 ## 🌍 Environmental Considerations
 
