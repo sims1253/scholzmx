@@ -1,21 +1,31 @@
 ---
-// Reusable portrait frame component with multiple style options
+// Unified image component that handles all image positioning and framing needs
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 
 export interface Props {
+  // Core image props
   src: string | ImageMetadata;
   alt: string;
-  style: 'botanical' | 'polaroid' | 'gentle-oval';
-  size?: 'small' | 'medium' | 'large';
-  className?: string;
-  width?: number | string;
-  height?: number | string;
+  width?: number;
+  height?: number;
   loading?: 'lazy' | 'eager';
+  
+  // Positioning & scaling
   positionX?: number; // Horizontal position as percentage (-50 to 50, where 0 is center)
   positionY?: number; // Vertical position as percentage (-50 to 50, where 0 is center)
-  scale?: number; // Scale/zoom factor (e.g., 1.2 for 20% zoom in, 0.8 for 20% zoom out)
+  scale?: number; // Scale/zoom factor (e.g., 1.2 for 20% zoom in)
   fillMode?: 'cover' | 'contain' | 'fill'; // How to handle image fitting when no scale/position given
+  
+  // Frame styling
+  style?: 'botanical' | 'polaroid' | 'gentle-oval' | 'hero' | 'simple';
+  size?: 'small' | 'medium' | 'large' | 'custom';
+  aspectRatio?: string; // e.g., "8/3" for hero, "1/1" for portraits
+  
+  // Container styling
+  className?: string;
+  containerClass?: string;
+  
   // Dual image support
   alternateSrc?: string | ImageMetadata; // Second image to toggle to
   alternateAlt?: string; // Alt text for second image
@@ -29,9 +39,6 @@ export interface Props {
 const { 
   src, 
   alt, 
-  style, 
-  size = 'medium',
-  className = '',
   width,
   height,
   loading = 'lazy',
@@ -39,6 +46,11 @@ const {
   positionY,
   scale,
   fillMode = 'cover',
+  style = 'simple',
+  size = 'medium',
+  aspectRatio,
+  className = '',
+  containerClass = '',
   alternateSrc,
   alternateAlt,
   alternatePositionX,
@@ -62,8 +74,8 @@ const finalAlternatePositionY = alternatePositionY || 0;
 const finalAlternateScale = alternateScale || 1;
 const finalAlternateFillMode = alternateFillMode || fillMode;
 
-// Size mappings for different frame styles
-const sizeMap = {
+// Size mappings for portrait frame styles
+const portraitSizeMap = {
   small: {
     botanical: { width: '120px', height: '120px' },
     polaroid: { width: '120px', height: '120px' },
@@ -81,25 +93,46 @@ const sizeMap = {
   }
 };
 
-const frameSize = sizeMap[size][style];
-const finalWidth = width || frameSize.width;
-const finalHeight = height || frameSize.height;
+// Determine final dimensions
+let finalWidth: string | number;
+let finalHeight: string | number;
+
+if (style === 'hero') {
+  // Hero images use viewport-relative sizing with custom aspect ratio
+  finalWidth = width || 'calc(min(75vw, 1100px) + 4rem)';
+  finalHeight = height || 'auto';
+} else if (style === 'simple') {
+  // Simple images use natural sizing or provided dimensions
+  finalWidth = width || '100%';
+  finalHeight = height || 'auto';
+} else {
+  // Portrait frames use size mapping
+  if (size === 'custom') {
+    // For custom size, use provided width/height or fallback to medium defaults
+    finalWidth = width || portraitSizeMap.medium.botanical.width;
+    finalHeight = height || portraitSizeMap.medium.botanical.height;
+  } else {
+    const frameSize = portraitSizeMap[size][style] || portraitSizeMap.medium.botanical;
+    finalWidth = width || frameSize.width;
+    finalHeight = height || frameSize.height;
+  }
+}
 
 // Parse dimensions for Image component
-const imageWidth = typeof finalWidth === 'string' ? parseInt(finalWidth) : finalWidth;
-const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) : finalHeight;
+const imageWidth = typeof finalWidth === 'string' ? parseInt(finalWidth) || 800 : finalWidth;
+const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) || 400 : finalHeight;
 ---
 
 <div 
-  class={`portrait-frame portrait-frame-${style} ${className} ${isClickable ? 'clickable' : ''}`} 
-  style={`width: ${finalWidth}; height: ${finalHeight};`}
+  class={`image-frame image-frame-${style} ${className} ${isClickable ? 'clickable' : ''} ${containerClass}`} 
+  style={`${aspectRatio ? `aspect-ratio: ${aspectRatio};` : ''} ${(style !== 'hero' && style !== 'simple') ? `width: ${finalWidth}; height: ${finalHeight};` : ''}`}
   role={isClickable ? 'button' : undefined}
   tabindex={isClickable ? '0' : undefined}
   aria-label={isClickable ? `Click to toggle between ${alt} and ${alternateAlt || 'alternate image'}` : undefined}
 >
   {useCustomPositioning ? (
     <div class="image-wrapper primary-image" style={`transform: scale(${finalScale}) translate(${finalPositionX}%, ${finalPositionY}%);`}>
-      <div class="portrait-image custom-positioning">
+      <div class="frame-image custom-positioning">
         {typeof src === 'string' ? (
           <img
             src={src}
@@ -114,15 +147,16 @@ const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) : fi
             alt={alt}
             width={imageWidth}
             height={imageHeight}
-            widths={[imageWidth]}
-            sizes={`${imageWidth}px`}
+            widths={style === 'hero' ? [400, 600, 800, 1100] : [imageWidth]}
+            sizes={style === 'hero' ? '(max-width: 768px) 400px, (max-width: 1200px) 600px, 800px' : `${imageWidth}px`}
             format="webp"
+            loading={loading}
           />
         )}
       </div>
     </div>
   ) : (
-    <div class={`portrait-image simple-fill fill-${fillMode} primary-image`}>
+    <div class={`frame-image simple-fill fill-${fillMode} primary-image`}>
       {typeof src === 'string' ? (
         <img
           src={src}
@@ -137,9 +171,10 @@ const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) : fi
           alt={alt}
           width={imageWidth}
           height={imageHeight}
-          widths={[imageWidth]}
-          sizes={`${imageWidth}px`}
+          widths={style === 'hero' ? [400, 600, 800, 1100] : [imageWidth]}
+          sizes={style === 'hero' ? '(max-width: 768px) 400px, (max-width: 1200px) 600px, 800px' : `${imageWidth}px`}
           format="webp"
+          loading={loading}
         />
       )}
     </div>
@@ -148,7 +183,7 @@ const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) : fi
   {alternateSrc && (
     useAlternateCustomPositioning ? (
       <div class="image-wrapper alternate-image" style={`transform: scale(${finalAlternateScale}) translate(${finalAlternatePositionX}%, ${finalAlternatePositionY}%);`}>
-        <div class="portrait-image custom-positioning">
+        <div class="frame-image custom-positioning">
           {typeof alternateSrc === 'string' ? (
             <img
               src={alternateSrc}
@@ -163,8 +198,8 @@ const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) : fi
               alt={alternateAlt || alt}
               width={imageWidth}
               height={imageHeight}
-              widths={[imageWidth]}
-              sizes={`${imageWidth}px`}
+              widths={style === 'hero' ? [400, 600, 800, 1100] : [imageWidth]}
+              sizes={style === 'hero' ? '(max-width: 768px) 400px, (max-width: 1200px) 600px, 800px' : `${imageWidth}px`}
               format="webp"
               loading="lazy"
             />
@@ -172,7 +207,7 @@ const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) : fi
         </div>
       </div>
     ) : (
-      <div class={`portrait-image simple-fill fill-${finalAlternateFillMode} alternate-image`}>
+      <div class={`frame-image simple-fill fill-${finalAlternateFillMode} alternate-image`}>
         {typeof alternateSrc === 'string' ? (
           <img
             src={alternateSrc}
@@ -187,8 +222,8 @@ const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) : fi
             alt={alternateAlt || alt}
             width={imageWidth}
             height={imageHeight}
-            widths={[imageWidth]}
-            sizes={`${imageWidth}px`}
+            widths={style === 'hero' ? [400, 600, 800, 1100] : [imageWidth]}
+            sizes={style === 'hero' ? '(max-width: 768px) 400px, (max-width: 1200px) 600px, 800px' : `${imageWidth}px`}
             format="webp"
             loading="lazy"
           />
@@ -199,14 +234,12 @@ const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) : fi
 </div>
 
 <style>
-  /* Base portrait frame styles */
-  .portrait-frame {
+  /* Base image frame styles */
+  .image-frame {
     position: relative;
     margin: 0 auto;
     overflow: hidden;
-    border: 3px solid var(--color-parchment-light);
-    background-color: var(--color-parchment-light);
-    box-shadow: 0 6px 16px rgba(139, 90, 60, 0.2);
+    display: block;
   }
 
   .image-wrapper {
@@ -218,7 +251,7 @@ const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) : fi
   }
 
   /* Custom positioning mode - for precise control */
-  .portrait-image.custom-positioning {
+  .frame-image.custom-positioning {
     width: 100%;
     height: 100%;
     display: block;
@@ -229,58 +262,84 @@ const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) : fi
     overflow: hidden;
   }
 
-  .portrait-image.custom-positioning img {
+  .frame-image.custom-positioning img {
     width: 100%;
     height: 100%;
     object-fit: contain;
   }
 
   /* Simple fill modes - for easy default usage */
-  .portrait-image.simple-fill {
+  .frame-image.simple-fill {
     width: 100%;
     height: 100%;
     display: block;
     overflow: hidden;
   }
 
-  .portrait-image.simple-fill img {
+  .frame-image.simple-fill img {
     width: 100%;
     height: 100%;
   }
 
-  .portrait-image.fill-cover img {
+  .frame-image.fill-cover img {
     object-fit: cover; /* Fill frame, crop excess */
   }
 
-  .portrait-image.fill-contain img {
+  .frame-image.fill-contain img {
     object-fit: contain; /* Show full image, letterbox if needed */
   }
 
-  .portrait-image.fill-fill img {
+  .frame-image.fill-fill img {
     object-fit: fill; /* Stretch to fit frame exactly */
   }
 
+  /* Hero image style - for blog post headers */
+  .image-frame-hero {
+    width: calc(min(75vw, 1100px) + 4rem);
+    aspect-ratio: 8/3;
+    margin-left: calc(50% - min(37.5vw, 550px) - 2rem);
+    margin-top: calc(-1 * var(--space-lg));
+    margin-bottom: var(--space-lg);
+    background: var(--color-background);
+    /* No border-radius or box-shadow for seamless integration */
+  }
+
+  /* Simple image style - for basic usage */
+  .image-frame-simple {
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 12px rgba(139, 90, 60, 0.15);
+  }
+
+  /* Portrait frame styles - copied from PortraitFrame */
+  .image-frame-botanical,
+  .image-frame-polaroid,
+  .image-frame-gentle-oval {
+    border: 3px solid var(--color-parchment-light);
+    background-color: var(--color-parchment-light);
+    box-shadow: 0 6px 16px rgba(139, 90, 60, 0.2);
+  }
+
   /* Clickable frame styles */
-  .portrait-frame.clickable {
+  .image-frame.clickable {
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
 
-  .portrait-frame.clickable:hover {
+  .image-frame.clickable:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(139, 90, 60, 0.25);
   }
 
-  .portrait-frame.clickable:active {
+  .image-frame.clickable:active {
     transform: translateY(-1px);
   }
 
-  .portrait-frame.clickable:focus {
+  .image-frame.clickable:focus {
     outline: none; /* Remove focus outline */
   }
 
   /* Only show focus outline when navigating with keyboard */
-  .portrait-frame.clickable:focus-visible {
+  .image-frame.clickable:focus-visible {
     outline: 2px solid var(--color-moss);
     outline-offset: 2px;
   }
@@ -296,29 +355,29 @@ const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) : fi
     height: 100%;
   }
 
-  .portrait-frame.show-alternate .primary-image {
+  .image-frame.show-alternate .primary-image {
     opacity: 0;
   }
 
-  .portrait-frame.show-alternate .alternate-image {
+  .image-frame.show-alternate .alternate-image {
     opacity: 1;
   }
 
   /* Enhanced shadows for clickable frames */
-  .portrait-frame-botanical.clickable:hover {
+  .image-frame-botanical.clickable:hover {
     box-shadow: 0 10px 22px rgba(139, 90, 60, 0.28);
   }
 
-  .portrait-frame-polaroid.clickable:hover {
+  .image-frame-polaroid.clickable:hover {
     box-shadow: 0 10px 24px rgba(139, 90, 60, 0.3);
   }
 
-  .portrait-frame-gentle-oval.clickable:hover {
+  .image-frame-gentle-oval.clickable:hover {
     box-shadow: 0 8px 20px rgba(139, 90, 60, 0.25);
   }
 
   /* Botanical Scallops Style */
-  .portrait-frame-botanical {
+  .image-frame-botanical {
     clip-path: polygon(
       20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 
       20% 100%, 0% 80%, 0% 20%
@@ -328,7 +387,7 @@ const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) : fi
   }
 
   /* Vintage Polaroid Style */
-  .portrait-frame-polaroid {
+  .image-frame-polaroid {
     border-radius: 8px;
     border: 12px solid #fff;
     border-bottom: 24px solid #fff;
@@ -337,30 +396,38 @@ const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) : fi
   }
 
   /* Gentle Oval Style */
-  .portrait-frame-gentle-oval {
+  .image-frame-gentle-oval {
     border-radius: 50%;
     box-shadow: 0 6px 16px rgba(139, 90, 60, 0.2);
   }
 
   /* Mobile responsiveness */
   @media (max-width: 768px) {
-    .portrait-frame {
+    .image-frame-botanical,
+    .image-frame-polaroid,
+    .image-frame-gentle-oval {
       max-width: 140px;
       max-height: 140px;
     }
 
-    .portrait-frame-gentle-oval {
+    .image-frame-gentle-oval {
       max-width: 120px;
       max-height: 140px;
+    }
+
+    .image-frame-hero {
+      width: calc(100vw - 2rem);
+      margin-left: -1rem;
+      aspect-ratio: 4/3;
     }
   }
 </style>
 
 {isClickable && (
   <script>
-    // Portrait frame toggle functionality
+    // Image frame toggle functionality
     document.addEventListener('DOMContentLoaded', function() {
-      const clickableFrames = document.querySelectorAll('.portrait-frame.clickable');
+      const clickableFrames = document.querySelectorAll('.image-frame.clickable');
       
       clickableFrames.forEach(frame => {
         const toggleImage = () => {

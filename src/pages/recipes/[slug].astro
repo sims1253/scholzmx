@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import DropCap from '../../components/DropCap.astro';
+import ImageFrame from '../../components/ImageFrame.astro';
 
 /* Note: Content markdown cannot render Astro components by default.
    To allow components inside markdown, pass them via the 'components' prop on <Content />. */
@@ -54,25 +55,15 @@ const { Content } = await recipe.render();
 
         {
           recipe.data.heroImage && (
-            <div class="hero-image">
-              <img
-                src={
-                  typeof recipe.data.heroImage === 'string'
-                    ? recipe.data.heroImage
-                    : recipe.data.heroImage.src
-                }
-                alt={recipe.data.title}
-                width={
-                  typeof recipe.data.heroImage === 'string' ? 600 : recipe.data.heroImage.width
-                }
-                height={
-                  typeof recipe.data.heroImage === 'string' ? 400 : recipe.data.heroImage.height
-                }
-                loading="lazy"
-                decoding="async"
-                class="recipe-hero"
-              />
-            </div>
+            <ImageFrame
+              src={recipe.data.heroImage}
+              alt={recipe.data.title}
+              style="simple"
+              width={600}
+              height={400}
+              loading="lazy"
+              className="recipe-hero"
+            />
           )
         }
       </header>
@@ -167,18 +158,6 @@ const { Content } = await recipe.render();
     margin-bottom: var(--space-lg);
   }
 
-  .hero-image {
-    margin: var(--space-lg) 0;
-    border-radius: var(--border-radius);
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(139, 90, 60, 0.15);
-  }
-
-  .recipe-hero {
-    width: 100%;
-    height: auto;
-    display: block;
-  }
 
   /* Typography now handled by global .longform class */
 
