@@ -211,7 +211,7 @@ const formatDate = (date: Date) => {
 </BaseLayout>
 
 <script>
-  // Convert blockquotes starting with "margin:" to margin notes
+  // Simple margin notes conversion
   document.addEventListener('DOMContentLoaded', function () {
     const blockquotes = document.querySelectorAll('.post-body blockquote');
 
@@ -223,7 +223,6 @@ const formatDate = (date: Date) => {
         firstP.textContent = text;
 
         // Convert blockquote to margin note
-        blockquote.classList.remove('blockquote');
         blockquote.classList.add('margin-note');
         blockquote.setAttribute('aria-label', 'Margin note');
       }
@@ -561,7 +560,7 @@ const formatDate = (date: Date) => {
   /* Margin Notes Styling - Applied via JavaScript */
   .post-body.longform :global(.margin-note) {
     position: absolute !important;
-    right: -240px;
+    left: 82%;
     width: 200px;
     font-size: var(--text-sm);
     color: var(--color-text-muted);
