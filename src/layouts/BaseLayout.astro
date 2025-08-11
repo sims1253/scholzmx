@@ -154,6 +154,10 @@ const currentPath = Astro.url.pathname;
         : 'longform serious-content'
       : undefined}
   >
+    <!-- Skip Links for Keyboard Navigation -->
+    <a href="#main-content" class="skip-link">Skip to main content (blog posts, articles, and page content)</a>
+    <a href="#main-navigation" class="skip-link">Skip to site navigation (Blog, Projects, Research links)</a>
+    
     <div class="page-wrapper">
       <!-- Organic botanical borders -->
       {
@@ -168,7 +172,7 @@ const currentPath = Astro.url.pathname;
 
       <!-- Navigation and Content in scrollable area -->
       <div class="nav-and-content-area">
-        <nav class="page-nav" role="navigation" aria-label="Main navigation">
+        <nav class="page-nav" role="navigation" aria-label="Main navigation" id="main-navigation">
           <div class="nav-content">
             <div class="nav-brand">
               <a href="/" class="site-logo" aria-label="Home">
@@ -227,7 +231,7 @@ const currentPath = Astro.url.pathname;
           </div>
 
           <!-- Main content area -->
-          <main class="main-content">
+          <main class="main-content" id="main-content">
             <div class={personal ? "container personal" : "container"}>
               <slot />
             </div>

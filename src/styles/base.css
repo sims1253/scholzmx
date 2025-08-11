@@ -1,5 +1,116 @@
 /* Base styles - shared across all pages */
 
+/* Skip Links for Accessibility */
+.skip-link {
+  position: fixed;
+  top: -40px;
+  left: 0;
+  z-index: 9999;
+  background-color: var(--color-walnut);
+  color: var(--color-parchment);
+  padding: var(--space-xs) var(--space-sm);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: var(--text-sm);
+  border-radius: 0 0 var(--border-radius) 0;
+  border: 2px solid var(--color-walnut);
+  transform: translateY(-100%);
+  transition: transform 0.2s ease-in-out;
+}
+
+.skip-link:focus {
+  transform: translateY(100%);
+  top: 0;
+  outline: 2px solid color-mix(in srgb, var(--color-ochre) 80%, white);
+  outline-offset: 2px;
+}
+
+.skip-link:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Enhanced Focus Management */
+*:focus {
+  outline: none;
+}
+
+*:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-walnut) 90%, var(--color-ochre));
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Specific focus styles for interactive elements */
+a:focus-visible {
+  outline-color: color-mix(in srgb, var(--color-walnut) 85%, var(--color-ochre));
+  background-color: color-mix(in srgb, var(--color-walnut) 8%, transparent);
+  text-decoration-color: var(--color-ochre);
+}
+
+button:focus-visible {
+  outline-color: color-mix(in srgb, var(--color-walnut) 90%, var(--color-ochre));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-walnut) 20%, transparent);
+}
+
+/* Form elements focus styles for consistency */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-walnut) 90%, var(--color-ochre));
+  outline-offset: 2px;
+  border-color: color-mix(in srgb, var(--color-walnut) 80%, var(--color-ochre));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-walnut) 15%, transparent);
+}
+
+/* Specific styling for different form element types */
+input[type="text"]:focus-visible,
+input[type="email"]:focus-visible,
+input[type="password"]:focus-visible,
+input[type="search"]:focus-visible,
+input[type="url"]:focus-visible,
+input[type="tel"]:focus-visible,
+textarea:focus-visible {
+  background-color: color-mix(in srgb, var(--color-parchment-light) 95%, var(--color-walnut));
+}
+
+input[type="checkbox"]:focus-visible,
+input[type="radio"]:focus-visible {
+  outline-offset: 3px;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-walnut) 25%, transparent);
+}
+
+select:focus-visible {
+  background-color: color-mix(in srgb, var(--color-parchment-light) 95%, var(--color-walnut));
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  *:focus-visible {
+    outline: 3px solid;
+    outline-offset: 3px;
+  }
+  
+  .skip-link:focus {
+    outline: 3px solid;
+    background-color: var(--color-ink-dark);
+    color: var(--color-parchment);
+  }
+  
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: 3px solid;
+    outline-offset: 3px;
+    border-width: 2px;
+    box-shadow: none;
+  }
+  
+  input[type="checkbox"]:focus-visible,
+  input[type="radio"]:focus-visible {
+    outline-offset: 4px;
+  }
+}
+
 /* Global base styles */
 *,
 *::before,
