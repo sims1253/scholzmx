@@ -66,7 +66,6 @@ const publicationsByYear = publications.reduce(
   {} as Record<number, (typeof publications)[number][]>
 );
 const years = Object.keys(publicationsByYear).sort((a, b) => Number(b) - Number(a));
-const types = Array.from(new Set(publications.map((p) => p.type))).sort();
 ---
 
 <BaseLayout

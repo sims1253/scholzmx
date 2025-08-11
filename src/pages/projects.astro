@@ -1,7 +1,5 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { Image } from 'astro:assets';
-import huerdLogo from '../../public/img/huerd-logo.png';
 
 const projects = [
   {
@@ -44,7 +42,7 @@ const projects = [
 const sortedProjects = projects.sort((a, b) => b.year - a.year);
 
 // Helper function for external image optimization
-const optimizeExternalImage = (url, width = 200, height = 120, quality = 80) => {
+const optimizeExternalImage = (url: string) => {
   // Simple URL-based image optimization service (you could replace with ImageKit, Cloudinary, etc.)
   // For now, we'll use original URL but with proper loading attributes
   return url;
@@ -71,7 +69,7 @@ const optimizeExternalImage = (url, width = 200, height = 120, quality = 80) => 
       <main class="projects-content">
         <section class="projects-list" aria-label="Projects">
           {
-            sortedProjects.map((project, index) => (
+            sortedProjects.map((project) => (
               <article class="project-card">
                 <div class="card-body">
                   <h3 class="card-title">

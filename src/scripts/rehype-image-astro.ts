@@ -2,7 +2,6 @@ import type { Root } from 'hast';
 import type { Plugin } from 'unified';
 import { visit } from 'unist-util-visit';
 import path from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
 
 /**
  * rehype-image-astro

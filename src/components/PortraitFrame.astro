@@ -100,22 +100,48 @@ const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) : fi
   {useCustomPositioning ? (
     <div class="image-wrapper primary-image" style={`transform: scale(${finalScale}) translate(${finalPositionX}%, ${finalPositionY}%);`}>
       <div class="portrait-image custom-positioning">
+        {typeof src === 'string' ? (
+          <img
+            src={src}
+            alt={alt}
+            width={imageWidth}
+            height={imageHeight}
+            loading={loading}
+          />
+        ) : (
+          <Image
+            src={src}
+            alt={alt}
+            width={imageWidth}
+            height={imageHeight}
+            widths={[imageWidth]}
+            sizes={`${imageWidth}px`}
+            format="webp"
+          />
+        )}
+      </div>
+    </div>
+  ) : (
+    <div class={`portrait-image simple-fill fill-${fillMode} primary-image`}>
+      {typeof src === 'string' ? (
+        <img
+          src={src}
+          alt={alt}
+          width={imageWidth}
+          height={imageHeight}
+          loading={loading}
+        />
+      ) : (
         <Image
           src={src}
           alt={alt}
           width={imageWidth}
           height={imageHeight}
+          widths={[imageWidth]}
+          sizes={`${imageWidth}px`}
+          format="webp"
         />
-      </div>
-    </div>
-  ) : (
-    <div class={`portrait-image simple-fill fill-${fillMode} primary-image`}>
-      <Image
-        src={src}
-        alt={alt}
-        width={imageWidth}
-        height={imageHeight}
-      />
+      )}
     </div>
   )}
   
@@ -123,24 +149,50 @@ const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) : fi
     useAlternateCustomPositioning ? (
       <div class="image-wrapper alternate-image" style={`transform: scale(${finalAlternateScale}) translate(${finalAlternatePositionX}%, ${finalAlternatePositionY}%);`}>
         <div class="portrait-image custom-positioning">
-          <Image
+          {typeof alternateSrc === 'string' ? (
+            <img
+              src={alternateSrc}
+              alt={alternateAlt || alt}
+              width={imageWidth}
+              height={imageHeight}
+              loading="lazy"
+            />
+          ) : (
+            <Image
+              src={alternateSrc}
+              alt={alternateAlt || alt}
+              width={imageWidth}
+              height={imageHeight}
+              widths={[imageWidth]}
+              sizes={`${imageWidth}px`}
+              format="webp"
+              loading="lazy"
+            />
+          )}
+        </div>
+      </div>
+    ) : (
+      <div class={`portrait-image simple-fill fill-${finalAlternateFillMode} alternate-image`}>
+        {typeof alternateSrc === 'string' ? (
+          <img
             src={alternateSrc}
             alt={alternateAlt || alt}
             width={imageWidth}
             height={imageHeight}
             loading="lazy"
           />
-        </div>
-      </div>
-    ) : (
-      <div class={`portrait-image simple-fill fill-${finalAlternateFillMode} alternate-image`}>
-        <Image
-          src={alternateSrc}
-          alt={alternateAlt || alt}
-          width={imageWidth}
-          height={imageHeight}
-          loading="lazy"
-        />
+        ) : (
+          <Image
+            src={alternateSrc}
+            alt={alternateAlt || alt}
+            width={imageWidth}
+            height={imageHeight}
+            widths={[imageWidth]}
+            sizes={`${imageWidth}px`}
+            format="webp"
+            loading="lazy"
+          />
+        )}
       </div>
     )
   )}
@@ -320,8 +372,9 @@ const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) : fi
         
         // Keyboard handler for accessibility
         frame.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
+          const keyEvent = e as KeyboardEvent;
+          if (keyEvent.key === 'Enter' || keyEvent.key === ' ') {
+            keyEvent.preventDefault();
             toggleImage();
           }
         });

@@ -102,7 +102,20 @@ const formatDate = (date: Date) => date.toISOString().slice(0, 10);
                               style={`transform: scale(${post.data.heroImageScale || 1}) translate(${(post.data.heroImagePositionX || 0) * 100}%, ${(post.data.heroImagePositionY || 0) * 100}%);`}
                             >
                               <div class="thumb-inner">
-                                <Image src={post.data.heroImage} alt="" loading="lazy" />
+                                {typeof post.data.heroImage === 'string' ? (
+                                  <img src={post.data.heroImage} alt="" loading="lazy" />
+                                ) : (
+                                  <Image 
+                                    src={post.data.heroImage} 
+                                    alt="" 
+                                    width={300} 
+                                    height={200} 
+                                    widths={[150, 300]}
+                                    sizes="(max-width: 768px) 150px, 300px"
+                                    format="webp"
+                                    loading="lazy" 
+                                  />
+                                )}
                               </div>
                             </div>
                           </figure>

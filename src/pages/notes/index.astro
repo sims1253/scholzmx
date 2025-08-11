@@ -1,7 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import DropCap from '../../components/DropCap.astro';
 import HandDrawnDivider from '../../components/HandDrawnDivider.astro';
 
 // Get all notes, filter out drafts, and sort by creation date
@@ -26,16 +25,6 @@ const formatDate = (date: Date) => {
 
 // Note: No longer using symbol icons - using CSS-drawn elements instead
 
-const getTypeColor = (type: string) => {
-  const colors = {
-    thought: 'var(--color-sage)',
-    observation: 'var(--color-moss)', 
-    draft: 'var(--color-ochre)',
-    idea: 'var(--color-gold)',
-    reference: 'var(--color-walnut)'
-  };
-  return colors[type as keyof typeof colors] || 'var(--color-ink-medium)';
-};
 ---
 
 <BaseLayout 

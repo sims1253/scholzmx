@@ -1,35 +1,12 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import QuoteOfTheDay from '../components/QuoteOfTheDay.astro';
 import DropCap from '../components/DropCap.astro';
-import Slideshow from '../components/Slideshow.astro';
-import HandDrawnDivider from '../components/HandDrawnDivider.astro';
-import VineFrame from '../components/VineFrame.astro';
-import SmoothVineFrame from '../components/SmoothVineFrame.astro';
 import PortraitFrame from '../components/PortraitFrame.astro';
 
 /* Optimized local images */
 import selfImage from '../assets/images/homepage/self.jpg';
 import portraitImage from '../assets/images/homepage/portrait.jpg';
 
-/* Sample images for easel slideshow */
-const portfolioImages = [
-  {
-    src: selfImage,
-    alt: 'Botanical garden sketch - wild roses in summer bloom',
-    caption: 'Wild roses captured during morning garden walks',
-  },
-  {
-    src: portraitImage,
-    alt: 'Kitchen wisdom - homemade sourdough starter',
-    caption: 'The living culture that feeds our family',
-  },
-  {
-    src: selfImage,
-    alt: 'Statistical thinking coffee setup',
-    caption: 'Every cup is an experiment in optimization',
-  },
-];
 ---
 
 <BaseLayout

@@ -105,7 +105,7 @@ export default defineConfig({
             // Separate vendor chunks for better caching
           },
           assetFileNames: (assetInfo) => {
-            const name = assetInfo && assetInfo.name ? assetInfo.name : '';
+            const name = assetInfo && assetInfo.names && assetInfo.names[0] ? assetInfo.names[0] : '';
             const info = name.split('.');
             const ext = info[info.length - 1] || '';
             if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(ext)) {

@@ -431,12 +431,13 @@ details.code-collapse summary:hover::before { color: var(--color-ochre); }
 
 details.code-collapse[open] summary { border-bottom-color: var(--color-lichen); margin-bottom: 0; }
 
-/* Content area styling */
+/* Content area styling - minimal overrides for collapsible context */
 details.code-collapse .astro-code {
-  margin: 0;
+  margin: 0 !important; /* Only this needs !important due to base rule specificity */
   border: none;
   border-radius: 0;
   box-shadow: none;
+  /* Keep all other styles from the original .astro-code rule */
 }
 
 /* Remove selection-style highlights from code content */

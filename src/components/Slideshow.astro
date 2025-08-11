@@ -22,7 +22,7 @@ const {
   showIndicators = true,
 } = Astro.props;
 
-const slideshowId = `slideshow-${Math.random().toString(36).substr(2, 9)}`;
+const slideshowId = `slideshow-${Math.random().toString(36).substring(2, 11)}`;
 ---
 
 <div class="slideshow-container" data-slideshow-id={slideshowId}>
@@ -102,7 +102,7 @@ const slideshowId = `slideshow-${Math.random().toString(36).substr(2, 9)}`;
   <div class="slideshow-ornament" aria-hidden="true">✿</div>
 </div>
 
-<script define:vars={{ autoPlay, interval, slideshowId }}>
+<script define:vars={{ autoPlay, interval, slideshowId }} is:inline>
   // Slideshow functionality with vanilla JavaScript
   document.addEventListener('DOMContentLoaded', function () {
     const container = document.querySelector(`[data-slideshow-id="${slideshowId}"]`);

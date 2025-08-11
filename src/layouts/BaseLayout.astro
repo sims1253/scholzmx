@@ -14,7 +14,7 @@ export interface Props {
   description?: string;
   image?: string;
   addBorders?: boolean;
-  footerVariant?: 'projects' | 'writing' | 'research' | 'default';
+  footerVariant?: 'garden' | 'kitchen' | 'craft' | 'writing' | 'projects' | 'research' | 'default';
   includeQuoteSection?: boolean;
   longform?: boolean;
   personal?: boolean;
@@ -269,7 +269,7 @@ const currentPath = Astro.url.pathname;
           const KEY = 'theme-preference';
           const root = document.documentElement;
           const btn = document.getElementById('nav-theme-toggle');
-          function apply(v) {
+          function apply(v: string | null) {
             if (!v) {
               root.removeAttribute('data-theme');
               return;
@@ -279,7 +279,7 @@ const currentPath = Astro.url.pathname;
           function get() {
             return localStorage.getItem(KEY);
           }
-          function set(v) {
+          function set(v: string | null) {
             if (v) localStorage.setItem(KEY, v);
             else localStorage.removeItem(KEY);
           }
