@@ -78,14 +78,14 @@ const formatDate = (date: Date) => {
                 {typeof post.data.heroImage === 'string' ? (
                   <img
                     src={post.data.heroImage}
-                    alt={`Hero image for ${post.data.title}`}
+                    alt={post.data.title}
                     width={800}
                     height={400}
                   />
                 ) : (
                   <Image 
                     src={post.data.heroImage} 
-                    alt={`Hero image for ${post.data.title}`}
+                    alt={post.data.title}
                     width={800}
                     height={400}
                     widths={[400, 600, 800]}

@@ -61,7 +61,7 @@ const { Content } = await recipe.render();
                     ? recipe.data.heroImage
                     : recipe.data.heroImage.src
                 }
-                alt={`Hero image for ${recipe.data.title}`}
+                alt={recipe.data.title}
                 width={
                   typeof recipe.data.heroImage === 'string' ? 600 : recipe.data.heroImage.width
                 }

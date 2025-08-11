@@ -17,7 +17,10 @@
     "lint:css": "stylelint \"src/**/*.{css,astro}\"",
     "lint:css:fix": "stylelint \"src/**/*.{css,astro}\" --fix",
     "format": "prettier . --write",
-    "format:check": "prettier . --check"
+    "format:check": "prettier . --check",
+    "a11y": "pa11y http://localhost:4321",
+    "a11y:full": "pa11y --sitemap http://localhost:4321/sitemap.xml",
+    "test:a11y": "bun run build && bun run preview & sleep 3 && bun run a11y; kill $!"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.12",
@@ -38,6 +41,7 @@
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "lighthouse": "^12.8.0",
     "lightningcss": "^1.30.1",
+    "pa11y": "^9.0.0",
     "postcss": "^8.5.6",
     "postcss-html": "^1.8.0",
     "postcss-scss": "^4.0.9",

@@ -132,7 +132,13 @@ const years = Object.keys(publicationsByYear).sort((a, b) => Number(b) - Number(
                           </span>
                         </div>
                         <h3 class="card-title">
-                          <a href="#" class="title-link">{pub.title}</a>
+                          {pub.links?.pdf || pub.links?.doi ? (
+                            <a href={pub.links.pdf || pub.links.doi} class="title-link" target="_blank" rel="noopener noreferrer">
+                              {pub.title}
+                            </a>
+                          ) : (
+                            <span class="title-text">{pub.title}</span>
+                          )}
                         </h3>
                         <p class="card-authors">
                           {pub.authors.map((a, i) => (
@@ -354,6 +360,9 @@ const years = Object.keys(publicationsByYear).sort((a, b) => Number(b) - Number(
   .title-link:hover {
     color: var(--color-link-hover);
     text-decoration: underline;
+  }
+  .title-text {
+    color: inherit;
   }
   .card-authors {
     margin: 0 0 var(--space-xxs);
