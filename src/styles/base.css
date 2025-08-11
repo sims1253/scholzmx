@@ -326,22 +326,7 @@ pre {
   margin: 1.5em 0;
 }
 
-/* Self-hosted fonts */
-@font-face {
-  font-family: 'Fira Code';
-  src: url('/fonts/FiraCode-Regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Fira Code';
-  src: url('/fonts/FiraCode-Medium.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
+/* Note: Font faces moved to consolidated /src/styles/fonts.css */
 
 /* Utility classes */
 .logo-text {

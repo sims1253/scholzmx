@@ -5,6 +5,8 @@ import IllustratedFooter from '../components/IllustratedFooter.astro';
 // Import CSS files
 import '../styles/tokens.colors.css';
 import '../styles/tokens.typography.css';
+import '../styles/fonts-critical.css';
+import '../styles/fonts.css';
 import '../styles/layout.css';
 import '../styles/base.css';
 import '../styles/dropcap.css';
@@ -53,51 +55,78 @@ const currentPath = Astro.url.pathname;
 
     <slot name="head" />
 
+    <!-- Preload fonts based on page type for optimal performance -->
+    <!-- Always preload heading font (used on all pages) -->
     <link
       rel="preload"
-      href="/katex/fonts/KaTeX_Main-Regular.woff2"
+      href="/fonts/cormorant-garamond-600.woff2"
       as="font"
       type="font/woff2"
       crossorigin
     />
-    <link
-      rel="preload"
-      href="/katex/katex.min.css"
-      as="style"
-      onload="this.onload=null;this.rel='stylesheet'"
-    />
-    <noscript><link rel="stylesheet" href="/katex/katex.min.css" /></noscript>
+    
+    {/* Conditional preloading based on content type */}
+    {personal ? (
+      <link
+        rel="preload"
+        href="/fonts/Alegreya/alegreya-v38-latin-regular.woff2"
+        as="font"
+        type="font/woff2"
+        crossorigin
+      />
+    ) : (
+      <link
+        rel="preload"
+        href="/fonts/et-book-roman-old-style-figures.woff2"
+        as="font"
+        type="font/woff2"
+        crossorigin
+      />
+    )}
 
-    <!-- Fira Code for code blocks -->
-    <link
-      rel="preload"
-      href="/fonts/FiraCode-Regular.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      href="/fonts/FiraCode-Medium.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
+    {/* Only preload code fonts for content that likely has code blocks */}
+    {(currentPath.includes('/blog/') || currentPath.includes('/notes/') || currentPath.includes('/projects')) && (
+      <>
+        <link
+          rel="preload"
+          href="/fonts/FiraCode-Regular.woff2"
+          as="font"
+          type="font/woff2"
+          crossorigin
+        />
+        <link
+          rel="preload"
+          href="/fonts/FiraCode-Medium.woff2"
+          as="font"
+          type="font/woff2"
+          crossorigin
+        />
+      </>
+    )}
 
-    <!-- Always load initials (dropcaps) CSS, small footprint -->
+    {/* Only preload math fonts for content that likely has equations */}
+    {(currentPath.includes('/blog/') || currentPath.includes('/notes/') || currentPath.includes('/research')) && (
+      <>
+        <link
+          rel="preload"
+          href="/katex/fonts/KaTeX_Main-Regular.woff2"
+          as="font"
+          type="font/woff2"
+          crossorigin
+        />
+        <link
+          rel="preload"
+          href="/katex/katex.min.css"
+          as="style"
+          onload="this.onload=null;this.rel='stylesheet'"
+        />
+        <noscript><link rel="stylesheet" href="/katex/katex.min.css" /></noscript>
+      </>
+    )}
+
+
+    <!-- Specialty fonts loaded on demand -->
     <link rel="stylesheet" href="/fonts/et-initials.css" />
-
-    <!-- Load critical font CSS synchronously -->
-    <link rel="stylesheet" href="/fonts/cormorant.css" />
-
-    <!-- Load non-critical fonts asynchronously -->
-    <link
-      rel="preload"
-      href="/fonts/alegreya.css"
-      as="style"
-      onload="this.onload=null;this.rel='stylesheet'"
-    />
-    <noscript><link rel="stylesheet" href="/fonts/alegreya.css" /></noscript>
 
     <!-- Only preload fonts critical for initial render -->
     <link
