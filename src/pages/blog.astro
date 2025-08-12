@@ -105,15 +105,15 @@ const formatDate = (date: Date) => date.toISOString().slice(0, 10);
                                 {typeof post.data.heroImage === 'string' ? (
                                   <img src={post.data.heroImage} alt="" loading="lazy" />
                                 ) : (
-                                  <Image 
-                                    src={post.data.heroImage} 
-                                    alt="" 
-                                    width={300} 
-                                    height={200} 
+                                  <Image
+                                    src={post.data.heroImage}
+                                    alt=""
+                                    width={300}
+                                    height={200}
                                     widths={[150, 300]}
                                     sizes="(max-width: 768px) 150px, 300px"
                                     format="webp"
-                                    loading="lazy" 
+                                    loading="lazy"
                                   />
                                 )}
                               </div>
@@ -465,21 +465,16 @@ const formatDate = (date: Date) => date.toISOString().slice(0, 10);
       const href = card.getAttribute('data-href');
       if (href) window.location.href = href;
     });
-    // Client-side filtering with JSDoc types
-    /** @type {string} */
-    let activeYear = '';
-    /** @type {string} */
-    let activeTag = '';
+    // Client-side filtering with TypeScript types
+    let activeYear: string = '';
+    let activeTag: string = '';
 
     /**
      * Filter posts based on active year and tag
-     * @returns {void}
      */
-    function filterPosts() {
-      /** @type {NodeListOf<HTMLElement>} */
-      const posts = document.querySelectorAll('.post-card');
-      /** @type {NodeListOf<HTMLElement>} */
-      const yearGroups = document.querySelectorAll('.year-group');
+    function filterPosts(): void {
+      const posts: NodeListOf<HTMLElement> = document.querySelectorAll('.post-card');
+      const yearGroups: NodeListOf<HTMLElement> = document.querySelectorAll('.year-group');
 
       posts.forEach((post) => {
         const postYear = post.getAttribute('data-year');
@@ -509,9 +504,8 @@ const formatDate = (date: Date) => date.toISOString().slice(0, 10);
 
     /**
      * Update active states of filter buttons
-     * @returns {void}
      */
-    function updateActiveStates() {
+    function updateActiveStates(): void {
       // Update year buttons
       document.querySelectorAll('[data-filter-year]').forEach((btn) => {
         const year = btn.getAttribute('data-filter-year');

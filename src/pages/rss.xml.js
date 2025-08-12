@@ -6,7 +6,8 @@ export async function GET(context) {
 
   return rss({
     title: 'Grotto - Digital Garden & Personal Website',
-    description: 'Ideas, recipes, projects, and musings from a digital garden. Built with slow web principles and a warm, botanical aesthetic.',
+    description:
+      'Ideas, recipes, projects, and musings from a digital garden. Built with slow web principles and a warm, botanical aesthetic.',
     site: context.site,
     items: blog.map((post) => ({
       title: post.data.title,

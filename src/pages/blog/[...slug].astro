@@ -202,7 +202,11 @@ const formatDate = (date: Date) => {
 
     blockquotes.forEach((blockquote) => {
       const firstP = blockquote.querySelector('p:first-child');
-      if (firstP && firstP.textContent && firstP.textContent.trim().toLowerCase().startsWith('margin:')) {
+      if (
+        firstP &&
+        firstP.textContent &&
+        firstP.textContent.trim().toLowerCase().startsWith('margin:')
+      ) {
         // Remove the "margin:" prefix
         const text = firstP.textContent.replace(/^margin:\s*/i, '').trim();
         firstP.textContent = text;
@@ -224,7 +228,6 @@ const formatDate = (date: Date) => {
     padding: 0 0 var(--space-xs) 0;
     position: relative;
   }
-
 
   .post-header {
     position: relative;

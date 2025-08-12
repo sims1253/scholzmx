@@ -8,7 +8,12 @@ const initialQuote = getRandomQuote();
 ---
 
 <div class="quote-container" id="quote-container" aria-live="polite" aria-label="Quote of the day">
-  <button class="quote-interactive-wrapper" type="button" aria-label="Click to get a new quote" id="quote-wrapper-button">
+  <button
+    class="quote-interactive-wrapper"
+    type="button"
+    aria-label="Click to get a new quote"
+    id="quote-wrapper-button"
+  >
     <blockquote class="daily-quote">
       <p class="quote-text" id="quote-text">{initialQuote.text}</p>
       <footer class="quote-attribution">
@@ -57,10 +62,10 @@ const initialQuote = getRandomQuote();
 
         // Create accessible announcement for screen readers
         const announcement = `New quote: ${newQuote.text} by ${newQuote.author}`;
-        
+
         // Update the aria-label for immediate announcement
         container.setAttribute('aria-label', `Quote of the day: ${announcement}`);
-        
+
         // Reset aria-label after announcement
         setTimeout(() => {
           container.setAttribute('aria-label', 'Quote of the day');

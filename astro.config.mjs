@@ -13,26 +13,36 @@ export default defineConfig({
     sitemap(),
     // PurgeCSS should be last to process all other integrations' CSS
     purgecss({
-      content: [
-        './src/**/*.{astro,js,jsx,ts,tsx,vue,svelte}',
-        './public/**/*.html',
-      ],
+      content: ['./src/**/*.{astro,js,jsx,ts,tsx,vue,svelte}', './public/**/*.html'],
       // Keep critical animations and dynamic classes
       safelist: [
         // Keep all CSS custom properties (variables)
         /^--/,
         // Keep classes that might be added dynamically by JavaScript
-        'active', 'focus', 'hover', 'disabled',
+        'active',
+        'focus',
+        'hover',
+        'disabled',
         // Keep torch toggle states
-        'torch-toggle', 'copied',
+        'torch-toggle',
+        'copied',
         // Keep manuscript and page elements
-        /^manuscript/, /^page/, /^longform/, /^personal-content/, /^serious-content/,
+        /^manuscript/,
+        /^page/,
+        /^longform/,
+        /^personal-content/,
+        /^serious-content/,
         // Keep navigation states
-        /^nav-/, /^site-/,
+        /^nav-/,
+        /^site-/,
         // Keep botanical and artistic elements
-        /^botanical/, /^border/, /^vine/, /^portrait/,
+        /^botanical/,
+        /^border/,
+        /^vine/,
+        /^portrait/,
         // Keep math/code elements
-        'astro-code', 'copy-button',
+        'astro-code',
+        'copy-button',
       ],
       // Keep keyframes for animations (set to false if using View Transitions)
       keyframes: true,
@@ -105,7 +115,8 @@ export default defineConfig({
             // Separate vendor chunks for better caching
           },
           assetFileNames: (assetInfo) => {
-            const name = assetInfo && assetInfo.names && assetInfo.names[0] ? assetInfo.names[0] : '';
+            const name =
+              assetInfo && assetInfo.names && assetInfo.names[0] ? assetInfo.names[0] : '';
             const info = name.split('.');
             const ext = info[info.length - 1] || '';
             if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(ext)) {

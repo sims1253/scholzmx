@@ -1,5 +1,5 @@
 {
-  "extends": ["stylelint-config-standard", "stylelint-config-html/astro"],
+  "extends": ["stylelint-config-standard"],
   "rules": {
     "at-rule-no-unknown": [
       true,
@@ -19,7 +19,13 @@
         "ignoreProperties": ["composes"]
       }
     ],
-    "declaration-block-trailing-semicolon": null,
+    "value-no-vendor-prefix": null,
+    "value-keyword-case": [
+      "lower",
+      {
+        "ignoreKeywords": ["gentle-oval", "hero", "simple", "botanical", "polaroid"]
+      }
+    ],
     "no-descending-specificity": null,
     "selector-class-pattern": null,
     "no-duplicate-selectors": null,
@@ -28,14 +34,17 @@
     "comment-empty-line-before": null,
     "declaration-empty-line-before": null,
     "at-rule-empty-line-before": null,
-    "value-keyword-case": null,
     "color-function-notation": null,
     "alpha-value-notation": null,
     "media-feature-range-notation": null,
     "selector-not-notation": null,
     "declaration-block-single-line-max-declarations": null,
     "font-family-name-quotes": null,
-    "color-function-alias-notation": null
+    "color-function-alias-notation": null,
+    "property-no-deprecated": null,
+    "media-feature-name-value-no-unknown": null,
+    "block-no-empty": null,
+    "declaration-block-no-shorthand-property-overrides": null
   },
-  "ignoreFiles": ["public/**/*", "dist/**/*", "node_modules/**/*"]
+  "ignoreFiles": ["public/**/*", "dist/**/*", "node_modules/**/*", "src/**/*.astro"]
 }

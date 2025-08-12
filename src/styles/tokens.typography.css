@@ -3,12 +3,12 @@
 
   /* Font families */
   --font-body-personal:
-    'Alegreya', 'EB Garamond', 'Times New Roman', Georgia, serif; /* Welcome, recipes */
+    'Alegreya', 'EB Garamond', 'Times New Roman', georgia, serif; /* Welcome, recipes */
   --font-body-serious:
-    'ET Book Roman', 'EB Garamond', 'Times New Roman', Georgia, serif; /* Blog, notes, projects */
+    'ET Book Roman', 'EB Garamond', 'Times New Roman', georgia, serif; /* Blog, notes, projects */
   --font-body: var(--font-body-personal);
-  --font-heading: 'Cormorant Garamond', 'EB Garamond', 'Times New Roman', Georgia, serif;
-  --font-ui: 'Alegreya', Georgia, sans-serif;
+  --font-heading: 'Cormorant Garamond', 'EB Garamond', 'Times New Roman', georgia, serif;
+  --font-ui: 'Alegreya', georgia, sans-serif;
   --font-mono: 'Fira Code', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
 
   /* Font weights */

@@ -6,29 +6,28 @@ import HandDrawnDivider from '../../components/HandDrawnDivider.astro';
 // Get all notes, filter out drafts, and sort by creation date
 const allNotes = await getCollection('notes');
 const publishedNotes = allNotes
-  .filter(note => !note.data.draft)
+  .filter((note) => !note.data.draft)
   .sort((a, b) => new Date(b.data.created).getTime() - new Date(a.data.created).getTime());
 
 // Extract all unique tags
-const allTags = [...new Set(publishedNotes.flatMap(note => note.data.tags || []))].sort();
+const allTags = [...new Set(publishedNotes.flatMap((note) => note.data.tags || []))].sort();
 
 // Extract all note types
-const allTypes = [...new Set(publishedNotes.map(note => note.data.type))].sort();
+const allTypes = [...new Set(publishedNotes.map((note) => note.data.type))].sort();
 
 const formatDate = (date: Date) => {
-  return date.toLocaleDateString('en-US', { 
-    year: 'numeric', 
-    month: 'short', 
-    day: 'numeric' 
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
   });
 };
 
 // Note: No longer using symbol icons - using CSS-drawn elements instead
-
 ---
 
-<BaseLayout 
-  title="Notes - Digital Garden" 
+<BaseLayout
+  title="Notes - Digital Garden"
   description="A collection of thoughts, observations, and ideas in various stages of development"
   footerVariant="garden"
   longform={true}
@@ -37,29 +36,27 @@ const formatDate = (date: Date) => {
   <div class="notes-page">
     <div class="notes-container">
       <header class="notes-header">
-        <h1 class="page-title">
-          Notes & Seedlings
-        </h1>
+        <h1 class="page-title">Notes & Seedlings</h1>
         <p class="page-description">
-          A digital garden where thoughts grow from seeds to saplings. 
-          Some ideas are polished, others are works in progress. 
-          All are part of the ongoing journey of learning and understanding.
+          A digital garden where thoughts grow from seeds to saplings. Some ideas are polished,
+          others are works in progress. All are part of the ongoing journey of learning and
+          understanding.
         </p>
       </header>
 
       <HandDrawnDivider variant="botanical" width="wide" />
 
-      <!-- Main Content Layout -->
+      {/* Main Content Layout */}
       <div class="garden-layout">
-        <!-- Sidebar with filters -->
+        {/* Sidebar with filters */}
         <aside class="garden-sidebar">
-          <!-- Hand-drawn ornamental header -->
+          {/* Hand-drawn ornamental header */}
           <div class="sidebar-ornament">
             <div class="ornamental-line"></div>
             <div class="hand-flourish"></div>
             <div class="ornamental-line"></div>
           </div>
-          
+
           <div class="sidebar-section">
             <h3 class="sidebar-title">
               <span class="rubric-letter">S</span>cripta
@@ -70,16 +67,18 @@ const formatDate = (date: Date) => {
                 <span class="button-text">mnia</span>
                 <span class="roman-numeral">({publishedNotes.length})</span>
               </button>
-              {allTypes.map(type => {
-                const count = publishedNotes.filter(note => note.data.type === type).length;
-                return (
-                  <button class="filter-button manuscript-button" data-type={type}>
-                    <span class="type-marker"></span>
-                    <span class="button-text">{type}</span>
-                    <span class="roman-numeral">({count})</span>
-                  </button>
-                );
-              })}
+              {
+                allTypes.map((type) => {
+                  const count = publishedNotes.filter((note) => note.data.type === type).length;
+                  return (
+                    <button class="filter-button manuscript-button" data-type={type}>
+                      <span class="type-marker" />
+                      <span class="button-text">{type}</span>
+                      <span class="roman-numeral">({count})</span>
+                    </button>
+                  );
+                })
+              }
             </div>
           </div>
 
@@ -97,20 +96,24 @@ const formatDate = (date: Date) => {
                 <span class="button-text">mnia</span>
                 <span class="roman-numeral">({allTags.length})</span>
               </button>
-              {allTags.map(tag => {
-                const count = publishedNotes.filter(note => note.data.tags?.includes(tag)).length;
-                return (
-                  <button class="filter-button manuscript-button" data-tag={tag}>
-                    <span class="topic-marker"></span>
-                    <span class="button-text">{tag}</span>
-                    <span class="roman-numeral">({count})</span>
-                  </button>
-                );
-              })}
+              {
+                allTags.map((tag) => {
+                  const count = publishedNotes.filter((note) =>
+                    note.data.tags?.includes(tag)
+                  ).length;
+                  return (
+                    <button class="filter-button manuscript-button" data-tag={tag}>
+                      <span class="topic-marker" />
+                      <span class="button-text">{tag}</span>
+                      <span class="roman-numeral">({count})</span>
+                    </button>
+                  );
+                })
+              }
             </div>
           </div>
 
-          <!-- Bottom with manuscript footer -->
+          {/* Bottom with manuscript footer */}
           <div class="sidebar-footer">
             <div class="manuscript-colophon">
               <span class="colophon-number" id="visible-count">{publishedNotes.length}</span>
@@ -119,64 +122,76 @@ const formatDate = (date: Date) => {
           </div>
         </aside>
 
-        <!-- Notes Grid -->
+        {/* Notes Grid */}
         <main class="notes-main">
           <div class="notes-grid" id="notes-grid">
-            {publishedNotes.map(note => (
-              <article class="note-card manuscript-page" data-type={note.data.type} data-tags={note.data.tags?.join(',') || ''}>
-                <!-- Binding holes and manuscript marks -->
-                <div class="binding-holes"></div>
-                
-                
-                <!-- Ink stains and age marks -->
-                <div class="manuscript-stains"></div>
-                <div class="manuscript-aging"></div>
-                
-                <!-- Torn/irregular edges -->
-                <div class="paper-edge-top"></div>
-                <div class="paper-edge-bottom"></div>
-                
-                <div class="manuscript-content">
-                  <div class="note-meta marginalia">
-                    <span class="manuscript-type-marker" data-type={note.data.type}></span>
-                    <time class="note-date scribal-note" datetime={note.data.created.toISOString()}>
-                      Anno {formatDate(note.data.created)}
-                    </time>
+            {
+              publishedNotes.map((note) => (
+                <article
+                  class="note-card manuscript-page"
+                  data-type={note.data.type}
+                  data-tags={note.data.tags?.join(',') || ''}
+                >
+                  {/* Binding holes and manuscript marks */}
+                  <div class="binding-holes" />
+
+                  {/* Ink stains and age marks */}
+                  <div class="manuscript-stains" />
+                  <div class="manuscript-aging" />
+
+                  {/* Torn/irregular edges */}
+                  <div class="paper-edge-top" />
+                  <div class="paper-edge-bottom" />
+
+                  <div class="manuscript-content">
+                    <div class="note-meta marginalia">
+                      <span class="manuscript-type-marker" data-type={note.data.type} />
+                      <time
+                        class="note-date scribal-note"
+                        datetime={note.data.created.toISOString()}
+                      >
+                        Anno {formatDate(note.data.created)}
+                      </time>
+                    </div>
+
+                    <div class="manuscript-body">
+                      <h3 class="note-title manuscript-heading">
+                        <a href={`/notes/${note.slug}`} class="note-link">
+                          {note.data.title}
+                        </a>
+                      </h3>
+
+                      {note.data.description && (
+                        <p class="note-description manuscript-text">{note.data.description}</p>
+                      )}
+
+                      {note.data.tags && note.data.tags.length > 0 && (
+                        <div class="note-tags manuscript-annotations">
+                          {note.data.tags.slice(0, 3).map((tag) => (
+                            <span class="tag scribal-annotation">{tag}</span>
+                          ))}
+                          {note.data.tags.length > 3 && (
+                            <span class="tag-more scribal-note">
+                              & {note.data.tags.length - 3} alia
+                            </span>
+                          )}
+                        </div>
+                      )}
+
+                      {note.data.connections && note.data.connections.length > 0 && (
+                        <div class="note-connections manuscript-reference">
+                          <span class="reference-mark" />
+                          <span class="connections-text">Vide etiam:</span>
+                          <span class="connections-count">
+                            {note.data.connections.length} scripta
+                          </span>
+                        </div>
+                      )}
+                    </div>
                   </div>
-
-                  <div class="manuscript-body">
-                    <h3 class="note-title manuscript-heading">
-                      <a href={`/notes/${note.slug}`} class="note-link">
-                        {note.data.title}
-                      </a>
-                    </h3>
-
-                    {note.data.description && (
-                      <p class="note-description manuscript-text">{note.data.description}</p>
-                    )}
-
-                    {note.data.tags && note.data.tags.length > 0 && (
-                      <div class="note-tags manuscript-annotations">
-                        {note.data.tags.slice(0, 3).map(tag => (
-                          <span class="tag scribal-annotation">{tag}</span>
-                        ))}
-                        {note.data.tags.length > 3 && (
-                          <span class="tag-more scribal-note">& {note.data.tags.length - 3} alia</span>
-                        )}
-                      </div>
-                    )}
-
-                    {note.data.connections && note.data.connections.length > 0 && (
-                      <div class="note-connections manuscript-reference">
-                        <span class="reference-mark"></span>
-                        <span class="connections-text">Vide etiam:</span>
-                        <span class="connections-count">{note.data.connections.length} scripta</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </article>
-            ))}
+                </article>
+              ))
+            }
           </div>
         </main>
       </div>
@@ -194,30 +209,45 @@ const formatDate = (date: Date) => {
       radial-gradient(ellipse at 80% 20%, rgba(168, 181, 160, 0.09) 0%, transparent 50%),
       radial-gradient(ellipse at 45% 30%, rgba(212, 175, 55, 0.06) 0%, transparent 40%),
       radial-gradient(ellipse at 75% 85%, rgba(139, 90, 60, 0.07) 0%, transparent 35%),
-      
       /* More prominent age spots and foxing */
-      radial-gradient(circle at 15% 40%, rgba(139, 90, 60, 0.18) 1px, transparent 3px),
+        radial-gradient(circle at 15% 40%, rgba(139, 90, 60, 0.18) 1px, transparent 3px),
       radial-gradient(circle at 85% 70%, rgba(139, 90, 60, 0.14) 2px, transparent 4px),
-      radial-gradient(circle at 30% 90%, rgba(139, 90, 60, 0.10) 1px, transparent 3px),
+      radial-gradient(circle at 30% 90%, rgba(139, 90, 60, 0.1) 1px, transparent 3px),
       radial-gradient(circle at 70% 15%, rgba(212, 175, 55, 0.08) 1px, transparent 2px),
       radial-gradient(circle at 25% 25%, rgba(139, 90, 60, 0.12) 1px, transparent 2px),
-      
       /* Grainy texture overlay */
-      repeating-linear-gradient(0deg,
-        transparent, transparent 2px,
-        rgba(139, 90, 60, 0.02) 2px, rgba(139, 90, 60, 0.02) 3px,
-        transparent 3px, transparent 6px),
-      repeating-linear-gradient(90deg,
-        transparent, transparent 3px,
-        rgba(139, 90, 60, 0.015) 3px, rgba(139, 90, 60, 0.015) 4px,
-        transparent 4px, transparent 8px),
-      
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(139, 90, 60, 0.02) 2px,
+          rgba(139, 90, 60, 0.02) 3px,
+          transparent 3px,
+          transparent 6px
+        ),
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 3px,
+        rgba(139, 90, 60, 0.015) 3px,
+        rgba(139, 90, 60, 0.015) 4px,
+        transparent 4px,
+        transparent 8px
+      ),
       /* Base aged parchment with more variation */
-      linear-gradient(135deg, #faf7f0 0%, #f8f4e9 25%, #f6f2e7 50%, #f8f5ef 75%, #faf7f0 100%);
-    background-size: 
-      800px 600px, 700px 500px, 600px 400px, 500px 400px,
-      80px 80px, 120px 120px, 90px 90px, 60px 60px, 100px 100px,
-      15px 15px, 20px 20px,
+        linear-gradient(135deg, #faf7f0 0%, #f8f4e9 25%, #f6f2e7 50%, #f8f5ef 75%, #faf7f0 100%);
+    background-size:
+      800px 600px,
+      700px 500px,
+      600px 400px,
+      500px 400px,
+      80px 80px,
+      120px 120px,
+      90px 90px,
+      60px 60px,
+      100px 100px,
+      15px 15px,
+      20px 20px,
       100% 100%;
   }
 
@@ -263,46 +293,39 @@ const formatDate = (date: Date) => {
       radial-gradient(ellipse at 30% 20%, rgba(139, 90, 60, 0.05) 0%, transparent 50%),
       radial-gradient(ellipse at 70% 80%, rgba(212, 175, 55, 0.04) 0%, transparent 40%),
       /* Ink stains and age marks */
-      radial-gradient(circle at 10% 30%, rgba(139, 90, 60, 0.08) 1px, transparent 3px),
+        radial-gradient(circle at 10% 30%, rgba(139, 90, 60, 0.08) 1px, transparent 3px),
       radial-gradient(circle at 90% 70%, rgba(139, 90, 60, 0.06) 2px, transparent 4px),
       linear-gradient(135deg, #faf8f2, #f6f2e8);
-    
+
     border: 2px solid rgba(139, 90, 60, 0.2);
     border-radius: 0;
     padding: var(--space-xl) var(--space-lg);
     top: var(--space-lg);
-    box-shadow: 
+    box-shadow:
       inset 0 0 20px rgba(139, 90, 60, 0.03),
       0 8px 24px rgba(139, 90, 60, 0.12),
       0 2px 6px rgba(139, 90, 60, 0.08);
-    
+
     /* Torn/aged paper edges */
-    clip-path: polygon(
-      0% 2%, 
-      3% 0%, 
-      97% 1%, 
-      100% 4%, 
-      99% 96%, 
-      96% 100%, 
-      2% 99%, 
-      0% 97%
-    );
-    
+    clip-path: polygon(0% 2%, 3% 0%, 97% 1%, 100% 4%, 99% 96%, 96% 100%, 2% 99%, 0% 97%);
+
     position: relative;
   }
-  
+
   .garden-sidebar::before {
     content: '';
     position: absolute;
     inset: -2px;
-    background: linear-gradient(45deg, 
-      rgba(139, 90, 60, 0.1) 0%, 
-      rgba(168, 181, 160, 0.08) 50%, 
-      rgba(139, 90, 60, 0.1) 100%);
+    background: linear-gradient(
+      45deg,
+      rgba(139, 90, 60, 0.1) 0%,
+      rgba(168, 181, 160, 0.08) 50%,
+      rgba(139, 90, 60, 0.1) 100%
+    );
     z-index: -1;
     border-radius: 2px;
   }
-  
+
   .sidebar-ornament {
     display: flex;
     align-items: center;
@@ -310,18 +333,20 @@ const formatDate = (date: Date) => {
     margin-bottom: var(--space-lg);
     gap: var(--space-sm);
   }
-  
+
   .ornamental-line {
     flex: 1;
     height: 1px;
-    background: linear-gradient(to right, 
-      transparent 0%, 
-      rgba(139, 90, 60, 0.3) 20%, 
-      rgba(139, 90, 60, 0.6) 50%, 
-      rgba(139, 90, 60, 0.3) 80%, 
-      transparent 100%);
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(139, 90, 60, 0.3) 20%,
+      rgba(139, 90, 60, 0.6) 50%,
+      rgba(139, 90, 60, 0.3) 80%,
+      transparent 100%
+    );
   }
-  
+
   .ornamental-flourish {
     color: var(--color-walnut);
     font-size: var(--text-lg);
@@ -349,18 +374,18 @@ const formatDate = (date: Date) => {
     justify-content: center;
     gap: var(--space-xs);
   }
-  
+
   /* Rubric letters - red initial capitals */
   .rubric-letter {
     color: #8b4513;
     font-size: 1.2em;
     font-weight: 700;
-    text-shadow: 
+    text-shadow:
       0 1px 2px rgba(139, 69, 19, 0.3),
       1px 0 0 rgba(139, 69, 19, 0.2);
     position: relative;
   }
-  
+
   .rubric-letter::after {
     content: '';
     position: absolute;
@@ -368,14 +393,16 @@ const formatDate = (date: Date) => {
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(to right, 
-      transparent 0%, 
-      rgba(139, 69, 19, 0.4) 20%, 
-      rgba(139, 69, 19, 0.6) 50%, 
-      rgba(139, 69, 19, 0.4) 80%, 
-      transparent 100%);
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(139, 69, 19, 0.4) 20%,
+      rgba(139, 69, 19, 0.6) 50%,
+      rgba(139, 69, 19, 0.4) 80%,
+      transparent 100%
+    );
   }
-  
+
   /* Hand-drawn flourish */
   .hand-flourish {
     width: 40px;
@@ -383,7 +410,7 @@ const formatDate = (date: Date) => {
     background: radial-gradient(ellipse at center, rgba(139, 90, 60, 0.3) 0%, transparent 70%);
     position: relative;
   }
-  
+
   .hand-flourish::before,
   .hand-flourish::after {
     content: '';
@@ -391,7 +418,7 @@ const formatDate = (date: Date) => {
     background: rgba(139, 90, 60, 0.4);
     border-radius: 50%;
   }
-  
+
   .hand-flourish::before {
     width: 8px;
     height: 3px;
@@ -399,7 +426,7 @@ const formatDate = (date: Date) => {
     left: 5px;
     transform: rotate(-20deg);
   }
-  
+
   .hand-flourish::after {
     width: 12px;
     height: 2px;
@@ -407,26 +434,28 @@ const formatDate = (date: Date) => {
     right: 8px;
     transform: rotate(15deg);
   }
-  
+
   /* Vine divider */
   .sidebar-divider {
     margin: var(--space-lg) 0;
     position: relative;
     height: 20px;
   }
-  
+
   .divider-vine {
     position: relative;
     height: 2px;
-    background: linear-gradient(to right,
+    background: linear-gradient(
+      to right,
       transparent 0%,
       rgba(139, 90, 60, 0.2) 20%,
       rgba(139, 90, 60, 0.4) 50%,
       rgba(139, 90, 60, 0.2) 80%,
-      transparent 100%);
+      transparent 100%
+    );
     margin: var(--space-sm) 0;
   }
-  
+
   .divider-vine::before,
   .divider-vine::after {
     content: '';
@@ -437,12 +466,12 @@ const formatDate = (date: Date) => {
     border-radius: 50% 0;
     top: -2px;
   }
-  
+
   .divider-vine::before {
     left: 30%;
     transform: rotate(-45deg);
   }
-  
+
   .divider-vine::after {
     right: 35%;
     transform: rotate(135deg);
@@ -470,13 +499,13 @@ const formatDate = (date: Date) => {
     text-align: left;
     font-family: var(--font-body-serious); /* ET Book Roman for serious content */
     position: relative;
-    
+
     /* Slight manuscript page curve */
-    box-shadow: 
+    box-shadow:
       inset 1px 1px 3px rgba(139, 90, 60, 0.06),
       0 1px 3px rgba(139, 90, 60, 0.08);
   }
-  
+
   .manuscript-button::before {
     content: '';
     position: absolute;
@@ -484,21 +513,22 @@ const formatDate = (date: Date) => {
     top: 0;
     bottom: 0;
     width: 3px;
-    background: linear-gradient(to bottom,
+    background: linear-gradient(
+      to bottom,
       transparent 0%,
       rgba(139, 90, 60, 0.2) 20%,
       rgba(139, 90, 60, 0.4) 50%,
       rgba(139, 90, 60, 0.2) 80%,
-      transparent 100%);
+      transparent 100%
+    );
   }
-  
+
   /* Initial letters for buttons */
   .initial-letter {
     display: inline-block;
     width: 20px;
     height: 20px;
-    background: 
-      radial-gradient(circle at 30% 30%, rgba(139, 69, 19, 0.8), rgba(139, 69, 19, 0.4));
+    background: radial-gradient(circle at 30% 30%, rgba(139, 69, 19, 0.8), rgba(139, 69, 19, 0.4));
     border: 1px solid rgba(139, 69, 19, 0.3);
     border-radius: 2px;
     color: rgba(250, 247, 240, 0.9);
@@ -510,18 +540,16 @@ const formatDate = (date: Date) => {
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
     position: relative;
   }
-  
+
   .initial-letter::before {
     content: '';
     position: absolute;
     inset: -1px;
-    background: linear-gradient(135deg, 
-      rgba(212, 175, 55, 0.2) 0%, 
-      transparent 50%);
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, transparent 50%);
     border-radius: 3px;
     z-index: -1;
   }
-  
+
   /* Type and topic markers */
   .type-marker,
   .topic-marker {
@@ -531,7 +559,7 @@ const formatDate = (date: Date) => {
     margin-right: var(--space-sm);
     position: relative;
   }
-  
+
   .type-marker::before {
     content: '';
     position: absolute;
@@ -544,7 +572,7 @@ const formatDate = (date: Date) => {
     border-radius: 50%;
     border: 1px solid rgba(139, 90, 60, 0.8);
   }
-  
+
   .topic-marker::before {
     content: '';
     position: absolute;
@@ -556,7 +584,7 @@ const formatDate = (date: Date) => {
     background: rgba(90, 107, 71, 0.6);
     border: 1px solid rgba(90, 107, 71, 0.8);
   }
-  
+
   /* Roman numerals styling */
   .roman-numeral {
     color: var(--color-ink-light);
@@ -565,12 +593,12 @@ const formatDate = (date: Date) => {
     font-family: var(--font-body-serious); /* ET Book Roman for serious content */
     font-style: italic;
   }
-  
+
   .button-text {
     flex: 1;
     font-style: italic;
   }
-  
+
   .button-count {
     color: var(--color-ink-light);
     font-size: 10px;
@@ -582,7 +610,7 @@ const formatDate = (date: Date) => {
     border-color: rgba(139, 90, 60, 0.25);
     color: var(--color-ink-dark);
     transform: translateX(2px);
-    box-shadow: 
+    box-shadow:
       inset 1px 1px 3px rgba(139, 90, 60, 0.1),
       0 2px 6px rgba(139, 90, 60, 0.12);
   }
@@ -593,34 +621,33 @@ const formatDate = (date: Date) => {
     color: var(--color-walnut);
     font-weight: 500;
     transform: translateX(4px);
-    box-shadow: 
+    box-shadow:
       inset 2px 2px 4px rgba(139, 90, 60, 0.1),
       0 3px 8px rgba(139, 90, 60, 0.15);
   }
-  
+
   .manuscript-button.active .button-ornament {
     color: var(--color-gold);
     text-shadow: 0 1px 2px rgba(212, 175, 55, 0.3);
   }
-  
+
   .sidebar-footer {
     margin-top: var(--space-xl);
     padding-top: var(--space-lg);
     border-top: 1px solid rgba(139, 90, 60, 0.2);
     text-align: center;
   }
-  
+
   /* Manuscript colophon (scribal signature) */
   .manuscript-colophon {
     text-align: center;
     padding: var(--space-sm);
-    background: 
-      linear-gradient(135deg, rgba(168, 181, 160, 0.05), rgba(139, 90, 60, 0.03));
+    background: linear-gradient(135deg, rgba(168, 181, 160, 0.05), rgba(139, 90, 60, 0.03));
     border: 1px dotted rgba(139, 90, 60, 0.2);
     font-style: italic;
     position: relative;
   }
-  
+
   .manuscript-colophon::before {
     content: '';
     position: absolute;
@@ -628,12 +655,14 @@ const formatDate = (date: Date) => {
     left: 20%;
     right: 20%;
     height: 1px;
-    background: linear-gradient(to right,
+    background: linear-gradient(
+      to right,
       transparent 0%,
       rgba(139, 90, 60, 0.3) 50%,
-      transparent 100%);
+      transparent 100%
+    );
   }
-  
+
   .manuscript-colophon::after {
     content: '';
     position: absolute;
@@ -641,12 +670,14 @@ const formatDate = (date: Date) => {
     left: 25%;
     right: 25%;
     height: 1px;
-    background: linear-gradient(to right,
+    background: linear-gradient(
+      to right,
       transparent 0%,
       rgba(139, 90, 60, 0.3) 50%,
-      transparent 100%);
+      transparent 100%
+    );
   }
-  
+
   .colophon-number {
     display: inline-block;
     color: var(--color-walnut);
@@ -655,7 +686,7 @@ const formatDate = (date: Date) => {
     font-family: var(--font-body-serious); /* ET Book Roman for serious content */
     margin-right: var(--space-xs);
   }
-  
+
   .colophon-text {
     color: var(--color-ink-medium);
     font-size: var(--text-xs);
@@ -710,45 +741,61 @@ const formatDate = (date: Date) => {
       radial-gradient(ellipse at 85% 75%, rgba(212, 175, 55, 0.08) 0%, transparent 25%),
       radial-gradient(ellipse at 50% 5%, rgba(168, 181, 160, 0.06) 0%, transparent 20%),
       radial-gradient(ellipse at 25% 85%, rgba(139, 90, 60, 0.07) 0%, transparent 35%),
-      
       /* Water stains and foxing */
-      radial-gradient(circle at 30% 40%, rgba(139, 90, 60, 0.08) 2px, transparent 8px),
+        radial-gradient(circle at 30% 40%, rgba(139, 90, 60, 0.08) 2px, transparent 8px),
       radial-gradient(circle at 70% 20%, rgba(139, 90, 60, 0.06) 3px, transparent 10px),
       radial-gradient(circle at 20% 80%, rgba(212, 175, 55, 0.05) 2px, transparent 6px),
       radial-gradient(circle at 80% 60%, rgba(139, 90, 60, 0.04) 4px, transparent 12px),
-      
       /* Rough paper fiber texture */
-      repeating-linear-gradient(0deg, 
-        transparent, transparent 2px, 
-        rgba(139, 90, 60, 0.04) 2px, rgba(139, 90, 60, 0.04) 4px,
-        transparent 4px, transparent 8px),
-      repeating-linear-gradient(90deg, 
-        transparent, transparent 2px, 
-        rgba(139, 90, 60, 0.03) 2px, rgba(139, 90, 60, 0.03) 4px,
-        transparent 4px, transparent 6px),
-      
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(139, 90, 60, 0.04) 2px,
+          rgba(139, 90, 60, 0.04) 4px,
+          transparent 4px,
+          transparent 8px
+        ),
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 2px,
+        rgba(139, 90, 60, 0.03) 2px,
+        rgba(139, 90, 60, 0.03) 4px,
+        transparent 4px,
+        transparent 6px
+      ),
       /* Cross-hatch texture for authenticity */
-      repeating-linear-gradient(45deg,
-        transparent, transparent 4px,
-        rgba(139, 90, 60, 0.015) 4px, rgba(139, 90, 60, 0.015) 6px,
-        transparent 6px, transparent 16px),
-      repeating-linear-gradient(-45deg,
-        transparent, transparent 6px,
-        rgba(168, 181, 160, 0.012) 6px, rgba(168, 181, 160, 0.012) 8px,
-        transparent 8px, transparent 18px),
-      
+        repeating-linear-gradient(
+          45deg,
+          transparent,
+          transparent 4px,
+          rgba(139, 90, 60, 0.015) 4px,
+          rgba(139, 90, 60, 0.015) 6px,
+          transparent 6px,
+          transparent 16px
+        ),
+      repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 6px,
+        rgba(168, 181, 160, 0.012) 6px,
+        rgba(168, 181, 160, 0.012) 8px,
+        transparent 8px,
+        transparent 18px
+      ),
       /* Base aged parchment with natural variation */
-      linear-gradient(125deg, #faf8f2 0%, #f6f3e9 25%, #faf7f0 50%, #f4f0e6 75%, #f8f5ef 100%);
-    
+        linear-gradient(125deg, #faf8f2 0%, #f6f3e9 25%, #faf7f0 50%, #f4f0e6 75%, #f8f5ef 100%);
+
     border: none;
     padding: var(--space-lg);
     transition: all var(--transition-medium);
     overflow: hidden;
-    
+
     /* Irregular hand-cut manuscript edges */
     clip-path: polygon(
-      0.3% 1.2%, 
-      1.8% 0.1%, 
+      0.3% 1.2%,
+      1.8% 0.1%,
       4.2% 0.7%,
       7.1% 0.2%,
       12.5% 0.9%,
@@ -764,7 +811,7 @@ const formatDate = (date: Date) => {
       84.6% 0.3%,
       91.2% 0.8%,
       96.8% 1.1%,
-      98.9% 2.8%, 
+      98.9% 2.8%,
       99.2% 8.4%,
       99.7% 15.1%,
       99.1% 22.8%,
@@ -778,7 +825,7 @@ const formatDate = (date: Date) => {
       99.1% 82.9%,
       99.5% 89.6%,
       98.7% 95.8%,
-      96.9% 98.2%, 
+      96.9% 98.2%,
       91.4% 98.9%,
       84.7% 98.3%,
       77.8% 98.8%,
@@ -792,7 +839,7 @@ const formatDate = (date: Date) => {
       17.2% 98.7%,
       9.7% 98.4%,
       4.1% 98.8%,
-      1.9% 97.1%, 
+      1.9% 97.1%,
       0.4% 93.7%,
       0.1% 86.2%,
       0.6% 78.9%,
@@ -807,34 +854,44 @@ const formatDate = (date: Date) => {
       0.6% 11.4%,
       0.8% 5.9%
     );
-    
+
     /* Very dark, highly visible shadows */
     box-shadow: 
       /* Extremely prominent main shadows */
       0 16px 40px rgba(0, 0, 0, 0.35),
-      0 12px 28px rgba(139, 90, 60, 0.60),
-      0 8px 20px rgba(139, 90, 60, 0.50),
-      0 4px 12px rgba(139, 90, 60, 0.40),
-      0 2px 6px rgba(139, 90, 60, 0.30),
-      
-      /* Additional dark depth layers */
-      0 20px 50px rgba(0, 0, 0, 0.25),
+      0 12px 28px rgba(139, 90, 60, 0.6),
+      0 8px 20px rgba(139, 90, 60, 0.5),
+      0 4px 12px rgba(139, 90, 60, 0.4),
+      0 2px 6px rgba(139, 90, 60, 0.3),
+      /* Additional dark depth layers */ 0 20px 50px rgba(0, 0, 0, 0.25),
       0 24px 60px rgba(139, 90, 60, 0.35),
       0 28px 70px rgba(0, 0, 0, 0.15),
-      
-      /* Strong inner shadows for paper thickness */
-      inset 0 0 25px rgba(139, 90, 60, 0.20),
+      /* Strong inner shadows for paper thickness */ inset 0 0 25px rgba(139, 90, 60, 0.2),
       inset 0 0 12px rgba(139, 90, 60, 0.15),
       inset 0 3px 6px rgba(139, 90, 60, 0.25);
-    
+
     /* More pronounced random rotation for manuscript authenticity */
-    &:nth-child(3n+1) { transform: rotate(1.2deg); }
-    &:nth-child(3n+2) { transform: rotate(-0.9deg); }
-    &:nth-child(3n+3) { transform: rotate(0.6deg); }
-    &:nth-child(5n+1) { transform: rotate(-1.1deg); }
-    &:nth-child(5n+3) { transform: rotate(1.4deg); }
-    &:nth-child(7n+2) { transform: rotate(-0.5deg); }
-    &:nth-child(11n+1) { transform: rotate(0.8deg); }
+    &:nth-child(3n + 1) {
+      transform: rotate(1.2deg);
+    }
+    &:nth-child(3n + 2) {
+      transform: rotate(-0.9deg);
+    }
+    &:nth-child(3n + 3) {
+      transform: rotate(0.6deg);
+    }
+    &:nth-child(5n + 1) {
+      transform: rotate(-1.1deg);
+    }
+    &:nth-child(5n + 3) {
+      transform: rotate(1.4deg);
+    }
+    &:nth-child(7n + 2) {
+      transform: rotate(-0.5deg);
+    }
+    &:nth-child(11n + 1) {
+      transform: rotate(0.8deg);
+    }
   }
 
   .manuscript-page:hover {
@@ -842,20 +899,16 @@ const formatDate = (date: Date) => {
     box-shadow: 
       /* Extremely dramatic hover shadows */
       0 32px 80px rgba(0, 0, 0, 0.45),
-      0 24px 60px rgba(139, 90, 60, 0.70),
-      0 16px 40px rgba(139, 90, 60, 0.60),
-      0 12px 28px rgba(139, 90, 60, 0.50),
-      0 8px 20px rgba(139, 90, 60, 0.40),
-      0 4px 12px rgba(139, 90, 60, 0.30),
-      
-      /* Massive depth layers */
-      0 40px 100px rgba(0, 0, 0, 0.30),
+      0 24px 60px rgba(139, 90, 60, 0.7),
+      0 16px 40px rgba(139, 90, 60, 0.6),
+      0 12px 28px rgba(139, 90, 60, 0.5),
+      0 8px 20px rgba(139, 90, 60, 0.4),
+      0 4px 12px rgba(139, 90, 60, 0.3),
+      /* Massive depth layers */ 0 40px 100px rgba(0, 0, 0, 0.3),
       0 48px 120px rgba(139, 90, 60, 0.25),
-      
       inset 0 0 30px rgba(139, 90, 60, 0.15);
     z-index: 10;
   }
-  
 
   /* Binding holes for manuscript pages */
   .binding-holes {
@@ -866,7 +919,7 @@ const formatDate = (date: Date) => {
     width: 8px;
     z-index: 1;
   }
-  
+
   .binding-holes::before,
   .binding-holes::after {
     content: '';
@@ -878,15 +931,15 @@ const formatDate = (date: Date) => {
     border: 1px solid rgba(139, 90, 60, 0.6);
     box-shadow: inset 0 1px 2px rgba(139, 90, 60, 0.3);
   }
-  
+
   .binding-holes::before {
     top: 20px;
   }
-  
+
   .binding-holes::after {
     bottom: 20px;
   }
-  
+
   /* Type markers for manuscript pages */
   .manuscript-type-marker {
     display: inline-block;
@@ -895,8 +948,8 @@ const formatDate = (date: Date) => {
     margin-right: var(--space-sm);
     position: relative;
   }
-  
-  .manuscript-type-marker[data-type="thought"]::before {
+
+  .manuscript-type-marker[data-type='thought']::before {
     content: '';
     position: absolute;
     top: 50%;
@@ -908,8 +961,8 @@ const formatDate = (date: Date) => {
     border-radius: 50%;
     background: rgba(168, 181, 160, 0.2);
   }
-  
-  .manuscript-type-marker[data-type="observation"]::before {
+
+  .manuscript-type-marker[data-type='observation']::before {
     content: '';
     position: absolute;
     top: 50%;
@@ -920,8 +973,8 @@ const formatDate = (date: Date) => {
     border: 2px solid rgba(90, 107, 71, 0.6);
     background: rgba(90, 107, 71, 0.2);
   }
-  
-  .manuscript-type-marker[data-type="draft"]::before {
+
+  .manuscript-type-marker[data-type='draft']::before {
     content: '';
     position: absolute;
     top: 50%;
@@ -932,8 +985,8 @@ const formatDate = (date: Date) => {
     border: 2px solid rgba(204, 139, 92, 0.6);
     background: rgba(204, 139, 92, 0.2);
   }
-  
-  .manuscript-type-marker[data-type="idea"]::before {
+
+  .manuscript-type-marker[data-type='idea']::before {
     content: '';
     position: absolute;
     top: 50%;
@@ -945,8 +998,8 @@ const formatDate = (date: Date) => {
     border-right: 4px solid transparent;
     border-bottom: 6px solid rgba(212, 175, 55, 0.6);
   }
-  
-  .manuscript-type-marker[data-type="reference"]::before {
+
+  .manuscript-type-marker[data-type='reference']::before {
     content: '';
     position: absolute;
     top: 50%;
@@ -956,8 +1009,8 @@ const formatDate = (date: Date) => {
     height: 2px;
     background: rgba(139, 90, 60, 0.6);
   }
-  
-  .manuscript-type-marker[data-type="reference"]::after {
+
+  .manuscript-type-marker[data-type='reference']::after {
     content: '';
     position: absolute;
     top: 50%;
@@ -974,46 +1027,124 @@ const formatDate = (date: Date) => {
     inset: 0;
     background: 
       /* More prominent ink blots and stains */
-      radial-gradient(circle at 12% 30%, rgba(139, 90, 60, 0.15) 1px, rgba(139, 90, 60, 0.08) 3px, transparent 8px),
-      radial-gradient(circle at 88% 75%, rgba(139, 90, 60, 0.12) 2px, rgba(139, 90, 60, 0.06) 4px, transparent 10px),
-      radial-gradient(circle at 25% 90%, rgba(139, 90, 60, 0.10) 1px, rgba(139, 90, 60, 0.04) 2px, transparent 6px),
-      radial-gradient(circle at 78% 18%, rgba(139, 90, 60, 0.13) 2px, rgba(139, 90, 60, 0.07) 3px, transparent 7px),
+      radial-gradient(
+        circle at 12% 30%,
+        rgba(139, 90, 60, 0.15) 1px,
+        rgba(139, 90, 60, 0.08) 3px,
+        transparent 8px
+      ),
+      radial-gradient(
+        circle at 88% 75%,
+        rgba(139, 90, 60, 0.12) 2px,
+        rgba(139, 90, 60, 0.06) 4px,
+        transparent 10px
+      ),
+      radial-gradient(
+        circle at 25% 90%,
+        rgba(139, 90, 60, 0.1) 1px,
+        rgba(139, 90, 60, 0.04) 2px,
+        transparent 6px
+      ),
+      radial-gradient(
+        circle at 78% 18%,
+        rgba(139, 90, 60, 0.13) 2px,
+        rgba(139, 90, 60, 0.07) 3px,
+        transparent 7px
+      ),
       radial-gradient(circle at 45% 15%, rgba(139, 90, 60, 0.08) 1px, transparent 4px),
-      
       /* Quill pen splatters */
-      radial-gradient(circle at 65% 85%, rgba(139, 90, 60, 0.18) 0.5px, rgba(139, 90, 60, 0.10) 1px, transparent 3px),
-      radial-gradient(circle at 35% 25%, rgba(139, 90, 60, 0.14) 0.5px, rgba(139, 90, 60, 0.08) 1.5px, transparent 4px);
+        radial-gradient(
+          circle at 65% 85%,
+          rgba(139, 90, 60, 0.18) 0.5px,
+          rgba(139, 90, 60, 0.1) 1px,
+          transparent 3px
+        ),
+      radial-gradient(
+        circle at 35% 25%,
+        rgba(139, 90, 60, 0.14) 0.5px,
+        rgba(139, 90, 60, 0.08) 1.5px,
+        transparent 4px
+      );
     pointer-events: none;
   }
-  
+
   .manuscript-aging {
     position: absolute;
     inset: 0;
     background: 
       /* More visible age spotting (foxing) */
-      radial-gradient(ellipse at 18% 22%, rgba(139, 90, 60, 0.16) 0%, rgba(139, 90, 60, 0.08) 15%, transparent 35%),
-      radial-gradient(ellipse at 82% 88%, rgba(139, 90, 60, 0.14) 0%, rgba(139, 90, 60, 0.07) 20%, transparent 40%),
-      radial-gradient(ellipse at 55% 45%, rgba(212, 175, 55, 0.12) 0%, rgba(212, 175, 55, 0.06) 10%, transparent 25%),
-      radial-gradient(ellipse at 25% 75%, rgba(139, 90, 60, 0.11) 0%, rgba(139, 90, 60, 0.05) 18%, transparent 32%),
-      
+      radial-gradient(
+        ellipse at 18% 22%,
+        rgba(139, 90, 60, 0.16) 0%,
+        rgba(139, 90, 60, 0.08) 15%,
+        transparent 35%
+      ),
+      radial-gradient(
+        ellipse at 82% 88%,
+        rgba(139, 90, 60, 0.14) 0%,
+        rgba(139, 90, 60, 0.07) 20%,
+        transparent 40%
+      ),
+      radial-gradient(
+        ellipse at 55% 45%,
+        rgba(212, 175, 55, 0.12) 0%,
+        rgba(212, 175, 55, 0.06) 10%,
+        transparent 25%
+      ),
+      radial-gradient(
+        ellipse at 25% 75%,
+        rgba(139, 90, 60, 0.11) 0%,
+        rgba(139, 90, 60, 0.05) 18%,
+        transparent 32%
+      ),
       /* Water damage marks */
-      radial-gradient(ellipse at 75% 25%, rgba(168, 181, 160, 0.08) 0%, rgba(168, 181, 160, 0.04) 12%, transparent 28%),
-      radial-gradient(ellipse at 40% 80%, rgba(139, 90, 60, 0.09) 0%, rgba(139, 90, 60, 0.04) 15%, transparent 30%);
+        radial-gradient(
+          ellipse at 75% 25%,
+          rgba(168, 181, 160, 0.08) 0%,
+          rgba(168, 181, 160, 0.04) 12%,
+          transparent 28%
+        ),
+      radial-gradient(
+        ellipse at 40% 80%,
+        rgba(139, 90, 60, 0.09) 0%,
+        rgba(139, 90, 60, 0.04) 15%,
+        transparent 30%
+      );
     pointer-events: none;
   }
-  
+
   /* Vary stains per card for uniqueness */
   .manuscript-page:nth-child(even) .manuscript-stains {
-    background: 
-      radial-gradient(circle at 20% 40%, rgba(139, 90, 60, 0.14) 1px, rgba(139, 90, 60, 0.07) 3px, transparent 7px),
-      radial-gradient(circle at 80% 20%, rgba(139, 90, 60, 0.11) 2px, rgba(139, 90, 60, 0.05) 4px, transparent 9px),
+    background:
+      radial-gradient(
+        circle at 20% 40%,
+        rgba(139, 90, 60, 0.14) 1px,
+        rgba(139, 90, 60, 0.07) 3px,
+        transparent 7px
+      ),
+      radial-gradient(
+        circle at 80% 20%,
+        rgba(139, 90, 60, 0.11) 2px,
+        rgba(139, 90, 60, 0.05) 4px,
+        transparent 9px
+      ),
       radial-gradient(circle at 60% 85%, rgba(139, 90, 60, 0.09) 1px, transparent 5px);
   }
-  
+
   .manuscript-page:nth-child(3n) .manuscript-aging {
-    background: 
-      radial-gradient(ellipse at 15% 85%, rgba(212, 175, 55, 0.13) 0%, rgba(212, 175, 55, 0.06) 12%, transparent 30%),
-      radial-gradient(ellipse at 85% 15%, rgba(139, 90, 60, 0.15) 0%, rgba(139, 90, 60, 0.08) 18%, transparent 38%);
+    background:
+      radial-gradient(
+        ellipse at 15% 85%,
+        rgba(212, 175, 55, 0.13) 0%,
+        rgba(212, 175, 55, 0.06) 12%,
+        transparent 30%
+      ),
+      radial-gradient(
+        ellipse at 85% 15%,
+        rgba(139, 90, 60, 0.15) 0%,
+        rgba(139, 90, 60, 0.08) 18%,
+        transparent 38%
+      );
   }
 
   /* Torn Paper Edges */
@@ -1023,24 +1154,28 @@ const formatDate = (date: Date) => {
     left: 0;
     right: 0;
     height: 2px;
-    background: 
-      repeating-linear-gradient(90deg,
-        transparent 0,
-        transparent 3px,
-        rgba(139, 90, 60, 0.1) 3px,
-        rgba(139, 90, 60, 0.1) 4px);
+    background: repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent 3px,
+      rgba(139, 90, 60, 0.1) 3px,
+      rgba(139, 90, 60, 0.1) 4px
+    );
     pointer-events: none;
   }
-  
-  .paper-edge-top { top: 0; }
-  .paper-edge-bottom { bottom: 0; }
+
+  .paper-edge-top {
+    top: 0;
+  }
+  .paper-edge-bottom {
+    bottom: 0;
+  }
 
   /* Manuscript Content Layout */
   .manuscript-content {
     position: relative;
     z-index: 2;
   }
-
 
   .manuscript-body {
     flex: 1;
@@ -1159,7 +1294,7 @@ const formatDate = (date: Date) => {
     margin-right: var(--space-xs);
     position: relative;
   }
-  
+
   .reference-mark::before {
     content: '';
     position: absolute;
@@ -1172,7 +1307,7 @@ const formatDate = (date: Date) => {
     border-radius: 50%;
     background: rgba(139, 90, 60, 0.1);
   }
-  
+
   .reference-mark::after {
     content: '';
     position: absolute;
@@ -1247,11 +1382,21 @@ const formatDate = (date: Date) => {
 
     .note-card {
       /* Reduce rotation on mobile for easier reading */
-      &:nth-child(3n+1) { transform: rotate(0.2deg); }
-      &:nth-child(3n+2) { transform: rotate(-0.1deg); }
-      &:nth-child(3n+3) { transform: rotate(0.1deg); }
-      &:nth-child(5n+1) { transform: rotate(-0.2deg); }
-      &:nth-child(5n+3) { transform: rotate(0.3deg); }
+      &:nth-child(3n + 1) {
+        transform: rotate(0.2deg);
+      }
+      &:nth-child(3n + 2) {
+        transform: rotate(-0.1deg);
+      }
+      &:nth-child(3n + 3) {
+        transform: rotate(0.1deg);
+      }
+      &:nth-child(5n + 1) {
+        transform: rotate(-0.2deg);
+      }
+      &:nth-child(5n + 3) {
+        transform: rotate(0.3deg);
+      }
     }
 
     .type-list,
@@ -1275,7 +1420,7 @@ const formatDate = (date: Date) => {
 
     function updateActiveButtons() {
       // Update type buttons
-      typeButtons.forEach(button => {
+      typeButtons.forEach((button) => {
         const buttonType = button.dataset.type || '';
         if (buttonType === selectedType) {
           button.classList.add('active');
@@ -1285,7 +1430,7 @@ const formatDate = (date: Date) => {
       });
 
       // Update tag buttons
-      tagButtons.forEach(button => {
+      tagButtons.forEach((button) => {
         const buttonTag = button.dataset.tag || '';
         if (buttonTag === selectedTag) {
           button.classList.add('active');
@@ -1298,10 +1443,10 @@ const formatDate = (date: Date) => {
     function filterNotes() {
       let visibleCount = 0;
 
-      noteCards.forEach(card => {
+      noteCards.forEach((card) => {
         const cardType = card.dataset.type || '';
         const cardTags = card.dataset.tags || '';
-        
+
         const typeMatch = !selectedType || cardType === selectedType;
         const tagMatch = !selectedTag || cardTags.includes(selectedTag);
 
@@ -1322,7 +1467,7 @@ const formatDate = (date: Date) => {
     }
 
     // Type filter event listeners
-    typeButtons.forEach(button => {
+    typeButtons.forEach((button) => {
       button.addEventListener('click', () => {
         selectedType = button.dataset.type || '';
         filterNotes();
@@ -1330,7 +1475,7 @@ const formatDate = (date: Date) => {
     });
 
     // Tag filter event listeners
-    tagButtons.forEach(button => {
+    tagButtons.forEach((button) => {
       button.addEventListener('click', () => {
         selectedTag = button.dataset.tag || '';
         filterNotes();

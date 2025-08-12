@@ -49,7 +49,12 @@ const currentPath = Astro.url.pathname;
     <link rel="canonical" href={`https://www.scholzmx.com${Astro.url.pathname}`} />
 
     <!-- RSS Feed autodiscovery -->
-    <link rel="alternate" type="application/rss+xml" title="Grotto RSS Feed" href={new URL('rss.xml', Astro.site)} />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Grotto RSS Feed"
+      href={new URL('rss.xml', Astro.site)}
+    />
 
     <!-- Critical resource hints for performance -->
 
@@ -64,66 +69,77 @@ const currentPath = Astro.url.pathname;
       type="font/woff2"
       crossorigin
     />
-    
+
     {/* Conditional preloading based on content type */}
-    {personal ? (
-      <link
-        rel="preload"
-        href="/fonts/Alegreya/alegreya-v38-latin-regular.woff2"
-        as="font"
-        type="font/woff2"
-        crossorigin
-      />
-    ) : (
-      <link
-        rel="preload"
-        href="/fonts/et-book-roman-old-style-figures.woff2"
-        as="font"
-        type="font/woff2"
-        crossorigin
-      />
-    )}
+    {
+      personal ? (
+        <link
+          rel="preload"
+          href="/fonts/Alegreya/alegreya-v38-latin-regular.woff2"
+          as="font"
+          type="font/woff2"
+          crossorigin
+        />
+      ) : (
+        <link
+          rel="preload"
+          href="/fonts/et-book-roman-old-style-figures.woff2"
+          as="font"
+          type="font/woff2"
+          crossorigin
+        />
+      )
+    }
 
     {/* Only preload code fonts for content that likely has code blocks */}
-    {(currentPath.includes('/blog/') || currentPath.includes('/notes/') || currentPath.includes('/projects')) && (
-      <>
-        <link
-          rel="preload"
-          href="/fonts/FiraCode-Regular.woff2"
-          as="font"
-          type="font/woff2"
-          crossorigin
-        />
-        <link
-          rel="preload"
-          href="/fonts/FiraCode-Medium.woff2"
-          as="font"
-          type="font/woff2"
-          crossorigin
-        />
-      </>
-    )}
+    {
+      (currentPath.includes('/blog/') ||
+        currentPath.includes('/notes/') ||
+        currentPath.includes('/projects')) && (
+        <>
+          <link
+            rel="preload"
+            href="/fonts/FiraCode-Regular.woff2"
+            as="font"
+            type="font/woff2"
+            crossorigin
+          />
+          <link
+            rel="preload"
+            href="/fonts/FiraCode-Medium.woff2"
+            as="font"
+            type="font/woff2"
+            crossorigin
+          />
+        </>
+      )
+    }
 
     {/* Only preload math fonts for content that likely has equations */}
-    {(currentPath.includes('/blog/') || currentPath.includes('/notes/') || currentPath.includes('/research')) && (
-      <>
-        <link
-          rel="preload"
-          href="/katex/fonts/KaTeX_Main-Regular.woff2"
-          as="font"
-          type="font/woff2"
-          crossorigin
-        />
-        <link
-          rel="preload"
-          href="/katex/katex.min.css"
-          as="style"
-          onload="this.onload=null;this.rel='stylesheet'"
-        />
-        <noscript><link rel="stylesheet" href="/katex/katex.min.css" /></noscript>
-      </>
-    )}
-
+    {
+      (currentPath.includes('/blog/') ||
+        currentPath.includes('/notes/') ||
+        currentPath.includes('/research')) && (
+        <>
+          <link
+            rel="preload"
+            href="/katex/fonts/KaTeX_Main-Regular.woff2"
+            as="font"
+            type="font/woff2"
+            crossorigin
+          />
+          <link
+            rel="preload"
+            href="/katex/katex.min.css"
+            as="style"
+            onload="this.onload=null;this.rel='stylesheet'"
+          />
+          <noscript>
+            <link rel="stylesheet" href="/katex/katex.min.css" />
+          </noscript>
+        </>
+      )
+    }
 
     <!-- Specialty fonts loaded on demand -->
     <link rel="stylesheet" href="/fonts/et-initials.css" />
@@ -150,7 +166,6 @@ const currentPath = Astro.url.pathname;
       type="font/woff2"
       crossorigin
     />
-
 
     <!-- Performance hints - will be updated by theme toggle -->
     <meta name="theme-color" content="#f9f6f2" />
@@ -184,9 +199,13 @@ const currentPath = Astro.url.pathname;
       : undefined}
   >
     <!-- Skip Links for Keyboard Navigation -->
-    <a href="#main-content" class="skip-link">Skip to main content (blog posts, articles, and page content)</a>
-    <a href="#main-navigation" class="skip-link">Skip to site navigation (Blog, Projects, Research links)</a>
-    
+    <a href="#main-content" class="skip-link"
+      >Skip to main content (blog posts, articles, and page content)</a
+    >
+    <a href="#main-navigation" class="skip-link"
+      >Skip to site navigation (Blog, Projects, Research links)</a
+    >
+
     <div class="page-wrapper">
       <!-- Organic botanical borders -->
       {
@@ -261,7 +280,7 @@ const currentPath = Astro.url.pathname;
 
           <!-- Main content area -->
           <main class="main-content" id="main-content">
-            <div class={personal ? "container personal" : "container"}>
+            <div class={personal ? 'container personal' : 'container'}>
               <slot />
             </div>
           </main>
@@ -275,8 +294,8 @@ const currentPath = Astro.url.pathname;
 
       <style is:global>
         /* Shiki dual theme switching - component-specific theme handling */
-        [data-theme="dark"] .astro-code,
-        [data-theme="dark"] .astro-code span {
+        [data-theme='dark'] .astro-code,
+        [data-theme='dark'] .astro-code span {
           color: var(--shiki-dark) !important;
           background-color: var(--shiki-dark-bg) !important;
           font-style: var(--shiki-dark-font-style) !important;
@@ -297,7 +316,6 @@ const currentPath = Astro.url.pathname;
       </style>
 
       <script>
-
         (function () {
           const KEY = 'theme-preference';
           const root = document.documentElement;

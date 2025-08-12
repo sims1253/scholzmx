@@ -30,10 +30,15 @@
 }
 
 /* Simple */
-.dropcap--simple { font-family: var(--font-heading); }
+.dropcap--simple {
+  font-family: var(--font-heading);
+}
 
 /* Ornate layered */
-.dropcap--ornate { font-family: var(--font-dropcap-foreground), var(--font-heading), serif; color: var(--dropcap-color-foreground); }
+.dropcap--ornate {
+  font-family: var(--font-dropcap-foreground), var(--font-heading), serif;
+  color: var(--dropcap-color-foreground);
+}
 .dropcap--ornate::before {
   content: attr(data-first-letter);
   position: absolute;
@@ -45,7 +50,9 @@
 }
 
 /* Botanical layered */
-.dropcap--botanical { font-family: var(--font-dropcap-foreground), var(--font-heading), serif; }
+.dropcap--botanical {
+  font-family: var(--font-dropcap-foreground), var(--font-heading), serif;
+}
 .dropcap--botanical::before {
   content: attr(data-first-letter);
   position: absolute;
@@ -57,11 +64,21 @@
 }
 
 /* Color variants apply to swirls (::before) only */
-.dropcap--gold::before { color: var(--color-tansy); }
-.dropcap--walnut::before { color: var(--color-walnut); }
-.dropcap--moss::before { color: var(--color-moss); }
-.dropcap--ochre::before { color: var(--color-ochre); }
-.dropcap--sage::before { color: var(--color-sage); }
+.dropcap--gold::before {
+  color: var(--color-tansy);
+}
+.dropcap--walnut::before {
+  color: var(--color-walnut);
+}
+.dropcap--moss::before {
+  color: var(--color-moss);
+}
+.dropcap--ochre::before {
+  color: var(--color-ochre);
+}
+.dropcap--sage::before {
+  color: var(--color-sage);
+}
 
 @media (max-width: 600px) {
   .dropcap--personal {
@@ -71,7 +88,7 @@
     shape-outside: none;
     shape-margin: 0;
   }
-  
+
   .dropcap--serious {
     font-size: 3.4rem !important;
     margin-right: 0.08rem;

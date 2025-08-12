@@ -3,6 +3,9 @@ import jsxA11y from 'eslint-plugin-jsx-a11y';
 import tsParser from '@typescript-eslint/parser';
 
 export default [
+  {
+    ignores: ['node_modules/', 'dist/', '.astro/', 'inspiration/', 'public/'],
+  },
   ...eslintPluginAstro.configs.recommended,
   {
     files: ['**/*.ts', '**/*.tsx'],

@@ -133,7 +133,12 @@ const years = Object.keys(publicationsByYear).sort((a, b) => Number(b) - Number(
                         </div>
                         <h3 class="card-title">
                           {pub.links?.pdf || pub.links?.doi ? (
-                            <a href={pub.links.pdf || pub.links.doi} class="title-link" target="_blank" rel="noopener noreferrer">
+                            <a
+                              href={pub.links.pdf || pub.links.doi}
+                              class="title-link"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
                               {pub.title}
                             </a>
                           ) : (
