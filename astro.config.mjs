@@ -12,7 +12,8 @@ export default defineConfig({
   redirects: {
     // Preserve legacy blog post URLs from live site
     '/post/building-bayesim-intro/': '/blog/2023/04-26-building-bayesim/',
-    '/post/how-to-make-your-simulation-study-reproducible/': '/blog/2022/11-03-how-to-make-your-simulation-study-reproducible/',
+    '/post/how-to-make-your-simulation-study-reproducible/':
+      '/blog/2022/11-03-how-to-make-your-simulation-study-reproducible/',
     '/post/kumaraswamy-custom-brms-family/': '/blog/2022/03-14-kumaraswamy-custom-brms-family/',
     '/post/simulating-dags/': '/blog/2022/01-26-simulating-dags/',
     '/post/gsoc-2017-postmorten-part-2-org-application/': '/blog/2017/gsoc_postmortem_2/',

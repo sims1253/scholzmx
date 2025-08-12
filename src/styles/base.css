@@ -424,13 +424,14 @@ pre {
   position: absolute;
   top: var(--space-sm);
   right: var(--space-sm);
-  background: color-mix(in srgb, var(--color-surface) 92%, var(--color-walnut));
-  border: 1px solid var(--color-lichen) !important;
+  background: rgba(60, 56, 54, 0.8); /* gruvbox bg1 with transparency */
+  border: 1px solid rgba(168, 153, 132, 0.3) !important; /* gruvbox light gray */
   border-radius: 999px;
-  padding: 6px 10px;
-  font-size: 18px;
-  font-family: var(--font-heading);
-  color: var(--color-walnut);
+  padding: 8px;
+  width: 32px;
+  height: 32px;
+  font-size: 0; /* Hide text content */
+  color: #a89984; /* gruvbox light gray/fg4 */
   cursor: pointer;
   opacity: 0.08;
   transition:
@@ -441,8 +442,18 @@ pre {
   user-select: none;
   pointer-events: auto;
   z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  box-shadow: 0 2px 6px color-mix(in srgb, var(--color-sage) 20%, transparent);
+  box-shadow: 0 2px 6px rgba(40, 40, 40, 0.4); /* gruvbox bg shadow */
+}
+
+.astro-code .copy-button svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+  color: inherit;
 }
 
 @media (max-width: 640px) {
@@ -456,27 +467,27 @@ pre {
 }
 
 .astro-code .copy-button:hover {
-  background: color-mix(in srgb, var(--color-surface) 96%, var(--color-walnut));
-  color: var(--color-ochre);
-  border-color: var(--color-lichen);
+  background: rgba(80, 73, 69, 0.9); /* gruvbox bg2 */
+  color: #83a598; /* gruvbox bright blue */
+  border-color: rgba(131, 165, 152, 0.5); /* gruvbox bright blue with transparency */
   transform: translateY(-1px);
-  box-shadow: 0 3px 8px color-mix(in srgb, var(--color-sage) 18%, transparent);
+  box-shadow: 0 3px 8px rgba(40, 40, 40, 0.6); /* stronger gruvbox shadow */
   opacity: 1;
 }
 
 .astro-code .copy-button:focus-visible {
-  outline-color: var(--color-lichen);
+  outline-color: #83a598; /* gruvbox bright blue for accessibility */
 }
 
 .astro-code .copy-button:active {
   transform: translateY(0);
-  box-shadow: 0 1px 3px color-mix(in srgb, var(--color-sage) 18%, transparent);
+  box-shadow: 0 1px 3px rgba(40, 40, 40, 0.3); /* gruvbox bg shadow on press */
 }
 
 .astro-code .copy-button.copied {
-  background: color-mix(in srgb, var(--color-surface) 96%, var(--color-moss));
-  color: var(--color-moss);
-  border-color: var(--color-moss);
+  background: rgba(80, 73, 69, 0.9); /* gruvbox bg2 */
+  color: #b8bb26; /* gruvbox bright green */
+  border-color: rgba(184, 187, 38, 0.5); /* gruvbox bright green with transparency */
 }
 
 /* Collapsible code sections with botanical styling */
