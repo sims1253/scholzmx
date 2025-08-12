@@ -9,6 +9,20 @@ import purgecss from 'astro-purgecss';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://www.scholzmx.com',
+  redirects: {
+    // Preserve legacy blog post URLs from live site
+    '/post/building-bayesim-intro/': '/blog/2023/04-26-building-bayesim/',
+    '/post/how-to-make-your-simulation-study-reproducible/': '/blog/2022/11-03-how-to-make-your-simulation-study-reproducible/',
+    '/post/kumaraswamy-custom-brms-family/': '/blog/2022/03-14-kumaraswamy-custom-brms-family/',
+    '/post/simulating-dags/': '/blog/2022/01-26-simulating-dags/',
+    '/post/gsoc-2017-postmorten-part-2-org-application/': '/blog/2017/gsoc_postmortem_2/',
+    '/post/gsoc-2017-postmorten-part-1-overview/': '/blog/2017/gsoc_postmortem_1/',
+    '/post/april-community-team-update/': '/blog/2017/april-community-update/',
+    '/post/coalas-call-for-chefs/': '/blog/2017/coala-call-for-chefs/',
+    '/post/the-birth-of-a-coala/': '/blog/2017/birth-of-coala/',
+    // Redirect old blog listing page to new one
+    '/post/': '/blog/',
+  },
   integrations: [
     sitemap(),
     // PurgeCSS should be last to process all other integrations' CSS
