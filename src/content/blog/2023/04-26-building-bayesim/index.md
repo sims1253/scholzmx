@@ -22,11 +22,6 @@ format:
     preserve-yaml: true
 ---
 
-# Building bayesim: The journey begins
-
-Maximilian Scholz
-2023-04-26
-
 <span class="dropcap dropcap--ornate dropcap--serious" data-first-letter="B" aria-hidden="true">B</span> uilding a framework for simulation studies in Bayesian statistics has been a journey of discovery. Let me share some thoughts on what I’m working on with [bayesim](https://github.com/sims1253/bayesim).
 
 ## The Motivation

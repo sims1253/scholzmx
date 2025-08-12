@@ -35,10 +35,6 @@ knitr:
     fig.path: ../../../../assets/images/blog/2022/03-14-kumaraswamy-custom-brms-family/
 ---
 
-# Kumaraswamy custom brms family
-
-2022-03-14
-
 _Update:_ We finally published [bayesfam](https://github.com/sims1253/bayesfam),
 a package that contains a bunch of custom families for brms.
 
@@ -107,8 +103,11 @@ and then replaced each occurrence of q with the result from the last section.
 While there is room to improve, this is just a first draft.
 
 ```r
-median_dkumaraswamy <- function(x, md, p){
-  p*(-(log(2)/log(1-md^p)))*x^(p-1)*(1-x^p)^((-(log(2)/log(1-md^p)))-1)
+median_dkumaraswamy <- function(x, md, p) {
+  p *
+    (-(log(2) / log(1 - md^p))) *
+    x^(p - 1) *
+    (1 - x^p)^((-(log(2) / log(1 - md^p))) - 1)
 }
 ```
 
@@ -116,12 +115,30 @@ Let’s see if the density looks as it should with a symmetric, an asymmetric an
 a bathtub shape.
 
 ```r
-x=seq(from=0 , to=1 , length.out=10000)[2:9999] # exclude 0 and 1
+x = seq(from = 0, to = 1, length.out = 10000)[2:9999] # exclude 0 and 1
 
 layout(matrix(1:3, ncol = 3))
-plot(x, median_dkumaraswamy(x, md = 0.5, p = 4), type="l", ylab = "Density", main = "Symmetric Kumaraswamy")
-plot(x, median_dkumaraswamy(x, md = 0.75, p = 4), type="l", ylab = "Density", main = "Asymmetric Kumaraswamy")
-plot(x, median_dkumaraswamy(x, md = 0.5, p = 0.25), type="l", ylab = "Density", main = "Bathtub Kumaraswamy")
+plot(
+  x,
+  median_dkumaraswamy(x, md = 0.5, p = 4),
+  type = "l",
+  ylab = "Density",
+  main = "Symmetric Kumaraswamy"
+)
+plot(
+  x,
+  median_dkumaraswamy(x, md = 0.75, p = 4),
+  type = "l",
+  ylab = "Density",
+  main = "Asymmetric Kumaraswamy"
+)
+plot(
+  x,
+  median_dkumaraswamy(x, md = 0.5, p = 0.25),
+  type = "l",
+  ylab = "Density",
+  main = "Bathtub Kumaraswamy"
+)
 ```
 
 ![](../../../../assets/images/blog/2022/03-14-kumaraswamy-custom-brms-family/median-test-1.png)
@@ -132,9 +149,27 @@ In the case of the kumaraswamy distribution, I was lucky.
 
 ```r
 layout(matrix(1:3, ncol = 3))
-plot(x, median_dkumaraswamy(x, 0.5, 4) - extraDistr::dkumar(x,4, -log(2)/log(1-0.5^4)), ylab = "Difference", main = "Symmetric: Mine - extraDistr")
-plot(x, median_dkumaraswamy(x, 0.75, 4) - extraDistr::dkumar(x,4, -log(2)/log(1-0.75^4)), ylab = "Difference", main = "Asymmetric: Mine - extraDistr")
-plot(x, median_dkumaraswamy(x, 0.5, 0.25) - extraDistr::dkumar(x,0.25 , -log(2)/log(1-0.5^0.25)), ylab = "Difference", main = "Bathtub: Mine - extraDistr")
+plot(
+  x,
+  median_dkumaraswamy(x, 0.5, 4) -
+    extraDistr::dkumar(x, 4, -log(2) / log(1 - 0.5^4)),
+  ylab = "Difference",
+  main = "Symmetric: Mine - extraDistr"
+)
+plot(
+  x,
+  median_dkumaraswamy(x, 0.75, 4) -
+    extraDistr::dkumar(x, 4, -log(2) / log(1 - 0.75^4)),
+  ylab = "Difference",
+  main = "Asymmetric: Mine - extraDistr"
+)
+plot(
+  x,
+  median_dkumaraswamy(x, 0.5, 0.25) -
+    extraDistr::dkumar(x, 0.25, -log(2) / log(1 - 0.5^0.25)),
+  ylab = "Difference",
+  main = "Bathtub: Mine - extraDistr"
+)
 ```
 
 ![](../../../../assets/images/blog/2022/03-14-kumaraswamy-custom-brms-family/median-test-validation-1.png)
@@ -199,14 +234,26 @@ layout(matrix(1:3, ncol = 3))
 
 md = 0.5
 p = 4
-plot(log(median_dkumaraswamy(x, md, p))-dkumaraswamy(x, md, p, log = TRUE), ylab = "Difference", main = "Symmetric: Simple log - Advanced log")
+plot(
+  log(median_dkumaraswamy(x, md, p)) - dkumaraswamy(x, md, p, log = TRUE),
+  ylab = "Difference",
+  main = "Symmetric: Simple log - Advanced log"
+)
 
 md = 0.75
-plot(log(median_dkumaraswamy(x, md, p))-dkumaraswamy(x, md, p, log = TRUE), ylab = "Difference", main = "Asymmetric: Simple log - Advanced log")
+plot(
+  log(median_dkumaraswamy(x, md, p)) - dkumaraswamy(x, md, p, log = TRUE),
+  ylab = "Difference",
+  main = "Asymmetric: Simple log - Advanced log"
+)
 
 md = 0.5
 p = 0.25
-plot(log(median_dkumaraswamy(x, md, p))-dkumaraswamy(x, md, p, log = TRUE), ylab = "Difference", main = "Bathtub: Simple log - Advanced log")
+plot(
+  log(median_dkumaraswamy(x, md, p)) - dkumaraswamy(x, md, p, log = TRUE),
+  ylab = "Difference",
+  main = "Bathtub: Simple log - Advanced log"
+)
 ```
 
 ![](../../../../assets/images/blog/2022/03-14-kumaraswamy-custom-brms-family/log-density-test-1.png)

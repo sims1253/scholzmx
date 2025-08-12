@@ -39,10 +39,6 @@ knitr:
     fig.path: ../../../../assets/images/blog/2025/01-15-blog-post-features-template/
 ---
 
-# Blog Post Features & Template
-
-2025-01-15
-
 <span class="dropcap dropcap--ornate dropcap--serious" data-first-letter="I" aria-hidden="true">I</span> keep finding myself looking up the same Quarto features every time I write a post, so I figured it would be useful to have a working example of everything in one place. Nothing groundbreaking here—just the basics that I use regularly and some things that took me a while to figure out.
 
 ## YAML Front Matter

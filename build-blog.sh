@@ -220,8 +220,73 @@ process_qmd_file() {
             
             # 3. Extract code block output from code-collapse details blocks
             extract_output_from_details "$md_file"
+
+            # 4. Remove Quarto-generated title and date from the markdown body
+            # Extract title from frontmatter (handle both quoted and unquoted titles)
+            title_from_yaml=$(awk '/^title:/ {sub(/^title: */, ""); gsub(/^["'\'']|["'\'']$/, ""); print; exit}' "$md_file")
+            
+            # More precise AWK script to remove duplicate title/date and clean up blank lines
+            awk -v title="$title_from_yaml" '
+            BEGIN { 
+                in_body = 0
+                found_frontmatter_end = 0
+                content_started = 0
+                skip_blanks = 0
+            }
+            
+            # Track when we exit the frontmatter
+            /^---$/ && NR > 1 && !found_frontmatter_end {
+                found_frontmatter_end = 1
+                in_body = 1
+                skip_blanks = 1  # Skip initial blank lines after frontmatter
+                print
+                next
+            }
+            
+            # Skip everything before frontmatter ends
+            !in_body {
+                print
+                next
+            }
+            
+            # In body content after frontmatter
+            in_body == 1 {
+                # Skip duplicate title (exact match with # prefix)
+                if ($0 == "# " title) {
+                    skip_blanks = 1
+                    next
+                }
+                
+                # Skip standalone date pattern (YYYY-MM-DD format)
+                if ($0 ~ /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/) {
+                    skip_blanks = 1
+                    next
+                }
+                
+                # Skip standalone author line (typically appears after title)
+                if ($0 ~ /^[A-Z][a-z]+ [A-Z][a-z]+$/ && skip_blanks == 1) {
+                    next
+                }
+                
+                # Skip blank lines when we are still cleaning up
+                if ($0 == "" && skip_blanks == 1) {
+                    next
+                }
+                
+                # Found real content - stop skipping blanks and start printing
+                if ($0 != "") {
+                    skip_blanks = 0
+                    content_started = 1
+                }
+                
+                # Only print if we have started real content or this is not a blank line
+                if (content_started == 1 || $0 != "") {
+                    print
+                }
+            }' "$md_file" > "${md_file}.tmp" && mv "${md_file}.tmp" "$md_file"
             
             echo "  ✨ Fixed image paths and extracted code output from collapsible blocks in: $md_file"
+            echo "  🔪 Removed Quarto-generated title/date from: $md_file"
         fi
         
         update_cache "$qmd_file"

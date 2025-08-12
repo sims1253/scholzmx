@@ -28,11 +28,6 @@ knitr:
     fig.path: ../../../../assets/images/blog/2022/01-26-simulating-dags/
 ---
 
-# Simulating DAGs
-
-Maximilian Scholz
-2022-01-26
-
 <span class="dropcap dropcap--ornate dropcap--serious" data-first-letter="I" aria-hidden="true">I</span> came across a cool example for a DAG (thanks to a comment by [Paul Bürkner](https://twitter.com/paulbuerkner))
 while working on some simulation and to me it became a somewhat minimal example
 for how DAGs work, how they can help inform modeling decisions and what can go
