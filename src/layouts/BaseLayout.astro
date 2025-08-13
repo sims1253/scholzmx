@@ -1,6 +1,7 @@
 ---
 import BotanicalBorder from '../components/BotanicalBorder.astro';
 import IllustratedFooter from '../components/IllustratedFooter.astro';
+import BackToTop from '../components/BackToTop.astro';
 
 // Import CSS files
 import '../styles/tokens.colors.css';
@@ -291,6 +292,9 @@ const currentPath = Astro.url.pathname;
           <IllustratedFooter variant={footerVariant} includeQuoteSection={includeQuoteSection} />
         </div>
       </div>
+
+      <!-- Back to Top Button -->
+      <BackToTop />
 
       <style is:global>
         /* Shiki dual theme switching - component-specific theme handling */
