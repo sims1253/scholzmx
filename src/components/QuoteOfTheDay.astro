@@ -21,16 +21,6 @@ const initialQuote = getRandomQuote();
       </footer>
     </blockquote>
   </button>
-  <button
-    class="refresh-quote"
-    id="refresh-quote"
-    title="Get a new quote"
-    aria-label="Get a new quote"
-    aria-describedby="quote-container"
-    type="button"
-  >
-    <span class="refresh-icon" aria-hidden="true">↻</span>
-  </button>
 </div>
 
 <script>
@@ -76,16 +66,19 @@ const initialQuote = getRandomQuote();
 
   // Add click handler when DOM is loaded
   document.addEventListener('DOMContentLoaded', () => {
-    const refreshButton = document.getElementById('refresh-quote');
     const quoteWrapperButton = document.getElementById('quote-wrapper-button');
-
-    if (refreshButton) {
-      refreshButton.addEventListener('click', updateQuote);
-    }
 
     // Add click handler to the quote wrapper button
     if (quoteWrapperButton) {
-      quoteWrapperButton.addEventListener('click', updateQuote);
+      quoteWrapperButton.addEventListener('click', () => {
+        updateQuote();
+
+        // Make blossoms stay visible after first click
+        const vineFrame = quoteWrapperButton.closest('.smooth-vine-frame');
+        if (vineFrame) {
+          vineFrame.classList.add('blossoms-activated');
+        }
+      });
     }
   });
 </script>
@@ -158,46 +151,10 @@ const initialQuote = getRandomQuote();
     font-family: var(--font-body-personal); /* Alegreya for footer vibes */
   }
 
-  /* Hover effect for subtle interactivity */
+  /* Hover effect for subtle interactivity - works with botanical frame */
   .quote-interactive-wrapper:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(139, 90, 60, 0.08);
+    /* No visual effect here - let the parent SmoothVineFrame handle the hover */
     transition: all var(--transition-medium);
-  }
-
-  .refresh-quote {
-    position: absolute;
-    top: var(--space-sm);
-    right: var(--space-sm);
-    background: none;
-    border: none;
-    color: var(--color-ink-light);
-    font-size: var(--text-md);
-    cursor: pointer;
-    opacity: 0;
-    transition: all var(--transition-medium);
-    padding: var(--space-xs);
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .quote-interactive-wrapper:hover + .refresh-quote {
-    opacity: 0.6;
-  }
-
-  .refresh-quote:hover {
-    opacity: 1 !important;
-    background-color: rgba(139, 90, 60, 0.1);
-    transform: rotate(180deg);
-  }
-
-  .refresh-icon {
-    display: block;
-    line-height: 1;
   }
 
   /* Mobile adjustments */
