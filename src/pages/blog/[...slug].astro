@@ -518,10 +518,10 @@ const formatDate = (date: Date) => {
     color: var(--color-text-muted);
     line-height: 1.4;
     padding: var(--space-xs);
-    background: rgba(248, 248, 242, 0.9) !important;
+    background: color-mix(in srgb, var(--color-surface) 90%, transparent) !important;
     border-left: 2px solid var(--color-sage) !important;
     border-radius: 0 var(--border-radius) var(--border-radius) 0;
-    box-shadow: 0 2px 8px rgba(168, 181, 160, 0.1);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--color-sage) 10%, transparent);
     font-style: normal !important;
     margin: 0 !important;
   }
