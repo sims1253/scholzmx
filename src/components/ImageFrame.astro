@@ -128,7 +128,11 @@ const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) || 4
 ---
 
 <div
-  class={`image-frame image-frame-${style} ${className} ${isClickable ? 'clickable' : ''} ${containerClass}`}
+  class={`image-frame image-frame-${style} ${className} ${isClickable ? 'clickable' : ''} ${containerClass} ${
+    style === 'hero' 
+      ? 'tw-w-full tw-max-w-5xl tw-mx-auto tw-px-8 tw--mt-lg tw-mb-lg tw-aspect-[8/3] md:tw-aspect-[8/3] sm:tw-aspect-[4/3]' 
+      : ''
+  }`}
   style={`${aspectRatio ? `aspect-ratio: ${aspectRatio};` : ''} ${style !== 'hero' && style !== 'simple' ? `width: ${finalWidth}; height: ${finalHeight};` : ''}`}
   role={isClickable ? 'button' : undefined}
   tabindex={isClickable ? '0' : undefined}
@@ -314,11 +318,6 @@ const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) || 4
 
   /* Hero image style - for blog post headers */
   .image-frame-hero {
-    width: calc(min(75vw, 1100px) + 4rem);
-    aspect-ratio: 8/3;
-    margin-left: calc(50% - min(37.5vw, 550px) - 2rem);
-    margin-top: calc(-1 * var(--space-lg));
-    margin-bottom: var(--space-lg);
     background: var(--color-background);
     /* No border-radius or box-shadow for seamless integration */
   }
@@ -433,11 +432,6 @@ const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) || 4
       max-height: 140px;
     }
 
-    .image-frame-hero {
-      width: calc(100vw - 2rem);
-      margin-left: -1rem;
-      aspect-ratio: 4/3;
-    }
   }
 </style>
 
