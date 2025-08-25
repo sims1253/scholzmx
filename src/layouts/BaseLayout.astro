@@ -222,8 +222,8 @@ const currentPath = Astro.url.pathname;
 
       <!-- Navigation and Content in scrollable area -->
       <div class="nav-and-content-area">
-        <nav class="page-nav" role="navigation" aria-label="Main navigation" id="main-navigation">
-          <div class="nav-content">
+        <nav class="page-nav tw-w-full" role="navigation" aria-label="Main navigation" id="main-navigation">
+          <div class="nav-content tw-max-w-5xl tw-mx-auto tw-w-full">
             <div class="nav-brand">
               <a href="/" class="site-logo" aria-label="Home">
                 <span class="logo-text" aria-hidden="false">Grotto</span>
@@ -282,7 +282,7 @@ const currentPath = Astro.url.pathname;
 
           <!-- Main content area -->
           <main class="main-content" id="main-content">
-            <div class={personal ? 'container personal' : 'container'}>
+            <div class={personal ? 'container personal tw-max-w-prose-personal tw-mx-auto tw-px-md' : 'container tw-max-w-6xl tw-mx-auto tw-px-md'}>
               <slot />
             </div>
           </main>

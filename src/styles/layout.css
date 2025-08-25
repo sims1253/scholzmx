@@ -5,10 +5,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: min(75vw, 1100px);
-  margin: 0 auto;
   padding: var(--space-lg) var(--space-lg);
-  width: 100%;
 }
 
 .nav-brand .site-logo {
@@ -126,9 +123,6 @@
 
 .page-nav {
   margin-bottom: var(--space-sm);
-  width: 100vw;
-  margin-left: calc(-50vw + 50%);
-  margin-right: calc(-50vw + 50%);
 }
 
 .nav-and-content-area {
