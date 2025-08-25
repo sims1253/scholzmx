@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import GridLayout from '../../components/GridLayout.astro';
 import FaintLineDivider from '../../components/FaintLineDivider.astro';
 import ImageFrame from '../../components/ImageFrame.astro';
 
@@ -167,7 +168,7 @@ const formatDate = (date: Date) => {
           relatedPosts.length > 0 && (
             <section class="related-posts" aria-label="Related posts">
               <h2 class="related-title">Related Posts</h2>
-              <div class="related-cards">
+              <GridLayout columns="auto" itemMinWidth="280px" gap="md" class="related-cards">
                 {relatedPosts.map((relatedPost) => (
                   <article class="related-card">
                     <h3 class="card-title">
@@ -186,7 +187,7 @@ const formatDate = (date: Date) => {
                     )}
                   </article>
                 ))}
-              </div>
+              </GridLayout>
             </section>
           )
         }

@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import GridLayout from '../components/GridLayout.astro';
 
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
 const posts = allPosts.sort(
@@ -80,7 +81,7 @@ const formatDate = (date: Date) => date.toISOString().slice(0, 10);
                     <span class="vine" />
                   </>
                 </h2>
-                <div class="cards">
+                <GridLayout columns="auto" itemMinWidth="280px" gap="sm" class="cards">
                   {posts
                     .filter((p) => new Date(p.data.date).getFullYear() === year)
                     .map((post) => (
@@ -156,7 +157,7 @@ const formatDate = (date: Date) => date.toISOString().slice(0, 10);
                         </div>
                       </article>
                     ))}
-                </div>
+                </GridLayout>
               </div>
             ))
           }

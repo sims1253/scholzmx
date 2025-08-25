@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import GridLayout from '../components/GridLayout.astro';
 
 const publications = [
   {
@@ -116,7 +117,7 @@ const years = Object.keys(publicationsByYear).sort((a, b) => Number(b) - Number(
                     <span class="vine" />
                   </>
                 </h2>
-                <div class="cards">
+                <GridLayout columns={1} gap="sm" class="cards">
                   {publicationsByYear[Number(year)].map((pub) => (
                     <article class="pub-card" data-year={year} data-type={pub.type}>
                       <div class="card-body">
@@ -201,7 +202,7 @@ const years = Object.keys(publicationsByYear).sort((a, b) => Number(b) - Number(
                       </div>
                     </article>
                   ))}
-                </div>
+                </GridLayout>
               </div>
             ))
           }

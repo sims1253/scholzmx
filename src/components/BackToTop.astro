@@ -174,7 +174,7 @@ const { className = '' } = Astro.props;
 
           if (shouldShow !== isVisible) {
             isVisible = shouldShow;
-            backToTopButton.classList.toggle('visible', isVisible);
+            backToTopButton?.classList.toggle('visible', isVisible);
           }
 
           ticking = false;
