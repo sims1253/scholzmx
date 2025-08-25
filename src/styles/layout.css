@@ -20,7 +20,6 @@
   font-size: var(--text-xl);
   font-weight: 600;
   color: var(--color-ink-dark);
-  transition: color var(--transition-medium);
 }
 
 .nav-brand .site-logo:hover {
@@ -57,7 +56,6 @@
   padding: 4px;
   border-radius: 50%;
   color: var(--color-walnut);
-  transition: background-color var(--transition-fast);
 }
 
 .torch-toggle:hover {
@@ -80,7 +78,6 @@
   text-decoration: none;
   color: var(--color-ink-light);
   padding: 4px 8px;
-  transition: color var(--transition-fast);
   font-weight: 400;
   letter-spacing: 0.01em;
   position: relative;

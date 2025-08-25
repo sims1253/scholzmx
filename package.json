@@ -29,7 +29,6 @@
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.12",
-    "@charmland/crush": "^0.5.0",
     "astro": "^5.12.9",
     "npm-check-updates": "^18.0.2",
     "rehype-katex": "^7.0.1",
@@ -56,6 +55,7 @@
     "stylelint": "^16.23.1",
     "stylelint-config-html": "^1.1.0",
     "stylelint-config-standard": "^39.0.0",
+    "tailwindcss": "^4.1.12",
     "vite-plugin-lightningcss": "^0.0.5"
   }
 }

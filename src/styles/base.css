@@ -29,6 +29,35 @@
   outline: none;
 }
 
+/* Instant-hover, slow-fade pattern for better interaction feedback */
+.nav-link,
+.torch-toggle,
+.copy-button,
+.site-logo,
+a:not(.nav-link):not(.site-logo),
+button:not(.torch-toggle):not(.copy-button),
+details.code-collapse summary,
+.clickable-frame {
+  transition: 
+    background-color 150ms ease-out,
+    color 150ms ease-out,
+    transform 150ms ease-out,
+    box-shadow 150ms ease-out,
+    border-color 150ms ease-out,
+    text-decoration-color 150ms ease-out;
+}
+
+.nav-link:hover,
+.torch-toggle:hover,
+.copy-button:hover,
+.site-logo:hover,
+a:not(.nav-link):not(.site-logo):hover,
+button:not(.torch-toggle):not(.copy-button):hover,
+details.code-collapse summary:hover,
+.clickable-frame:hover {
+  transition: none; /* Instant feedback on hover */
+}
+
 /* Enhanced Focus Management */
 *:focus {
   outline: none;
@@ -214,9 +243,6 @@ a {
   text-decoration: underline;
   text-decoration-color: var(--color-underline);
   text-underline-offset: 2px;
-  transition:
-    color var(--transition-fast),
-    text-decoration-color var(--transition-fast);
   text-decoration-thickness: 1.6px;
 }
 
