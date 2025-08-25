@@ -26,10 +26,14 @@ export default defineConfig({
   },
   integrations: [
     sitemap(),
-    // PurgeCSS should be last to process all other integrations' CSS
+    // PurgeCSS with conservative minimal safelist
     purgecss({
-      content: ['./src/**/*.{astro,js,jsx,ts,tsx,vue,svelte}', './public/**/*.html'],
-      // Keep critical animations and dynamic classes
+      // Include markdown/quarto so typography/dropcaps classes referenced in content are detected
+      content: [
+        './src/**/*.{astro,js,jsx,ts,tsx,vue,svelte,md,mdx}',
+        './src/content/**/*.{md,mdx,qmd}',
+        './public/**/*.html',
+      ],
       safelist: [
         // Keep all CSS custom properties (variables)
         /^--/,
@@ -58,11 +62,37 @@ export default defineConfig({
         // Keep math/code elements
         'astro-code',
         'copy-button',
+        // Dropcap variants generated dynamically in DropCap.astro - CRITICAL
+        /^dropcap$/,
+        /^dropcap--/,
+        // ImageFrame dynamic/toggled classes
+        /^image-frame/,
+        'primary-image',
+        'alternate-image',
+        'clickable',
+        'show-alternate',
+        /^fill-/,
+        // Margin notes injected via JS on blog posts
+        'margin-note',
+        // Keep specific Tailwind utilities (NOT broad regex)
+        'tw-grid',
+        'tw-grid-cols-1',
+        'tw-grid-cols-2',
+        'tw-grid-cols-3',
+        'tw-gap-4',
+        'tw-gap-6',
+        'tw-w-full',
+        'tw-max-w-5xl',
+        'tw-max-w-6xl',
+        'tw-mx-auto',
+        'tw-px-md',
+        // Responsive variants for grid
+        'md:tw-grid-cols-2',
+        'lg:tw-grid-cols-3',
       ],
-      // Keep keyframes for animations (set to false if using View Transitions)
       keyframes: true,
-      // Keep font-face declarations
-      fontFace: true,
+      // Keep all @font-face declarations so production keeps heading/body/dropcap fonts
+      fontFace: false,
     }),
   ],
   // Enable automatic image optimization

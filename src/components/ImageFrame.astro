@@ -129,8 +129,8 @@ const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) || 4
 
 <div
   class={`image-frame image-frame-${style} ${className} ${isClickable ? 'clickable' : ''} ${containerClass} ${
-    style === 'hero' 
-      ? 'tw-w-full tw-max-w-5xl tw-mx-auto tw-px-8 tw--mt-lg tw-mb-lg tw-aspect-[8/3] md:tw-aspect-[8/3] sm:tw-aspect-[4/3]' 
+    style === 'hero'
+      ? 'tw-w-full tw-max-w-5xl tw-mx-auto tw-px-8 tw--mt-lg tw-mb-lg tw-aspect-[8/3] md:tw-aspect-[8/3] sm:tw-aspect-[4/3]'
       : ''
   }`}
   style={`${aspectRatio ? `aspect-ratio: ${aspectRatio};` : ''} ${style !== 'hero' && style !== 'simple' ? `width: ${finalWidth}; height: ${finalHeight};` : ''}`}
@@ -431,7 +431,6 @@ const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) || 4
       max-width: 120px;
       max-height: 140px;
     }
-
   }
 </style>
 

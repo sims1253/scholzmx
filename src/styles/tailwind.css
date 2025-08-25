@@ -1,2 +1,2 @@
 /* Utilities-only to preserve your base/typography (no Preflight) */
-@import "tailwindcss/utilities";
+@import url('tailwindcss/utilities');

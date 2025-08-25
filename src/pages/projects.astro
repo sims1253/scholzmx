@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import GridLayout from '../components/GridLayout.astro';
 
 const projects = [
   {
@@ -58,60 +59,64 @@ const optimizeExternalImage = (url: string) => {
 
     <div class="projects-container">
       <main class="projects-content">
-        <section class="projects-list" aria-label="Projects">
-          {
-            sortedProjects.map((project) => (
-              <article class="project-card">
-                <div class="card-body">
-                  <h3 class="card-title">
-                    {project.title === 'huerd — Herding Hues' ? (
-                      <a href="https://sims1253.github.io/huerd/" target="_blank" rel="noopener">
-                        {project.title}
-                      </a>
-                    ) : (
-                      project.title
-                    )}
-                  </h3>
-                  <p class="card-excerpt">{project.description}</p>
-                  <div class="card-meta">
-                    <div class="card-info">
-                      <span class="year-badge">{project.year}</span>
-                      <span class="status-badge status-{project.status.toLowerCase()}">
-                        {project.status}
-                      </span>
-                    </div>
-                    <div class="meta-tags">
-                      {project.tech.map((tech) => (
-                        <span class="chip">#{tech}</span>
-                      ))}
-                    </div>
-                  </div>
-                  {project.links?.length && (
-                    <div class="project-links">
-                      {project.links.map((l) => (
-                        <a class="link-chip" href={l.url} target="_blank" rel="noopener">
-                          {l.type}
+        <section aria-label="Projects">
+          <div
+            class="projects-list tw-grid tw-grid-cols-1 md:tw-grid-cols-2 lg:tw-grid-cols-3 tw-gap-4"
+          >
+            {
+              sortedProjects.map((project) => (
+                <article class="project-card">
+                  <div class="card-body">
+                    <h3 class="card-title">
+                      {project.title === 'huerd — Herding Hues' ? (
+                        <a href="https://sims1253.github.io/huerd/" target="_blank" rel="noopener">
+                          {project.title}
                         </a>
-                      ))}
+                      ) : (
+                        project.title
+                      )}
+                    </h3>
+                    <p class="card-excerpt">{project.description}</p>
+                    <div class="card-meta">
+                      <div class="card-info">
+                        <span class="year-badge">{project.year}</span>
+                        <span class={`status-badge status-${project.status.toLowerCase()}`}>
+                          {project.status}
+                        </span>
+                      </div>
+                      <div class="meta-tags">
+                        {project.tech.map((tech) => (
+                          <span class="chip">#{tech}</span>
+                        ))}
+                      </div>
                     </div>
+                    {project.links?.length && (
+                      <div class="project-links">
+                        {project.links.map((l) => (
+                          <a class="link-chip" href={l.url} target="_blank" rel="noopener">
+                            {l.type}
+                          </a>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  {project.banner && (
+                    <figure class="thumb">
+                      <img
+                        src={optimizeExternalImage(project.banner)}
+                        alt={project.title}
+                        width="160"
+                        height="120"
+                        loading="lazy"
+                        fetchpriority="low"
+                        decoding="async"
+                      />
+                    </figure>
                   )}
-                </div>
-                {project.banner && (
-                  <figure class="thumb">
-                    <img
-                      src={optimizeExternalImage(project.banner)}
-                      alt={project.title}
-                      width="160"
-                      height="120"
-                      loading="lazy"
-                      fetchpriority="low"
-                      decoding="async"
-                    />
-                  </figure>
-                )}
-              </article>
-            ))
-          }
+                </article>
+              ))
+            }
+          </div>
         </section>
       </main>
     </div>
@@ -147,11 +152,6 @@ const optimizeExternalImage = (url: string) => {
     margin: 0 auto;
   }
   .projects-content {
-  }
-
-  .projects-list {
-    display: grid;
-    gap: var(--space-sm);
   }
 
   .project-card {

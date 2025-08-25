@@ -1,0 +1,97 @@
+---
+// GridLayout.astro - Flexible responsive grid component using Tailwind utilities
+// Replaces fragile custom CSS grid patterns with robust Tailwind classes
+
+export interface Props {
+  columns?: 1 | 2 | 3 | 'auto'; // Number of columns at largest breakpoint
+  gap?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'; // Gap size using design tokens
+  itemMinWidth?: string; // Minimum width per item (for auto-fit grids)
+  className?: string; // Additional classes
+  class?: string; // Additional classes (Astro-style)
+  responsive?: boolean; // Whether to use responsive breakpoints (default: true)
+}
+
+const {
+  columns = 3,
+  gap = 'md',
+  itemMinWidth,
+  className = '',
+  class: classProp = '',
+  responsive = true,
+} = Astro.props;
+
+// Build grid classes based on configuration
+const getGridClasses = () => {
+  const classes = ['tw-grid'];
+
+  // Gap classes - use custom spacing tokens defined in tailwind.config.mjs
+  const gapMap = {
+    xs: 'tw-gap-xs',
+    sm: 'tw-gap-sm',
+    md: 'tw-gap-md',
+    lg: 'tw-gap-lg',
+    xl: 'tw-gap-xl',
+  };
+  classes.push(gapMap[gap]);
+
+  if (columns === 'auto' && itemMinWidth) {
+    // Auto-fit handled via inline style; keep grid a single column by default
+    classes.push('tw-grid-cols-1');
+  } else if (responsive && typeof columns === 'number') {
+    // Responsive grid: mobile (1 col) → tablet (2 col) → desktop (specified cols)
+    if (columns === 1) {
+      // Single column: use grid-cols-1 which creates proper grid rows
+      classes.push('tw-grid-cols-1');
+    } else {
+      classes.push('tw-grid-cols-1');
+      if (columns >= 2) {
+        classes.push('md:tw-grid-cols-2');
+      }
+      if (columns >= 3) {
+        classes.push('lg:tw-grid-cols-3');
+      }
+    }
+  } else if (typeof columns === 'number') {
+    // Fixed columns at all breakpoints (explicit classes to avoid dynamic)
+    if (columns === 1) classes.push('tw-grid-cols-1');
+    if (columns === 2) classes.push('tw-grid-cols-2');
+    if (columns === 3) classes.push('tw-grid-cols-3');
+  }
+
+  const extra = [className, classProp].filter(Boolean).join(' ');
+  if (extra) classes.push(extra);
+
+  return classes.join(' ');
+};
+
+const gridClasses = getGridClasses();
+const gridStyle =
+  columns === 'auto'
+    ? `grid-template-columns: repeat(auto-fit, minmax(${itemMinWidth ?? '18rem'}, 1fr));`
+    : undefined;
+const gapVarMap = {
+  xs: 'var(--space-xs)',
+  sm: 'var(--space-sm)',
+  md: 'var(--space-md)',
+  lg: 'var(--space-lg)',
+  xl: 'var(--space-xl)',
+};
+const mergedStyle = [gridStyle].filter(Boolean).join('; ');
+---
+
+<div class={gridClasses} style={mergedStyle}>
+  <slot />
+</div>
+
+<style>
+  /* Support for custom grid templates when needed */
+  :global(.grid-layout-custom) {
+    /* Custom grid patterns can be added here if Tailwind utilities aren't sufficient */
+  }
+
+  /* Ensure grid items don't overflow */
+  :global(.grid-layout-custom > *) {
+    min-width: 0;
+    overflow-wrap: break-word;
+  }
+</style>

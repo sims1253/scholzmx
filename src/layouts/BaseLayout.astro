@@ -12,6 +12,7 @@ import '../styles/layout.css';
 import '../styles/base.css';
 import '../styles/dropcap.css';
 import '../styles/tailwind.css'; // Utilities only - preserves existing design
+import '../styles/tailwind-utilities.css'; // Force utility generation
 
 export interface Props {
   title: string;
@@ -222,7 +223,12 @@ const currentPath = Astro.url.pathname;
 
       <!-- Navigation and Content in scrollable area -->
       <div class="nav-and-content-area">
-        <nav class="page-nav tw-w-full" role="navigation" aria-label="Main navigation" id="main-navigation">
+        <nav
+          class="page-nav tw-w-full"
+          role="navigation"
+          aria-label="Main navigation"
+          id="main-navigation"
+        >
           <div class="nav-content tw-max-w-5xl tw-mx-auto tw-w-full">
             <div class="nav-brand">
               <a href="/" class="site-logo" aria-label="Home">
@@ -282,7 +288,11 @@ const currentPath = Astro.url.pathname;
 
           <!-- Main content area -->
           <main class="main-content" id="main-content">
-            <div class={personal ? 'container personal tw-max-w-prose-personal tw-mx-auto tw-px-md' : 'container tw-max-w-6xl tw-mx-auto tw-px-md'}>
+            <div
+              class={personal
+                ? 'container personal tw-max-w-prose-personal tw-mx-auto tw-px-md'
+                : 'container tw-max-w-6xl tw-mx-auto tw-px-md'}
+            >
               <slot />
             </div>
           </main>

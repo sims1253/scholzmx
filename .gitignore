@@ -64,3 +64,8 @@ _freeze
 **.RData
 **.rdb
 **__packages
+
+
+GUIDE.md
+plans.db
+tailwind_refactor.md
