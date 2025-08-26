@@ -17,6 +17,10 @@ export interface Props {
   scale?: number; // Scale/zoom factor (e.g., 1.2 for 20% zoom in)
   fillMode?: 'cover' | 'contain' | 'fill'; // How to handle image fitting when no scale/position given
 
+  // Focal control for object-fit (applies when not using custom positioning)
+  focalX?: number; // -50 (left) to 50 (right), 0 center
+  focalY?: number; // -50 (top) to 50 (bottom), 0 center
+
   // Frame styling
   style?: 'botanical' | 'polaroid' | 'gentle-oval' | 'hero' | 'simple';
   size?: 'small' | 'medium' | 'large' | 'custom';
@@ -25,6 +29,7 @@ export interface Props {
   // Container styling
   className?: string;
   containerClass?: string;
+  caption?: string;
 
   // Dual image support
   alternateSrc?: string | ImageMetadata; // Second image to toggle to
@@ -51,6 +56,9 @@ const {
   aspectRatio,
   className = '',
   containerClass = '',
+  focalX,
+  focalY,
+  caption,
   alternateSrc,
   alternateAlt,
   alternatePositionX,
@@ -91,6 +99,15 @@ const alternateObjectFitClass =
     : finalAlternateFillMode === 'contain'
       ? 'tw-object-contain'
       : 'tw-object-fill';
+
+// Focal point mapping (-50..50 → 0%..100%) used as CSS object-position when not using custom positioning
+function clamp(val: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, val));
+}
+const hasFocal = focalX !== undefined || focalY !== undefined;
+const focalXPct = `${clamp((focalX ?? 0) + 50, 0, 100)}%`;
+const focalYPct = `${clamp((focalY ?? 0) + 50, 0, 100)}%`;
+const objectPositionStyle = hasFocal ? `object-position: ${focalXPct} ${focalYPct};` : '';
 
 // Size mappings for portrait frame styles
 const portraitSizeMap = {
@@ -139,40 +156,242 @@ if (style === 'hero') {
 // Parse dimensions for Image component
 const imageWidth = typeof finalWidth === 'string' ? parseInt(finalWidth) || 800 : finalWidth;
 const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) || 400 : finalHeight;
+
+// Hero performance hints
+const effectiveLoading = style === 'hero' ? 'eager' : loading;
+const effectiveFetchPriority = style === 'hero' ? 'high' : undefined;
+const heroSizes = '(min-width: 90rem) 1100px, (min-width: 72rem) 72rem, 100vw';
+const decodingAttr = effectiveLoading === 'eager' ? 'sync' : 'async';
+const hasCaption = Astro.slots?.has?.('caption') || caption;
+const captionId = hasCaption
+  ? `imgcap-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`
+  : undefined;
 ---
 
-<div
-  class={`image-frame image-frame-${style} tw-relative tw-overflow-hidden tw-block tw-mx-auto ${className} ${
-    isClickable
-      ? 'clickable tw-cursor-pointer tw-transition-transform tw-duration-200 tw-ease-in-out'
-      : ''
-  } ${containerClass} ${
-    style === 'hero'
-      ? 'tw-w-full tw-max-w-5xl tw-mx-auto tw-px-8 tw--mt-lg tw-mb-lg tw-aspect-[8/3] md:tw-aspect-[8/3] sm:tw-aspect-[4/3]'
-      : ''
-  }`}
-  style={`${aspectRatio ? `aspect-ratio: ${aspectRatio};` : ''} ${style !== 'hero' && style !== 'simple' ? `width: ${finalWidth}; height: ${finalHeight};` : ''}`}
-  role={isClickable ? 'button' : undefined}
-  tabindex={isClickable ? '0' : undefined}
-  aria-label={isClickable
-    ? `Click to toggle between ${alt} and ${alternateAlt || 'alternate image'}`
-    : undefined}
->
-  {
-    useCustomPositioning ? (
+{
+  Astro.slots?.has?.('caption') || caption ? (
+    <figure class="image-figure tw-mx-auto">
       <div
-        class="image-wrapper primary-image tw-w-full tw-h-full tw-overflow-hidden tw-origin-center tw-relative"
-        style={`transform: scale(${finalScale}) translate(${finalPositionX}%, ${finalPositionY}%);`}
+        class={`image-frame image-frame-${style} tw-relative tw-overflow-hidden tw-block tw-mx-auto ${className} ${
+          isClickable
+            ? 'clickable tw-cursor-pointer tw-transition-transform tw-duration-200 tw-ease-in-out'
+            : ''
+        } ${containerClass} ${
+          style === 'hero'
+            ? 'tw-w-full tw-max-w-5xl tw-mx-auto tw-px-8 tw--mt-lg tw-mb-lg tw-aspect-[8/3] md:tw-aspect-[8/3] sm:tw-aspect-[4/3]'
+            : ''
+        }`}
+        style={`${aspectRatio ? `aspect-ratio: ${aspectRatio};` : ''} ${style !== 'hero' && style !== 'simple' ? `width: ${finalWidth}; height: ${finalHeight};` : ''}`}
+        role={isClickable ? 'button' : undefined}
+        tabindex={isClickable ? '0' : undefined}
+        aria-label={
+          isClickable
+            ? `Click to toggle between ${alt} and ${alternateAlt || 'alternate image'}`
+            : undefined
+        }
+        aria-pressed={isClickable ? 'false' : undefined}
+        aria-describedby={hasCaption ? captionId : undefined}
       >
-        <div class="frame-image custom-positioning tw-w-full tw-h-full tw-block tw-absolute tw-top-1/2 tw-left-1/2 tw--translate-x-1/2 tw--translate-y-1/2 tw-overflow-hidden">
+        {useCustomPositioning ? (
+          <div
+            class="image-wrapper primary-image tw-w-full tw-h-full tw-overflow-hidden tw-origin-center tw-relative"
+            style={`transform: scale(${finalScale}) translate(${finalPositionX}%, ${finalPositionY}%);`}
+          >
+            <div class="frame-image custom-positioning tw-w-full tw-h-full tw-block tw-absolute tw-top-1/2 tw-left-1/2 tw--translate-x-1/2 tw--translate-y-1/2 tw-overflow-hidden">
+              {typeof src === 'string' ? (
+                <img
+                  class="tw-w-full tw-h-full tw-object-contain"
+                  src={src}
+                  alt={alt}
+                  width={imageWidth}
+                  height={imageHeight}
+                  loading={effectiveLoading}
+                  fetchpriority={effectiveFetchPriority}
+                />
+              ) : (
+                <Image
+                  src={src}
+                  alt={alt}
+                  width={imageWidth}
+                  height={imageHeight}
+                  widths={style === 'hero' ? [400, 600, 800, 1100] : [imageWidth]}
+                  sizes={style === 'hero' ? heroSizes : `${imageWidth}px`}
+                  format="webp"
+                  loading={effectiveLoading}
+                  class={`tw-w-full tw-h-full tw-object-contain`}
+                  fetchpriority={effectiveFetchPriority}
+                />
+              )}
+            </div>
+          </div>
+        ) : (
+          <div
+            class={`frame-image simple-fill fill-${fillMode} primary-image tw-w-full tw-h-full tw-block tw-overflow-hidden`}
+          >
+            {typeof src === 'string' ? (
+              <img
+                class={`tw-w-full tw-h-full ${objectFitClass}`}
+                style={objectPositionStyle}
+                src={src}
+                alt={alt}
+                width={imageWidth}
+                height={imageHeight}
+                loading={effectiveLoading}
+                fetchpriority={effectiveFetchPriority}
+              />
+            ) : (
+              <Image
+                src={src}
+                alt={alt}
+                width={imageWidth}
+                height={imageHeight}
+                widths={style === 'hero' ? [400, 600, 800, 1100] : [imageWidth]}
+                sizes={style === 'hero' ? heroSizes : `${imageWidth}px`}
+                format="webp"
+                loading={effectiveLoading}
+                class={`tw-w-full tw-h-full ${objectFitClass}`}
+                style={objectPositionStyle}
+                fetchpriority={effectiveFetchPriority}
+              />
+            )}
+          </div>
+        )}
+
+        {alternateSrc &&
+          (useAlternateCustomPositioning ? (
+            <div
+              class="image-wrapper alternate-image tw-opacity-0 tw-transition-opacity tw-duration-300 tw-ease-in-out tw-absolute tw-inset-0 tw-w-full tw-h-full tw-overflow-hidden tw-origin-center"
+              style={`transform: scale(${finalAlternateScale}) translate(${finalAlternatePositionX}%, ${finalAlternatePositionY}%);`}
+              aria-hidden="true"
+            >
+              <div class="frame-image custom-positioning tw-w-full tw-h-full tw-block tw-absolute tw-top-1/2 tw-left-1/2 tw--translate-x-1/2 tw--translate-y-1/2 tw-overflow-hidden">
+                {typeof alternateSrc === 'string' ? (
+                  <img
+                    class="tw-w-full tw-h-full tw-object-contain"
+                    src={alternateSrc}
+                    alt={alternateAlt || alt}
+                    width={imageWidth}
+                    height={imageHeight}
+                    loading="lazy"
+                  />
+                ) : (
+                  <Image
+                    src={alternateSrc}
+                    alt={alternateAlt || alt}
+                    width={imageWidth}
+                    height={imageHeight}
+                    widths={style === 'hero' ? [400, 600, 800, 1100] : [imageWidth]}
+                    sizes={style === 'hero' ? heroSizes : `${imageWidth}px`}
+                    format="webp"
+                    loading="lazy"
+                    class={`tw-w-full tw-h-full tw-object-contain`}
+                  />
+                )}
+              </div>
+            </div>
+          ) : (
+            <div
+              class={`frame-image simple-fill fill-${finalAlternateFillMode} alternate-image tw-absolute tw-inset-0 tw-w-full tw-h-full tw-block tw-overflow-hidden tw-opacity-0 tw-transition-opacity tw-duration-300 tw-ease-in-out`}
+            >
+              {typeof alternateSrc === 'string' ? (
+                <img
+                  class={`tw-w-full tw-h-full ${alternateObjectFitClass}`}
+                  style={objectPositionStyle}
+                  src={alternateSrc}
+                  alt={alternateAlt || alt}
+                  width={imageWidth}
+                  height={imageHeight}
+                  loading="lazy"
+                />
+              ) : (
+                <Image
+                  src={alternateSrc}
+                  alt={alternateAlt || alt}
+                  width={imageWidth}
+                  height={imageHeight}
+                  widths={style === 'hero' ? [400, 600, 800, 1100] : [imageWidth]}
+                  sizes={style === 'hero' ? heroSizes : `${imageWidth}px`}
+                  format="webp"
+                  loading="lazy"
+                  class={`tw-w-full tw-h-full ${alternateObjectFitClass}`}
+                  style={objectPositionStyle}
+                />
+              )}
+            </div>
+          ))}
+      </div>
+      <figcaption class="image-caption" id={captionId}>
+        {caption}
+        <slot name="caption" />
+      </figcaption>
+    </figure>
+  ) : (
+    <div
+      class={`image-frame image-frame-${style} tw-relative tw-overflow-hidden tw-block tw-mx-auto ${className} ${
+        isClickable ? 'clickable tw-cursor-pointer' : ''
+      } ${containerClass} ${
+        style === 'hero'
+          ? 'tw-w-full tw-max-w-5xl tw-mx-auto tw-px-8 tw--mt-lg tw-mb-lg tw-aspect-[8/3] md:tw-aspect-[8/3] sm:tw-aspect-[4/3]'
+          : ''
+      }`}
+      style={`${aspectRatio ? `aspect-ratio: ${aspectRatio};` : ''} ${style !== 'hero' && style !== 'simple' ? `width: ${finalWidth}; height: ${finalHeight};` : ''}`}
+      role={isClickable ? 'button' : undefined}
+      tabindex={isClickable ? '0' : undefined}
+      aria-label={
+        isClickable
+          ? `Click to toggle between ${alt} and ${alternateAlt || 'alternate image'}`
+          : undefined
+      }
+      aria-pressed={isClickable ? 'false' : undefined}
+    >
+      {useCustomPositioning ? (
+        <div
+          class="image-wrapper primary-image tw-w-full tw-h-full tw-overflow-hidden tw-origin-center tw-relative"
+          style={`transform: scale(${finalScale}) translate(${finalPositionX}%, ${finalPositionY}%);`}
+        >
+          <div class="frame-image custom-positioning tw-w-full tw-h-full tw-block tw-absolute tw-top-1/2 tw-left-1/2 tw--translate-x-1/2 tw--translate-y-1/2 tw-overflow-hidden">
+            {typeof src === 'string' ? (
+              <img
+                class="tw-w-full tw-h-full tw-object-contain"
+                src={src}
+                alt={alt}
+                width={imageWidth}
+                height={imageHeight}
+                loading={effectiveLoading}
+                fetchpriority={effectiveFetchPriority}
+                decoding={decodingAttr}
+              />
+            ) : (
+              <Image
+                src={src}
+                alt={alt}
+                width={imageWidth}
+                height={imageHeight}
+                widths={style === 'hero' ? [400, 600, 800, 1100] : [imageWidth]}
+                sizes={style === 'hero' ? heroSizes : `${imageWidth}px`}
+                format="webp"
+                loading={effectiveLoading}
+                class={`tw-w-full tw-h-full tw-object-contain`}
+                fetchpriority={effectiveFetchPriority}
+              />
+            )}
+          </div>
+        </div>
+      ) : (
+        <div
+          class={`frame-image simple-fill fill-${fillMode} primary-image tw-w-full tw-h-full tw-block tw-overflow-hidden`}
+        >
           {typeof src === 'string' ? (
             <img
-              class="tw-w-full tw-h-full tw-object-contain"
+              class={`tw-w-full tw-h-full ${objectFitClass}`}
+              style={objectPositionStyle}
               src={src}
               alt={alt}
               width={imageWidth}
               height={imageHeight}
-              loading={loading}
+              loading={effectiveLoading}
+              fetchpriority={effectiveFetchPriority}
+              decoding={decodingAttr}
             />
           ) : (
             <Image
@@ -181,63 +400,56 @@ const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) || 4
               width={imageWidth}
               height={imageHeight}
               widths={style === 'hero' ? [400, 600, 800, 1100] : [imageWidth]}
-              sizes={
-                style === 'hero'
-                  ? '(max-width: 768px) 400px, (max-width: 1200px) 600px, 800px'
-                  : `${imageWidth}px`
-              }
+              sizes={style === 'hero' ? heroSizes : `${imageWidth}px`}
               format="webp"
-              loading={loading}
-              class={`tw-w-full tw-h-full tw-object-contain`}
+              loading={effectiveLoading}
+              class={`tw-w-full tw-h-full ${objectFitClass}`}
+              style={objectPositionStyle}
+              fetchpriority={effectiveFetchPriority}
             />
           )}
         </div>
-      </div>
-    ) : (
-      <div
-        class={`frame-image simple-fill fill-${fillMode} primary-image tw-w-full tw-h-full tw-block tw-overflow-hidden`}
-      >
-        {typeof src === 'string' ? (
-          <img
-            class={`tw-w-full tw-h-full ${objectFitClass}`}
-            src={src}
-            alt={alt}
-            width={imageWidth}
-            height={imageHeight}
-            loading={loading}
-          />
+      )}
+      {alternateSrc &&
+        (useAlternateCustomPositioning ? (
+          <div
+            class="image-wrapper alternate-image tw-opacity-0 tw-transition-opacity tw-duration-300 tw-ease-in-out tw-absolute tw-inset-0 tw-w-full tw-h-full tw-overflow-hidden tw-origin-center"
+            style={`transform: scale(${finalAlternateScale}) translate(${finalAlternatePositionX}%, ${finalAlternatePositionY}%);`}
+          >
+            <div class="frame-image custom-positioning tw-w-full tw-h-full tw-block tw-absolute tw-top-1/2 tw-left-1/2 tw--translate-x-1/2 tw--translate-y-1/2 tw-overflow-hidden">
+              {typeof alternateSrc === 'string' ? (
+                <img
+                  class="tw-w-full tw-h-full tw-object-contain"
+                  src={alternateSrc}
+                  alt={alternateAlt || alt}
+                  width={imageWidth}
+                  height={imageHeight}
+                  loading="lazy"
+                />
+              ) : (
+                <Image
+                  src={alternateSrc}
+                  alt={alternateAlt || alt}
+                  width={imageWidth}
+                  height={imageHeight}
+                  widths={style === 'hero' ? [400, 600, 800, 1100] : [imageWidth]}
+                  sizes={style === 'hero' ? heroSizes : `${imageWidth}px`}
+                  format="webp"
+                  loading="lazy"
+                  class={`tw-w-full tw-h-full tw-object-contain`}
+                />
+              )}
+            </div>
+          </div>
         ) : (
-          <Image
-            src={src}
-            alt={alt}
-            width={imageWidth}
-            height={imageHeight}
-            widths={style === 'hero' ? [400, 600, 800, 1100] : [imageWidth]}
-            sizes={
-              style === 'hero'
-                ? '(max-width: 768px) 400px, (max-width: 1200px) 600px, 800px'
-                : `${imageWidth}px`
-            }
-            format="webp"
-            loading={loading}
-            class={`tw-w-full tw-h-full ${objectFitClass}`}
-          />
-        )}
-      </div>
-    )
-  }
-
-  {
-    alternateSrc &&
-      (useAlternateCustomPositioning ? (
-        <div
-          class="image-wrapper alternate-image tw-opacity-0 tw-transition-opacity tw-duration-300 tw-ease-in-out tw-absolute tw-inset-0 tw-w-full tw-h-full tw-overflow-hidden tw-origin-center"
-          style={`transform: scale(${finalAlternateScale}) translate(${finalAlternatePositionX}%, ${finalAlternatePositionY}%);`}
-        >
-          <div class="frame-image custom-positioning tw-w-full tw-h-full tw-block tw-absolute tw-top-1/2 tw-left-1/2 tw--translate-x-1/2 tw--translate-y-1/2 tw-overflow-hidden">
+          <div
+            class={`frame-image simple-fill fill-${finalAlternateFillMode} alternate-image tw-absolute tw-inset-0 tw-w-full tw-h-full tw-block tw-overflow-hidden tw-opacity-0 tw-transition-opacity tw-duration-300 tw-ease-in-out`}
+            aria-hidden="true"
+          >
             {typeof alternateSrc === 'string' ? (
               <img
-                class="tw-w-full tw-h-full tw-object-contain"
+                class={`tw-w-full tw-h-full ${alternateObjectFitClass}`}
+                style={objectPositionStyle}
                 src={alternateSrc}
                 alt={alternateAlt || alt}
                 width={imageWidth}
@@ -251,52 +463,18 @@ const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) || 4
                 width={imageWidth}
                 height={imageHeight}
                 widths={style === 'hero' ? [400, 600, 800, 1100] : [imageWidth]}
-                sizes={
-                  style === 'hero'
-                    ? '(max-width: 768px) 400px, (max-width: 1200px) 600px, 800px'
-                    : `${imageWidth}px`
-                }
+                sizes={style === 'hero' ? heroSizes : `${imageWidth}px`}
                 format="webp"
                 loading="lazy"
-                class={`tw-w-full tw-h-full tw-object-contain`}
+                class={`tw-w-full tw-h-full ${alternateObjectFitClass}`}
+                style={objectPositionStyle}
               />
             )}
           </div>
-        </div>
-      ) : (
-        <div
-          class={`frame-image simple-fill fill-${finalAlternateFillMode} alternate-image tw-absolute tw-inset-0 tw-w-full tw-h-full tw-block tw-overflow-hidden tw-opacity-0 tw-transition-opacity tw-duration-300 tw-ease-in-out`}
-        >
-          {typeof alternateSrc === 'string' ? (
-            <img
-              class={`tw-w-full tw-h-full ${alternateObjectFitClass}`}
-              src={alternateSrc}
-              alt={alternateAlt || alt}
-              width={imageWidth}
-              height={imageHeight}
-              loading="lazy"
-            />
-          ) : (
-            <Image
-              src={alternateSrc}
-              alt={alternateAlt || alt}
-              width={imageWidth}
-              height={imageHeight}
-              widths={style === 'hero' ? [400, 600, 800, 1100] : [imageWidth]}
-              sizes={
-                style === 'hero'
-                  ? '(max-width: 768px) 400px, (max-width: 1200px) 600px, 800px'
-                  : `${imageWidth}px`
-              }
-              format="webp"
-              loading="lazy"
-              class={`tw-w-full tw-h-full ${alternateObjectFitClass}`}
-            />
-          )}
-        </div>
-      ))
-  }
-</div>
+        ))}
+    </div>
+  )
+}
 
 <style>
   /* Base image frame styles */
@@ -346,17 +524,7 @@ const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) || 4
     height: 100%;
   }
 
-  .frame-image.fill-cover img {
-    object-fit: cover; /* Fill frame, crop excess */
-  }
-
-  .frame-image.fill-contain img {
-    object-fit: contain; /* Show full image, letterbox if needed */
-  }
-
-  .frame-image.fill-fill img {
-    object-fit: fill; /* Stretch to fit frame exactly */
-  }
+  /* object-fit handled via Tailwind utilities now */
 
   /* Hero image style - for blog post headers */
   .image-frame-hero {
@@ -388,12 +556,7 @@ const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) || 4
   }
 
   .image-frame.clickable:hover {
-    transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(139, 90, 60, 0.25);
-  }
-
-  .image-frame.clickable:active {
-    transform: translateY(-1px);
   }
 
   .image-frame.clickable:focus {
@@ -415,6 +578,12 @@ const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) || 4
     left: 0;
     width: 100%;
     height: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .alternate-image {
+      transition: none;
+    }
   }
 
   .image-frame.show-alternate .primary-image {
