@@ -120,7 +120,7 @@ export default defineConfig({
         light: 'solarized-light',
         dark: 'gruvbox-dark-hard',
       },
-      wrap: true,
+      wrap: false,
     },
   },
 

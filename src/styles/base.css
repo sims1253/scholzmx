@@ -433,6 +433,10 @@ pre {
   line-height: 1.25 !important;
   overflow-x: auto;
 
+  /* Fix first-line visual indentation issue - normalize text alignment */
+  text-indent: 0 !important;
+  text-align: left !important;
+
   /* Gentle transition for theme changes */
   transition:
     border-color 0.3s ease,
@@ -610,7 +614,7 @@ details.code-collapse .astro-code {
   /* Keep all other styles from the original .astro-code rule */
 }
 
-/* Remove selection-style highlights from code content */
+/* Remove selection-style highlights from code content and normalize alignment */
 .astro-code *,
 .astro-code span,
 .astro-code .line {
@@ -618,6 +622,9 @@ details.code-collapse .astro-code {
   outline: none !important;
   border: none !important;
   box-shadow: none !important;
+  text-indent: 0 !important;
+  margin-left: 0 !important;
+  padding-left: 0 !important;
 }
 
 /* Ensure no pseudo-element backgrounds interfere */
@@ -627,6 +634,14 @@ details.code-collapse .astro-code {
   outline: none !important;
   border: none !important;
   box-shadow: none !important;
+}
+
+/* Explicitly reset any first-line pseudo-element styling that might cause indentation */
+.astro-code::first-line,
+.astro-code *::first-line {
+  text-indent: 0 !important;
+  margin-left: 0 !important;
+  padding-left: 0 !important;
 }
 
 /* Smooth opening animation */
