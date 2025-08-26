@@ -78,6 +78,20 @@ const finalAlternatePositionY = alternatePositionY || 0;
 const finalAlternateScale = alternateScale || 1;
 const finalAlternateFillMode = alternateFillMode || fillMode;
 
+// Tailwind object-fit class mapping for simple fill mode
+const objectFitClass =
+  fillMode === 'cover'
+    ? 'tw-object-cover'
+    : fillMode === 'contain'
+      ? 'tw-object-contain'
+      : 'tw-object-fill';
+const alternateObjectFitClass =
+  finalAlternateFillMode === 'cover'
+    ? 'tw-object-cover'
+    : finalAlternateFillMode === 'contain'
+      ? 'tw-object-contain'
+      : 'tw-object-fill';
+
 // Size mappings for portrait frame styles
 const portraitSizeMap = {
   small: {
@@ -128,7 +142,11 @@ const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) || 4
 ---
 
 <div
-  class={`image-frame image-frame-${style} ${className} ${isClickable ? 'clickable' : ''} ${containerClass} ${
+  class={`image-frame image-frame-${style} tw-relative tw-overflow-hidden tw-block tw-mx-auto ${className} ${
+    isClickable
+      ? 'clickable tw-cursor-pointer tw-transition-transform tw-duration-200 tw-ease-in-out'
+      : ''
+  } ${containerClass} ${
     style === 'hero'
       ? 'tw-w-full tw-max-w-5xl tw-mx-auto tw-px-8 tw--mt-lg tw-mb-lg tw-aspect-[8/3] md:tw-aspect-[8/3] sm:tw-aspect-[4/3]'
       : ''
@@ -143,12 +161,19 @@ const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) || 4
   {
     useCustomPositioning ? (
       <div
-        class="image-wrapper primary-image"
+        class="image-wrapper primary-image tw-w-full tw-h-full tw-overflow-hidden tw-origin-center tw-relative"
         style={`transform: scale(${finalScale}) translate(${finalPositionX}%, ${finalPositionY}%);`}
       >
-        <div class="frame-image custom-positioning">
+        <div class="frame-image custom-positioning tw-w-full tw-h-full tw-block tw-absolute tw-top-1/2 tw-left-1/2 tw--translate-x-1/2 tw--translate-y-1/2 tw-overflow-hidden">
           {typeof src === 'string' ? (
-            <img src={src} alt={alt} width={imageWidth} height={imageHeight} loading={loading} />
+            <img
+              class="tw-w-full tw-h-full tw-object-contain"
+              src={src}
+              alt={alt}
+              width={imageWidth}
+              height={imageHeight}
+              loading={loading}
+            />
           ) : (
             <Image
               src={src}
@@ -163,14 +188,24 @@ const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) || 4
               }
               format="webp"
               loading={loading}
+              class={`tw-w-full tw-h-full tw-object-contain`}
             />
           )}
         </div>
       </div>
     ) : (
-      <div class={`frame-image simple-fill fill-${fillMode} primary-image`}>
+      <div
+        class={`frame-image simple-fill fill-${fillMode} primary-image tw-w-full tw-h-full tw-block tw-overflow-hidden`}
+      >
         {typeof src === 'string' ? (
-          <img src={src} alt={alt} width={imageWidth} height={imageHeight} loading={loading} />
+          <img
+            class={`tw-w-full tw-h-full ${objectFitClass}`}
+            src={src}
+            alt={alt}
+            width={imageWidth}
+            height={imageHeight}
+            loading={loading}
+          />
         ) : (
           <Image
             src={src}
@@ -185,6 +220,7 @@ const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) || 4
             }
             format="webp"
             loading={loading}
+            class={`tw-w-full tw-h-full ${objectFitClass}`}
           />
         )}
       </div>
@@ -195,12 +231,13 @@ const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) || 4
     alternateSrc &&
       (useAlternateCustomPositioning ? (
         <div
-          class="image-wrapper alternate-image"
+          class="image-wrapper alternate-image tw-opacity-0 tw-transition-opacity tw-duration-300 tw-ease-in-out tw-absolute tw-inset-0 tw-w-full tw-h-full tw-overflow-hidden tw-origin-center"
           style={`transform: scale(${finalAlternateScale}) translate(${finalAlternatePositionX}%, ${finalAlternatePositionY}%);`}
         >
-          <div class="frame-image custom-positioning">
+          <div class="frame-image custom-positioning tw-w-full tw-h-full tw-block tw-absolute tw-top-1/2 tw-left-1/2 tw--translate-x-1/2 tw--translate-y-1/2 tw-overflow-hidden">
             {typeof alternateSrc === 'string' ? (
               <img
+                class="tw-w-full tw-h-full tw-object-contain"
                 src={alternateSrc}
                 alt={alternateAlt || alt}
                 width={imageWidth}
@@ -221,14 +258,18 @@ const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) || 4
                 }
                 format="webp"
                 loading="lazy"
+                class={`tw-w-full tw-h-full tw-object-contain`}
               />
             )}
           </div>
         </div>
       ) : (
-        <div class={`frame-image simple-fill fill-${finalAlternateFillMode} alternate-image`}>
+        <div
+          class={`frame-image simple-fill fill-${finalAlternateFillMode} alternate-image tw-absolute tw-inset-0 tw-w-full tw-h-full tw-block tw-overflow-hidden tw-opacity-0 tw-transition-opacity tw-duration-300 tw-ease-in-out`}
+        >
           {typeof alternateSrc === 'string' ? (
             <img
+              class={`tw-w-full tw-h-full ${alternateObjectFitClass}`}
               src={alternateSrc}
               alt={alternateAlt || alt}
               width={imageWidth}
@@ -249,6 +290,7 @@ const imageHeight = typeof finalHeight === 'string' ? parseInt(finalHeight) || 4
               }
               format="webp"
               loading="lazy"
+              class={`tw-w-full tw-h-full ${alternateObjectFitClass}`}
             />
           )}
         </div>
