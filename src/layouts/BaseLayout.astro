@@ -13,6 +13,7 @@ import '../styles/base.css';
 import '../styles/dropcap.css';
 import '../styles/tailwind.css'; // Utilities only - preserves existing design
 import '../styles/tailwind-utilities.css'; // Force utility generation
+import '../styles/margin-notes.css';
 
 export interface Props {
   title: string;
@@ -295,6 +296,7 @@ const currentPath = Astro.url.pathname;
             >
               <slot />
             </div>
+            <div class="notes-container" id="notesContainer"></div>
           </main>
         </nav>
 
@@ -416,6 +418,163 @@ const currentPath = Astro.url.pathname;
             codeBlock.appendChild(button);
           });
         });
+
+        // Margin Notes positioning logic (progressive enhancement)
+        (function () {
+          function convertMarginBlockquotesToAnchors() {
+            const blockquotes = document.querySelectorAll('.post-body blockquote');
+            blockquotes.forEach((blockquote) => {
+              const firstP = blockquote.querySelector('p:first-child');
+              if (!firstP || !firstP.textContent) return;
+              const raw = firstP.textContent.trim();
+              if (!/^margin:/i.test(raw)) return;
+              const noteText = raw.replace(/^margin:\s*/i, '').trim();
+              const anchor = document.createElement('span');
+              anchor.className = 'note-anchor';
+              anchor.textContent = '';
+              anchor.setAttribute('data-note', noteText);
+              blockquote.parentElement?.insertBefore(anchor, blockquote);
+              blockquote.remove();
+            });
+          }
+          class MarginNotes {
+            anchors: NodeListOf<HTMLElement>;
+            notesContainer: HTMLElement | null;
+            notes: HTMLElement[];
+            constructor() {
+              this.anchors = document.querySelectorAll('.note-anchor');
+              this.notesContainer = document.getElementById('notesContainer');
+              this.notes = [];
+              if (!this.anchors.length || !this.notesContainer) return;
+              this.init();
+            }
+            init() {
+              this.createNotes();
+              this.positionNotesContainer();
+              this.positionNotes();
+              this.setupEventListeners();
+            }
+            createNotes() {
+              this.anchors.forEach((anchor, index) => {
+                const noteElement = document.createElement('div');
+                noteElement.className = 'margin-note';
+                noteElement.textContent = anchor.dataset.note || '';
+                noteElement.setAttribute('data-anchor-index', String(index));
+                this.notesContainer!.appendChild(noteElement);
+                this.notes.push(noteElement);
+              });
+            }
+            positionNotesContainer() {
+              const pageContainer =
+                (document.querySelector('.post-body.longform') as HTMLElement) ||
+                (document.querySelector('.container.personal') as HTMLElement) ||
+                (document.querySelector('.container') as HTMLElement);
+              const wrapper = document.querySelector('.main-content');
+              if (!pageContainer || !wrapper || !this.notesContainer) return;
+              const contentRect = pageContainer.getBoundingClientRect();
+              const wrapperRect = (wrapper as HTMLElement).getBoundingClientRect();
+              const gap = 28; // matches --margin-note-gap
+              const leftPosition = contentRect.right - wrapperRect.left + gap;
+              this.notesContainer.style.left = leftPosition + 'px';
+            }
+            positionNotes() {
+              const wrapper = document.querySelector('.main-content');
+              if (!wrapper) return;
+              const wrapperRect = (wrapper as HTMLElement).getBoundingClientRect();
+              const used: { top: number; height: number }[] = [];
+              this.anchors.forEach((anchor, index) => {
+                const anchorRect = anchor.getBoundingClientRect();
+                const note = this.notes[index];
+                if (!note) return;
+                let top = anchorRect.top - wrapperRect.top;
+                top = this.avoidCollisions(top, used, note);
+                used.push({ top, height: this.getNoteHeight(note) });
+                note.style.top = top + 'px';
+                setTimeout(() => {
+                  note.classList.add('visible');
+                  // Ensure visibility even if CSS for .visible is purged/late
+                  note.style.opacity = '1';
+                  note.style.transform = 'translateY(0)';
+                }, index * 60);
+              });
+            }
+            getNoteHeight(note: HTMLElement) {
+              const od = note.style.display,
+                ov = note.style.visibility,
+                op = note.style.position,
+                ot = note.style.top;
+              note.style.display = 'block';
+              note.style.visibility = 'hidden';
+              note.style.position = 'absolute';
+              note.style.top = '0px';
+              const h = note.offsetHeight;
+              note.style.display = od;
+              note.style.visibility = ov;
+              note.style.position = op;
+              note.style.top = ot;
+              return h;
+            }
+            avoidCollisions(
+              desiredTop: number,
+              used: { top: number; height: number }[],
+              note: HTMLElement
+            ) {
+              let adjusted = desiredTop;
+              const height = this.getNoteHeight(note);
+              const minGap = 24;
+              const sorted = used.slice().sort((a, b) => a.top - b.top);
+              for (const u of sorted) {
+                if (adjusted < u.top + u.height + minGap && adjusted + height + minGap > u.top) {
+                  adjusted = u.top + u.height + minGap;
+                }
+              }
+              return adjusted;
+            }
+            setupEventListeners() {
+              let t: number | undefined;
+              const onResize = () => {
+                if (t) window.clearTimeout(t);
+                t = window.setTimeout(() => {
+                  this.positionNotesContainer();
+                  this.positionNotes();
+                }, 200);
+              };
+              window.addEventListener('resize', onResize);
+              window.addEventListener('load', () => this.refresh());
+            }
+            refresh() {
+              this.positionNotesContainer();
+              this.positionNotes();
+            }
+          }
+          (function initMarginNotesWhenReady() {
+            const tryInit = () => {
+              if (window.matchMedia('(max-width: 1100px)').matches) return;
+              if ((window as any).__mnotes_inited) return;
+              // Ensure anchors exist by converting any Quarto-style margin notes first
+              convertMarginBlockquotesToAnchors();
+              const anchors = document.querySelectorAll('.note-anchor');
+              const container = document.getElementById('notesContainer');
+              if (!anchors.length || !container) return;
+              new (MarginNotes as any)();
+              (window as any).__mnotes_inited = true;
+            };
+            document.addEventListener('DOMContentLoaded', () => {
+              // Run after DOM ready, then again in a microtask to wait for page-level mutations
+              tryInit();
+              setTimeout(tryInit, 0);
+            });
+            window.addEventListener('load', tryInit);
+            // If user resizes from narrow to wide, attempt init
+            const mql = window.matchMedia('(max-width: 1100px)');
+            mql.addEventListener?.('change', () => {
+              if (!mql.matches) {
+                // just became wide
+                setTimeout(tryInit, 50);
+              }
+            });
+          })();
+        })();
       </script>
     </div>
   </body>

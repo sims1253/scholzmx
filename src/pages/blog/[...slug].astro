@@ -197,25 +197,22 @@ const formatDate = (date: Date) => {
 </BaseLayout>
 
 <script>
-  // Simple margin notes conversion
+  // Convert Quarto-style "> margin:" blockquotes into inline anchors with data-note
   document.addEventListener('DOMContentLoaded', function () {
     const blockquotes = document.querySelectorAll('.post-body blockquote');
-
     blockquotes.forEach((blockquote) => {
       const firstP = blockquote.querySelector('p:first-child');
-      if (
-        firstP &&
-        firstP.textContent &&
-        firstP.textContent.trim().toLowerCase().startsWith('margin:')
-      ) {
-        // Remove the "margin:" prefix
-        const text = firstP.textContent.replace(/^margin:\s*/i, '').trim();
-        firstP.textContent = text;
-
-        // Convert blockquote to margin note
-        blockquote.classList.add('margin-note');
-        blockquote.setAttribute('aria-label', 'Margin note');
-      }
+      if (!firstP || !firstP.textContent) return;
+      const raw = firstP.textContent.trim();
+      if (!/^margin:/i.test(raw)) return;
+      const noteText = raw.replace(/^margin:\s*/i, '').trim();
+      // Replace the blockquote with a span anchor placed before it, then remove the blockquote
+      const anchor = document.createElement('span');
+      anchor.className = 'note-anchor';
+      anchor.textContent = '';
+      anchor.setAttribute('data-note', noteText);
+      blockquote.parentElement?.insertBefore(anchor, blockquote);
+      blockquote.remove();
     });
   });
 </script>

@@ -74,6 +74,9 @@ export default defineConfig({
         /^fill-/,
         // Margin notes injected via JS on blog posts
         'margin-note',
+        'notes-container',
+        'note-anchor',
+        'visible',
         // Keep specific Tailwind utilities (NOT broad regex)
         'tw-grid',
         'tw-grid-cols-1',
