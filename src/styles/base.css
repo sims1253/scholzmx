@@ -457,10 +457,12 @@ pre {
   background: rgba(60, 56, 54, 0.8); /* gruvbox bg1 with transparency */
   border: 1px solid rgba(168, 153, 132, 0.3) !important; /* gruvbox light gray */
   border-radius: 999px;
-  padding: 8px;
+  padding: 0; /* ensure icon is centered within fixed size */
   width: 32px;
   height: 32px;
   font-size: 0; /* Hide text content */
+  line-height: 0; /* avoid baseline affecting centering */
+  box-sizing: border-box;
   color: #a89984; /* gruvbox light gray/fg4 */
   cursor: pointer;
   opacity: 0.08;
