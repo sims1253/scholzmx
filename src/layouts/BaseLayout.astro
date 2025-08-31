@@ -4,12 +4,14 @@ import IllustratedFooter from '../components/IllustratedFooter.astro';
 import BackToTop from '../components/BackToTop.astro';
 
 // Import CSS files
+import '../styles/layers.css';
 import '../styles/tokens.colors.css';
 import '../styles/tokens.typography.css';
 import '../styles/fonts-critical.css';
 import '../styles/fonts.css';
 import '../styles/layout.css';
 import '../styles/base.css';
+import '../styles/modern.css';
 import '../styles/dropcap.css';
 import '../styles/tailwind.css'; // Utilities only - preserves existing design
 import '../styles/tailwind-utilities.css'; // Force utility generation
@@ -230,7 +232,7 @@ const currentPath = Astro.url.pathname;
           aria-label="Main navigation"
           id="main-navigation"
         >
-          <div class="nav-content tw-max-w-5xl tw-mx-auto tw-w-full">
+          <div class="nav-content nav-wide tw-mx-auto">
             <div class="nav-brand">
               <a href="/" class="site-logo" aria-label="Home">
                 <span class="logo-text" aria-hidden="false">Grotto</span>
@@ -340,9 +342,13 @@ const currentPath = Astro.url.pathname;
           function apply(v: string | null) {
             if (!v) {
               root.removeAttribute('data-theme');
-              return;
+            } else {
+              root.setAttribute('data-theme', v);
             }
-            root.setAttribute('data-theme', v);
+            const meta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;
+            if (meta) {
+              meta.content = v === 'dark' ? '#0f100e' : '#f9f6f2';
+            }
           }
           function get() {
             return localStorage.getItem(KEY);
@@ -360,8 +366,17 @@ const currentPath = Astro.url.pathname;
           function toggle() {
             const cur = effective();
             const next = cur === 'dark' ? 'light' : 'dark';
-            set(next);
-            apply(next);
+            const run = () => {
+              set(next);
+              apply(next);
+            };
+            const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const doc = document as any;
+            if ('startViewTransition' in doc && !prefersReduced) {
+              (doc as any).startViewTransition(run);
+            } else {
+              run();
+            }
           }
           apply(get());
           btn && btn.addEventListener('click', toggle);

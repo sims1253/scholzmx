@@ -1,0 +1,4 @@
+/* Global layer order: base → components → enhancements → utilities */
+@layer base, components, enhancements, utilities;
+
+

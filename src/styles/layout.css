@@ -1,3 +1,4 @@
+@layer components {
 /* Layout and navigation styles for BaseLayout */
 
 /* Navigation styles */
@@ -6,6 +7,7 @@
   justify-content: space-between;
   align-items: center;
   padding: var(--space-lg) var(--space-lg);
+}
 }
 
 .nav-brand .site-logo {
@@ -147,6 +149,9 @@
 .footer-area {
   margin-top: auto;
   background: var(--color-background);
+  /* ModernCSS: avoid offscreen work until needed */
+  content-visibility: auto;
+  contain-intrinsic-size: 400px 600px;
 }
 
 /* Mobile responsiveness */
