@@ -1,0 +1,229 @@
+---
+import "../styles/stacked-card.css";
+import { createSeededRng } from "../scripts/seeded";
+import { doodadCategories } from "../config/doodadConfig";
+import { processDoodadCategories, extractDoodadsByKind } from "../lib/doodadProcessor";
+import type { DoodadResults } from "../config/doodadConfig";
+/**
+ * StackedCard: production-ready variant with unified doodad system
+ *
+ * Quick tweak guide:
+ * - Layer count weighting: see `layerCount` below (1–4). Adjust thresholds.
+ * - Offsets: change ranges in `offx/offy` map() calls.
+ * - Rotation: adjust `rotA/rotB/rotC` ranges for lighter/heavier tilt.
+ * - Doodad configuration: see `src/config/doodadConfig.ts`
+ */
+interface Props {
+  seed: string;
+  title?: string;
+  subtitle?: string;
+  href?: string;
+  allowBookmark?: boolean;
+  allowTape?: boolean;
+  // TWEAK: Allow forcing number of layers (1–4). Omit to use weighted randomness.
+  layers?: 1 | 2 | 3 | 4;
+  tilt?: 'light' | 'med';
+  class?: string;
+  ornament?: boolean;
+}
+
+const {
+  seed,
+  title,
+  subtitle,
+  href,
+  allowBookmark = true,
+  allowTape = true,
+  layers: layersProp,
+  tilt = 'light',
+  class: className,
+  ornament = true,
+} = Astro.props as Props;
+
+// TWEAK: Split RNG streams to prevent ripple changes when extending features
+const layoutRng = createSeededRng(seed, 'stackedcard-v3:layout');
+const doodadRng = createSeededRng(seed, 'stackedcard-v3:doodads');
+
+function roundPx(n: number) { return Math.round(n); }
+
+// TWEAK: Card position offsets (px) - uses layout stream
+const offx = roundPx(layoutRng.between(-8, 8));
+const offy = roundPx(layoutRng.between(-6, 6));
+// TWEAK: Layer count weighting (1:15%, 2:45%, 3:30%, 4:10%) - uses layout stream
+const r = layoutRng.random();
+const layerCount = layersProp ?? (r < 0.15 ? 1 : r < 0.60 ? 2 : r < 0.90 ? 3 : 4);
+const isSheet = layerCount === 1;
+const rotA = (tilt === 'light' ? layoutRng.between(-1.6, 1.2) : layoutRng.between(-2.4, 2.0)).toFixed(2);
+const rotB = (tilt === 'light' ? layoutRng.between(-1.2, 1.6) : layoutRng.between(-2.0, 2.2)).toFixed(2);
+const rotC = (tilt === 'light' ? layoutRng.between(-1.0, 1.0) : layoutRng.between(-1.6, 1.6)).toFixed(2);
+
+/**
+ * UNIFIED DOODAD SYSTEM
+ * 
+ * Now fully data-driven! Configuration moved to src/config/doodadConfig.ts
+ * 
+ * To add new doodads:
+ * 1. Add item to appropriate category in doodadConfig.ts
+ * 2. For SVG doodles: just add metadata (src, defaultSize, positions) - no template changes needed!
+ * 3. For element doodles: add CSS class and optionally template block
+ * 4. For background effects: add CSS selector using data attributes
+ */
+
+// Generate doodads using the unified processor - uses doodad stream
+const doodads: DoodadResults = processDoodadCategories(
+  doodadCategories,
+  isSheet,
+  allowBookmark,
+  allowTape,
+  ornament,
+  { 
+    random: doodadRng.random, 
+    pick: doodadRng.chance, 
+    map: doodadRng.between, 
+    betweenInt: doodadRng.betweenInt 
+  }
+);
+
+// Extract doodads by type using the new system
+const svgDoodles = extractDoodadsByKind(doodads, doodadCategories, 'svg');
+const elementDoodles = extractDoodadsByKind(doodads, doodadCategories, 'element');
+const backgroundDoodles = extractDoodadsByKind(doodads, doodadCategories, 'background');
+
+// Extract results for backward compatibility with existing CSS/template
+const hasBookmark = !!doodads.bookmarkRibbon?.active;
+const hasTape = !!doodads.tapeCorners?.active;
+const bookmarkSide = doodads.bookmarkRibbon?.side || 'right';
+const showTab = !!doodads.tab?.active;
+const showOrnament = !!doodads.spriteOrnament?.active;
+const ornamentVariant = doodads.spriteOrnament?.variant || 0;
+const showLeafDoodle = !!doodads.leafDoodle?.active;
+const showCircleBookmark = !!doodads.circleBookmark?.active;
+const showStickerTR = !!doodads.stickerTR?.active;
+const showStickerBL = !!doodads.stickerBL?.active;
+
+// Extract background effect variables using the new system
+const washEffect = backgroundDoodles.find(d => d.id === 'washSubtle' || d.id === 'washBold');
+const ringEffect = backgroundDoodles.find(d => d.id === 'ringEffect');
+
+// Wash variables
+const washX = washEffect?.props.washX || 50;
+const washY = washEffect?.props.washY || 50;
+const washAlpha = washEffect?.props.washAlpha || 0;
+const washTx = washEffect?.props.washTx || 0;
+const washTy = washEffect?.props.washTy || 0;
+const washR1 = washEffect?.props.washR1 || 0;
+const washR2 = washEffect?.props.washR2 || 0;
+const washX2 = washEffect?.props.washX2 || 50;
+const washY2 = washEffect?.props.washY2 || 50;
+const washBleed = washEffect?.props.washBleed || 120;
+
+// Ring variables
+const ringScale = ringEffect?.props.ringScale || layoutRng.between(0.6, 0.9);
+const ringAlpha = ringEffect?.props.ringAlpha || 0;
+
+// Data attributes kept for future hooks; not used by visuals now
+const dataBookmark = hasBookmark ? (bookmarkSide === 'right' ? 'right' : 'left') : 'none';
+const dataTape = hasTape ? 'corners' : 'none';
+const dataWash = washEffect ? (washEffect.id === 'washBold' ? 'bold' : 'subtle') : 'none';
+const dataRing = ringEffect ? 'active' : 'none';
+
+// Old hardcoded doodad logic has been replaced by category-based system above
+
+const styleVars = {
+  '--offx': `${offx}px`,
+  '--offy': `${offy}px`,
+  '--rot-a': `${rotA}deg`,
+  '--rot-b': `${rotB}deg`,
+  '--rot-c': `${rotC}deg`,
+  '--ring-scale': `${ringScale}`,
+  '--ring-alpha': `${ringAlpha}`,
+  '--wash-x': `${washX}%`,
+  '--wash-y': `${washY}%`,
+  '--wash-alpha': `${washAlpha}`,
+  '--wash-tx': `${washTx}px`,
+  '--wash-ty': `${washTy}px`,
+  '--wash-bleed': `${washBleed}%`,
+  '--wash-r1': `${washR1}px`,
+  '--wash-r2': `${washR2}px`,
+  '--wash2-x': `${washX2}%`,
+  '--wash2-y': `${washY2}%`,
+} as Record<string, string>;
+
+const styleInline = Object.entries(styleVars).map(([k, v]) => `${k}: ${v}`).join('; ');
+---
+
+<article class={`sc-card ${className || ''}`}
+  style={styleInline}
+  data-bookmark={dataBookmark}
+  data-tape={dataTape}
+  data-wash={dataWash}
+  data-ring={dataRing}
+  data-layers={String(layerCount)}
+  data-ornament-variant={String(ornamentVariant)}>
+  {layerCount >= 3 && <i class="sc-layer-c" aria-hidden="true"></i>}
+  {layerCount >= 4 && <i class="sc-layer-d" aria-hidden="true"></i>}
+  {hasBookmark && <i class={`sc-bookmark ${bookmarkSide === 'left' ? 'left' : 'right'}`} aria-hidden="true"></i>}
+  {hasTape && <>
+    <i class="sc-tape left" aria-hidden="true"></i>
+    <i class="sc-tape right" aria-hidden="true"></i>
+  </>}
+  {showStickerTR && <i class="sc-sticker tr" aria-hidden="true"></i>}
+  {showStickerBL && <i class="sc-sticker bl" aria-hidden="true"></i>}
+  {showCircleBookmark && <i class="sc-circle-bookmark" aria-hidden="true"></i>}
+  {showTab && <i class="sc-tab" aria-hidden="true"></i>}
+  <div class="sc-face">
+    <div class="sc-content">
+    {href ? (
+      <a href={href} class="sc-link" aria-label={title}>
+        {title && <h3 class="sc-title">{title}</h3>}
+        {subtitle && <p class="sc-subtitle">{subtitle}</p>}
+        <slot />
+      </a>
+    ) : (
+      <>
+        {title && <h3 class="sc-title">{title}</h3>}
+        {subtitle && <p class="sc-subtitle">{subtitle}</p>}
+        <slot />
+      </>
+    )}
+    {showOrnament && <i class="sc-ornament" aria-hidden="true"></i>}
+    {showLeafDoodle && <div class="sc-leaf-doodle" aria-hidden="true">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path>
+        <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path>
+      </svg>
+    </div>}
+    {/* Auto-rendered SVG doodles from configuration */}
+    {svgDoodles.map(doodle => {
+      const { definition, props } = doodle;
+      const position = props.position || definition.positions?.[0] || 'center';
+      const transforms = [];
+      
+      // For centered elements, include the centering transform first
+      if (position === 'center') {
+        transforms.push('translate(-50%, -50%)');
+      }
+      
+      // Add item-specific transforms
+      if (props.rotation) transforms.push(`rotate(${props.rotation}deg)`);
+      if (props.scale) transforms.push(`scale(${props.scale})`);
+      
+      const transformStyle = transforms.length > 0 ? `transform: ${transforms.join(' ')};` : '';
+      const sizeStyle = definition.defaultSize ? `width: ${definition.defaultSize}; height: ${definition.defaultSize};` : '';
+      const combinedStyle = [transformStyle, sizeStyle].filter(Boolean).join(' ');
+      
+      const maskVar = `--doodle-src: url(${definition.src});`;
+      const finalStyle = [combinedStyle, maskVar].filter(Boolean).join(' ');
+      return (
+        <div 
+          class={`sc-svg-doodle sc-${doodle.id} ${position}`} 
+          style={finalStyle || undefined}
+          aria-hidden="true"
+        />
+      );
+    })}
+    </div>
+  </div>
+</article>
+
+

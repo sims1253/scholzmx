@@ -1,0 +1,26 @@
+---
+import StackedCard from "./StackedCard.astro";
+
+interface CardItem {
+  id: string;
+  title: string;
+  subtitle?: string;
+  href?: string;
+}
+
+interface Props {
+  items: CardItem[];
+  class?: string;
+  layers?: 1 | 2 | 3 | 4; // Allow forcing single-layer cards
+}
+
+const { items, class: className, layers } = Astro.props as Props;
+---
+
+<div class={`tw-grid tw-gap-lg ${className || ''}`} style="grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: var(--space-lg);">
+  {items.map((it) => (
+    <StackedCard seed={`stack/${it.id}`} title={it.title} subtitle={it.subtitle} href={it.href} layers={layers} />
+  ))}
+</div>
+
+

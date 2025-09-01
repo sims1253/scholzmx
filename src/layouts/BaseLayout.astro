@@ -16,6 +16,7 @@ import '../styles/dropcap.css';
 import '../styles/tailwind.css'; // Utilities only - preserves existing design
 import '../styles/tailwind-utilities.css'; // Force utility generation
 import '../styles/margin-notes.css';
+import '../styles/stacked-card.css';
 
 export interface Props {
   title: string;
@@ -149,6 +150,7 @@ const currentPath = Astro.url.pathname;
 
     <!-- Specialty fonts loaded on demand -->
     <link rel="stylesheet" href="/fonts/et-initials.css" />
+    <link rel="stylesheet" href="/src/styles/stacked-card.css" />
 
     <!-- Only preload fonts critical for initial render -->
     <link

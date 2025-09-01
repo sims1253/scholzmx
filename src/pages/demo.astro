@@ -1,0 +1,320 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Grotto Demo"
+  description="A demonstration of a new design direction for Grotto."
+  footerVariant="default"
+  includeQuoteSection={false}
+  addBorders={false}
+  longform={true}
+  personal={true}
+>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Caveat:wght@400;600&family=EB+Garamond:ital,wght@0,400;0,700;1,400&display=swap');
+
+  :root {
+    --demo-parchment: #f9f6f0;
+    --demo-ink: #3d2914;
+    --demo-accent: #8a6d3b;
+    --demo-highlight: #d4a76a;
+    --demo-shadow: rgba(94, 76, 44, 0.15);
+    --demo-sage: #9ca986;
+    --demo-pressed-flower: #c08552;
+  }
+
+  .demo-body {
+    font-family: 'Crimson Pro', serif;
+    background-color: var(--demo-parchment);
+    color: var(--demo-ink);
+    line-height: 1.7;
+    background-image:
+        radial-gradient(circle at 5% 10%, rgba(180, 160, 120, 0.03) 1px, transparent 1px),
+        radial-gradient(circle at 95% 90%, rgba(180, 160, 120, 0.03) 1px, transparent 1px);
+    background-size: 30px 30px;
+    position: relative;
+    overflow-x: hidden;
+    padding: 2rem;
+  }
+
+  .handwritten {
+    font-family: 'Caveat', cursive;
+  }
+
+  .font-display {
+    font-family: 'EB Garamond', serif;
+  }
+
+  .illuminated-letter {
+    float: left;
+    font-size: 6rem;
+    line-height: 0.8;
+    margin: 0.1em 0.1em 0 0;
+    color: var(--demo-pressed-flower);
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    font-weight: 700;
+    position: relative;
+  }
+
+  .illuminated-letter::after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    background: radial-gradient(circle, var(--demo-highlight) 0%, transparent 70%);
+    opacity: 0.4;
+    z-index: -1;
+    animation: demo-glow 4s ease-in-out infinite;
+  }
+
+  @keyframes demo-glow {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.05); }
+  }
+
+  .illuminated-text {
+    position: relative;
+    background: linear-gradient(110deg, var(--demo-accent) 20%, #fde488 40%, #e6bf4a 60%, var(--demo-accent) 80%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: demo-shimmer 8s infinite linear;
+    background-size: 200% 100%;
+  }
+
+  @keyframes demo-shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+  }
+
+  .demo-header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .demo-title {
+    font-family: 'EB Garamond', serif;
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  .demo-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2.5rem;
+    margin: 3rem 0;
+  }
+
+  .demo-card {
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid var(--demo-shadow);
+    padding: 1.5rem;
+    border-radius: 4px;
+    box-shadow: 4px 4px 0 var(--demo-shadow);
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .demo-card:hover {
+    transform: translateY(-6px) rotate(1.5deg);
+    box-shadow: 8px 8px 0 var(--demo-shadow);
+  }
+
+  .demo-card:nth-child(2n) {
+    transform: rotate(-1deg);
+  }
+  .demo-card:nth-child(2n):hover {
+    transform: translateY(-6px) rotate(-1.5deg);
+  }
+
+  .demo-card h3 {
+    font-family: 'EB Garamond', serif;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--demo-accent);
+  }
+
+  .demo-card .annotation {
+    display: inline-block;
+    cursor: pointer;
+    margin-top: 1rem;
+    color: var(--demo-accent);
+    position: relative;
+  }
+
+  .demo-card .annotation::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--demo-highlight), transparent);
+    opacity: 0.6;
+    transition: all 0.3s ease;
+  }
+
+  .demo-card .annotation:hover::after {
+    height: 4px;
+    opacity: 1;
+  }
+
+  .demo-card .reveal-note {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.4s ease;
+    margin-top: 1rem;
+    padding: 1rem;
+    background: rgba(249, 246, 240, 0.7);
+    border: 1px dashed var(--demo-shadow);
+    border-radius: 3px;
+    font-size: 0.9rem;
+  }
+
+  .demo-card .annotation:hover + .reveal-note,
+  .demo-card .reveal-note:hover {
+      opacity: 1;
+      transform: translateY(0);
+  }
+
+  .manuscript-quote {
+    border-left: 3px solid var(--demo-highlight);
+    padding-left: 1.5rem;
+    font-style: italic;
+    font-size: 1.2rem;
+    color: var(--demo-accent);
+    margin: 3rem auto;
+    max-width: 60ch;
+  }
+
+  .floating-particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: var(--demo-highlight);
+    border-radius: 50%;
+    opacity: 0.3;
+    animation: demo-float 20s infinite linear;
+    pointer-events: none;
+  }
+
+  @keyframes demo-float {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.3; }
+      90% { opacity: 0.3; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+  }
+
+  .floating-elements-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .marginalia {
+    font-family: 'Caveat', cursive;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--demo-ink);
+    opacity: 0.6;
+    transform: rotate(-5deg);
+    position: absolute;
+    user-select: none;
+    top: 1rem;
+    right: -2rem;
+    width: 100px;
+  }
+
+  .main-content {
+    position: relative;
+  }
+
+</style>
+
+<div class="demo-body">
+  <div class="floating-elements-container" id="floating-elements"></div>
+
+  <header class="demo-header">
+    <h1 class="demo-title">The <span class="illuminated-text">Grotto</span> Project</h1>
+    <p class="handwritten text-2xl">A new design, grown from inspiration.</p>
+  </header>
+
+  <main>
+    <article class="max-w-3xl mx-auto relative">
+      <div class="main-content">
+        <p class="text-xl leading-relaxed">
+          <span class="illuminated-letter">T</span>his page is a living tapestry, weaving together threads of inspiration from your vision. It's designed to feel like a discovery—an illuminated manuscript found in a sunlit attic, filled with handcrafted details and whimsical touches. The goal is warmth and personality over sterile perfection, a space that invites slow, thoughtful exploration.
+        </p>
+        <div class="marginalia handwritten">A place to think...</div>
+      </div>
+
+      <blockquote class="manuscript-quote">
+        "Moments of coziness and playfulness are woven throughout, reminiscent of finding pressed flowers in old books—small delights that reward slow, attentive browsing."
+      </blockquote>
+
+      <p class="text-lg leading-relaxed">
+        Here, we embrace the organic. The layout is intentionally imperfect, with cards scattered like notes on a desk. Hover over them to see them lift, as if ready to be picked up. Some hide little secrets, rewarding your curiosity. This is a space for contemplation, for finding joy in the small details, and for cultivating a digital garden that feels truly alive.
+      </p>
+    </article>
+
+    <section class="demo-card-grid max-w-5xl mx-auto">
+      <div class="demo-card">
+        <h3>On Slow Reading</h3>
+        <p>The art of savoring words like fine tea—letting meaning steep and unfold gradually.</p>
+        <div class="annotation">View Note</div>
+        <div class="reveal-note">
+          <p>This is about creating focus, removing distractions, and respecting the reader's attention.</p>
+        </div>
+      </div>
+      <div class="demo-card">
+        <h3>Digital Minimalism</h3>
+        <p>Creating intentional spaces. Sometimes the most radical act is choosing what not to consume.</p>
+        <div class="annotation">View Note</div>
+        <div class="reveal-note">
+          <p>Inspired by the idea of a quiet library, a counterpoint to the noisy web.</p>
+        </div>
+      </div>
+      <div class="demo-card">
+        <h3>Handmade Web</h3>
+        <p>In an age of templates, there's profound beauty in the irregular, the personal, the crafted.</p>
+        <div class="annotation">View Note</div>
+        <div class="reveal-note">
+          <p>This is reflected in the hand-drawn elements and slightly "off-kilter" design.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="text-center mt-16 pt-8 border-t-2 border-dashed border-[var(--demo-shadow)]">
+      <p class="handwritten text-xl">Tended with care.</p>
+  </footer>
+
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Create floating particles
+    const container = document.getElementById('floating-elements');
+    if (container) {
+      const particleCount = 15;
+      for (let i = 0; i < particleCount; i++) {
+          const particle = document.createElement('div');
+          particle.className = 'floating-particle';
+          particle.style.left = Math.random() * 100 + '%';
+          particle.style.animationDelay = Math.random() * 20 + 's';
+          particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+          container.appendChild(particle);
+      }
+    }
+  });
+</script>
+</BaseLayout>

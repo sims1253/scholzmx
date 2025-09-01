@@ -4,9 +4,12 @@
 /* Navigation styles */
 .nav-content {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: var(--space-lg) var(--space-lg);
+  padding: var(--space-lg);
+  position: relative;
+  max-width: calc(var(--content-width-personal) * 1.5);
+  margin: 0 auto;
+  width: 100%;
 }
 }
 
@@ -19,6 +22,7 @@
   font-size: var(--text-xl);
   font-weight: 600;
   color: var(--color-ink-dark);
+  margin-left: calc((var(--content-width-personal) * 0.5) / -1.5);
 }
 
 .nav-brand .site-logo:hover {
@@ -38,9 +42,11 @@
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 0;
+  gap: var(--space-sm);
   font-size: var(--text-lg);
   font-family: var(--font-heading);
+  margin-left: auto;
+  margin-right: calc((var(--content-width-personal) * 0.5) / 1.5);
 }
 
 .torch-toggle {
@@ -112,7 +118,7 @@
 .nav-separator {
   color: var(--color-ink-light);
   opacity: 0.5;
-  margin: 0 var(--space-xs);
+  margin: 0;
   font-weight: 300;
 }
 

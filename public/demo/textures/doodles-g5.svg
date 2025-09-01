@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="40" viewBox="0 0 160 40">
+  <g fill="none" stroke="#8C5A3A" stroke-opacity="0.75" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- 0: loose underline swoosh -->
+    <path d="M8 28 C 20 32, 36 24, 48 28 S 72 30, 80 26"/>
+    <!-- 1: starburst asterisk -->
+    <g transform="translate(40,6)">
+      <path d="M20 8 L20 20"/>
+      <path d="M14 14 L26 14"/>
+      <path d="M16 10 L24 18"/>
+      <path d="M16 18 L24 10"/>
+    </g>
+    <!-- 2: small leaf curl -->
+    <g transform="translate(80,6)">
+      <path d="M6 20 C 14 12, 22 12, 30 18"/>
+      <path d="M18 13 C 16 16, 14 18, 12 20"/>
+    </g>
+    <!-- 3: quick sketch crosshatch -->
+    <g transform="translate(120,6)">
+      <path d="M8 10 L26 22"/>
+      <path d="M8 22 L26 10"/>
+      <path d="M10 16 L24 16" stroke-opacity="0.55"/>
+    </g>
+  </g>
+</svg>
+
