@@ -14,3 +14,7 @@ DOCS-COLOR-TOKENS.md
 QUARTO-TO-ASTRO-PIPELINE.md
 README.md
 LICENSE.md
+bar/
+.playwright-mcp/
+todo.md
+public/demo/

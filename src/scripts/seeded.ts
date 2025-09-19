@@ -21,7 +21,7 @@ export function createMulberry32(seed: number) {
   };
 }
 
-export function createSeededRng(seed: string, salt = "ui-variation-v1") {
+export function createSeededRng(seed: string, salt = 'ui-variation-v1') {
   const h = hashStringFNV1a(`${seed}|${salt}`);
   const rng = createMulberry32(h);
   const random = () => rng();
@@ -30,7 +30,3 @@ export function createSeededRng(seed: string, salt = "ui-variation-v1") {
   const betweenInt = (min: number, max: number) => Math.round(between(min, max));
   return { random, chance, between, betweenInt };
 }
-
-
-
-

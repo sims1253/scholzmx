@@ -1,26 +1,114 @@
 ---
-import StackedCard from "./StackedCard.astro";
+import StackedCard from './StackedCard.astro';
+import ImageFrame from './ImageFrame.astro';
+import GridLayout from './GridLayout.astro';
 
 interface CardItem {
   id: string;
   title: string;
   subtitle?: string;
   href?: string;
+  writtenDate?: string;
+  updatedDate?: string;
+  tags?: string[];
+  hero?:
+    | {
+        kind: 'url';
+        src: string;
+        scale?: number;
+        posX?: number; // -1..1
+        posY?: number; // -1..1
+      }
+    | {
+        kind: 'asset';
+        src: any;
+        width?: number;
+        height?: number;
+        scale?: number;
+        posX?: number;
+        posY?: number;
+      };
+  year?: number;
 }
 
 interface Props {
   items: CardItem[];
   class?: string;
   layers?: 1 | 2 | 3 | 4; // Allow forcing single-layer cards
+  columns?: 1 | 'auto';
+  itemMinWidth?: string;
 }
 
-const { items, class: className, layers } = Astro.props as Props;
+const { items, class: className, layers, columns = 'auto', itemMinWidth } = Astro.props as Props;
 ---
 
-<div class={`tw-grid tw-gap-lg ${className || ''}`} style="grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: var(--space-lg);">
-  {items.map((it) => (
-    <StackedCard seed={`stack/${it.id}`} title={it.title} subtitle={it.subtitle} href={it.href} layers={layers} />
-  ))}
-</div>
+<GridLayout columns={columns} itemMinWidth={itemMinWidth ?? '22rem'} gap="xl" class={className}>
+  {
+    items.map((it) => (
+      <div class="nc-item" data-year={it.year} data-tags={it.tags?.join(',') || ''} style="width: 100%; max-width: var(--card-max-width); margin: 0 auto;">
+        <StackedCard
+          seed={`stack/${it.id}`}
+          title={it.title}
+          subtitle={it.subtitle}
+          href={it.href}
+          layers={layers}
+        >
+          {it.hero && (
+            <div class="sc-media" slot="media">
+              <ImageFrame
+                src={it.hero.kind === 'url' ? it.hero.src : it.hero.src}
+                alt=""
+                aspectRatio="8/3"
+                style="simple"
+                fillMode="cover"
+                positionX={it.hero.posX !== undefined ? it.hero.posX * 100 : undefined}
+                positionY={it.hero.posY !== undefined ? it.hero.posY * 100 : undefined}
+                scale={it.hero.scale}
+                width={1200}
+                height={450}
+                containerClass="tw-w-full"
+              />
+            </div>
+          )}
+          <div class="sc-meta">
+            <div class="sc-dates">
+              {it.writtenDate && (
+                <div class="sc-date-item">
+                  <span class="sc-date-label">Written:</span>
+                  <time class="sc-date" datetime={it.writtenDate}>
+                    {it.writtenDate}
+                  </time>
+                </div>
+              )}
+              {it.updatedDate && (
+                <div class="sc-date-item">
+                  <span class="sc-date-label">Updated:</span>
+                  <time class="sc-date" datetime={it.updatedDate}>
+                    {it.updatedDate}
+                  </time>
+                </div>
+              )}
+            </div>
+            <div class="sc-tags">
+              {it.tags?.map((tag) => (
+                <a class="sc-chip" href={`/blog?tag=${encodeURIComponent(tag)}`}>
+                  #{tag}
+                </a>
+              ))}
+            </div>
+          </div>
+        </StackedCard>
+      </div>
+    ))
+  }
+</GridLayout>
 
-
+<style>
+  .nc-item {
+    margin-bottom: var(--space-lg);
+  }
+  /* Ensure row spacing even if utility gap classes are unavailable */
+  :global(.tw-grid) {
+    row-gap: var(--space-xl);
+  }
+</style>

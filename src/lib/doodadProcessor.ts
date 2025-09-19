@@ -1,6 +1,6 @@
 /**
  * Doodad Processing System
- * 
+ *
  * Handles the probability-based selection and processing of doodads
  * based on the configuration system.
  */
@@ -16,7 +16,7 @@ export interface RngFunctions {
 
 /**
  * Process doodad categories to determine which items should be active
- * 
+ *
  * @param categories - Array of doodad categories to process
  * @param isSheet - Whether this is a single-layer card
  * @param allowBookmark - Whether bookmarks are allowed (prop restriction)
@@ -36,41 +36,42 @@ export function processDoodadCategories(
   const { random, pick, map, betweenInt } = rng;
   const results: DoodadResults = {};
   const activatedItems: string[] = [];
-  
+
   for (const category of categories) {
     // Check category enablement and prop restrictions
     let categoryEnabled = category.enabled;
     if (category.id === 'doodles') {
       categoryEnabled = categoryEnabled && ornament;
     }
-    
+
     // Category-level probability gate
     if (!categoryEnabled || !pick(category.probability)) continue;
-    
+
     // Filter items by layer compatibility and prop restrictions
-    let availableItems = category.items.filter(item => {
+    let availableItems = category.items.filter((item) => {
       // Layer compatibility check
-      const layerCompatible = item.layerTypes.includes('all') || 
+      const layerCompatible =
+        item.layerTypes.includes('all') ||
         (isSheet && item.layerTypes.includes('single')) ||
         (!isSheet && item.layerTypes.includes('multi'));
-      
+
       // Prop-based restrictions
       if (item.id === 'bookmarkRibbon' && !allowBookmark) return false;
       if (item.id === 'tapeCorners' && !allowTape) return false;
-      
+
       // Conflict check (order-dependent: earlier items win)
-      if (item.conflicts?.some(conflictId => activatedItems.includes(conflictId))) return false;
-      
+      if (item.conflicts?.some((conflictId) => activatedItems.includes(conflictId))) return false;
+
       return layerCompatible;
     });
-    
+
     if (availableItems.length === 0) continue;
-    
+
     if (category.exclusive) {
       // Exclusive category: select one item using weighted probability
       const totalWeight = availableItems.reduce((sum, item) => sum + item.probability, 0);
       let randomWeight = random() * totalWeight;
-      
+
       for (const item of availableItems) {
         randomWeight -= item.probability;
         if (randomWeight <= 0) {
@@ -91,13 +92,13 @@ export function processDoodadCategories(
       }
     }
   }
-  
+
   return results;
 }
 
 /**
  * Extract items of a specific kind from doodad results
- * 
+ *
  * @param results - Processed doodad results
  * @param categories - Original categories (for metadata lookup)
  * @param kind - Kind of items to extract ('svg', 'element', 'background')
@@ -109,7 +110,7 @@ export function extractDoodadsByKind(
   kind: 'svg' | 'element' | 'background'
 ) {
   const itemsOfKind = [];
-  
+
   // Build lookup map for item metadata
   const itemLookup = new Map();
   for (const category of categories) {
@@ -117,20 +118,20 @@ export function extractDoodadsByKind(
       itemLookup.set(item.id, item);
     }
   }
-  
+
   // Extract active items of the specified kind
   for (const [itemId, props] of Object.entries(results)) {
     if (!props.active) continue;
-    
+
     const itemDef = itemLookup.get(itemId);
     if (itemDef && itemDef.kind === kind) {
       itemsOfKind.push({
         id: itemId,
         definition: itemDef,
-        props: props
+        props: props,
       });
     }
   }
-  
+
   return itemsOfKind;
 }

@@ -1,6 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import GridLayout from '../components/GridLayout.astro';
+import StackedCard from '../components/StackedCard.astro';
+import ImageFrame from '../components/ImageFrame.astro';
 
 const projects = [
   {
@@ -45,8 +47,9 @@ const optimizeExternalImage = (url: string) => {
   title="Projects"
   description="Selected projects"
   footerVariant="projects"
-  longform={true}
+  longform={false}
   personal={false}
+  contentWidth="wide"
 >
   <div class="projects-page">
     <header class="projects-header">
@@ -59,65 +62,49 @@ const optimizeExternalImage = (url: string) => {
 
     <div class="projects-container">
       <main class="projects-content">
-        <section aria-label="Projects">
-          <div
-            class="projects-list tw-grid tw-grid-cols-1 md:tw-grid-cols-2 lg:tw-grid-cols-3 tw-gap-4"
-          >
-            {
-              sortedProjects.map((project) => (
-                <article class="project-card">
-                  <div class="card-body">
-                    <h3 class="card-title">
-                      {project.title === 'huerd — Herding Hues' ? (
-                        <a href="https://sims1253.github.io/huerd/" target="_blank" rel="noopener">
-                          {project.title}
-                        </a>
-                      ) : (
-                        project.title
-                      )}
-                    </h3>
-                    <p class="card-excerpt">{project.description}</p>
-                    <div class="card-meta">
-                      <div class="card-info">
-                        <span class="year-badge">{project.year}</span>
-                        <span class={`status-badge status-${project.status.toLowerCase()}`}>
-                          {project.status}
-                        </span>
-                      </div>
-                      <div class="meta-tags">
-                        {project.tech.map((tech) => (
-                          <span class="chip">#{tech}</span>
-                        ))}
-                      </div>
+        <div class="projects-inner container-wide">
+          <section aria-label="Projects">
+            <GridLayout columns={1} gap="xl" class="projects-grid">
+              {
+                sortedProjects.map((project) => {
+                  const primaryLink = project.links?.[0]?.url;
+                  return (
+                    <div class="nc-item project-item">
+                      <StackedCard
+                        seed={`project/${project.title}`}
+                        title={project.title}
+                        subtitle={project.description}
+                        href={primaryLink}
+                        layers={3}
+                        layout="side"
+                      >
+                        {project.banner && (
+                          <div slot="media" class="project-logo">
+                            <ImageFrame
+                              src={optimizeExternalImage(project.banner)}
+                              alt={project.title}
+                              style="simple"
+                              fillMode="contain"
+                            />
+                          </div>
+                        )}
+                        {project.links?.length && (
+                          <div class="project-links sc-tags">
+                            {project.links.map((l) => (
+                              <a class="sc-chip" href={l.url} target="_blank" rel="noopener">
+                                {l.type}
+                              </a>
+                            ))}
+                          </div>
+                        )}
+                      </StackedCard>
                     </div>
-                    {project.links?.length && (
-                      <div class="project-links">
-                        {project.links.map((l) => (
-                          <a class="link-chip" href={l.url} target="_blank" rel="noopener">
-                            {l.type}
-                          </a>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  {project.banner && (
-                    <figure class="thumb">
-                      <img
-                        src={optimizeExternalImage(project.banner)}
-                        alt={project.title}
-                        width="160"
-                        height="120"
-                        loading="lazy"
-                        fetchpriority="low"
-                        decoding="async"
-                      />
-                    </figure>
-                  )}
-                </article>
-              ))
-            }
-          </div>
-        </section>
+                  );
+                })
+              }
+            </GridLayout>
+          </section>
+        </div>
       </main>
     </div>
   </div>
@@ -147,138 +134,53 @@ const optimizeExternalImage = (url: string) => {
     font-style: italic;
   }
 
-  .projects-container {
-    max-width: var(--content-width-serious);
-    margin: 0 auto;
+  /* Centering handled by BaseLayout container (contentWidth) */
+
+  /* Legacy card styles removed in favor of StackedCard */
+  /* Width/centering handled via .container-wide */
+  .projects-grid {
+    margin-bottom: var(--space-xl);
   }
-  .projects-content {
+  .project-item {
+    width: 40rem;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .project-logo .image-frame {
+    width: 240px;
+    max-width: 100%;
+  }
+  .project-item {
+    margin-bottom: var(--space-lg);
+  }
+  /* Remove any default frames/shadows around logo images */
+  .project-logo .image-frame {
+    box-shadow: none;
+    border: 0;
+    background: transparent;
+    border-radius: 0;
+  }
+  .project-logo .frame-image {
+    box-shadow: none;
+    background: transparent;
+  }
+  .project-logo img {
+    box-shadow: none !important;
+    border-radius: 0 !important;
   }
 
-  .project-card {
-    display: grid;
-    grid-template-columns: 1fr 160px; /* Flip: content first, smaller image */
-    gap: var(--space-lg);
-    padding: var(--space-lg);
-    background: var(--color-surface);
-    border: 1px solid var(--color-lichen);
-    border-radius: var(--border-radius);
-    transition:
-      transform var(--transition-medium),
-      box-shadow var(--transition-medium),
-      border-color var(--transition-medium);
-    box-shadow: 0 4px 10px color-mix(in srgb, var(--color-walnut) 5%, transparent);
+  /* Keep side layout, but make content column flex so links can sit at bottom */
+  .projects-page .sc-row {
+    align-items: stretch;
   }
-  .project-card:hover {
-    transform: translateY(-1px);
-    border-color: var(--color-sage);
-    box-shadow: 0 6px 16px color-mix(in srgb, var(--color-walnut) 7%, transparent);
-  }
-  .thumb {
-    margin: 0;
-    background: var(--color-parchment-light);
-    border-radius: var(--border-radius);
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 120px;
-  }
-  .thumb img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    filter: saturate(0.85) contrast(0.95);
-    opacity: 0.9;
-  }
-  .card-body {
+  .projects-page .sc-col.content {
     display: flex;
     flex-direction: column;
-    gap: var(--space-xs);
   }
-  .card-title {
-    margin: 0;
-    font-size: var(--text-xl);
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-text-primary);
-  }
-  .card-excerpt {
-    color: var(--color-text-secondary);
-    margin: 0;
-    font-size: var(--text-md);
-    line-height: 1.6;
-  }
-  .card-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: var(--space-sm);
-    flex-wrap: wrap;
-  }
-
-  .card-info {
-    display: flex;
-    gap: var(--space-xs);
-    align-items: center;
-  }
-  .year-badge {
-    font-size: var(--text-xs);
-    color: var(--color-text-muted);
-    letter-spacing: 0.05em;
-    padding: 0.15em 0.55em;
-    border-radius: 999px;
-    border: 1px solid var(--color-lichen);
-    background: var(--color-surface);
-  }
-  .status-badge {
-    font-size: var(--text-xs);
-    letter-spacing: 0.05em;
-    padding: 0.15em 0.55em;
-    border-radius: 999px;
-    border: 1px solid var(--color-lichen);
-    background: var(--wash-sage);
-  }
-  .status-active {
-    color: var(--color-accent-secondary);
-  }
-  .status-ongoing {
-    color: var(--color-walnut);
-  }
-
-  .meta-tags {
-    display: flex;
-    gap: var(--space-xxs, 0.25rem);
-    flex-wrap: wrap;
-  }
-  .chip {
-    position: relative;
-    font-size: var(--text-xxs, 0.7rem);
-    color: var(--color-accent-secondary);
-    background: var(--wash-sage);
-    padding: 0.15em 0.55em;
-    border-radius: 999px;
-    text-decoration: none;
-    border: 1px solid var(--color-lichen);
-    letter-spacing: 0.02em;
-  }
-
-  .project-links {
-    display: flex;
-    gap: var(--space-sm);
-    flex-wrap: wrap;
-  }
-  .link-chip {
-    font-size: var(--text-xs);
-    color: var(--color-text-primary);
-    text-decoration: none;
-    padding: 0.15rem 0.45rem;
-    border-radius: 6px;
-    border: 1px solid var(--color-lichen);
-    background: var(--color-surface);
-  }
-  .link-chip:hover {
-    color: var(--color-link-hover);
-    background: var(--wash-sage);
-    border-color: var(--color-sage);
+  .projects-page .project-links {
+    margin-top: auto;
+    padding-top: var(--space-xs);
   }
 
   @media (max-width: 768px) {

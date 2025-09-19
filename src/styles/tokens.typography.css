@@ -53,9 +53,17 @@
   --content-width-personal: 58ch; /* Personal content - Alegreya */
   --content-width-serious: 60ch; /* Serious content - ET Book */
   --content-width-projects: 70ch; /* Projects/Research pages - alias for serious */
+  --content-width-listing: 960px; /* Shared width for collection pages (Blog/Research/Recipes) */
   --content-width: var(--content-width-personal);
   --content-width-narrow: 72ch;
   --main-content-width: 800px;
+
+  /* Site-level chrome */
+  --site-width: 1280px; /* Controls nav inner wrapper max-width */
+  --nav-brand-left-offset: 24px; /* Subtle brand shift to the left of center content */
+  --card-max-width: 640px; /* Consistent card width across pages regardless of rem */
+  --sidebar-width: 12rem;
+  --sidebar-gap: clamp(1rem, 2vw, 2rem);
   --main-content-width-large: 900px;
   --sidebar-width: 15rem;
   --border-radius: 0.25rem;

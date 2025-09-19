@@ -15,7 +15,6 @@ html {
 }
 
 @layer enhancements {
-
   /* Smarter text wrapping for headings and body copy */
   @supports (text-wrap: balance) {
     h1,
@@ -85,43 +84,79 @@ html {
 
   /* Enable container queries on key wrappers */
   .container,
-  .post-body.longform,
-  .nav-wide {
+  .post-body.longform {
     container: page / inline-size;
+  }
+  .nav-wide {
+    container: nav / inline-size;
   }
 
   /* Container query tweaks for tighter spaces */
-  @container page (inline-size <= 52rem) {
-    .nav-links { font-size: var(--text-md); gap: var(--space-xs); }
-    /* cqw headings scale with the container */
-    h1 { font-size: clamp(1.75rem, 4cqw + 1rem, var(--text-2xl)); }
-    h2 { font-size: clamp(1.25rem, 3cqw + 0.75rem, var(--text-xl)); }
-    h3 { font-size: clamp(1.1rem, 2.5cqw + 0.5rem, var(--text-lg)); }
+  @container nav (inline-size <= 52rem) {
+    .nav-links {
+      font-size: var(--text-md);
+      gap: var(--space-xs);
+    }
   }
-  @container page (inline-size <= 38rem) {
-    .nav-links { font-size: var(--text-sm); }
+  @container nav (inline-size <= 38rem) {
+    .nav-links {
+      font-size: var(--text-sm);
+    }
+  }
+
+  /* Page headings should scale with the page content container, not the nav */
+  @container page (inline-size <= 52rem) {
+    h1 {
+      font-size: clamp(1.75rem, 4cqw + 1rem, var(--text-2xl));
+    }
+    h2 {
+      font-size: clamp(1.25rem, 3cqw + 0.75rem, var(--text-xl));
+    }
+    h3 {
+      font-size: clamp(1.1rem, 2.5cqw + 0.5rem, var(--text-lg));
+    }
   }
 
   /* Media defaults and utilities */
   img,
-  video { image-rendering: auto; }
-  .media-cover { object-fit: cover; object-position: center; }
-  .media-contain { object-fit: contain; object-position: center; }
+  video {
+    image-rendering: auto;
+  }
+  .media-cover {
+    object-fit: cover;
+    object-position: center;
+  }
+  .media-contain {
+    object-fit: contain;
+    object-position: center;
+  }
 
   /* Navigation quantity & style queries (progressive enhancement) */
-  .nav-links { container: menu / inline-size; }
-  .nav-links:has(:nth-child(6)) { --show-menu: true; }
+  .nav-links {
+    container: menu / inline-size;
+  }
+  .nav-links:has(:nth-child(6)) {
+    --show-menu: true;
+  }
   @container menu (40ch <= inline-size <= 60ch) {
     @container not style(--show-menu: true) {
-      .nav-link { display: inline-flex; }
+      .nav-link {
+        display: inline-flex;
+      }
     }
   }
 
   /* Burgerless nav adjustments: tighten spacing and enable scroll at narrow widths */
   @container menu (inline-size <= 40rem) {
-    .nav-links { gap: var(--space-xs); }
-    .nav-separator { display: none; }
-    .nav-link { padding: 2px 6px; }
+    .nav-links {
+      gap: var(--space-xs);
+    }
+    .nav-separator {
+      display: none;
+    }
+    .nav-link {
+      padding: 2px 6px;
+    }
   }
   @container menu (inline-size <= 28rem) {
     .nav-links {
@@ -129,7 +164,9 @@ html {
       scroll-snap-type: x proximity;
       -webkit-overflow-scrolling: touch;
     }
-    .nav-link { scroll-snap-align: start; }
+    .nav-link {
+      scroll-snap-align: start;
+    }
   }
 
   /* Note: longform width is controlled in base.css with !important; do not re-define here */
@@ -143,7 +180,9 @@ html {
   }
 
   /* View Transitions hook on the root for theme cross-fade */
-  :root { view-transition-name: root; }
+  :root {
+    view-transition-name: root;
+  }
   @media (prefers-reduced-motion: no-preference) {
     ::view-transition-old(root),
     ::view-transition-new(root) {
@@ -151,4 +190,3 @@ html {
     }
   }
 }
-

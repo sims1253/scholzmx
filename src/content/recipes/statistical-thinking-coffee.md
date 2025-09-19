@@ -6,6 +6,9 @@ time: '9 minutes'
 tags: ['Coffee', 'Methodology', 'Morning Ritual']
 season: 'All Year'
 heroImage: '../../assets/images/recipes/coffee-setup.jpg'
+heroImagePositionX: 0
+heroImagePositionY: 0.235
+heroImageScale: 3.5
 draft: false
 ---
 

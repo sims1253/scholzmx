@@ -33,6 +33,9 @@ const recipes = defineCollection({
       ingredients: z.array(z.string()).optional(),
       equipment: z.array(z.string()).optional(),
       heroImage: image().optional(),
+      heroImagePositionX: z.number().optional(),
+      heroImagePositionY: z.number().optional(),
+      heroImageScale: z.number().optional(),
       draft: z.boolean().optional().default(false),
     }),
 });

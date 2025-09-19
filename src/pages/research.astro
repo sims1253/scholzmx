@@ -1,11 +1,12 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import GridLayout from '../components/GridLayout.astro';
+import StackedCard from '../components/StackedCard.astro';
 
 const publications = [
   {
     year: 2022,
-    type: 'preprint',
+    type: 'Preprint',
     title:
       'Some models are useful, but how do we know which ones? Towards a unified Bayesian model taxonomy',
     authors: ['Paul-Christian Bürkner', 'Maximilian Scholz', 'Stefan T. Radev'],
@@ -17,7 +18,7 @@ const publications = [
   },
   {
     year: 2022,
-    type: 'preprint',
+    type: 'Preprint',
     title:
       'Prediction can be safely used as a proxy for explanation in causally consistent Bayesian generalized linear models',
     authors: ['Maximilian Scholz', 'Paul-Christian Bürkner'],
@@ -31,7 +32,7 @@ const publications = [
   },
   {
     year: 2021,
-    type: 'journal',
+    type: 'Journal',
     title: 'An empirical study of Linespots: A novel past-fault algorithm',
     authors: ['Maximilian Scholz', 'Richard Torkar'],
     venue: 'Software Testing, Verification and Reliability (STVR)',
@@ -43,7 +44,7 @@ const publications = [
   },
   {
     year: 2019,
-    type: 'thesis',
+    type: 'Thesis',
     title: 'An Analysis of Linespots and its Utility in Realistic Scenarios',
     authors: ['Maximilian Scholz'],
     venue: "Master's Thesis, Chalmers University of Technology",
@@ -51,7 +52,7 @@ const publications = [
   },
   {
     year: 2016,
-    type: 'thesis',
+    type: 'Thesis',
     title: 'A Line Based Approach for Bugspots',
     authors: ['Maximilian Scholz'],
     venue: "Bachelor's Thesis, Hamburg University of Technology",
@@ -73,8 +74,9 @@ const years = Object.keys(publicationsByYear).sort((a, b) => Number(b) - Number(
   title="Publications"
   description="Publications by Maximilian Scholz"
   footerVariant="writing"
-  longform={true}
+  longform={false}
   personal={false}
+  contentWidth="full"
 >
   <div class="research-page">
     <header class="research-header">
@@ -117,91 +119,42 @@ const years = Object.keys(publicationsByYear).sort((a, b) => Number(b) - Number(
                     <span class="vine" />
                   </>
                 </h2>
-                <GridLayout columns={1} gap="sm" class="cards">
-                  {publicationsByYear[Number(year)].map((pub) => (
-                    <article class="pub-card" data-year={year} data-type={pub.type}>
-                      <div class="card-body">
-                        <div class="card-meta-top">
-                          <span class={`type-badge type-${pub.type}`}>
-                            {pub.type === 'preprint'
-                              ? 'Preprint'
-                              : pub.type === 'journal'
-                                ? 'Journal'
-                                : pub.type === 'thesis'
-                                  ? 'Thesis'
-                                  : pub.type}
-                          </span>
-                        </div>
-                        <h3 class="card-title">
-                          {pub.links?.pdf || pub.links?.doi ? (
-                            <a
-                              href={pub.links.pdf || pub.links.doi}
-                              class="title-link"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              {pub.title}
-                            </a>
-                          ) : (
-                            <span class="title-text">{pub.title}</span>
-                          )}
-                        </h3>
-                        <p class="card-authors">
-                          {pub.authors.map((a, i) => (
-                            <span class={a === 'Maximilian Scholz' ? 'author-self' : 'author'}>
-                              {a}
-                              {i < pub.authors.length - 1 ? ', ' : ''}
-                            </span>
-                          ))}
-                        </p>
-                        <p class="card-venue">{pub.venue}</p>
-                        {pub.links && (
-                          <div class="pub-links">
-                            {pub.links.pdf && (
-                              <a
-                                class="link-chip"
-                                href={pub.links.pdf}
-                                target="_blank"
-                                rel="noopener"
-                              >
-                                PDF
-                              </a>
-                            )}
-                            {pub.links.code && (
-                              <a
-                                class="link-chip"
-                                href={pub.links.code}
-                                target="_blank"
-                                rel="noopener"
-                              >
-                                Code
-                              </a>
-                            )}
-                            {pub.links.data && (
-                              <a
-                                class="link-chip"
-                                href={pub.links.data}
-                                target="_blank"
-                                rel="noopener"
-                              >
-                                Data
-                              </a>
-                            )}
-                            {pub.links.doi && (
-                              <a
-                                class="link-chip"
-                                href={pub.links.doi}
-                                target="_blank"
-                                rel="noopener"
-                              >
-                                DOI
-                              </a>
-                            )}
+                <GridLayout columns={1} gap="xl" class="cards">
+                  {publicationsByYear[Number(year)].map((pub, idx) => {
+                    const primaryLink = pub.links?.pdf || pub.links?.doi || undefined;
+                    return (
+                      <div class="pub-item">
+                        <StackedCard
+                          seed={`pub/${year}/${idx}/${pub.title}`}
+                          title={pub.title}
+                          subtitle={pub.venue}
+                          href={primaryLink}
+                          layers={1}
+                          ornament={false}
+                        >
+                          <div class="sc-meta">
+                            <div class="sc-dates">
+                              <div class="sc-date-item">
+                                <span class="sc-date-label">Type:</span>
+                                <span class="sc-date">{pub.type}</span>
+                              </div>
+                              <div class="sc-date-item">
+                                <span class="sc-date-label">Authors:</span>
+                                <span class="sc-date">{pub.authors.join(', ')}</span>
+                              </div>
+                            </div>
+                            <div class="sc-tags">
+                              {Object.entries(pub.links || {}).map(([k, url]) => (
+                                <a class="sc-chip" href={url} target="_blank" rel="noopener">
+                                  {k}
+                                </a>
+                              ))}
+                            </div>
                           </div>
-                        )}
+                        </StackedCard>
                       </div>
-                    </article>
-                  ))}
+                    );
+                  })}
                 </GridLayout>
               </div>
             ))
@@ -219,7 +172,7 @@ const years = Object.keys(publicationsByYear).sort((a, b) => Number(b) - Number(
 
   .research-header {
     text-align: center;
-    max-width: var(--content-width-serious);
+    max-width: var(--content-width-listing);
     margin: 0 auto var(--space-xs);
   }
 
@@ -234,11 +187,14 @@ const years = Object.keys(publicationsByYear).sort((a, b) => Number(b) - Number(
     line-height: 1.6;
     color: var(--color-ink-medium);
     font-style: italic;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .research-container {
     position: relative;
-    max-width: var(--content-width-serious);
+    max-width: var(--content-width-listing);
     margin: 0 auto;
   }
   .research-content {
@@ -246,9 +202,10 @@ const years = Object.keys(publicationsByYear).sort((a, b) => Number(b) - Number(
   }
   .research-sidebar {
     position: absolute;
-    right: calc(-12.5rem - var(--space-lg));
+    /* Anchor to the centered card column: center (50%) + half card width + small gap */
+    left: calc(50% + (var(--card-max-width) / 2) + var(--sidebar-gap));
     top: calc(var(--space-xl) + 4px);
-    width: 13rem;
+    width: var(--sidebar-width);
   }
   .sidebar-section {
     background-color: var(--color-surface);
@@ -313,8 +270,15 @@ const years = Object.keys(publicationsByYear).sort((a, b) => Number(b) - Number(
   .cards {
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--space-sm);
-    margin-bottom: var(--space-sm);
+    gap: var(--space-lg);
+    margin-bottom: var(--space-md);
+  }
+  .pub-item {
+    margin-bottom: var(--space-lg);
+    width: 100%;
+    max-width: var(--card-max-width);
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .pub-card {
@@ -342,7 +306,6 @@ const years = Object.keys(publicationsByYear).sort((a, b) => Number(b) - Number(
   }
   .type-badge {
     font-size: var(--text-xs);
-    text-transform: uppercase;
     letter-spacing: 0.05em;
     padding: 0.1rem 0.4rem;
     border-radius: 999px;

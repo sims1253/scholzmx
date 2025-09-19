@@ -1,16 +1,16 @@
 @layer components {
-/* Layout and navigation styles for BaseLayout */
+  /* Layout and navigation styles for BaseLayout */
 
-/* Navigation styles */
-.nav-content {
-  display: flex;
-  align-items: center;
-  padding: var(--space-lg);
-  position: relative;
-  max-width: calc(var(--content-width-personal) * 1.5);
-  margin: 0 auto;
-  width: 100%;
-}
+  /* Navigation styles */
+  .nav-content {
+    display: flex;
+    align-items: center;
+    padding: var(--space-lg);
+    position: relative;
+    max-width: min(var(--site-width, 1280px), calc(100vw - 2rem));
+    margin: 0 auto;
+    width: 100%;
+  }
 }
 
 .nav-brand .site-logo {
@@ -22,7 +22,7 @@
   font-size: var(--text-xl);
   font-weight: 600;
   color: var(--color-ink-dark);
-  margin-left: calc((var(--content-width-personal) * 0.5) / -1.5);
+  margin-left: 0;
 }
 
 .nav-brand .site-logo:hover {
@@ -46,7 +46,19 @@
   font-size: var(--text-lg);
   font-family: var(--font-heading);
   margin-left: auto;
-  margin-right: calc((var(--content-width-personal) * 0.5) / 1.5);
+  margin-right: 0;
+  /* Allow the links block to shrink and wrap within the nav wrapper */
+  min-width: 0;
+  flex: 1 1 auto;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 900px) {
+  .nav-links {
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+  }
 }
 
 .torch-toggle {
@@ -151,6 +163,25 @@
 .main-content .container {
   width: 100%;
 }
+
+/* Explicit wide/full containers to ensure centering and width */
+.main-content .container-wide,
+.main-content .container-full {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+}
+.main-content .container-wide {
+  max-width: 80rem; /* ~1280px */
+}
+.main-content .container-full {
+  max-width: 90rem; /* very wide */
+}
+
+/* Ensure main-content child wrapper (when not using .container) still fills and centers */
+/* Centering handled by BaseLayout container classes */
 
 .footer-area {
   margin-top: auto;

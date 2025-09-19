@@ -58,10 +58,14 @@ const { Content } = await recipe.render();
             <ImageFrame
               src={recipe.data.heroImage}
               alt={recipe.data.title}
-              style="simple"
-              width={600}
+              style="hero"
+              aspectRatio="8/3"
+              scale={recipe.data.heroImageScale}
+              positionX={recipe.data.heroImagePositionX ? recipe.data.heroImagePositionX * 100 : 0}
+              positionY={recipe.data.heroImagePositionY ? recipe.data.heroImagePositionY * 100 : 0}
+              loading="eager"
+              width={800}
               height={400}
-              loading="lazy"
               className="recipe-hero"
             />
           )

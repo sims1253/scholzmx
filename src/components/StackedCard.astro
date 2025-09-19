@@ -1,9 +1,9 @@
 ---
-import "../styles/stacked-card.css";
-import { createSeededRng } from "../scripts/seeded";
-import { doodadCategories } from "../config/doodadConfig";
-import { processDoodadCategories, extractDoodadsByKind } from "../lib/doodadProcessor";
-import type { DoodadResults } from "../config/doodadConfig";
+import '../styles/stacked-card.css';
+import { createSeededRng } from '../scripts/seeded';
+import { doodadCategories } from '../config/doodadConfig';
+import { processDoodadCategories, extractDoodadsByKind } from '../lib/doodadProcessor';
+import type { DoodadResults } from '../config/doodadConfig';
 /**
  * StackedCard: production-ready variant with unified doodad system
  *
@@ -25,6 +25,7 @@ interface Props {
   tilt?: 'light' | 'med';
   class?: string;
   ornament?: boolean;
+  layout?: 'stacked' | 'side';
 }
 
 const {
@@ -38,30 +39,39 @@ const {
   tilt = 'light',
   class: className,
   ornament = true,
+  layout = 'stacked',
 } = Astro.props as Props;
 
 // TWEAK: Split RNG streams to prevent ripple changes when extending features
 const layoutRng = createSeededRng(seed, 'stackedcard-v3:layout');
 const doodadRng = createSeededRng(seed, 'stackedcard-v3:doodads');
 
-function roundPx(n: number) { return Math.round(n); }
+function roundPx(n: number) {
+  return Math.round(n);
+}
 
 // TWEAK: Card position offsets (px) - uses layout stream
 const offx = roundPx(layoutRng.between(-8, 8));
 const offy = roundPx(layoutRng.between(-6, 6));
 // TWEAK: Layer count weighting (1:15%, 2:45%, 3:30%, 4:10%) - uses layout stream
 const r = layoutRng.random();
-const layerCount = layersProp ?? (r < 0.15 ? 1 : r < 0.60 ? 2 : r < 0.90 ? 3 : 4);
+const layerCount = layersProp ?? (r < 0.15 ? 1 : r < 0.6 ? 2 : r < 0.9 ? 3 : 4);
 const isSheet = layerCount === 1;
-const rotA = (tilt === 'light' ? layoutRng.between(-1.6, 1.2) : layoutRng.between(-2.4, 2.0)).toFixed(2);
-const rotB = (tilt === 'light' ? layoutRng.between(-1.2, 1.6) : layoutRng.between(-2.0, 2.2)).toFixed(2);
-const rotC = (tilt === 'light' ? layoutRng.between(-1.0, 1.0) : layoutRng.between(-1.6, 1.6)).toFixed(2);
+const rotA = (
+  tilt === 'light' ? layoutRng.between(-1.6, 1.2) : layoutRng.between(-2.4, 2.0)
+).toFixed(2);
+const rotB = (
+  tilt === 'light' ? layoutRng.between(-1.2, 1.6) : layoutRng.between(-2.0, 2.2)
+).toFixed(2);
+const rotC = (
+  tilt === 'light' ? layoutRng.between(-1.0, 1.0) : layoutRng.between(-1.6, 1.6)
+).toFixed(2);
 
 /**
  * UNIFIED DOODAD SYSTEM
- * 
+ *
  * Now fully data-driven! Configuration moved to src/config/doodadConfig.ts
- * 
+ *
  * To add new doodads:
  * 1. Add item to appropriate category in doodadConfig.ts
  * 2. For SVG doodles: just add metadata (src, defaultSize, positions) - no template changes needed!
@@ -76,11 +86,11 @@ const doodads: DoodadResults = processDoodadCategories(
   allowBookmark,
   allowTape,
   ornament,
-  { 
-    random: doodadRng.random, 
-    pick: doodadRng.chance, 
-    map: doodadRng.between, 
-    betweenInt: doodadRng.betweenInt 
+  {
+    random: doodadRng.random,
+    pick: doodadRng.chance,
+    map: doodadRng.between,
+    betweenInt: doodadRng.betweenInt,
   }
 );
 
@@ -102,8 +112,8 @@ const showStickerTR = !!doodads.stickerTR?.active;
 const showStickerBL = !!doodads.stickerBL?.active;
 
 // Extract background effect variables using the new system
-const washEffect = backgroundDoodles.find(d => d.id === 'washSubtle' || d.id === 'washBold');
-const ringEffect = backgroundDoodles.find(d => d.id === 'ringEffect');
+const washEffect = backgroundDoodles.find((d) => d.id === 'washSubtle' || d.id === 'washBold');
+const ringEffect = backgroundDoodles.find((d) => d.id === 'ringEffect');
 
 // Wash variables
 const washX = washEffect?.props.washX || 50;
@@ -149,81 +159,137 @@ const styleVars = {
   '--wash2-y': `${washY2}%`,
 } as Record<string, string>;
 
-const styleInline = Object.entries(styleVars).map(([k, v]) => `${k}: ${v}`).join('; ');
+const styleInline = Object.entries(styleVars)
+  .map(([k, v]) => `${k}: ${v}`)
+  .join('; ');
 ---
 
-<article class={`sc-card ${className || ''}`}
+<article
+  class={`sc-card ${className || ''}`}
   style={styleInline}
   data-bookmark={dataBookmark}
   data-tape={dataTape}
   data-wash={dataWash}
   data-ring={dataRing}
   data-layers={String(layerCount)}
-  data-ornament-variant={String(ornamentVariant)}>
-  {layerCount >= 3 && <i class="sc-layer-c" aria-hidden="true"></i>}
-  {layerCount >= 4 && <i class="sc-layer-d" aria-hidden="true"></i>}
-  {hasBookmark && <i class={`sc-bookmark ${bookmarkSide === 'left' ? 'left' : 'right'}`} aria-hidden="true"></i>}
-  {hasTape && <>
-    <i class="sc-tape left" aria-hidden="true"></i>
-    <i class="sc-tape right" aria-hidden="true"></i>
-  </>}
-  {showStickerTR && <i class="sc-sticker tr" aria-hidden="true"></i>}
-  {showStickerBL && <i class="sc-sticker bl" aria-hidden="true"></i>}
-  {showCircleBookmark && <i class="sc-circle-bookmark" aria-hidden="true"></i>}
-  {showTab && <i class="sc-tab" aria-hidden="true"></i>}
+  data-ornament-variant={String(ornamentVariant)}
+>
+  {layerCount >= 3 && <i class="sc-layer-c" aria-hidden="true" />}
+  {layerCount >= 4 && <i class="sc-layer-d" aria-hidden="true" />}
+  {
+    hasBookmark && (
+      <i class={`sc-bookmark ${bookmarkSide === 'left' ? 'left' : 'right'}`} aria-hidden="true" />
+    )
+  }
+  {
+    hasTape && (
+      <>
+        <i class="sc-tape left" aria-hidden="true" />
+        <i class="sc-tape right" aria-hidden="true" />
+      </>
+    )
+  }
+  {showStickerTR && <i class="sc-sticker tr" aria-hidden="true" />}
+  {showStickerBL && <i class="sc-sticker bl" aria-hidden="true" />}
+  {showCircleBookmark && <i class="sc-circle-bookmark" aria-hidden="true" />}
+  {showTab && <i class="sc-tab" aria-hidden="true" />}
   <div class="sc-face">
     <div class="sc-content">
-    {href ? (
-      <a href={href} class="sc-link" aria-label={title}>
-        {title && <h3 class="sc-title">{title}</h3>}
-        {subtitle && <p class="sc-subtitle">{subtitle}</p>}
-        <slot />
-      </a>
-    ) : (
-      <>
-        {title && <h3 class="sc-title">{title}</h3>}
-        {subtitle && <p class="sc-subtitle">{subtitle}</p>}
-        <slot />
-      </>
-    )}
-    {showOrnament && <i class="sc-ornament" aria-hidden="true"></i>}
-    {showLeafDoodle && <div class="sc-leaf-doodle" aria-hidden="true">
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path>
-        <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path>
-      </svg>
-    </div>}
-    {/* Auto-rendered SVG doodles from configuration */}
-    {svgDoodles.map(doodle => {
-      const { definition, props } = doodle;
-      const position = props.position || definition.positions?.[0] || 'center';
-      const transforms = [];
-      
-      // For centered elements, include the centering transform first
-      if (position === 'center') {
-        transforms.push('translate(-50%, -50%)');
+      {
+        layout === 'side' ? (
+          <div class="sc-row">
+            <div class="sc-col content">
+              {title &&
+                (href ? (
+                  <h3 class="sc-title">
+                    <a href={href} class="sc-title-link" aria-label={title}>
+                      {title}
+                    </a>
+                  </h3>
+                ) : (
+                  <h3 class="sc-title">{title}</h3>
+                ))}
+              {subtitle && <p class="sc-subtitle">{subtitle}</p>}
+              <slot />
+            </div>
+            {Astro.slots?.has?.('media') && (
+              <div class="sc-col media">
+                <slot name="media" />
+              </div>
+            )}
+          </div>
+        ) : (
+          <>
+            <slot name="media" />
+            {title &&
+              (href ? (
+                <h3 class="sc-title">
+                  <a href={href} class="sc-title-link" aria-label={title}>
+                    {title}
+                  </a>
+                </h3>
+              ) : (
+                <h3 class="sc-title">{title}</h3>
+              ))}
+            {subtitle && <p class="sc-subtitle">{subtitle}</p>}
+            <slot />
+          </>
+        )
       }
-      
-      // Add item-specific transforms
-      if (props.rotation) transforms.push(`rotate(${props.rotation}deg)`);
-      if (props.scale) transforms.push(`scale(${props.scale})`);
-      
-      const transformStyle = transforms.length > 0 ? `transform: ${transforms.join(' ')};` : '';
-      const sizeStyle = definition.defaultSize ? `width: ${definition.defaultSize}; height: ${definition.defaultSize};` : '';
-      const combinedStyle = [transformStyle, sizeStyle].filter(Boolean).join(' ');
-      
-      const maskVar = `--doodle-src: url(${definition.src});`;
-      const finalStyle = [combinedStyle, maskVar].filter(Boolean).join(' ');
-      return (
-        <div 
-          class={`sc-svg-doodle sc-${doodle.id} ${position}`} 
-          style={finalStyle || undefined}
-          aria-hidden="true"
-        />
-      );
-    })}
+      {showOrnament && <i class="sc-ornament" aria-hidden="true" />}
+      {
+        showLeafDoodle && (
+          <div class="sc-leaf-doodle" aria-hidden="true">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" />
+              <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" />
+            </svg>
+          </div>
+        )
+      }
+      {/* Auto-rendered SVG doodles from configuration */}
+      {
+        svgDoodles.map((doodle) => {
+          const { definition, props } = doodle;
+          const position = props.position || definition.positions?.[0] || 'center';
+          const transforms = [];
+
+          // For centered elements, include the centering transform first
+          if (position === 'center') {
+            transforms.push('translate(-50%, -50%)');
+          }
+
+          // Add item-specific transforms
+          if (props.rotation) transforms.push(`rotate(${props.rotation}deg)`);
+          if (props.scale) transforms.push(`scale(${props.scale})`);
+
+          const transformStyle = transforms.length > 0 ? `transform: ${transforms.join(' ')};` : '';
+          const sizeStyle = definition.defaultSize
+            ? `width: ${definition.defaultSize}; height: ${definition.defaultSize};`
+            : '';
+          const combinedStyle = [transformStyle, sizeStyle].filter(Boolean).join(' ');
+
+          const maskVar = `--doodle-src: url(${definition.src});`;
+          const finalStyle = [combinedStyle, maskVar].filter(Boolean).join(' ');
+          return (
+            <div
+              class={`sc-svg-doodle sc-${doodle.id} ${position}`}
+              style={finalStyle || undefined}
+              aria-hidden="true"
+            />
+          );
+        })
+      }
     </div>
   </div>
 </article>
-
-

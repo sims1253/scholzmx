@@ -6,7 +6,7 @@ import FaintLineDivider from '../../components/FaintLineDivider.astro';
 import ImageFrame from '../../components/ImageFrame.astro';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog');
+  const posts = (await getCollection('blog')).filter((post) => !post.data.draft);
   return posts.map((post) => ({
     params: { slug: post.slug },
     props: { post },
@@ -62,6 +62,7 @@ const formatDate = (date: Date) => {
 <BaseLayout
   title={`${post.data.title}`}
   description={post.data.description}
+  image={typeof post.data.heroImage === 'string' ? post.data.heroImage : post.data.heroImage?.src}
   footerVariant="writing"
   longform={true}
   personal={false}
