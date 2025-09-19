@@ -31,7 +31,8 @@ html {
     blockquote p,
     .content,
     .post-body,
-    .longform {
+    .longform,
+    .prose {
       text-wrap: pretty;
     }
   }
@@ -84,7 +85,8 @@ html {
 
   /* Enable container queries on key wrappers */
   .container,
-  .post-body.longform {
+  .post-body.longform,
+  .layout-prose {
     container: page / inline-size;
   }
   .nav-wide {

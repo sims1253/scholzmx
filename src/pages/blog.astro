@@ -17,9 +17,8 @@ const tags = Array.from(new Set(posts.flatMap((p) => p.data.tags ?? []))).sort()
   title="Blog"
   description="My long-form writing."
   footerVariant="writing"
-  longform={false}
-  personal={false}
-  contentWidth="full"
+  tone="serious"
+  layout="listing"
 >
   <div class="blog-page">
     <header class="blog-header">
@@ -108,7 +107,7 @@ const tags = Array.from(new Set(posts.flatMap((p) => p.data.tags ?? []))).sort()
 
     .blog-header {
       text-align: center;
-      max-width: var(--content-width-listing);
+    max-width: var(--measure-listing);
       margin: 0 auto var(--space-xs);
     }
 
@@ -125,9 +124,9 @@ const tags = Array.from(new Set(posts.flatMap((p) => p.data.tags ?? []))).sort()
       font-style: italic;
     }
 
-    .blog-container {
+  .blog-container {
       position: relative;
-      max-width: var(--content-width-listing);
+    max-width: var(--measure-listing);
       margin: 0 auto;
     }
     .blog-content {

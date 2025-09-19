@@ -184,10 +184,12 @@
   /* Typography token switching: serious vs personal contexts (fonts only) */
   .serious-content {
     --font-body: var(--font-body-serious);
+    --measure-prose: var(--measure-prose-serious);
   }
 
   .personal-content {
     --font-body: var(--font-body-personal);
+    --measure-prose: var(--measure-prose-personal);
   }
 
   /* ModernCSS: improve scroll positions for anchor and focus */
@@ -252,14 +254,7 @@
   }
 
   p {
-    max-width: var(--content-width);
     margin: 0 0 1.25em;
-  }
-
-  .longform.personal-content p,
-  .container.personal p,
-  .personal-content .content p {
-    max-width: var(--content-width-personal) !important;
   }
 
   a {
@@ -405,10 +400,7 @@
     margin: 0 auto;
   }
 
-  /* Personal content variant - constrained to 65ch for optimal readability */
-  .container.personal {
-    max-width: var(--content-width-personal);
-  }
+  /* Legacy .container.personal removed; use layout classes instead */
 
   .content {
     max-width: var(--content-width);
@@ -713,82 +705,7 @@
     padding: 1px 3px;
   }
 
-  /* ===== LONGFORM TYPOGRAPHY SYSTEM ===== */
-  /* Dual typography system: serious vs personal content */
-
-  /* Default longform baseline */
-  .longform {
-    font-family: var(--font-body);
-    font-size: var(--text-md);
-    line-height: 1.35;
-    color: var(--color-text-primary);
-    font-feature-settings:
-      'liga' 1,
-      'kern' 1,
-      'calt' 1;
-    text-rendering: optimizelegibility;
-    max-width: var(--content-width-serious) !important;
-    margin: 0 auto;
-  }
-
-  /* Ensure blog posts use serious content width */
-  .post-body.longform {
-    max-width: var(--content-width-serious) !important;
-  }
-
-  .post-body.longform > * {
-    max-width: 100%;
-  }
-
-  /* Personal content typography (welcome, recipes) */
-  .longform.personal-content {
-    line-height: 1.4;
-    max-width: var(--content-width-personal);
-  }
-
-  .longform p {
-    margin-bottom: 1.25em;
-    line-height: inherit;
-  }
-
-  .longform h2 {
-    font-size: var(--text-xl);
-    margin-top: 1.6em;
-    margin-bottom: 0.6em;
-    color: var(--color-walnut);
-    font-weight: var(--heading-weight-strong);
-    line-height: 1.3;
-  }
-
-  .longform h3 {
-    font-size: var(--text-lg);
-    margin-top: 1.4em;
-    margin-bottom: 0.5em;
-    color: var(--color-text-primary);
-    font-weight: var(--heading-weight-strong);
-    line-height: 1.4;
-  }
-
-  .longform blockquote {
-    border-left: 3px solid var(--color-sage);
-    padding-left: var(--space-md);
-    margin: var(--space-lg) 0;
-    font-style: italic;
-    color: var(--color-text-secondary);
-    background: rgba(168, 181, 160, 0.08);
-    border-radius: 0 var(--border-radius) var(--border-radius) 0;
-  }
-
-  .longform ul,
-  .longform ol {
-    margin: 0 0 1.25em;
-    padding-left: var(--space-lg);
-  }
-
-  .longform li {
-    margin-bottom: var(--space-xs);
-    line-height: inherit;
-  }
+  /* (Legacy .longform system removed in favor of scoped .prose) */
 
   /* Print styles */
   @media print {

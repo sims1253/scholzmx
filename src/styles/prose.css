@@ -1,0 +1,73 @@
+@layer components {
+  /* Scoped rich text styling. Replace .longform usage. */
+  .prose {
+    font-family: var(--font-body);
+    font-size: var(--text-md);
+    line-height: 1.35;
+    color: var(--color-text-primary);
+    font-feature-settings:
+      'liga' 1,
+      'kern' 1,
+      'calt' 1;
+    text-rendering: optimizelegibility;
+  }
+
+  /* Slightly looser line-height for personal tone by default */
+  .personal-content .prose {
+    line-height: 1.4;
+  }
+
+  .prose p {
+    margin: 0 0 1.25em;
+    line-height: inherit;
+  }
+
+  .prose h2 {
+    font-size: var(--text-xl);
+    margin-top: 1.6em;
+    margin-bottom: 0.6em;
+    color: var(--color-walnut);
+    font-weight: var(--heading-weight-strong);
+    line-height: 1.3;
+  }
+
+  .prose h3 {
+    font-size: var(--text-lg);
+    margin-top: 1.4em;
+    margin-bottom: 0.5em;
+    color: var(--color-text-primary);
+    font-weight: var(--heading-weight-strong);
+    line-height: 1.4;
+  }
+
+  .prose blockquote {
+    border-left: 3px solid var(--color-sage);
+    padding-left: var(--space-md);
+    margin: var(--space-lg) 0;
+    font-style: italic;
+    color: var(--color-text-secondary);
+    background: rgba(168, 181, 160, 0.08);
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+    max-width: 100%;
+  }
+
+  .prose ul,
+  .prose ol {
+    margin: 0 0 1.25em;
+    padding-left: var(--space-lg);
+  }
+
+  .prose li {
+    margin-bottom: var(--space-xs);
+    line-height: inherit;
+  }
+
+  /* Optional: tighter excerpt variant for cards */
+  .prose--excerpt {
+    font-size: 0.95em;
+    line-height: 1.35;
+  }
+  .prose--excerpt p { margin: 0 0 0.75em; }
+}
+
+

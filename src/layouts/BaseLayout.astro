@@ -12,6 +12,8 @@ import '../styles/fonts.css';
 import '../styles/layout.css';
 import '../styles/base.css';
 import '../styles/modern.css';
+import '../styles/prose.css';
+import '../styles/typography-utils.css';
 import '../styles/dropcap.css';
 import '../styles/tailwind.css'; // Utilities only - preserves existing design
 import '../styles/tailwind-utilities.css'; // Force utility generation
@@ -25,9 +27,15 @@ export interface Props {
   addBorders?: boolean;
   footerVariant?: 'garden' | 'kitchen' | 'craft' | 'writing' | 'projects' | 'research' | 'default';
   includeQuoteSection?: boolean;
+  /* Legacy props (for backward-compat) */
   longform?: boolean;
   personal?: boolean;
   contentWidth?: 'default' | 'wide' | 'full';
+  /* New props */
+  tone?: 'personal' | 'serious';
+  layout?: 'prose' | 'listing' | 'wide' | 'full';
+  prose?: boolean;
+  leading?: 'default' | 'relaxed' | 'tight';
 }
 
 const {
@@ -37,10 +45,23 @@ const {
   addBorders = true,
   footerVariant = 'default',
   includeQuoteSection = false,
+  /* legacy */
   longform = false,
   personal = true,
   contentWidth = 'default',
+  /* new */
+  tone,
+  layout,
+  prose,
+  leading,
 } = Astro.props;
+
+/* Backward-compatible mapping */
+const resolvedTone = tone ?? (personal ? 'personal' : 'serious');
+const isProseLayoutLegacy = longform || contentWidth === 'default';
+const resolvedLayout = layout ?? (isProseLayoutLegacy ? 'prose' : contentWidth === 'wide' ? 'wide' : contentWidth === 'full' ? 'full' : 'prose');
+const resolvedProse = prose ?? longform ?? false;
+const resolvedLeading = leading ?? 'default';
 
 const currentPath = Astro.url.pathname;
 ---
@@ -79,9 +100,9 @@ const currentPath = Astro.url.pathname;
       crossorigin
     />
 
-    {/* Conditional preloading based on content type */}
+    {/* Conditional preloading based on tone */}
     {
-      personal ? (
+      resolvedTone === 'personal' ? (
         <link
           rel="preload"
           href="/fonts/Alegreya/alegreya-v38-latin-regular.woff2"
@@ -193,7 +214,7 @@ const currentPath = Astro.url.pathname;
     <title>{title}</title>
   </head>
 
-  <body class={personal ? 'personal-content' : 'serious-content'}>
+  <body class={resolvedTone === 'personal' ? 'personal-content' : 'serious-content'}>
     <!-- Skip Links for Keyboard Navigation -->
     <a href="#main-content" class="skip-link"
       >Skip to main content (blog posts, articles, and page content)</a
@@ -288,15 +309,7 @@ const currentPath = Astro.url.pathname;
 
         <!-- Main content area -->
         <main class="main-content" id="main-content">
-          <div
-            class={`${contentWidth === 'default' ? 'container' : contentWidth === 'wide' ? 'container-wide' : contentWidth === 'full' ? 'container-full' : ''} ${personal ? 'personal' : ''} ${
-              contentWidth === 'default'
-                ? personal
-                  ? 'tw-max-w-prose-personal'
-                  : 'tw-max-w-6xl'
-                : ''
-            } ${longform ? 'post-body longform' : ''} tw-mx-auto tw-px-md`}
-          >
+          <div class={`layout-${resolvedLayout} ${resolvedProse ? 'prose' : ''} ${resolvedLeading !== 'default' ? `leading-${resolvedLeading}` : ''}`}>
             <slot />
           </div>
           <div class="notes-container" id="notesContainer"></div>
@@ -483,8 +496,8 @@ const currentPath = Astro.url.pathname;
             }
             positionNotesContainer() {
               const pageContainer =
-                (document.querySelector('.post-body.longform') as HTMLElement) ||
-                (document.querySelector('.container.personal') as HTMLElement) ||
+                (document.querySelector('.post-body.prose') as HTMLElement) ||
+                (document.querySelector('.layout-prose') as HTMLElement) ||
                 (document.querySelector('.container') as HTMLElement);
               const wrapper = document.querySelector('.main-content');
               if (!pageContainer || !wrapper || !this.notesContainer) return;

@@ -24,8 +24,10 @@ const { Content } = await recipe.render();
   title={`${recipe.data.title} - Scholz MX`}
   description={recipe.data.description}
   footerVariant="kitchen"
-  longform={true}
-  personal={true}
+  tone="personal"
+  layout="prose"
+  prose={true}
+  leading="relaxed"
 >
   <div class="recipe-post">
     <article class="recipe-content">
@@ -72,7 +74,7 @@ const { Content } = await recipe.render();
         }
       </header>
 
-      <div class="recipe-body longform personal-content">
+      <div class="recipe-body prose">
         <!-- Allow markdown to use MarginNote and DropCap components -->
         <Content components={{ DropCap }} />
         <!-- Fallback for plain HTML margin note markup in Markdown (no components mapping needed) -->
@@ -94,7 +96,7 @@ const { Content } = await recipe.render();
   }
 
   .recipe-content {
-    max-width: var(--content-width-personal); /* Use personal content width (65ch) */
+    max-width: var(--measure-prose); /* personal tone sets 58ch */
     margin: 0 auto;
     padding: var(--space-xl) var(--space-lg);
   }
@@ -162,7 +164,7 @@ const { Content } = await recipe.render();
     margin-bottom: var(--space-lg);
   }
 
-  /* Typography now handled by global .longform class */
+  /* Typography now handled by scoped .prose class */
 
   .recipe-body :global(strong) {
     color: var(--color-walnut);

@@ -49,14 +49,19 @@
   --text-2xl: 1.8rem;
   --text-3xl: 2.2rem;
 
-  /* Layout metrics */
-  --content-width-personal: 58ch; /* Personal content - Alegreya */
-  --content-width-serious: 60ch; /* Serious content - ET Book */
-  --content-width-projects: 70ch; /* Projects/Research pages - alias for serious */
-  --content-width-listing: 960px; /* Shared width for collection pages (Blog/Research/Recipes) */
-  --content-width: var(--content-width-personal);
-  --content-width-narrow: 72ch;
+  /* Layout metrics (legacy removed in favor of measure-* tokens) */
   --main-content-width: 800px;
+
+  /* Measure tokens (new) */
+  /* Prose reading measures by tone */
+  --measure-prose-personal: 60ch;
+  --measure-prose-serious: 70ch;
+  /* Default prose measure (tone sets this at runtime) */
+  --measure-prose: var(--measure-prose-personal);
+  /* Shared layout measures */
+  --measure-listing: 960px;
+  --measure-wide: 80rem;
+  --measure-full: 90rem;
 
   /* Site-level chrome */
   --site-width: 1280px; /* Controls nav inner wrapper max-width */

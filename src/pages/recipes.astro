@@ -11,9 +11,8 @@ const recipes = allRecipes.sort((a, b) => a.data.title.localeCompare(b.data.titl
   title="Recipes"
   description="Personal kitchen notes and recipes."
   footerVariant="kitchen"
-  longform={false}
-  personal={true}
-  contentWidth="full"
+  tone="personal"
+  layout="listing"
 >
   <div class="recipes-page">
     <header class="recipes-header">
@@ -55,7 +54,7 @@ const recipes = allRecipes.sort((a, b) => a.data.title.localeCompare(b.data.titl
 
   .recipes-header {
     text-align: center;
-    max-width: var(--content-width-listing);
+    max-width: var(--measure-listing);
     margin: 0 auto var(--space-xs);
   }
 
@@ -76,7 +75,7 @@ const recipes = allRecipes.sort((a, b) => a.data.title.localeCompare(b.data.titl
   }
 
   .recipes-container {
-    max-width: var(--content-width-listing);
+    max-width: var(--measure-listing);
     margin: 0 auto;
   }
 

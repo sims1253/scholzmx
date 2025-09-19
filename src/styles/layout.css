@@ -13,6 +13,42 @@
   }
 }
 
+.layout-prose {
+  width: 100%;
+  max-width: var(--measure-prose);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+}
+
+.layout-listing {
+  width: 100%;
+  max-width: var(--measure-listing);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+}
+
+.layout-wide {
+  width: 100%;
+  max-width: var(--measure-wide);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+}
+
+.layout-full {
+  width: 100%;
+  max-width: var(--measure-full);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+}
+
 .nav-brand .site-logo {
   display: flex;
   align-items: center;
@@ -155,8 +191,7 @@
 .main-content {
   padding: var(--space-sm) 0;
   flex: 1 1 auto;
-  display: flex;
-  align-items: flex-start;
+  display: block; /* Prevent flex from shrinking inner layout wrappers */
   position: relative; /* required for margin-notes absolute container */
 }
 

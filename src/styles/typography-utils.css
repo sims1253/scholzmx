@@ -1,0 +1,12 @@
+@layer utilities {
+  .leading-relaxed { line-height: 1.45; }
+  .leading-tight { line-height: 1.25; }
+
+  /* Debug helper: visualize paragraphs outside prose scope (opt-in at body) */
+  .debug-prose-scope :not(.prose) p {
+    outline: 2px dashed #d33;
+    background: color-mix(in srgb, #d33 8%, transparent);
+  }
+}
+
+

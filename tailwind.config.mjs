@@ -46,10 +46,10 @@ export default {
         xl: '90rem',
       },
       maxWidth: {
-        // Reading measures
-        prose: 'var(--content-width-serious, 65ch)',
-        'prose-wide': 'var(--content-width-wide, 75ch)',
-        'prose-personal': 'var(--content-width-personal, 60ch)',
+        // Reading measures (fallbacks kept for safety)
+        prose: 'var(--measure-prose, 60ch)',
+        'prose-wide': 'var(--measure-wide, 80rem)',
+        'prose-personal': 'var(--measure-prose, 58ch)',
       },
     },
   },

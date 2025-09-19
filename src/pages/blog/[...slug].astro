@@ -64,8 +64,9 @@ const formatDate = (date: Date) => {
   description={post.data.description}
   image={typeof post.data.heroImage === 'string' ? post.data.heroImage : post.data.heroImage?.src}
   footerVariant="writing"
-  longform={true}
-  personal={false}
+  tone="serious"
+  layout="prose"
+  prose={true}
 >
   <div class="blog-post">
     <article class="post-content" itemscope itemtype="https://schema.org/Article">
@@ -134,7 +135,7 @@ const formatDate = (date: Date) => {
 
       <FaintLineDivider width="wide" />
 
-      <section class="post-body longform" itemprop="articleBody">
+      <section class="post-body prose" itemprop="articleBody">
         <Content />
       </section>
 
@@ -509,7 +510,7 @@ const formatDate = (date: Date) => {
   }
 
   /* Margin Notes Styling - Applied via JavaScript */
-  .post-body.longform :global(.margin-note) {
+  .post-body.prose :global(.margin-note) {
     position: absolute !important;
     left: 82%;
     width: 200px;
@@ -526,12 +527,12 @@ const formatDate = (date: Date) => {
   }
 
   /* Remove the decorative quote from margin notes */
-  .post-body.longform :global(.margin-note::before) {
+  .post-body.prose :global(.margin-note::before) {
     display: none !important;
   }
 
   @media (max-width: 1400px) {
-    .post-body.longform :global(.margin-note) {
+    .post-body.prose :global(.margin-note) {
       display: none !important;
     }
   }

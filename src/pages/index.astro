@@ -14,14 +14,15 @@ import portraitImage from '../assets/images/homepage/portrait.jpg';
   footerVariant="default"
   includeQuoteSection={true}
   addBorders={true}
-  longform={true}
-  personal={true}
+  tone="personal"
+  layout="prose"
+  prose={true}
 >
   <div class="welcome-section">
     <div class="welcome-header">
       <div class="manuscript-text">
         <h1 class="site-title">Welcome to Grotto</h1>
-        <p class="site-description constrained-text longform personal-content">
+        <p class="site-description constrained-text prose">
           a place where I try to cultivate the feeling of watching the shadows dance through vines,
           while insects are humming and tansy is making everything smell like summer.
         </p>
@@ -53,8 +54,8 @@ import portraitImage from '../assets/images/homepage/portrait.jpg';
           </p>
         </span>
       </div> -->
-      <div class="longform personal-content content">
-        <p class="longform personal-content">
+      <div class="prose content">
+        <p class="prose">
           <DropCap letter="I" variant="personal" />'m Maximilian. My music taste was once described
           as "The Atmospheric Futurist with a Nostalgic Heart" and my favourite feedback described
           me as a "herder of cat herders". I create things. Whether that's software infrastructure,
@@ -144,7 +145,7 @@ import portraitImage from '../assets/images/homepage/portrait.jpg';
       gap: var(--space-sm);
     }
 
-    .about-preview .longform p {
+    .about-preview .prose p {
       text-align: left;
     }
 

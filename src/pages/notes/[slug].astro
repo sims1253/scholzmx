@@ -52,8 +52,9 @@ const getTypeColor = (type: string) => {
   title={`${note.data.title} - Notes`}
   description={note.data.description || `A ${note.data.type} from the digital garden`}
   footerVariant="garden"
-  longform={true}
-  personal={false}
+  tone="serious"
+  layout="prose"
+  prose={true}
 >
   <div class="note-page">
     <div class="note-container">
@@ -98,7 +99,7 @@ const getTypeColor = (type: string) => {
 
         <HandDrawnDivider variant="botanical" width="wide" />
 
-        <div class="note-body longform">
+        <div class="note-body prose">
           <!-- Ensure first paragraph of Content begins with a DropCap for consistent manuscript style.
                If the markdown content starts with a heading or image, consider moving DropCap usage into
                the content itself or adding a lead paragraph here. -->

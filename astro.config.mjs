@@ -48,7 +48,9 @@ export default defineConfig({
         // Keep manuscript and page elements
         /^manuscript/,
         /^page/,
-        /^longform/,
+        /^longform/, // legacy during migration
+        /^prose/,
+        /^layout-/,
         /^personal-content/,
         /^serious-content/,
         // Keep navigation states

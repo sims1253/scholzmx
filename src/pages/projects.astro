@@ -47,9 +47,8 @@ const optimizeExternalImage = (url: string) => {
   title="Projects"
   description="Selected projects"
   footerVariant="projects"
-  longform={false}
-  personal={false}
-  contentWidth="wide"
+  tone="serious"
+  layout="wide"
 >
   <div class="projects-page">
     <header class="projects-header">
@@ -117,7 +116,7 @@ const optimizeExternalImage = (url: string) => {
 
   .projects-header {
     text-align: center;
-    max-width: var(--content-width-serious);
+    max-width: var(--measure-prose);
     margin: 0 auto var(--space-xs);
   }
 

@@ -74,9 +74,8 @@ const years = Object.keys(publicationsByYear).sort((a, b) => Number(b) - Number(
   title="Publications"
   description="Publications by Maximilian Scholz"
   footerVariant="writing"
-  longform={false}
-  personal={false}
-  contentWidth="full"
+  tone="serious"
+  layout="listing"
 >
   <div class="research-page">
     <header class="research-header">
@@ -172,7 +171,7 @@ const years = Object.keys(publicationsByYear).sort((a, b) => Number(b) - Number(
 
   .research-header {
     text-align: center;
-    max-width: var(--content-width-listing);
+    max-width: var(--measure-listing);
     margin: 0 auto var(--space-xs);
   }
 
@@ -194,7 +193,7 @@ const years = Object.keys(publicationsByYear).sort((a, b) => Number(b) - Number(
 
   .research-container {
     position: relative;
-    max-width: var(--content-width-listing);
+    max-width: var(--measure-listing);
     margin: 0 auto;
   }
   .research-content {

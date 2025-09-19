@@ -30,8 +30,8 @@ const formatDate = (date: Date) => {
   title="Notes - Digital Garden"
   description="A collection of thoughts, observations, and ideas in various stages of development"
   footerVariant="garden"
-  longform={true}
-  personal={false}
+  tone="serious"
+  layout="listing"
 >
   <div class="notes-page">
     <div class="notes-container">
@@ -273,7 +273,7 @@ const formatDate = (date: Date) => {
     font-size: var(--text-md);
     line-height: 1.6;
     color: var(--color-ink-medium);
-    max-width: var(--content-width-narrow);
+    max-width: 72ch;
     margin: 0 auto;
     font-style: italic;
   }
