@@ -5,6 +5,7 @@ import NoteCardStack from '../components/NoteCardStack.astro';
 
 const allRecipes = await getCollection('recipes', ({ data }) => !data.draft);
 const recipes = allRecipes.sort((a, b) => a.data.title.localeCompare(b.data.title));
+const tags = Array.from(new Set(recipes.flatMap((r) => r.data.tags ?? []))).sort();
 ---
 
 <BaseLayout
@@ -30,6 +31,7 @@ const recipes = allRecipes.sort((a, b) => a.data.title.localeCompare(b.data.titl
               title: r.data.title,
               subtitle: r.data.description,
               href: `/recipes/${r.slug}`,
+              tags: r.data.tags ?? [],
               hero: r.data.heroImage
                 ? {
                     kind: 'asset',
@@ -43,6 +45,23 @@ const recipes = allRecipes.sort((a, b) => a.data.title.localeCompare(b.data.titl
           />
         </section>
       </main>
+      <aside class="recipes-filters">
+        <section class="sidebar-section">
+          <h3>Filter by tag</h3>
+          <ul class="filter-list">
+            <li><button class="filter-btn active" data-filter-tag="">All</button></li>
+            {
+              tags.map((t) => (
+                <li>
+                  <button class="filter-btn" data-filter-tag={t}>
+                    #{t}
+                  </button>
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+      </aside>
     </div>
   </div>
 </BaseLayout>
@@ -75,6 +94,7 @@ const recipes = allRecipes.sort((a, b) => a.data.title.localeCompare(b.data.titl
   }
 
   .recipes-container {
+    position: relative;
     max-width: var(--measure-listing);
     margin: 0 auto;
   }
@@ -82,4 +102,104 @@ const recipes = allRecipes.sort((a, b) => a.data.title.localeCompare(b.data.titl
   .recipes-content {
     position: relative;
   }
+
+  .recipes-filters {
+    position: absolute;
+    /* Anchor to the centered card column: center (50%) + half card width + small gap */
+    left: calc(50% + (var(--card-max-width) / 2) + var(--sidebar-gap));
+    top: 0;
+    width: var(--sidebar-width);
+  }
+
+  .sidebar-section {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-lichen);
+    border-radius: var(--border-radius);
+    padding: 0 var(--space-sm) var(--space-xs);
+  }
+
+  .sidebar-section h3 {
+    font-size: var(--text-md);
+    margin: var(--space-xs) 0;
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .filter-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  .filter-btn {
+    color: var(--color-text-secondary);
+    background: var(--color-surface);
+    border: 1px solid var(--color-lichen);
+    font-size: var(--text-xs);
+    font-family: inherit;
+    padding: 0.1rem 0.35rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+
+  .filter-btn:hover {
+    color: var(--color-link-hover);
+    background: var(--wash-sage);
+    border-color: var(--color-sage);
+  }
+
+  .filter-btn.active {
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-semibold);
+    border-color: var(--color-link);
+  }
+
+  @media (max-width: 1024px) {
+    .recipes-content {
+      position: static;
+    }
+    .recipes-filters {
+      position: static;
+      width: auto;
+      margin-top: var(--space-lg);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: var(--space-md);
+    }
+  }
 </style>
+
+<script>
+  let activeTag = '';
+  function applyFilters() {
+    const cards = document.querySelectorAll('.nc-item');
+    cards.forEach((el) => {
+      const tagsAttr = el.getAttribute('data-tags') || '';
+      const tags = tagsAttr ? tagsAttr.split(',') : [];
+      const tagMatch = !activeTag || tags.includes(activeTag);
+      (el as HTMLElement).style.display = tagMatch ? '' : 'none';
+    });
+  }
+  function updateActive() {
+    document.querySelectorAll('[data-filter-tag]').forEach((btn) => {
+      const tag = btn.getAttribute('data-filter-tag') || '';
+      btn.classList.toggle('active', tag === activeTag);
+    });
+  }
+  document.querySelectorAll('[data-filter-tag]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      activeTag = btn.getAttribute('data-filter-tag') || '';
+      applyFilters();
+      updateActive();
+    });
+  });
+  const params = new URLSearchParams(location.search);
+  const qTag = params.get('tag') || '';
+  if (qTag) activeTag = qTag;
+  applyFilters();
+  updateActive();
+</script>

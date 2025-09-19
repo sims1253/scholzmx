@@ -1,0 +1,7 @@
+:root {
+  /* ===== Motion Tokens ===== */
+
+  /* Transition timing (consistent interaction feedback) */
+  --transition-fast: 0.15s ease; /* Quick state changes */
+  --transition-medium: 0.3s ease; /* Standard UI transitions */
+}

@@ -1,0 +1,30 @@
+:root {
+  /* ===== Layout Tokens ===== */
+
+  /* Prose reading measures (ch units ensure optimal character count per line) */
+  --measure-prose-personal: 61ch; /* Warmer, more intimate reading width */
+  --measure-prose-serious: 70ch; /* Wider for academic/technical content */
+  --measure-prose: var(--measure-prose-personal); /* Default, set dynamically by tone */
+
+  /* Page layout measures */
+  --measure-listing: 960px; /* px for consistent grid layouts */
+  --measure-wide: 80rem; /* rem for responsive wide layouts */
+  --measure-full: 90rem; /* rem for maximum content width */
+
+  /* Site-level chrome (px for consistent structural elements) */
+  --site-width: 1280px; /* Controls nav inner wrapper max-width */
+  --nav-brand-left-offset: 24px; /* Subtle brand shift left of center content */
+  --card-max-width: 640px; /* Consistent card width regardless of rem scaling */
+
+  /* Sidebar layout */
+  --sidebar-width: 15rem; /* rem for scalable sidebar */
+  --sidebar-gap: clamp(1rem, 2vw, 2rem); /* Fluid responsive gap */
+
+  /* Legacy layout tokens (maintained for compatibility) */
+  --main-content-width: 800px;
+  --main-content-width-large: 900px;
+
+  /* Border radius tokens */
+  --border-radius: 0.25rem;
+  --border-radius-lg: 1rem;
+}

@@ -12,7 +12,7 @@ heroImageScale: 3.5
 draft: false
 ---
 
-<span class="dropcap" data-first-letter="T">T</span> his isn't just a coffee recipe - it's a lesson in statistical thinking disguised as a morning ritual. Every cup becomes a small experiment in optimization, teaching you to think about variables, measurement, and the difference between correlation and causation.
+<span class="dropcap dropcap--ornate dropcap--personal" data-first-letter="T" aria-hidden="true">T</span>his isn't just a coffee recipe - it's a lesson in statistical thinking disguised as a morning ritual. Every cup becomes a small experiment in optimization, teaching you to think about variables, measurement, and the difference between correlation and causation.
 
 ## The Philosophy
 
