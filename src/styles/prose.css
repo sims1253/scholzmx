@@ -67,7 +67,7 @@
     font-size: 0.95em;
     line-height: 1.35;
   }
-  .prose--excerpt p { margin: 0 0 0.75em; }
+  .prose--excerpt p {
+    margin: 0 0 0.75em;
+  }
 }
-
-

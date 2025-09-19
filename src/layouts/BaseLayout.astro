@@ -62,7 +62,15 @@ const {
 /* Backward-compatible mapping */
 const resolvedTone = tone ?? (personal ? 'personal' : 'serious');
 const isProseLayoutLegacy = longform || contentWidth === 'default';
-const resolvedLayout = layout ?? (isProseLayoutLegacy ? 'prose' : contentWidth === 'wide' ? 'wide' : contentWidth === 'full' ? 'full' : 'prose');
+const resolvedLayout =
+  layout ??
+  (isProseLayoutLegacy
+    ? 'prose'
+    : contentWidth === 'wide'
+      ? 'wide'
+      : contentWidth === 'full'
+        ? 'full'
+        : 'prose');
 const resolvedProse = prose ?? longform ?? false;
 const resolvedLeading = leading ?? 'default';
 
@@ -312,7 +320,9 @@ const currentPath = Astro.url.pathname;
 
         <!-- Main content area -->
         <main class="main-content" id="main-content">
-          <div class={`layout-${resolvedLayout} ${resolvedProse ? 'prose' : ''} ${resolvedLeading !== 'default' ? `leading-${resolvedLeading}` : ''}`}>
+          <div
+            class={`layout-${resolvedLayout} ${resolvedProse ? 'prose' : ''} ${resolvedLeading !== 'default' ? `leading-${resolvedLeading}` : ''}`}
+          >
             <slot />
           </div>
           <div class="notes-container" id="notesContainer"></div>

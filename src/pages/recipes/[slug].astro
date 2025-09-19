@@ -51,7 +51,7 @@ const { Content } = await recipe.render();
       }
 
       <header class="recipe-header">
-        <h1 class="recipe-title" itemprop="name">
+        <h1 class="recipe-title" itemprop="name" data-pagefind-meta="title">
           {recipe.data.title}
         </h1>
 
@@ -67,26 +67,34 @@ const { Content } = await recipe.render();
             </div>
             <div class="info-item">
               <span class="info-label">Season:</span>
-              <span class="info-value">🌿 {recipe.data.season}</span>
+              <span class="info-value" data-pagefind-meta="season">🌿 {recipe.data.season}</span>
             </div>
           </div>
           {
             recipe.data.tags && (
-              <ul class="recipe-tags" aria-label="Tags">
+              <ul
+                class="recipe-tags"
+                aria-label="Tags"
+                data-pagefind-meta="tags:{recipe.data.tags.join(', ')}"
+              >
                 {recipe.data.tags.map((tag) => (
-                  <li class="tag" itemprop="recipeCategory">#{tag}</li>
+                  <li class="tag" itemprop="recipeCategory">
+                    #{tag}
+                  </li>
                 ))}
               </ul>
             )
           }
         </div>
 
-        <p class="recipe-description" itemprop="description">{recipe.data.description}</p>
+        <p class="recipe-description" itemprop="description" data-pagefind-meta="description">
+          {recipe.data.description}
+        </p>
       </header>
 
       <FaintLineDivider width="wide" />
 
-      <section class="recipe-body prose" itemprop="recipeInstructions">
+      <section class="recipe-body prose" itemprop="recipeInstructions" data-pagefind-body>
         <Content components={{ DropCap }} />
       </section>
 

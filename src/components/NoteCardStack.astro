@@ -45,7 +45,12 @@ const { items, class: className, layers, columns = 'auto', itemMinWidth } = Astr
 <GridLayout columns={columns} itemMinWidth={itemMinWidth ?? '22rem'} gap="xl" class={className}>
   {
     items.map((it) => (
-      <div class="nc-item" data-year={it.year} data-tags={it.tags?.join(',') || ''} style="width: 100%; max-width: var(--card-max-width); margin: 0 auto;">
+      <div
+        class="nc-item"
+        data-year={it.year}
+        data-tags={it.tags?.join(',') || ''}
+        style="width: 100%; max-width: var(--card-max-width); margin: 0 auto;"
+      >
         <StackedCard
           seed={`stack/${it.id}`}
           title={it.title}

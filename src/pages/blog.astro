@@ -107,7 +107,7 @@ const tags = Array.from(new Set(posts.flatMap((p) => p.data.tags ?? []))).sort()
 
     .blog-header {
       text-align: center;
-    max-width: var(--measure-listing);
+      max-width: var(--measure-listing);
       margin: 0 auto var(--space-xs);
     }
 
@@ -124,9 +124,9 @@ const tags = Array.from(new Set(posts.flatMap((p) => p.data.tags ?? []))).sort()
       font-style: italic;
     }
 
-  .blog-container {
+    .blog-container {
       position: relative;
-    max-width: var(--measure-listing);
+      max-width: var(--measure-listing);
       margin: 0 auto;
     }
     .blog-content {

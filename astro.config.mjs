@@ -5,6 +5,7 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import lightningcss from 'vite-plugin-lightningcss';
 import purgecss from 'astro-purgecss';
+import pagefind from 'astro-pagefind';
 
 // https://astro.build/config
 export default defineConfig({
@@ -26,6 +27,7 @@ export default defineConfig({
   },
   integrations: [
     sitemap(),
+    pagefind(),
     // PurgeCSS with conservative minimal safelist
     purgecss({
       // Include markdown/quarto so typography/dropcaps classes referenced in content are detected
