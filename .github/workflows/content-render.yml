@@ -53,7 +53,7 @@ jobs:
             any::dagitty
             github::sims1253/bayesim
 
-      - name: Cache render timestamps
+      - name: Cache render hashes
         uses: actions/cache@v4
         with:
           path: .blog-cache

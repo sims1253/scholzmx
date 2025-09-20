@@ -44,13 +44,13 @@ mkdir -p .blog-cache
 needs_rendering() {
     local qmd_file="$1"
     local md_file="${qmd_file%.qmd}.md"
-    local cache_file=".blog-cache/$(echo "$qmd_file" | sed 's|/|_|g').timestamp"
+    local hash_file=".blog-cache/$(echo "$qmd_file" | sed 's|/|_|g').hash"
 
-    # Debug: Show file timestamps for CI troubleshooting
-    echo "Debug timestamps for $qmd_file:"
-    echo "  QMD: $(stat -c '%Y %y' "$qmd_file" 2>/dev/null || echo 'not found')"
-    echo "  MD:  $(stat -c '%Y %y' "$md_file" 2>/dev/null || echo 'not found')"
-    echo "  Cache: $(stat -c '%Y %y' "$cache_file" 2>/dev/null || echo 'not found')"
+    # Debug: Show file info for CI troubleshooting
+    echo "Debug info for $qmd_file:"
+    echo "  QMD exists: $([ -f "$qmd_file" ] && echo 'yes' || echo 'no')"
+    echo "  MD exists:  $([ -f "$md_file" ] && echo 'yes' || echo 'no')"
+    echo "  Hash file exists: $([ -f "$hash_file" ] && echo 'yes' || echo 'no')"
 
     # Force rebuild if requested
     if [ "$FORCE_REBUILD" = true ]; then
@@ -64,27 +64,35 @@ needs_rendering() {
         return 0
     fi
 
-    # If cache file doesn't exist, needs rendering
-    if [ ! -f "$cache_file" ]; then
-        echo "  Decision: REBUILD (no cache)"
+    # If hash file doesn't exist, needs rendering
+    if [ ! -f "$hash_file" ]; then
+        echo "  Decision: REBUILD (no hash cache)"
         return 0
     fi
 
-    # If qmd is newer than cache, needs rendering
-    if [ "$qmd_file" -nt "$cache_file" ]; then
-        echo "  Decision: REBUILD (QMD newer than cache)"
+    # Calculate current hash of QMD file content
+    local current_hash=$(sha256sum "$qmd_file" | cut -d' ' -f1)
+    local cached_hash=$(cat "$hash_file" 2>/dev/null || echo "")
+
+    echo "  Current hash: ${current_hash:0:8}..."
+    echo "  Cached hash:  ${cached_hash:0:8}..."
+
+    # If content changed, needs rendering
+    if [ "$current_hash" != "$cached_hash" ]; then
+        echo "  Decision: REBUILD (content changed)"
         return 0
     fi
 
-    echo "  Decision: SKIP (cached)"
+    echo "  Decision: SKIP (cached, content unchanged)"
     return 1
 }
 
-# Function to update cache timestamp
+# Function to update cache with content hash
 update_cache() {
     local qmd_file="$1"
-    local cache_file=".blog-cache/$(echo "$qmd_file" | sed 's|/|_|g').timestamp"
-    touch "$cache_file"
+    local hash_file=".blog-cache/$(echo "$qmd_file" | sed 's|/|_|g').hash"
+    local current_hash=$(sha256sum "$qmd_file" | cut -d' ' -f1)
+    echo "$current_hash" > "$hash_file"
 }
 
 # Function to move code block output outside of code-collapse details blocks
@@ -192,26 +200,40 @@ process_qmd_file() {
         fi
         cd - > /dev/null
         
-        # Post-processing: clean up Quarto output for Astro  
+        # Post-processing: clean up Quarto output for Astro
         local md_file="${qmd_file%.qmd}.md"
         if [ -f "$md_file" ]; then
             # Extract year and folder name for image path fixing
             year=$(echo "$qmd_file" | sed 's|.*/\([0-9]\{4\}\)/.*|\1|')
             post_folder=$(basename "$(dirname "$qmd_file")")
-            
+
             # Move Quarto index_files assets to src/assets and rewrite refs
-            assets_dir="src/assets/images/blog/${year}/${post_folder}"
+            # Use absolute path to ensure we create directory in project root
+            project_root=$(pwd)
+            assets_dir="${project_root}/src/assets/images/blog/${year}/${post_folder}"
             mkdir -p "$assets_dir"
             post_dir=$(dirname "$md_file")
+
+            # Handle both index_files (older Quarto) and nested src structure (newer Quarto)
             if [ -d "$post_dir/index_files" ]; then
               find "$post_dir/index_files" -type f \( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.gif" -o -name "*.svg" -o -name "*.webp" \) | while read img; do
                 base=$(basename "$img")
-                cp -f "$img" "$assets_dir/$base"
+                cp -f "$img" "${assets_dir}/$base"
                 rel_index_path=$(echo "$img" | sed "s|$post_dir/||")
                 # Replace both markdown and HTML refs
                 sed -i "s|$rel_index_path|$base|g" "$md_file"
               done
               rm -rf "$post_dir/index_files"
+            fi
+
+            # Handle nested src/assets structure created by Quarto
+            if [ -d "$post_dir/src/assets/images/blog/${year}/${post_folder}" ]; then
+              find "$post_dir/src/assets/images/blog/${year}/${post_folder}" -type f \( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.gif" -o -name "*.svg" -o -name "*.webp" \) | while read img; do
+                base=$(basename "$img")
+                cp -f "$img" "${assets_dir}/$base"
+                echo "  Moved image: $base to ${assets_dir}/"
+              done
+              rm -rf "$post_dir/src"
             fi
 
             # 1. Fix markdown body image paths: use proper relative paths to src/assets
