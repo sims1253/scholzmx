@@ -36,10 +36,7 @@ jobs:
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: |
-            any::knitr
-            any::rmarkdown
             any::tidyverse
-            any::broom
             any::furrr
             any::patchwork
             any::extraDistr
@@ -52,11 +49,19 @@ jobs:
         shell: Rscript {0}
         run: |
           options(repos = c(CRAN = 'https://cloud.r-project.org'))
-          pkgs <- c('brms','bayesim')
+
+          # Install CRAN packages
+          pkgs <- c('brms')
           install_if_missing <- function(p) {
             if (!requireNamespace(p, quietly = TRUE)) install.packages(p)
           }
           for (p in pkgs) install_if_missing(p)
+
+          # Install GitHub packages
+          if (!requireNamespace('remotes', quietly = TRUE)) install.packages('remotes')
+          if (!requireNamespace('bayesim', quietly = TRUE)) {
+            remotes::install_github('sims1253/bayesim')
+          }
 
       - name: Cache render timestamps
         uses: actions/cache@v4
