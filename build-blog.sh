@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# New simplified build script for organized blog structure
+# Build script for blog posts
 # Usage:
-#   ./build-blog-new.sh                                    # Build all posts
-#   ./build-blog-new.sh path/to/post-folder/index.qmd      # Build specific post
-#   ./build-blog-new.sh --force                            # Force rebuild all
-#   ./build-blog-new.sh --force path/to/post-folder/index.qmd # Force rebuild specific
+#   ./build-blog.sh                                    # Build all posts
+#   ./build-blog.sh path/to/post-folder/index.qmd      # Build specific post
+#   ./build-blog.sh --force                            # Force rebuild all
+#   ./build-blog.sh --force path/to/post-folder/index.qmd # Force rebuild specific
 
 set -e  # Exit on any error
 
@@ -32,9 +32,9 @@ for arg in "$@"; do
 done
 
 if [ -n "$SPECIFIC_FILE" ]; then
-    echo "🎯 Building specific post: $SPECIFIC_FILE"
+    echo "Building specific post: $SPECIFIC_FILE"
 else
-    echo "🚀 Building all blog posts..."
+    echo "Building all blog posts"
 fi
 
 # Create cache directory
@@ -168,13 +168,13 @@ process_qmd_file() {
     local dir=$(dirname "$qmd_file")
     
     if needs_rendering "$qmd_file"; then
-        echo "📝 Rendering $qmd_file"
+        echo "Rendering $qmd_file"
         
         # Change to the post directory and render
         cd "$dir"
         mkdir -p .blog-cache
         if ! quarto render "index.qmd" --to gfm --output-dir . --execute-daemon=false 2> .blog-cache/last-error.log; then
-          echo "❌ Quarto render failed. See $dir/.blog-cache/last-error.log" >&2
+          echo "Error: Quarto render failed. See $dir/.blog-cache/last-error.log" >&2
           quarto render "index.qmd" --to gfm --output-dir . --execute-daemon=false || true
           cd - > /dev/null
           return 0
@@ -285,14 +285,14 @@ process_qmd_file() {
                 }
             }' "$md_file" > "${md_file}.tmp" && mv "${md_file}.tmp" "$md_file"
             
-            echo "  ✨ Fixed image paths and extracted code output from collapsible blocks in: $md_file"
-            echo "  🔪 Removed Quarto-generated title/date from: $md_file"
+            echo "  Fixed image paths and extracted code output from collapsible blocks in: $md_file"
+            echo "  Removed Quarto-generated title/date from: $md_file"
         fi
         
         update_cache "$qmd_file"
         rendered_count=$((rendered_count + 1))
     else
-        echo "✅ Cached: $qmd_file"
+        echo "Cached: $qmd_file"
         cached_count=$((cached_count + 1))
     fi
 }
@@ -301,7 +301,7 @@ process_qmd_file() {
 if [ -n "$SPECIFIC_FILE" ]; then
     # Build specific file
     if [ ! -f "$SPECIFIC_FILE" ]; then
-        echo "❌ Error: File $SPECIFIC_FILE not found"
+        echo "Error: File $SPECIFIC_FILE not found"
         exit 1
     fi
     process_qmd_file "$SPECIFIC_FILE"
@@ -312,8 +312,7 @@ else
     done
 fi
 
-echo "📊 Rendered: $rendered_count, Cached: $cached_count"
-echo "✅ Blog build complete!"
-echo "   All posts processed with organized structure"
-echo "   Images automatically placed in correct directories"
-echo "   🚀 Ready for Astro dev server"
+echo "Rendered: $rendered_count, Cached: $cached_count"
+echo "Blog build complete"
+echo "All posts processed"
+echo "Images placed in correct directories"
