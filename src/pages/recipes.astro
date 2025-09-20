@@ -84,7 +84,8 @@ const tags = Array.from(new Set(recipes.flatMap((r) => r.data.tags ?? []))).sort
                 data-filter-tag=""
                 role="radio"
                 aria-checked="true"
-                aria-label="Show all recipes">All</button>
+                aria-label="Show all recipes">All</button
+              >
             </li>
             {
               tags.map((t) => (

@@ -5,6 +5,7 @@ The decorative elements you see on cards throughout the site. Makes things feel 
 ## How it works
 
 Cards get seeded randomization that picks from different categories of doodads:
+
 - **SVG doodles** - Small decorative graphics that get positioned around cards
 - **Background effects** - Subtle textures and patterns
 - **Element doodles** - HTML elements like tape, bookmarks, etc.
@@ -37,6 +38,7 @@ The `generate` function lets you customize positioning and rotation based on the
 ## CSS Mask Rendering
 
 SVG doodles use CSS masks instead of `<img>` tags. This means:
+
 - Perfect transparency and cutout effects
 - Doodles can be recolored with CSS variables without touching the SVG
 - Fallback to colored rectangles in old browsers
@@ -46,7 +48,7 @@ The implementation is in `src/styles/stacked-card.css` around line 270:
 ```css
 .sc-doodle {
   /* Color comes from CSS variable, not SVG fill */
-  background-color: var(--doodle-color, /* fallback */);
+  background-color: var(--doodle-color /* fallback */);
 
   /* SVG loaded as mask */
   mask-image: var(--doodle-src);
