@@ -46,15 +46,10 @@ jobs:
       - name: Setup R dependencies (cached)
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
+          dependencies: false
           extra-packages: |
-            any::tidyverse
-            any::furrr
-            any::patchwork
-            any::extraDistr
-            any::loo
-            any::ggdag
-            any::GGally
-            any::dagitty
+            any::knitr
+            any::rmarkdown
 
       - name: Cache heavy R packages
         uses: actions/cache@v4
@@ -65,22 +60,36 @@ jobs:
             heavy-r-packages-${{ runner.os }}-${{ hashFiles('**/DESCRIPTION') }}-brms-bayesim-
             heavy-r-packages-${{ runner.os }}-
 
-      - name: Install heavy R packages (mandatory)
+      - name: Install R packages (all)
         shell: Rscript {0}
         run: |
           options(repos = c(CRAN = 'https://cloud.r-project.org'))
 
-          # Install CRAN packages
-          pkgs <- c('brms')
+          # Function to install if missing
           install_if_missing <- function(p) {
-            if (!requireNamespace(p, quietly = TRUE)) install.packages(p)
+            if (!requireNamespace(p, quietly = TRUE)) {
+              cat("Installing package:", p, "\n")
+              install.packages(p)
+            } else {
+              cat("Package already installed:", p, "\n")
+            }
           }
-          for (p in pkgs) install_if_missing(p)
+
+          # Install all required CRAN packages
+          cran_pkgs <- c(
+            'tidyverse', 'brms', 'furrr', 'patchwork',
+            'extraDistr', 'loo', 'ggdag', 'GGally', 'dagitty'
+          )
+
+          for (p in cran_pkgs) install_if_missing(p)
 
           # Install GitHub packages
           if (!requireNamespace('remotes', quietly = TRUE)) install.packages('remotes')
           if (!requireNamespace('bayesim', quietly = TRUE)) {
+            cat("Installing bayesim from GitHub\n")
             remotes::install_github('sims1253/bayesim')
+          } else {
+            cat("Package already installed: bayesim\n")
           }
 
       - name: Cache render timestamps
