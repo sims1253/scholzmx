@@ -1,10 +1,10 @@
 ---
-title: "Blog Post Features & Template"
-description: "A reference for blog features and Quarto options with working examples."
+title: "Blog Post Template"
+description: "Copy-paste template for new blog posts with examples of everything I use."
 date: 2025-01-15
 lastUpdated: 2025-01-15
-categories: [Tutorial, Meta]
-tags: ["blogging", "quarto", "template"]
+categories: [Meta]
+tags: ["template", "quarto"]
 heroImage: ../../../../assets/images/homepage/self.jpg
 heroImagePositionX: 0
 heroImagePositionY: 0.235
@@ -34,46 +34,44 @@ knitr:
     fig.path: "src/assets/images/blog/2025/01-15-blog-post-features-template/"
 ---
 
-<span class="dropcap dropcap--ornate dropcap--serious" data-first-letter="I" aria-hidden="true">I</span> keep finding myself looking up the same Quarto features every time I write a post, so I figured it would be useful to have a working example of everything in one place. Nothing groundbreaking here—just the basics that I use regularly and some things that took me a while to figure out.
+<span class="dropcap dropcap--ornate dropcap--serious" data-first-letter="T" aria-hidden="true">T</span> his is my copy-paste template for new blog posts. I got tired of looking up the same Quarto features every time, so here's everything I use with working examples.
 
-## YAML Front Matter
+## YAML frontmatter
 
-The essential stuff goes at the top:
+Copy this header and adjust:
 
 ```yaml
-title: "Your Title"
-description: "Brief description for SEO"
+title: "Your Title Here"
+description: "Brief description for SEO and social cards"
 date: 2025-01-15
-categories: [Statistics, R]
-tags: ["brms", "Bayesian", "simulation"]
+categories: [Statistics, R]  # or whatever
+tags: ["brms", "Bayesian"]
+draft: false  # set to true to hide
+cache: true   # speeds up builds for R-heavy posts
 ```
 
-Other useful options:
-- `lastUpdated`: When you made changes
-- `heroImage`: Path to header image
-- `draft: true`: Hide from site
-- `cache: true`: Speed up builds for computational posts
+Optional stuff:
+- `heroImage`: Header image path
+- `lastUpdated`: When you edited it
 
-## Typography & Math
+## Typography
 
-Drop caps work with this syntax:
-
+Drop caps for long posts:
 ```html
-<span class="dropcap" data-first-letter="I">I</span> started with...
+<span class="dropcap dropcap--ornate dropcap--serious" data-first-letter="T" aria-hidden="true">T</span> ext starts here...
 ```
 
-Inline math like $\mu = \sum_{i=1}^n x_i$ and display equations:
+Math: inline like $\mu = \sum_{i=1}^n x_i$ or display:
+$$\hat{\beta} = (X^TX)^{-1}X^Ty$$
 
-$$
-\hat{\beta} = (X^TX)^{-1}X^Ty
-$$
+Citations: [@cinelliCrashCourseGood2020] if you have a `references.bib` file.
 
-Citations work like this [@cinelliCrashCourseGood2020] if you have a `references.bib` file.
+Margin notes:
+> margin: This appears in the right margin. Good for tangents or extra context.
 
-> margin: This is a margin note that appears in the right margin. Useful for side comments or additional context.
+## R Code
 
-Basic R chunk that shows code and runs it:
-
+Basic chunk:
 ```{r}
 #| label: basic-example
 
@@ -90,12 +88,10 @@ data <- data.frame(
 head(data, 3)
 ```
 
-<details class="code-collapse">
-<summary>Making plots with figure options</summary>
-
+Plots with options:
 ```{r}
 #| label: sample-plot
-#| fig-cap: "Simple scatter plot example"
+#| fig-cap: "Simple scatter plot"
 #| fig-width: 8
 #| fig-height: 5
 
@@ -105,43 +101,18 @@ ggplot(data, aes(x = x, y = y, color = group)) +
   labs(title = "Sample Data", x = "X values", y = "Y values")
 ```
 
-</details>
+> margin: Chunk options go after `#|`. Main ones: `echo`, `eval`, `fig-cap`, `fig-width`.
 
-> margin: Code chunk options go after `#|`. The most useful ones are `echo`, `eval`, `fig-cap`, and `fig-width`.
+## Collapsible code
 
-## Useful Chunk Options
-
-Show code but don't run it:
-```{r}
-#| eval: false
-
-expensive_function <- function(x) {
-  # This displays but doesn't execute
-  Sys.sleep(10)
-  return(x^2)
-}
-```
-
-Run code but hide it:
-```{r}
-#| echo: false
-
-# This runs silently
-hidden_result <- "Code runs, output shows, but code is hidden"
-print(hidden_result)
-```
-
-## Collapsible Code Sections
-
-For longer code that might clutter the main text:
+For longer setup that would clutter the post:
 
 <details class="code-collapse">
-<summary>Show data processing code</summary>
+<summary>Show data processing</summary>
 
 ```{r}
 #| label: processing-example
 
-# Simulate some messier data processing
 processed_data <- data %>%
   filter(!is.na(x), !is.na(y)) %>%
   mutate(
@@ -156,51 +127,38 @@ head(processed_data, 3)
 
 </details>
 
-## Common Patterns
+## Useful chunk options
 
-**Show clean code, run complex version behind the scenes:**
-
-<details class="code-collapse">
-<summary>Show simple model code</summary>
-
+Show code, don't run:
 ```{r}
 #| eval: false
 
-# What readers see
-model <- lm(mpg ~ wt + hp, data = mtcars)
-summary(model)
+expensive_computation <- function(x) {
+  Sys.sleep(10)  # This won't actually run
+  return(x^2)
+}
 ```
 
-</details>
-
+Run code, don't show:
 ```{r}
 #| echo: false
-#| message: false
 
-# What actually runs with better error handling
-library(broom)
-model <- lm(mpg ~ wt + hp, data = mtcars)
-results <- tidy(model) %>% 
-  select(term, estimate, p.value) %>%
-  mutate(across(where(is.numeric), ~round(.x, 3)))
-
-knitr::kable(results)
+result <- "This code runs but doesn't show"
+print(result)
 ```
 
-**Quick reference for chunk options:**
+## Quick reference
 
-| Option | Purpose |
-|--------|---------|
+| Option | What it does |
+|--------|-------------|
 | `echo: false` | Hide code, show output |
 | `eval: false` | Show code, don't run |
-| `fig-width: 8` | Control figure size |
-| `cache: true` | Save results |
+| `fig-width: 8` | Plot width |
+| `cache: true` | Save chunk results |
 
-## Other Stuff
+## Standard markdown
 
-Regular markdown works fine—**bold**, *italic*, `code`, [links](https://quarto.org/), lists, etc.
-
-For more detailed options, check the [Quarto docs](https://quarto.org/docs/reference/).
+Works as expected: **bold**, *italic*, `code`, [links](https://quarto.org/), lists, etc.
 
 ## References
 

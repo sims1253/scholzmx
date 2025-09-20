@@ -1,133 +1,119 @@
-# Digital Garden Website Template
+# scholzmx.com
 
-A thoughtful, privacy-first website built with **slow web principles** and a warm, botanical aesthetic. This is both a personal digital garden and a template for others who want to create their own mindful spaces on the internet.
+My personal digital space built with Astro—part blog, part experiment, part digital garden. A place for thinking out loud about stats, coding, and whatever else catches my attention.
 
-## 🌱 Philosophy
+## What this is
 
-This website embodies:
-- **Slow web principles**: No tracking, no analytics, no dark patterns
-- **Digital garden thinking**: Ideas that grow and evolve naturally
-- **Seasonal rhythms**: Content that follows natural cycles  
-- **Community over commerce**: Connection, not conversion
-- **Privacy by design**: Respects visitors without surveillance
-- **Accessibility first**: Works for everyone, on any device
-- **Minimal dependencies**: Fast, lightweight, and sustainable
+I wanted a site that felt warm and personal instead of another sterile tech blog. So this has:
+- **No tracking whatsoever** - your privacy is respected completely
+- **Botanical/manuscript vibes** - inspired by illuminated texts and botanical illustrations
+- **Quality over quantity** - I write when I have something worth saying
+- **Accessibility first** - works for everyone, period
+- **Performance obsessed** - aggressive optimization because I hate slow sites
 
-## 🎨 Aesthetic
+The whole thing runs on modern web standards but feels handcrafted. Think medieval herbalist's notebook meets contemporary web development.
 
-Inspired by:
-- Illuminated manuscripts and medieval marginalia
-- Late-summer botanical illustrations  
-- The cozy warmth of hand-textured papers
-- Simon Sarris and TurnTrout's thoughtful web design
-- The nostalgic UI of classic games like Stronghold
+## How it works
 
-## 🛠️ Built With
+Built with [Astro](https://astro.build) because it lets me write content in Quarto (for R code and math) while getting all the performance benefits of a modern static site generator.
 
-- **[Astro](https://astro.build)**: Modern static site generator
-- **Vanilla CSS**: No frameworks, just thoughtful styling
-- **Privacy-friendly fonts**: Bunny Fonts (Google Fonts alternative)
-- **Web standards**: Semantic HTML, progressive enhancement
-- **Accessible components**: Screen reader friendly, keyboard navigable
+### Content Collections
+- **Blog** (`/blog`): Long-form posts, mostly about statistics and programming
+- **Recipes** (`/recipes`): Seasonal cooking experiments
+- **Notes** (`/notes`): Shorter thoughts and observations
 
-## 🏗️ Architecture
+### Key Components
+- `DropCap.astro` - Those decorative first letters you see in posts
+- `PaperTexture.astro` - Subtle background textures for that manuscript feel
+- `StackedCard.astro` - Cards with the doodad system (more on that below)
+- `MarginNote.astro` - Sidenotes that appear in the right margin
 
-### Core Components
+### The Doodad System
+Random decorative elements that make cards feel more organic. SVG doodles, background effects, and visual variety that makes the site feel alive. See `DOODAD_GUIDE.md` for the technical details.
 
-- `QuoteOfTheDay.astro`: Daily rotating inspirational quotes
-- `DropCap.astro`: Beautiful initial capitals for text
-- `MarginNote.astro`: Tufte-style sidenotes for additional context  
-- `PaperTexture.astro`: Subtle background patterns and textures
-- `Slideshow.astro`: Accessible image carousel with botanical styling
+### Blog Pipeline
+I write posts in Quarto (`.qmd` files) with R code, math, and citations. A build script converts them to markdown with properly optimized images. The whole process is automated in CI. See `QUARTO-TO-ASTRO-PIPELINE.md` for details.
 
-### Page Structure
+## Development
 
-- **Home** (`/`): Welcome space with navigation and daily quote
-- **Blog** (`/blog`): Writing and thoughts with manuscript-like styling
-- **Recipes** (`/recipes`): Kitchen wisdom organized by season
-- **Projects** (`/projects`): Creative works and technical experiments
-- **About** (`/about`): Personal philosophy and connection information
+### Quick Start
+```bash
+bun install          # Install dependencies
+bun run dev          # Start dev server (localhost:4321)
+```
 
-## 🚀 Getting Started
+### Available Commands
+```bash
+# Core development
+bun run dev          # Development server with hot reload
+bun run build        # Production build
+bun run preview      # Preview production build locally
 
-1. **Clone this repository**
-   ```bash
-   git clone [repository-url]
-   cd digital-garden-template
-   ```
+# Content workflow
+bun run build-blog   # Convert Quarto files to markdown (runs ./build-blog.sh)
 
-2. **Install dependencies**
-   ```bash
-   bun install
-   ```
+# Quality assurance (what CI runs)
+bun run typecheck    # TypeScript checking
+bun run lint:js      # ESLint for JS/TS/Astro files
+bun run lint:css     # Stylelint for CSS
+bun run format:check # Prettier formatting check
+bun run quality:check # All of the above
 
-3. **Start development server**
-   ```bash
-   bun run dev
-   ```
+# Performance monitoring
+bun run lighthouse   # Local Lighthouse audit
+bun run a11y         # Accessibility testing with pa11y
+bun run test:a11y    # Full build + a11y test
+```
 
-4. **Customize for your own garden**
-   - Update content in `/src/pages/`
-   - Modify colors and fonts in `/src/styles/global.css`
-   - Replace images in `/public/img/`
-   - Adjust components to match your aesthetic
+### CI/CD Pipeline
+The site has a sophisticated build process:
 
-## 📝 Content Guidelines
+1. **Content Render** (`content-render.yml`) - Runs when Quarto files change:
+   - Sets up R environment with all necessary packages (brms, ggdag, tidyverse, etc.)
+   - Runs `./build-blog.sh` to convert `.qmd` → `.md` + optimized images
+   - Caches expensive R computations
+   - Uploads rendered content as artifact
 
-### Writing Philosophy
-- Quality over quantity - publish when ready, not on schedule
-- Personal voice - authentic thoughts over performative content
-- Interconnected ideas - link thoughts and build on previous work
-- Seasonal awareness - some ideas need time to mature
+2. **Quality Gates** (`ci.yml`) - Runs on every commit:
+   - TypeScript checking, linting, formatting
+   - Full build test
+   - Accessibility validation
 
-### Visual Design
-- Warm, muted color palette (off-whites, walnut, moss, ochre)
-- Generous whitespace and breathing room
-- Subtle textures that add warmth without distraction
-- Typography that invites slow reading
+3. **Performance Monitoring** (`performance.yml`):
+   - Lighthouse CI audits on multiple pages
+   - Performance budgets that fail builds if exceeded
+   - Deep accessibility testing with PA11y
 
-## 🔒 Privacy & Performance
+4. **Deploy** (`deploy.yml`) - Production deployment:
+   - Downloads rendered content from step 1
+   - Builds Astro site with optimized assets
+   - Deploys to GitHub Pages
 
-- **No tracking scripts** - respects visitor privacy completely
-- **No external analytics** - growth measured by personal satisfaction
-- **Lightweight assets** - optimized for slow connections
-- **Accessible by default** - works with assistive technologies
-- **Progressive enhancement** - functions without JavaScript
+This means I can push Quarto files and they automatically get rendered with R, optimized, and deployed. The performance monitoring ensures the site stays fast and accessible.
 
-## 📋 Scripts
+## Architecture Notes
 
-- `bun run dev`: Start development server
-- `bun run build`: Build for production  
-- `bun run preview`: Preview production build
+### Image Optimization
+Images in `src/assets/` get automatic Astro optimization (WebP conversion, responsive sizing, lazy loading). The Quarto build script handles moving generated images to the right location.
 
-## 🌍 Environmental Considerations
+### CSS Strategy
+- Vanilla CSS with modern features (custom properties, container queries, etc.)
+- PurgeCSS removes unused styles in production
+- LightningCSS for optimal minification and modern browser targeting
+- No CSS frameworks - just thoughtful, semantic styling
 
-This template prioritizes:
-- Minimal resource usage (small bundle size)
-- Efficient hosting (static files, CDN-friendly)
-- Sustainable practices (no unnecessary requests)
-- Long-term maintainability (standard technologies)
+### Performance Philosophy
+- Inline styles are disabled (separate CSS files for better caching)
+- Aggressive image optimization with Sharp
+- CSS code splitting for faster initial loads
+- Everything optimized for Core Web Vitals
 
-## 📜 License
+## License
 
 **Content**: [Creative Commons CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) - Share and adapt freely with attribution
 
 **Code**: MIT License - Use, modify, and distribute freely
 
-## 🤝 Contributing
-
-This is both a personal website and a community template. Contributions welcome for:
-- Accessibility improvements
-- Performance optimizations  
-- Additional component examples
-- Documentation enhancements
-
-## 💝 Acknowledgments
-
-Inspired by the digital garden movement, slow web advocates, and everyone building thoughtful spaces on the internet. Special thanks to the Astro team for creating such a delightful developer experience.
-
 ---
 
-*"We are all just walking each other home." - Ram Dass*
-
-Made with care, attention, and the belief that the internet can still be a place for human flourishing.
+Built with Astro. Inspired by digital gardens, slow web principles, and the belief that personal websites should feel personal.

@@ -1,103 +1,77 @@
-# Component Usage Rules
+# Component Usage Guide
 
-Scope: Home, Blog Index, Blog Post Detail. Non-destructive guidance aligned with design_guide.md. Keep global 21px sizes and existing line-heights.
+Quick reference for how to use the main components without making the site look messy.
 
 ## PaperTexture.astro
-- Purpose: Subtle parchment/linen background texture per-surface.
-- Home: pattern="botanical" intensity="light"
-- Blog index + post detail: pattern="linen" intensity="light"
-- Do not nest multiple PaperTexture per page. Use at top-level surface only.
+Adds subtle background texture. Use once per page at the top level.
 
-Example:
-[`PaperTexture.astro()`](src/components/PaperTexture.astro)
-[`index.astro()`](src/pages/index.astro)
-[`blog.astro()`](src/pages/blog.astro)
-[`[...slug].astro()`](src/pages/blog/[...slug].astro)
+```astro
+<!-- Homepage -->
+<PaperTexture pattern="botanical" intensity="light" />
 
-## BotanicalBorder.astro (layout-level)
-- Purpose: Decorative frame around the whole page.
-- Applied via BaseLayout; keep intensity="light" to avoid distraction.
-- Do not add additional borders inside content pages.
+<!-- Blog pages -->
+<PaperTexture pattern="linen" intensity="light" />
+```
 
-Example:
-[`BaseLayout.astro()`](src/layouts/BaseLayout.astro)
+Don't nest multiple PaperTexture components.
 
 ## DropCap.astro
-- Purpose: One decorative initial to begin long-form narrative content.
-- Where: Only first paragraph in long essays (> ~600 words) on post detail. Avoid in titles, standfirst/description, lists, or short posts.
-- Frequency: Exactly one per article.
-- Mobile: Let CSS hide or reduce if needed (component/global styles handle behavior).
-- Blog index: Do not use in cards/excerpts.
+Decorative first letter for long posts only.
 
-Example use in a post:
-[`DropCap.astro()`](src/components/DropCap.astro)
-[`[...slug].astro()`](src/pages/blog/[...slug].astro:61)
+```astro
+<!-- In blog post content -->
+<span class="dropcap dropcap--ornate dropcap--serious" data-first-letter="T" aria-hidden="true">T</span> ext continues...
+```
+
+Use exactly once per post, only for long essays (600+ words). Skip for short posts, lists, or titles.
+
+## BotanicalBorder.astro
+Page border applied in BaseLayout. Don't add extra borders inside pages.
 
 ## MarginNote.astro
-- Purpose: Side notes for playful/secondary commentary.
-- Home: Allowed sparingly for personality (e.g., welcome note).
-- Blog index: Avoid.
-- Post detail: Optional for essays; keep short, avoid interrupting flow.
-- Accessibility: Ensure notes aren’t required to understand the main text.
+Side notes in the right margin.
 
-Example:
-[`MarginNote.astro()`](src/components/MarginNote.astro)
-[`index.astro()`](src/pages/index.astro:66)
+```astro
+<MarginNote>This appears in the margin</MarginNote>
+```
+
+Or in markdown:
+```markdown
+> margin: This appears in the margin
+```
+
+Use sparingly - homepage okay for personality, avoid on blog index, optional for long posts.
 
 ## IllustratedFooter.astro
-- Purpose: Page-ending illustration theme.
-- Home: footerVariant="default"
-- Blog index + post detail: footerVariant="writing"
-- Keep consistent per section.
+Different footer illustrations for different sections.
 
-Example:
-[`IllustratedFooter.astro()`](src/components/IllustratedFooter.astro)
-[`BaseLayout.astro()`](src/layouts/BaseLayout.astro)
+```astro
+<!-- Homepage -->
+<IllustratedFooter footerVariant="default" />
+
+<!-- Blog pages -->
+<IllustratedFooter footerVariant="writing" />
+```
+
+Applied in BaseLayout - keep consistent per section.
 
 ## HandDrawnDivider.astro
-- Purpose: Section separators with hand-drawn/ink vibe.
-- Post detail: One after header meta/title, one before footer/nav recommended.
-- Home + Blog index: Use very sparingly; only if needed to separate distinct content blocks.
+Section separators with sketchy/ink style.
 
-Example:
-[`HandDrawnDivider.astro()`](src/components/HandDrawnDivider.astro)
-[`[...slug].astro()`](src/pages/blog/[...slug].astro:59,68)
+Good for blog posts: one after the header, one before footer. Use sparingly elsewhere.
 
 ## PortraitFrame.astro
-- Purpose: Framed portrait/hero image with gentle organic styling.
-- Home only. Prefer a single portrait in the hero area. Avoid on blog index and post detail to keep reading focus.
+Framed portrait with organic styling. Homepage only - avoid on blog pages to keep focus on content.
 
-Example:
-[`PortraitFrame.astro()`](src/components/PortraitFrame.astro)
-[`index.astro()`](src/pages/index.astro:48)
+## Experimental Components
+- `VineFrame.astro` / `SmoothVineFrame.astro` - Ornamental framing, not used on main pages
+- `Slideshow.astro` - Image carousel, currently experimental
 
-## VineFrame.astro / SmoothVineFrame.astro
-- Purpose: Experimental/ornamental framing.
-- Default: Not used on publish surfaces (Home, Blog Index, Post Detail). Reserve for experiments/lab routes.
+## Typography Guidelines
 
-Example:
-[`VineFrame.astro()`](src/components/VineFrame.astro)
-[`SmoothVineFrame.astro()`](src/components/SmoothVineFrame.astro)
+Use `.longform` class for reading content:
+- Homepage: Only around the main bio paragraph
+- Blog index: On the posts container so excerpts inherit proper rhythm
+- Blog posts: Already applied to article body
 
-## Slideshow.astro
-- Purpose: Visual portfolio moments.
-- Home: Optional sidebar/easel concept; keep commented or behind a toggle until curated. Avoid on blog index and post detail for performance and focus.
-
-Example:
-[`Slideshow.astro()`](src/components/Slideshow.astro)
-[`index.astro()`](src/pages/index.astro:96)
-
-## Typography usage notes
-- .longform: Apply to true reading blocks only.
-  - Home: Only around the biography paragraph; use .longform personal-content.
-  - Blog index: Apply to posts list container so excerpts inherit rhythm.
-  - Post detail: Apply to article body only (already present).
-- Headings: Rely on global styles for families/weights; page CSS should only adjust layout/spacing.
-- Avoid per-page font-family overrides unless there’s a clear, page-specific need.
-
-Relevant files:
-[`global.css`](src/styles/global.css)
-[`index.astro`](src/pages/index.astro)
-[`blog.astro`](src/pages/blog.astro)
-[`[...slug].astro`](src/pages/blog/[...slug].astro)
-[`BaseLayout.astro`](src/layouts/BaseLayout.astro)
+Stick to global font styles - avoid per-page font overrides unless there's a specific need.
