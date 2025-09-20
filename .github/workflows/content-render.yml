@@ -26,16 +26,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Cache Quarto installation
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.quarto
-            /opt/quarto
-          key: quarto-${{ runner.os }}-${{ hashFiles('.github/workflows/content-render.yml') }}
-          restore-keys: |
-            quarto-${{ runner.os }}-
-
       - name: Setup Quarto
         uses: quarto-dev/quarto-actions/setup@v2
 
@@ -43,15 +33,7 @@ jobs:
         id: setup-r
         uses: r-lib/actions/setup-r@v2
 
-      - name: Setup R dependencies (cached)
-        uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          dependencies: false
-          extra-packages: |
-            any::knitr
-            any::rmarkdown
-
-      - name: Cache heavy R packages
+      - name: Cache R packages
         uses: actions/cache@v4
         with:
           path: ${{ env.R_LIBS_USER }}
@@ -77,7 +59,7 @@ jobs:
 
           # Install all required CRAN packages
           cran_pkgs <- c(
-            'tidyverse', 'brms', 'furrr', 'patchwork',
+            'knitr', 'rmarkdown', 'tidyverse', 'brms', 'furrr', 'patchwork',
             'extraDistr', 'loo', 'ggdag', 'GGally', 'dagitty'
           )
 
