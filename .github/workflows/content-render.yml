@@ -83,5 +83,5 @@ jobs:
           if-no-files-found: error
           compression-level: 6
           path: |
-            ./src/content/blog/**/index.md
-            ./src/assets/images/blog/**
+            src/
+            .blog-cache/

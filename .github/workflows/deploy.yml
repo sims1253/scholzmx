@@ -49,32 +49,35 @@ jobs:
       - name: Install JavaScript dependencies
         run: bun install --frozen-lockfile
 
-      # Download rendered content if triggered by Content Render workflow
-      - name: Download rendered content
-        if: github.event_name == 'workflow_run'
+      # Find and download latest rendered content artifact
+      - name: Get latest content render run
+        id: latest-render
+        run: |
+          latest_run=$(gh run list \
+            --workflow="Content Render (Quarto → Markdown)" \
+            --status=success \
+            --limit=1 \
+            --json=databaseId \
+            --jq='.[0].databaseId')
+          echo "run-id=$latest_run" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download latest rendered content
         uses: actions/download-artifact@v4
         with:
           name: rendered-content
           path: .
           github-token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
-          run-id: ${{ github.event.workflow_run.id }}
+          run-id: ${{ steps.latest-render.outputs.run-id }}
+        continue-on-error: true
 
       # Debug - Show what files were downloaded and where
       - name: Debug - Show downloaded files
-        if: github.event_name == 'workflow_run'
         run: |
           echo "=== Root directory contents ==="
           ls -la
-          echo "=== Check extra content directory ==="
-          if [ -d "./content" ]; then
-            echo "Found ./content directory!"
-            find ./content -name "*.md" -type f | head -10
-            echo "=== content directory structure ==="
-            tree ./content || ls -la ./content/*/
-          else
-            echo "No ./content directory found"
-          fi
           echo "=== src/content/blog structure ==="
           find src/content/blog -type f -name "*.md" | head -20
           echo "=== All downloaded content ==="
@@ -83,6 +86,8 @@ jobs:
           find . -name "index.md" -type f
           echo "=== Directory tree of blog content ==="
           tree src/content/blog || ls -la src/content/blog/*/
+          echo "=== Assets directory ==="
+          ls -la src/assets/images/blog/ || echo "No assets directory"
 
       # Build Astro site
       - name: Build site

@@ -45,27 +45,38 @@ needs_rendering() {
     local qmd_file="$1"
     local md_file="${qmd_file%.qmd}.md"
     local cache_file=".blog-cache/$(echo "$qmd_file" | sed 's|/|_|g').timestamp"
-    
+
+    # Debug: Show file timestamps for CI troubleshooting
+    echo "Debug timestamps for $qmd_file:"
+    echo "  QMD: $(stat -c '%Y %y' "$qmd_file" 2>/dev/null || echo 'not found')"
+    echo "  MD:  $(stat -c '%Y %y' "$md_file" 2>/dev/null || echo 'not found')"
+    echo "  Cache: $(stat -c '%Y %y' "$cache_file" 2>/dev/null || echo 'not found')"
+
     # Force rebuild if requested
     if [ "$FORCE_REBUILD" = true ]; then
+        echo "  Decision: REBUILD (force flag)"
         return 0
     fi
-    
+
     # If markdown doesn't exist, needs rendering
     if [ ! -f "$md_file" ]; then
+        echo "  Decision: REBUILD (no MD file)"
         return 0
     fi
-    
+
     # If cache file doesn't exist, needs rendering
     if [ ! -f "$cache_file" ]; then
+        echo "  Decision: REBUILD (no cache)"
         return 0
     fi
-    
+
     # If qmd is newer than cache, needs rendering
     if [ "$qmd_file" -nt "$cache_file" ]; then
+        echo "  Decision: REBUILD (QMD newer than cache)"
         return 0
     fi
-    
+
+    echo "  Decision: SKIP (cached)"
     return 1
 }
 
