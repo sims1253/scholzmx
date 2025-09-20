@@ -26,10 +26,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Cache Quarto installation
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.quarto
+            /opt/quarto
+          key: quarto-${{ runner.os }}-${{ hashFiles('.github/workflows/content-render.yml') }}
+          restore-keys: |
+            quarto-${{ runner.os }}-
+
       - name: Setup Quarto
         uses: quarto-dev/quarto-actions/setup@v2
 
       - name: Setup R
+        id: setup-r
         uses: r-lib/actions/setup-r@v2
 
       - name: Setup R dependencies (cached)
@@ -44,6 +55,15 @@ jobs:
             any::ggdag
             any::GGally
             any::dagitty
+
+      - name: Cache heavy R packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.R_LIBS_USER }}
+          key: heavy-r-packages-${{ runner.os }}-${{ hashFiles('**/DESCRIPTION') }}-brms-bayesim-${{ github.sha }}
+          restore-keys: |
+            heavy-r-packages-${{ runner.os }}-${{ hashFiles('**/DESCRIPTION') }}-brms-bayesim-
+            heavy-r-packages-${{ runner.os }}-
 
       - name: Install heavy R packages (mandatory)
         shell: Rscript {0}
@@ -67,8 +87,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .blog-cache
-          key: render-cache-${{ runner.os }}-${{ hashFiles('src/content/**/*.qmd', 'build-blog.sh', '_quarto.yml') }}
+          key: render-cache-${{ runner.os }}-r${{ steps.setup-r.outputs.installed-r-version }}-${{ hashFiles('src/content/**/*.qmd', 'build-blog.sh', '_quarto.yml') }}
           restore-keys: |
+            render-cache-${{ runner.os }}-r${{ steps.setup-r.outputs.installed-r-version }}-
             render-cache-${{ runner.os }}-
 
       - name: Render Quarto posts
