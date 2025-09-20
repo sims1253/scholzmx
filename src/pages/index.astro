@@ -1,0 +1,164 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import DropCap from '../components/DropCap.astro';
+import ImageFrame from '../components/ImageFrame.astro';
+
+/* Optimized local images */
+import selfImage from '../assets/images/homepage/self.jpg';
+import portraitImage from '../assets/images/homepage/portrait.jpg';
+---
+
+<BaseLayout
+  title="Grotto - Digital Garden & Personal Website"
+  description="Welcome to Grotto - a thoughtful space for ideas, recipes, projects, and musings. Built with slow web principles and a warm, botanical aesthetic."
+  footerVariant="default"
+  includeQuoteSection={true}
+  addBorders={true}
+  tone="personal"
+  layout="prose"
+  prose={true}
+>
+  <div class="welcome-section">
+    <div class="welcome-header">
+      <div class="manuscript-text">
+        <h1 class="site-title">Welcome to Grotto</h1>
+        <p class="site-description constrained-text prose">
+          a place where I try to cultivate the feeling of watching the shadows dance through vines,
+          while insects are humming and tansy is making everything smell like summer.
+        </p>
+      </div>
+      <ImageFrame
+        src={portraitImage}
+        alt="Professional portrait of me"
+        alternateSrc={selfImage}
+        alternateAlt="More cool portrait of me"
+        style="gentle-oval"
+        size="large"
+        loading="eager"
+        positionX={0}
+        positionY={2}
+        scale={1.4}
+        alternatePositionX={-5}
+        alternatePositionY={15}
+        alternateScale={1.5}
+      />
+    </div>
+
+    <div class="about-preview">
+      <!-- <div class="garden-note">
+        <span>
+          <p>
+            Think of this as a digital commonplace book - a collection of
+            thoughts, discoveries, and creations that have meaning to me.
+            And maybe have some fun while browsing.
+          </p>
+        </span>
+      </div> -->
+      <div class="prose content">
+        <p class="prose">
+          <DropCap letter="I" variant="personal" />'m Maximilian. My music taste was once described
+          as "The Atmospheric Futurist with a Nostalgic Heart" and my favourite feedback described
+          me as a "herder of cat herders". I create things. Whether that's software infrastructure,
+          harsh vocals over guitar riffs, elaborate Call of Cthulhu campaigns for players to
+          inevitably ignore, or dinner experiments that occasionally don't poison anyone. When I'm
+          not building things, you'll find me on the mats failing my triangle escape... again! I
+          have a B.Sc. in Computer Science in Engineering, a M.Sc. in Software Engineering and
+          Technology and, if the gods of bureaucracy eventually show some mercy, will hold a Dr.
+          rer. nat. in Bayesian statistics.
+        </p>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  /* Simplified welcome page - let BaseLayout grid control overall structure */
+
+  .welcome-section {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .welcome-header {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-xl);
+    margin: 0 auto var(--space-xs);
+  }
+
+  .manuscript-text {
+    flex: 1;
+    margin-bottom: var(--space-md);
+  }
+
+  .site-title {
+    font-size: clamp(var(--text-xl), 3.5vw, var(--text-2xl));
+    line-height: 1.4;
+    margin-bottom: 0;
+    color: var(--color-ink-dark);
+    font-weight: 600;
+  }
+
+  .site-description {
+    margin-top: var(--space-xs);
+    margin-bottom: 0;
+  }
+
+  .constrained-text {
+    max-width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
+  .about-preview {
+    margin-bottom: var(--space-xs);
+    margin-top: var(--space-xs);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Mobile Responsiveness */
+  @media (max-width: 768px) {
+    .welcome-header {
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-md);
+    }
+
+    .manuscript-text {
+      text-align: center;
+    }
+
+    .portrait-frame {
+      order: -1;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .about-preview {
+      flex-direction: column;
+      text-align: center;
+      gap: var(--space-sm);
+    }
+
+    .about-preview .prose p {
+      text-align: left;
+    }
+
+    .portrait-frame {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .site-title {
+      font-size: var(--text-lg);
+    }
+  }
+</style>

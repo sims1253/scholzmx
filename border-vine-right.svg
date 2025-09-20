@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 160 800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="organicTextureRight" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence baseFrequency="0.02" numOctaves="2" result="noise" seed="2" />
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.5" />
+    </filter>
+  </defs>
+  
+  <!-- Main vine with organic texture -->
+  <path
+    d="M25,0 Q35,120 30,240 Q25,360 35,480 Q40,600 30,720 Q25,800 35,800"
+    stroke="rgba(139, 90, 60, 0.4)"
+    stroke-width="3"
+    fill="none"
+    filter="url(#organicTextureRight)"
+  />
+  
+  <!-- Botanical elements -->
+  <g fill="rgba(90, 107, 71, 0.15)" filter="url(#organicTextureRight)">
+    <path d="M30,100 Q42,95 48,108 Q42,120 30,115 Q18,108 30,100" />
+    <path d="M35,220 Q47,215 53,228 Q47,240 35,235 Q23,228 35,220" />
+    <path d="M28,340 Q40,335 46,348 Q40,360 28,355 Q16,348 28,340" />
+    <path d="M32,460 Q44,455 50,468 Q44,480 32,475 Q20,468 32,460" />
+    <path d="M30,580 Q42,575 48,588 Q42,600 30,595 Q18,588 30,580" />
+    <path d="M35,700 Q47,695 53,708 Q47,720 35,715 Q23,708 35,700" />
+    
+    <!-- Small flowers -->
+    <circle cx="45" cy="150" r="3" fill="rgba(168, 181, 160, 0.15)" />
+    <circle cx="40" cy="300" r="2.5" fill="rgba(168, 181, 160, 0.15)" />
+    <circle cx="48" cy="500" r="3.5" fill="rgba(168, 181, 160, 0.15)" />
+    <circle cx="42" cy="650" r="3" fill="rgba(168, 181, 160, 0.15)" />
+  </g>
+</svg>

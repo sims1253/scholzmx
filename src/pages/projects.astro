@@ -1,0 +1,203 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import GridLayout from '../components/GridLayout.astro';
+import StackedCard from '../components/StackedCard.astro';
+import ImageFrame from '../components/ImageFrame.astro';
+
+const projects = [
+  {
+    title: 'huerd — Herding Hues',
+    description: 'Perceptually distinct color palettes optimized for accessibility in OKLAB (R).',
+    year: 2024,
+    status: 'Active',
+    banner: 'https://sims1253.github.io/huerd/reference/figures/logo.png',
+    isLocal: false, // Mark external images
+    tech: ['R', 'OKLAB', 'nloptr'],
+    links: [
+      { type: 'GitHub', url: 'https://github.com/sims1253/huerd' },
+      { type: 'Docs', url: 'https://github.com/sims1253/huerd#readme' },
+    ],
+  },
+  {
+    title: 'hrvester — Heart Rate Variability Toolkit',
+    description: 'Analyze HRV data with robust preprocessing and recovery scoring.',
+    year: 2024,
+    status: 'Active',
+    banner: 'https://sims1253.github.io/hrvester/reference/figures/logo.png',
+    tech: ['R', 'Signal Processing'],
+    links: [
+      { type: 'GitHub', url: 'https://github.com/sims1253/hrvester' },
+      { type: 'Docs', url: 'https://github.com/sims1253/hrvester#readme' },
+    ],
+  },
+];
+
+// Sort projects by year (most recent first)
+const sortedProjects = projects.sort((a, b) => b.year - a.year);
+
+// Helper function for external image optimization
+const optimizeExternalImage = (url: string) => {
+  // Simple URL-based image optimization service (you could replace with ImageKit, Cloudinary, etc.)
+  // For now, we'll use original URL but with proper loading attributes
+  return url;
+};
+---
+
+<BaseLayout
+  title="Projects"
+  description="Selected projects"
+  footerVariant="projects"
+  tone="serious"
+  layout="wide"
+>
+  <div class="projects-page">
+    <header class="projects-header">
+      <h1 class="page-title">Projects & Software</h1>
+      <p class="page-description">
+        Selected work in research software, tooling, and art — built for clarity, accessibility, and
+        longevity.
+      </p>
+    </header>
+
+    <div class="projects-container">
+      <main class="projects-content">
+        <div class="projects-inner container-wide">
+          <section aria-label="Projects">
+            <GridLayout columns={1} gap="xl" class="projects-grid">
+              {
+                sortedProjects.map((project) => {
+                  const primaryLink = project.links?.[0]?.url;
+                  return (
+                    <div class="nc-item project-item">
+                      <StackedCard
+                        seed={`project/${project.title}`}
+                        title={project.title}
+                        subtitle={project.description}
+                        href={primaryLink}
+                        layers={3}
+                        layout="side"
+                      >
+                        {project.banner && (
+                          <div slot="media" class="project-logo">
+                            <ImageFrame
+                              src={optimizeExternalImage(project.banner)}
+                              alt={project.title}
+                              style="simple"
+                              fillMode="contain"
+                            />
+                          </div>
+                        )}
+                        {project.links?.length && (
+                          <div class="project-links sc-tags">
+                            {project.links.map((l) => (
+                              <a class="sc-chip" href={l.url} target="_blank" rel="noopener">
+                                {l.type}
+                              </a>
+                            ))}
+                          </div>
+                        )}
+                      </StackedCard>
+                    </div>
+                  );
+                })
+              }
+            </GridLayout>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .projects-page {
+    max-width: 100%;
+  }
+
+  .projects-header {
+    text-align: center;
+    max-width: var(--measure-prose);
+    margin: 0 auto var(--space-xs);
+  }
+
+  .page-title {
+    font-size: clamp(var(--text-2xl), 5vw, var(--text-3xl));
+    margin-bottom: var(--space-xs);
+    color: var(--color-ink-dark);
+  }
+
+  .page-description {
+    font-size: var(--text-lg);
+    line-height: 1.6;
+    color: var(--color-ink-medium);
+    font-style: italic;
+  }
+
+  /* Centering handled by BaseLayout container (contentWidth) */
+
+  /* Legacy card styles removed in favor of StackedCard */
+  /* Width/centering handled via .container-wide */
+  .projects-grid {
+    margin-bottom: var(--space-xl);
+  }
+  .project-item {
+    width: 40rem;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .project-logo .image-frame {
+    width: 240px;
+    max-width: 100%;
+  }
+  .project-item {
+    margin-bottom: var(--space-lg);
+  }
+  /* Remove any default frames/shadows around logo images */
+  .project-logo .image-frame {
+    box-shadow: none;
+    border: 0;
+    background: transparent;
+    border-radius: 0;
+  }
+  .project-logo .frame-image {
+    box-shadow: none;
+    background: transparent;
+  }
+  .project-logo img {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+
+  /* Keep side layout, but make content column flex so links can sit at bottom */
+  .projects-page .sc-row {
+    align-items: stretch;
+  }
+  .projects-page .sc-col.content {
+    display: flex;
+    flex-direction: column;
+  }
+  .projects-page .project-links {
+    margin-top: auto;
+    padding-top: var(--space-xs);
+  }
+
+  @media (max-width: 768px) {
+    .project-card {
+      grid-template-columns: 1fr;
+      gap: var(--space-md);
+    }
+    .thumb {
+      min-height: 120px;
+      order: -1; /* Move image above content on mobile */
+    }
+  }
+  @media (max-width: 480px) {
+    .card-title {
+      font-size: var(--text-lg);
+    }
+    .project-card {
+      padding: var(--space-md);
+    }
+  }
+</style>

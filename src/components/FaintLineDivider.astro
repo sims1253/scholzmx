@@ -1,0 +1,35 @@
+---
+export interface Props {
+  width?: 'narrow' | 'medium' | 'wide';
+  class?: string;
+}
+
+const { width = 'medium', class: className = '' } = Astro.props;
+---
+
+<div class={`faint-line-divider ${width} ${className}`}></div>
+
+<style>
+  .faint-line-divider {
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      color-mix(in srgb, var(--color-lichen) 60%, transparent),
+      transparent
+    );
+    margin: calc(var(--space-xs) * 2) auto var(--space-sm);
+  }
+
+  .faint-line-divider.narrow {
+    max-width: 200px;
+  }
+
+  .faint-line-divider.medium {
+    max-width: 400px;
+  }
+
+  .faint-line-divider.wide {
+    max-width: 600px;
+  }
+</style>

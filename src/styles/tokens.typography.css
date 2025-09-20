@@ -1,0 +1,40 @@
+:root {
+  /* ===== Typography Tokens ===== */
+
+  /* Font families */
+  --font-body-personal:
+    'Alegreya', 'EB Garamond', 'Times New Roman', georgia, serif; /* Welcome, recipes */
+  --font-body-serious:
+    'ET Book Roman', 'EB Garamond', 'Times New Roman', georgia, serif; /* Blog, notes, projects */
+  --font-body: var(--font-body-personal);
+  --font-heading: 'Cormorant Garamond', 'EB Garamond', 'Times New Roman', georgia, serif;
+  --font-ui: 'Alegreya', georgia, sans-serif;
+  --font-mono: 'Fira Code', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+
+  /* Font weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --heading-weight-strong: var(--font-weight-semibold);
+  --heading-weight-medium: var(--font-weight-medium);
+
+  /* Typography scale (rem units scale with user font preferences) */
+  --text-xxs: 0.65rem;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.2rem;
+  --text-xl: 1.4rem;
+  --text-2xl: 1.8rem;
+  --text-3xl: 2.2rem;
+
+  /* Dropcap fonts */
+  --font-dropcap-background: 'EBGaramond-InitialsF1';
+  --font-dropcap-foreground: 'EBGaramond-InitialsF2';
+  --dropcap-color-background: var(--color-sage);
+  --dropcap-color-foreground: var(--color-ink-dark);
+
+  /* Typography spacing */
+  --spacing-line-height: 1.45;
+}

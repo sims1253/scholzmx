@@ -1,0 +1,245 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import NoteCardStack from '../components/NoteCardStack.astro';
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const posts = allPosts.sort(
+  (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
+const years = Array.from(new Set(posts.map((p) => new Date(p.data.date).getFullYear()))).sort(
+  (a, b) => b - a
+);
+const tags = Array.from(new Set(posts.flatMap((p) => p.data.tags ?? []))).sort();
+---
+
+<BaseLayout
+  title="Blog"
+  description="My long-form writing."
+  footerVariant="writing"
+  tone="serious"
+  layout="listing"
+>
+  <div class="blog-page">
+    <header class="blog-header">
+      <h1 class="page-title" id="blog-title">Blog</h1>
+    </header>
+
+    <div class="blog-container">
+      <main class="blog-content">
+        <section aria-label="Posts">
+          <NoteCardStack
+            columns={1}
+            items={posts.map((p) => ({
+              id: p.slug,
+              title: p.data.title,
+              subtitle: p.data.description,
+              href: `/blog/${p.slug}`,
+              writtenDate: p.data.date.toISOString().slice(0, 10),
+              updatedDate: p.data.lastUpdated
+                ? p.data.lastUpdated.toISOString().slice(0, 10)
+                : undefined,
+              tags: p.data.tags ?? [],
+              year: new Date(p.data.date).getFullYear(),
+              hero:
+                typeof p.data.heroImage === 'string'
+                  ? {
+                      kind: 'url',
+                      src: p.data.heroImage,
+                      scale: p.data.heroImageScale || 1,
+                      posX: p.data.heroImagePositionX || 0,
+                      posY: p.data.heroImagePositionY || 0,
+                    }
+                  : p.data.heroImage
+                    ? {
+                        kind: 'asset',
+                        src: p.data.heroImage,
+                        width: 800,
+                        height: 600,
+                        scale: p.data.heroImageScale || 1,
+                        posX: p.data.heroImagePositionX || 0,
+                        posY: p.data.heroImagePositionY || 0,
+                      }
+                    : undefined,
+            }))}
+          />
+        </section>
+      </main>
+      <aside class="blog-filters">
+        <section class="sidebar-section">
+          <h3>Filter by year</h3>
+          <ul class="filter-list">
+            <li><button class="filter-btn active" data-filter-year="">All</button></li>
+            {
+              years.map((y) => (
+                <li>
+                  <button class="filter-btn" data-filter-year={y}>
+                    {y}
+                  </button>
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+        <section class="sidebar-section">
+          <h3>Filter by tag</h3>
+          <ul class="filter-list">
+            <li><button class="filter-btn active" data-filter-tag="">All</button></li>
+            {
+              tags.map((t) => (
+                <li>
+                  <button class="filter-btn" data-filter-tag={t}>
+                    #{t}
+                  </button>
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+      </aside>
+    </div>
+  </div>
+
+  <style>
+    .blog-page {
+      max-width: 100%;
+    }
+
+    .blog-header {
+      text-align: center;
+      max-width: var(--measure-listing);
+      margin: 0 auto var(--space-xs);
+    }
+
+    .page-title {
+      font-size: clamp(var(--text-2xl), 5vw, var(--text-3xl));
+      margin-bottom: var(--space-xs);
+      color: var(--color-ink-dark);
+    }
+
+    .page-description {
+      font-size: var(--text-lg);
+      line-height: 1.6;
+      color: var(--color-ink-medium);
+      font-style: italic;
+    }
+
+    .blog-container {
+      position: relative;
+      max-width: var(--measure-listing);
+      margin: 0 auto;
+    }
+    .blog-content {
+      position: relative;
+    }
+    .blog-filters {
+      position: absolute;
+      /* Anchor to the centered card column: center (50%) + half card width + small gap */
+      left: calc(50% + (var(--card-max-width) / 2) + var(--sidebar-gap));
+      top: 0;
+      width: var(--sidebar-width);
+    }
+    .sidebar-section {
+      background-color: var(--color-surface);
+      border: 1px solid var(--color-lichen);
+      border-radius: var(--border-radius);
+      padding: 0 var(--space-sm) var(--space-xs);
+    }
+    .sidebar-section h3 {
+      font-size: var(--text-md);
+      margin: var(--space-xs) 0;
+      color: var(--color-text-primary);
+      font-weight: var(--font-weight-semibold);
+    }
+    .filter-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+    }
+    .filter-btn {
+      color: var(--color-text-secondary);
+      background: var(--color-surface);
+      border: 1px solid var(--color-lichen);
+      font-size: var(--text-xs);
+      font-family: inherit;
+      padding: 0.1rem 0.35rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .filter-btn:hover {
+      color: var(--color-link-hover);
+      background: var(--wash-sage);
+      border-color: var(--color-sage);
+    }
+    .filter-btn.active {
+      color: var(--color-text-primary);
+      font-weight: var(--font-weight-semibold);
+      border-color: var(--color-link);
+    }
+
+    @media (max-width: 1024px) {
+      .blog-content {
+        position: static;
+      }
+      .blog-filters {
+        position: static;
+        width: auto;
+        margin-top: var(--space-lg);
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: var(--space-md);
+      }
+    }
+  </style>
+
+  <script>
+    let activeYear = '';
+    let activeTag = '';
+    function applyFilters() {
+      const cards = document.querySelectorAll('.nc-item');
+      cards.forEach((el) => {
+        const year = el.getAttribute('data-year');
+        const tagsAttr = el.getAttribute('data-tags') || '';
+        const tags = tagsAttr ? tagsAttr.split(',') : [];
+        const yearMatch = !activeYear || year === activeYear;
+        const tagMatch = !activeTag || tags.includes(activeTag);
+        (el as HTMLElement).style.display = yearMatch && tagMatch ? '' : 'none';
+      });
+    }
+    function updateActive() {
+      document.querySelectorAll('[data-filter-year]').forEach((btn) => {
+        const year = btn.getAttribute('data-filter-year') || '';
+        btn.classList.toggle('active', year === activeYear);
+      });
+      document.querySelectorAll('[data-filter-tag]').forEach((btn) => {
+        const tag = btn.getAttribute('data-filter-tag') || '';
+        btn.classList.toggle('active', tag === activeTag);
+      });
+    }
+    document.querySelectorAll('[data-filter-year]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        activeYear = btn.getAttribute('data-filter-year') || '';
+        applyFilters();
+        updateActive();
+      });
+    });
+    document.querySelectorAll('[data-filter-tag]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        activeTag = btn.getAttribute('data-filter-tag') || '';
+        applyFilters();
+        updateActive();
+      });
+    });
+    const params = new URLSearchParams(location.search);
+    const qYear = params.get('year') || '';
+    const qTag = params.get('tag') || '';
+    if (qYear) activeYear = qYear;
+    if (qTag) activeTag = qTag;
+    applyFilters();
+    updateActive();
+  </script>
+</BaseLayout>

@@ -1,0 +1,166 @@
+---
+title: "Blog Post Template"
+description: "Copy-paste template for new blog posts with examples of everything I use."
+date: 2025-01-15
+lastUpdated: 2025-01-15
+categories: [Meta]
+tags: ["template", "quarto"]
+heroImage: ../../../../assets/images/homepage/self.jpg
+heroImagePositionX: 0
+heroImagePositionY: 0.235
+heroImageScale: 3.5
+images:
+  - ../../../../assets/images/blog/2025/01-15-blog-post-features-template/sample-plot-1.png
+draft: false
+execute:
+  echo: true
+  eval: true
+  warning: false
+  message: false
+format:
+  md:
+    variant: gfm
+    preserve-yaml: true
+    code-fold: false
+    code-block-bg: false
+    code-tools: false
+    title-block-style: none
+bibliography: references.bib
+link-citations: true
+cache: true
+freeze: false
+knitr:
+  opts_chunk:
+    fig.path: "src/assets/images/blog/2025/01-15-blog-post-features-template/"
+---
+
+<span class="dropcap dropcap--ornate dropcap--serious" data-first-letter="T" aria-hidden="true">T</span> his is my copy-paste template for new blog posts. I got tired of looking up the same Quarto features every time, so here's everything I use with working examples.
+
+## YAML frontmatter
+
+Copy this header and adjust:
+
+```yaml
+title: "Your Title Here"
+description: "Brief description for SEO and social cards"
+date: 2025-01-15
+categories: [Statistics, R]  # or whatever
+tags: ["brms", "Bayesian"]
+draft: false  # set to true to hide
+cache: true   # speeds up builds for R-heavy posts
+```
+
+Optional stuff:
+- `heroImage`: Header image path
+- `lastUpdated`: When you edited it
+
+## Typography
+
+Drop caps for long posts:
+```html
+<span class="dropcap dropcap--ornate dropcap--serious" data-first-letter="T" aria-hidden="true">T</span> ext starts here...
+```
+
+Math: inline like $\mu = \sum_{i=1}^n x_i$ or display:
+$$\hat{\beta} = (X^TX)^{-1}X^Ty$$
+
+Citations: [@cinelliCrashCourseGood2020] if you have a `references.bib` file.
+
+Margin notes:
+> margin: This appears in the right margin. Good for tangents or extra context.
+
+## R Code
+
+Basic chunk:
+```{r}
+#| label: basic-example
+
+library(ggplot2)
+library(dplyr)
+
+set.seed(42)
+data <- data.frame(
+  x = rnorm(100),
+  y = rnorm(100) + 0.3 * rnorm(100),
+  group = sample(c("A", "B", "C"), 100, replace = TRUE)
+)
+
+head(data, 3)
+```
+
+Plots with options:
+```{r}
+#| label: sample-plot
+#| fig-cap: "Simple scatter plot"
+#| fig-width: 8
+#| fig-height: 5
+
+ggplot(data, aes(x = x, y = y, color = group)) +
+  geom_point(alpha = 0.7) +
+  theme_minimal() +
+  labs(title = "Sample Data", x = "X values", y = "Y values")
+```
+
+> margin: Chunk options go after `#|`. Main ones: `echo`, `eval`, `fig-cap`, `fig-width`.
+
+## Collapsible code
+
+For longer setup that would clutter the post:
+
+<details class="code-collapse">
+<summary>Show data processing</summary>
+
+```{r}
+#| label: processing-example
+
+processed_data <- data %>%
+  filter(!is.na(x), !is.na(y)) %>%
+  mutate(
+    x_scaled = scale(x)[,1],
+    y_scaled = scale(y)[,1],
+    distance = sqrt(x_scaled^2 + y_scaled^2)
+  ) %>%
+  arrange(desc(distance))
+
+head(processed_data, 3)
+```
+
+</details>
+
+## Useful chunk options
+
+Show code, don't run:
+```{r}
+#| eval: false
+
+expensive_computation <- function(x) {
+  Sys.sleep(10)  # This won't actually run
+  return(x^2)
+}
+```
+
+Run code, don't show:
+```{r}
+#| echo: false
+
+result <- "This code runs but doesn't show"
+print(result)
+```
+
+## Quick reference
+
+| Option | What it does |
+|--------|-------------|
+| `echo: false` | Hide code, show output |
+| `eval: false` | Show code, don't run |
+| `fig-width: 8` | Plot width |
+| `cache: true` | Save chunk results |
+
+## Standard markdown
+
+Works as expected: **bold**, *italic*, `code`, [links](https://quarto.org/), lists, etc.
+
+## References
+
+::: {#refs}
+:::

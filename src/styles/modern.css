@@ -1,0 +1,194 @@
+/* Modern CSS enhancements (container queries, fluid type, accent colors, view transitions)
+   Layered to avoid specificity battles and keep overrides predictable. */
+
+/* Unlayered: must override base.css unlayered html rules */
+html {
+  color-scheme: light dark;
+  scrollbar-gutter: stable both-edges;
+}
+
+/* Fluid root type with safe bounds (keeps existing design scale intact) */
+@supports (font-size: clamp(1rem, 1vw, 2rem)) {
+  html {
+    font-size: clamp(18px, 1.1vw + 14px, 21px);
+  }
+}
+
+@layer enhancements {
+  /* Smarter text wrapping for headings and body copy */
+  @supports (text-wrap: balance) {
+    h1,
+    h2,
+    h3 {
+      text-wrap: balance;
+    }
+  }
+  @supports (text-wrap: pretty) {
+    p,
+    li,
+    dd,
+    figcaption,
+    blockquote p,
+    .content,
+    .post-body,
+    .longform,
+    .prose {
+      text-wrap: pretty;
+    }
+  }
+  p,
+  li,
+  figcaption,
+  blockquote p {
+    hyphens: auto;
+  }
+
+  /* Native accent color for form controls */
+  :root,
+  input,
+  button,
+  select,
+  textarea {
+    accent-color: var(--color-ochre);
+  }
+
+  /* Headings: avoid faux styles for better typographic fidelity */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-synthesis: none;
+  }
+
+  /* Subtle, accessible scrollbars (Firefox + WebKit) */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--color-walnut) 40%, transparent) transparent;
+  }
+  @supports selector(::-webkit-scrollbar) {
+    *::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+    *::-webkit-scrollbar-thumb {
+      background-color: color-mix(in srgb, var(--color-walnut) 45%, transparent);
+      border-radius: 999px;
+      border: 2px solid transparent;
+      background-clip: content-box;
+    }
+    *::-webkit-scrollbar-track {
+      background: transparent;
+    }
+  }
+
+  /* Enable container queries on key wrappers */
+  .container,
+  .post-body.longform,
+  .layout-prose {
+    container: page / inline-size;
+  }
+  .nav-wide {
+    container: nav / inline-size;
+  }
+
+  /* Container query tweaks for tighter spaces */
+  @container nav (inline-size <= 52rem) {
+    .nav-links {
+      font-size: var(--text-md);
+      gap: var(--space-xs);
+    }
+  }
+  @container nav (inline-size <= 38rem) {
+    .nav-links {
+      font-size: var(--text-sm);
+    }
+  }
+
+  /* Page headings should scale with the page content container, not the nav */
+  @container page (inline-size <= 52rem) {
+    h1 {
+      font-size: clamp(1.75rem, 4cqw + 1rem, var(--text-2xl));
+    }
+    h2 {
+      font-size: clamp(1.25rem, 3cqw + 0.75rem, var(--text-xl));
+    }
+    h3 {
+      font-size: clamp(1.1rem, 2.5cqw + 0.5rem, var(--text-lg));
+    }
+  }
+
+  /* Media defaults and utilities */
+  img,
+  video {
+    image-rendering: auto;
+  }
+  .media-cover {
+    object-fit: cover;
+    object-position: center;
+  }
+  .media-contain {
+    object-fit: contain;
+    object-position: center;
+  }
+
+  /* Navigation quantity & style queries (progressive enhancement) */
+  .nav-links {
+    container: menu / inline-size;
+  }
+  .nav-links:has(:nth-child(6)) {
+    --show-menu: true;
+  }
+  @container menu (40ch <= inline-size <= 60ch) {
+    @container not style(--show-menu: true) {
+      .nav-link {
+        display: inline-flex;
+      }
+    }
+  }
+
+  /* Burgerless nav adjustments: tighten spacing and enable scroll at narrow widths */
+  @container menu (inline-size <= 40rem) {
+    .nav-links {
+      gap: var(--space-xs);
+    }
+    .nav-separator {
+      display: none;
+    }
+    .nav-link {
+      padding: 2px 6px;
+    }
+  }
+  @container menu (inline-size <= 28rem) {
+    .nav-links {
+      overflow-x: auto;
+      scroll-snap-type: x proximity;
+      -webkit-overflow-scrolling: touch;
+    }
+    .nav-link {
+      scroll-snap-align: start;
+    }
+  }
+
+  /* Note: longform width is controlled in base.css with !important; do not re-define here */
+
+  /* :has() progressive enhancement — highlight code block on copy */
+  @supports selector(.astro-code:has(.copy-button)) {
+    .astro-code:has(.copy-button.copied) {
+      border-color: color-mix(in srgb, var(--color-tansy) 60%, transparent) !important;
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-tansy) 35%, transparent) inset !important;
+    }
+  }
+
+  /* View Transitions hook on the root for theme cross-fade */
+  :root {
+    view-transition-name: root;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation-duration: 180ms;
+    }
+  }
+}

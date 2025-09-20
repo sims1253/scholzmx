@@ -1,0 +1,309 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import DropCap from '../../components/DropCap.astro';
+import ImageFrame from '../../components/ImageFrame.astro';
+import FaintLineDivider from '../../components/FaintLineDivider.astro';
+
+/* Note: Content markdown cannot render Astro components by default.
+   To allow components inside markdown, pass them via the 'components' prop on <Content />. */
+// import { Image } from 'astro:assets';
+
+export async function getStaticPaths() {
+  const recipes = await getCollection('recipes');
+  return recipes.map((recipe) => ({
+    params: { slug: recipe.slug },
+    props: { recipe },
+  }));
+}
+
+const { recipe } = Astro.props;
+const { Content } = await recipe.render();
+---
+
+<BaseLayout
+  title={`${recipe.data.title} - Scholz MX`}
+  description={recipe.data.description}
+  footerVariant="kitchen"
+  tone="personal"
+  layout="prose"
+  prose={true}
+  leading="relaxed"
+>
+  <div class="recipe-post">
+    <article class="recipe-content" itemscope itemtype="https://schema.org/Recipe">
+      {
+        recipe.data.heroImage && (
+          <ImageFrame
+            src={recipe.data.heroImage}
+            alt={recipe.data.title}
+            style="hero"
+            aspectRatio="8/3"
+            scale={recipe.data.heroImageScale}
+            positionX={recipe.data.heroImagePositionX ? recipe.data.heroImagePositionX * 100 : 0}
+            positionY={recipe.data.heroImagePositionY ? recipe.data.heroImagePositionY * 100 : 0}
+            loading="eager"
+            width={800}
+            height={400}
+            className="recipe-hero"
+          />
+        )
+      }
+
+      <header class="recipe-header">
+        <h1 class="recipe-title" itemprop="name" data-pagefind-meta="title">
+          {recipe.data.title}
+        </h1>
+
+        <div class="recipe-meta">
+          <div class="recipe-info">
+            <div class="info-item">
+              <span class="info-label">Servings:</span>
+              <span class="info-value" itemprop="recipeYield">👥 {recipe.data.servings}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Time:</span>
+              <span class="info-value" itemprop="totalTime">⏱️ {recipe.data.time}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Season:</span>
+              <span class="info-value" data-pagefind-meta="season">🌿 {recipe.data.season}</span>
+            </div>
+          </div>
+          {
+            recipe.data.tags && (
+              <ul
+                class="recipe-tags"
+                aria-label="Tags"
+                data-pagefind-meta="tags:{recipe.data.tags.join(', ')}"
+              >
+                {recipe.data.tags.map((tag) => (
+                  <li class="tag" itemprop="recipeCategory">
+                    #{tag}
+                  </li>
+                ))}
+              </ul>
+            )
+          }
+        </div>
+
+        <p class="recipe-description" itemprop="description" data-pagefind-meta="description">
+          {recipe.data.description}
+        </p>
+      </header>
+
+      <FaintLineDivider width="wide" />
+
+      <section class="recipe-body prose" itemprop="recipeInstructions" data-pagefind-body>
+        <Content components={{ DropCap }} />
+      </section>
+
+      <FaintLineDivider width="medium" />
+
+      <footer class="recipe-footer">
+        <nav class="recipe-navigation" aria-label="Recipe navigation">
+          <a href="/recipes" class="back-link">← Back to Kitchen</a>
+        </nav>
+      </footer>
+    </article>
+  </div>
+</BaseLayout>
+
+<style>
+  .recipe-post {
+    max-width: 100%;
+  }
+
+  .recipe-content {
+    /* Width constraint handled by BaseLayout's .layout-prose */
+    padding: 0 0 var(--space-xs) 0;
+    position: relative;
+  }
+
+  .recipe-header {
+    position: relative;
+    margin-bottom: var(--space-xl);
+  }
+
+  .recipe-title {
+    display: flex;
+    align-items: baseline;
+    gap: 0.15em;
+    flex-wrap: wrap;
+    text-align: center;
+    justify-content: center;
+    margin-bottom: var(--space-xs);
+  }
+
+  .recipe-meta {
+    position: absolute;
+    right: -220px;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--space-sm);
+    width: 200px;
+  }
+
+  .recipe-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xxs);
+  }
+
+  .info-item {
+    display: flex;
+    align-items: baseline;
+    gap: 0.35em;
+    text-align: right;
+  }
+
+  .info-label {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+
+  .info-value {
+    font-size: var(--text-xs);
+    color: var(--color-ink-light);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+
+  .recipe-tags {
+    display: flex;
+    gap: 0.25rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .tag {
+    position: relative;
+    font-size: var(--text-2xs, 0.7rem);
+    color: var(--color-accent-secondary);
+    background: var(--wash-sage);
+    padding: 0.15em 0.5em;
+    border-radius: 999px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    border: 1px solid var(--color-lichen);
+    text-decoration: none;
+  }
+
+  .tag:hover {
+    color: var(--color-link-hover);
+    background: color-mix(in srgb, var(--wash-sage) 60%, transparent);
+    border-color: var(--color-sage);
+  }
+
+  .recipe-title {
+    font-size: clamp(var(--text-2xl), 5vw, var(--text-3xl));
+    line-height: 1.2;
+    color: var(--color-ink-dark);
+    font-family: var(--font-heading);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .recipe-description {
+    font-family: var(--font-body-personal); /* Alegreya */
+    font-size: var(--text-lg);
+    font-style: italic;
+    color: var(--color-ink-medium);
+    line-height: 1.6;
+    margin-bottom: var(--space-lg);
+  }
+
+  /* Typography now handled by scoped .prose class */
+
+  .recipe-body :global(strong) {
+    color: var(--color-walnut);
+    font-weight: 600;
+  }
+
+  .recipe-body :global(em) {
+    color: var(--color-ink-medium);
+  }
+
+  .recipe-body :global(img) {
+    width: 100%;
+    height: auto;
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 12px rgba(139, 90, 60, 0.15);
+    margin: var(--space-lg) 0;
+  }
+
+  .recipe-footer {
+    margin-top: var(--space-xxl);
+    padding-top: var(--space-lg);
+    border-top: 1px solid rgba(139, 90, 60, 0.1);
+  }
+
+  .recipe-navigation {
+    text-align: center;
+  }
+
+  .back-link {
+    font-family: var(--font-body-personal); /* Alegreya */
+    font-size: var(--text-sm);
+    color: var(--color-walnut);
+    text-decoration: none;
+    font-weight: 500;
+    padding: var(--space-xs) var(--space-sm);
+    border: 1px solid var(--color-walnut);
+    border-radius: var(--border-radius);
+    transition: all var(--transition-fast);
+  }
+
+  .back-link:hover {
+    background-color: var(--color-walnut);
+    color: var(--color-parchment-light);
+  }
+
+  /* Large screen adjustments - hide meta on smaller screens */
+  @media (max-width: 1400px) {
+    .recipe-meta {
+      position: static;
+      width: auto;
+      align-items: flex-start;
+      flex-direction: row;
+      justify-content: flex-start;
+      margin-top: var(--space-sm);
+      gap: var(--space-lg);
+    }
+
+    .recipe-tags {
+      justify-content: flex-start;
+    }
+  }
+
+  /* Mobile responsiveness */
+  @media (max-width: 768px) {
+    .recipe-content {
+      padding: var(--space-lg) var(--space-md);
+    }
+
+    .recipe-meta {
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .recipe-title {
+      text-align: center;
+    }
+
+    .recipe-info {
+      flex-direction: column;
+      gap: var(--space-xs);
+      align-items: flex-start;
+    }
+  }
+</style>

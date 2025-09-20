@@ -1,0 +1,197 @@
+---
+interface Props {
+  title: string;
+  subtitle?: string;
+  href?: string;
+  class?: string;
+  rotation?: string; // e.g., "-rotate-[0.5deg]", "rotate-[0.3deg]"
+  backgroundImage?: string;
+  backgroundRotation?: string; // e.g., "rotate-1", "-rotate-2"
+}
+
+const {
+  title,
+  subtitle,
+  href,
+  class: className,
+  rotation = 'tw-rotate-1',
+  backgroundImage = '',
+  backgroundRotation = 'tw-rotate-1',
+} = Astro.props as Props;
+---
+
+<style>
+  .simple-card {
+    position: relative;
+  }
+
+  .simple-card-bg {
+    position: absolute;
+    inset: 0;
+    background: color-mix(in srgb, var(--color-lichen) 25%, transparent);
+    border-radius: 2px;
+    transform: scale(1.03) rotate(1deg);
+  }
+
+  .simple-card-main {
+    position: relative;
+    background: color-mix(in srgb, var(--color-surface) 85%, transparent);
+    backdrop-filter: blur(8px);
+    padding: 1.5rem;
+    border-radius: 2px;
+    border: 1px solid color-mix(in srgb, var(--color-lichen) 25%, transparent);
+    box-shadow:
+      0 10px 25px color-mix(in srgb, var(--color-walnut) 8%, transparent),
+      0 2px 6px color-mix(in srgb, var(--color-sage) 12%, transparent);
+    transform: rotate(-0.5deg);
+  }
+
+  @media (min-width: 768px) {
+    .simple-card-main {
+      padding: 2rem;
+    }
+  }
+
+  .simple-card-circle {
+    position: absolute;
+    top: 1.25rem;
+    right: 2.5rem;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    border: 1px solid color-mix(in srgb, var(--color-tansy) 15%, transparent);
+    opacity: 0.15;
+    transform: rotate(-3deg);
+  }
+
+  .simple-card-title {
+    font-family: var(--font-heading);
+    font-size: var(--text-xl);
+    margin-bottom: 0.75rem;
+    color: var(--color-walnut);
+    transform: rotate(0.5deg);
+    position: relative;
+    display: inline-block;
+  }
+
+  .simple-card-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: color-mix(in srgb, var(--color-walnut) 25%, transparent);
+    transform: rotate(-1deg);
+  }
+
+  .simple-card-subtitle {
+    color: var(--color-ink-light);
+    font-size: var(--text-sm);
+    margin-bottom: 1rem;
+  }
+
+  .simple-card-tab {
+    position: absolute;
+    top: -0.5rem;
+    right: 3rem;
+    width: 1rem;
+    height: 3rem;
+    background: color-mix(in srgb, var(--color-tansy) 35%, transparent);
+    transform: rotate(-3deg);
+  }
+
+  .simple-card-bottom-accent {
+    position: absolute;
+    bottom: -1rem;
+    left: -1.5rem;
+    transform: rotate(30deg);
+  }
+
+  .simple-card-bottom-accent-inner {
+    width: 4rem;
+    height: 0.5rem;
+    background: color-mix(in srgb, var(--color-walnut) 25%, transparent);
+    border-radius: 999px;
+    transform: rotate(45deg);
+  }
+
+  .simple-card-doodle {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%) rotate(-12deg);
+    width: 2.5rem;
+    height: 2.5rem;
+    color: color-mix(in srgb, var(--color-walnut) 18%, transparent);
+    opacity: 0.6;
+  }
+
+  .simple-card-link {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  @media (max-width: 767px) {
+    .simple-card-bottom-accent {
+      display: none;
+    }
+  }
+</style>
+
+<div class={`simple-card ${className || ''} ${rotation}`}>
+  <!-- Background layer -->
+  <div class={`simple-card-bg ${backgroundRotation}`}></div>
+
+  <!-- Main card -->
+  <div class="simple-card-main">
+    <!-- Decorative circle -->
+    <div class="simple-card-circle"></div>
+
+    <!-- Card content -->
+    {
+      href ? (
+        <a href={href} class="simple-card-link">
+          <h3 class="simple-card-title">{title}</h3>
+          {subtitle && <p class="simple-card-subtitle">{subtitle}</p>}
+          <slot />
+        </a>
+      ) : (
+        <>
+          <h3 class="simple-card-title">{title}</h3>
+          {subtitle && <p class="simple-card-subtitle">{subtitle}</p>}
+          <slot />
+        </>
+      )
+    }
+
+    <!-- Tab accent -->
+    <div class="simple-card-tab"></div>
+
+    <!-- Leaf doodle in bottom center -->
+    <div class="simple-card-doodle">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"
+        ></path>
+        <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"></path>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Bottom decorative accent -->
+  <div class="simple-card-bottom-accent">
+    <div class="simple-card-bottom-accent-inner"></div>
+  </div>
+</div>

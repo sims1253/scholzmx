@@ -1,0 +1,658 @@
+---
+// Unified image component that handles all image positioning and framing needs
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+export interface Props {
+  // Core image props
+  src: string | ImageMetadata;
+  alt: string;
+  width?: number;
+  height?: number;
+  loading?: 'lazy' | 'eager';
+
+  // Positioning & scaling
+  positionX?: number; // Horizontal position as percentage (-50 to 50, where 0 is center)
+  positionY?: number; // Vertical position as percentage (-50 to 50, where 0 is center)
+  scale?: number; // Scale/zoom factor (e.g., 1.2 for 20% zoom in)
+  fillMode?: 'cover' | 'contain' | 'fill'; // How to handle image fitting when no scale/position given
+
+  // Focal control for object-fit (applies when not using custom positioning)
+  focalX?: number; // -50 (left) to 50 (right), 0 center
+  focalY?: number; // -50 (top) to 50 (bottom), 0 center
+
+  // Frame styling
+  style?: 'botanical' | 'polaroid' | 'gentle-oval' | 'hero' | 'simple';
+  size?: 'small' | 'medium' | 'large' | 'custom';
+  aspectRatio?: string; // e.g., "8/3" for hero, "1/1" for portraits
+
+  // Container styling
+  className?: string;
+  containerClass?: string;
+  caption?: string;
+
+  // Dual image support
+  alternateSrc?: string | ImageMetadata; // Second image to toggle to
+  alternateAlt?: string; // Alt text for second image
+  alternatePositionX?: number; // Position for second image
+  alternatePositionY?: number; // Position for second image
+  alternateScale?: number; // Scale for second image
+  alternateFillMode?: 'cover' | 'contain' | 'fill'; // Fill mode for second image
+  clickable?: boolean; // Whether the frame should be clickable (auto-enabled if alternateSrc provided)
+}
+
+const {
+  src,
+  alt,
+  width,
+  height,
+  loading = 'lazy',
+  positionX,
+  positionY,
+  scale,
+  fillMode = 'cover',
+  style = 'simple',
+  size = 'medium',
+  aspectRatio,
+  className = '',
+  containerClass = '',
+  focalX,
+  focalY,
+  caption,
+  alternateSrc,
+  alternateAlt,
+  alternatePositionX,
+  alternatePositionY,
+  alternateScale,
+  alternateFillMode,
+  clickable,
+} = Astro.props;
+
+// Smart defaults: if no positioning/scaling is provided, use simple fill mode
+const useCustomPositioning =
+  positionX !== undefined || positionY !== undefined || scale !== undefined;
+const finalPositionX = positionX || 0;
+const finalPositionY = positionY || 0;
+const finalScale = scale || 1;
+
+// Dual image support
+const isClickable = clickable || alternateSrc !== undefined;
+const useAlternateCustomPositioning =
+  alternatePositionX !== undefined ||
+  alternatePositionY !== undefined ||
+  alternateScale !== undefined;
+const finalAlternatePositionX = alternatePositionX || 0;
+const finalAlternatePositionY = alternatePositionY || 0;
+const finalAlternateScale = alternateScale || 1;
+const finalAlternateFillMode = alternateFillMode || fillMode;
+
+// Tailwind object-fit class mapping for simple fill mode
+const objectFitClass =
+  fillMode === 'cover'
+    ? 'tw-object-cover'
+    : fillMode === 'contain'
+      ? 'tw-object-contain'
+      : 'tw-object-fill';
+const alternateObjectFitClass =
+  finalAlternateFillMode === 'cover'
+    ? 'tw-object-cover'
+    : finalAlternateFillMode === 'contain'
+      ? 'tw-object-contain'
+      : 'tw-object-fill';
+
+// Focal point mapping (-50..50 → 0%..100%) used as CSS object-position when not using custom positioning
+function clamp(val: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, val));
+}
+const hasFocal = focalX !== undefined || focalY !== undefined;
+const focalXPct = `${clamp((focalX ?? 0) + 50, 0, 100)}%`;
+const focalYPct = `${clamp((focalY ?? 0) + 50, 0, 100)}%`;
+const objectPositionStyle = hasFocal ? `object-position: ${focalXPct} ${focalYPct};` : '';
+
+// Height handling: avoid stretching simple images; if aspectRatio is provided, fill container
+const containerHeightClass = style === 'simple' ? '' : 'tw-h-full';
+const imageHeightClass =
+  style === 'simple' ? (aspectRatio ? 'tw-h-full' : 'tw-h-auto') : 'tw-h-full';
+
+// Size mappings for portrait frame styles
+const portraitSizeMap = {
+  small: {
+    botanical: { width: '120px', height: '120px' },
+    polaroid: { width: '120px', height: '120px' },
+    'gentle-oval': { width: '110px', height: '130px' },
+  },
+  medium: {
+    botanical: { width: '160px', height: '160px' },
+    polaroid: { width: '160px', height: '160px' },
+    'gentle-oval': { width: '150px', height: '170px' },
+  },
+  large: {
+    botanical: { width: '200px', height: '200px' },
+    polaroid: { width: '200px', height: '200px' },
+    'gentle-oval': { width: '180px', height: '210px' },
+  },
+};
+
+// Determine final dimensions
+let finalWidth: string | number;
+let finalHeight: string | number;
+
+if (style === 'hero') {
+  // Hero images use viewport-relative sizing with custom aspect ratio
+  finalWidth = width || 'calc(min(75vw, 1100px) + 4rem)';
+  finalHeight = height || 'auto';
+} else if (style === 'simple') {
+  // Simple images use natural sizing or provided dimensions
+  finalWidth = width || '100%';
+  finalHeight = height || 'auto';
+} else {
+  // Portrait frames use size mapping
+  if (size === 'custom') {
+    // For custom size, use provided width/height or fallback to medium defaults
+    finalWidth = width || portraitSizeMap.medium.botanical.width;
+    finalHeight = height || portraitSizeMap.medium.botanical.height;
+  } else {
+    const frameSize = portraitSizeMap[size][style] || portraitSizeMap.medium.botanical;
+    finalWidth = width || frameSize.width;
+    finalHeight = height || frameSize.height;
+  }
+}
+
+// Parse dimensions for Image component
+const imageWidth = typeof finalWidth === 'string' ? parseInt(finalWidth) || 800 : finalWidth;
+// If an aspectRatio like "8/3" is provided and height is not numeric, derive height from width
+function parseAspectRatio(r?: string): { w: number; h: number } | undefined {
+  if (!r) return undefined;
+  const parts = r.split('/');
+  if (parts.length !== 2) return undefined;
+  const w = Number(parts[0]);
+  const h = Number(parts[1]);
+  if (!Number.isFinite(w) || !Number.isFinite(h) || w <= 0 || h <= 0) return undefined;
+  return { w, h };
+}
+const ar = parseAspectRatio(aspectRatio);
+let imageHeight = typeof finalHeight === 'string' ? NaN : (finalHeight as number);
+if (!Number.isFinite(imageHeight)) {
+  imageHeight = ar ? Math.round((imageWidth as number) * (ar.h / ar.w)) : 400;
+}
+const responsiveWidths =
+  style === 'hero' ? [400, 600, 800, 1100] : [320, 480, 640, 800, 960, 1200, 1440, 1600];
+// Approximate sizes for a centered content area with a 3-column card layout
+const defaultSizes = '(min-width: 80rem) 30vw, (min-width: 48rem) 45vw, 94vw';
+
+// Hero performance hints
+const effectiveLoading = style === 'hero' ? 'eager' : loading;
+const effectiveFetchPriority = style === 'hero' ? 'high' : undefined;
+const heroSizes = '(min-width: 90rem) 1100px, (min-width: 72rem) 72rem, 100vw';
+const decodingAttr = effectiveLoading === 'eager' ? 'sync' : 'async';
+const hasCaption = Astro.slots?.has?.('caption') || caption;
+const captionId = hasCaption
+  ? `imgcap-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`
+  : undefined;
+---
+
+{
+  Astro.slots?.has?.('caption') || caption ? (
+    <figure class="image-figure tw-mx-auto">
+      <div
+        class={`image-frame image-frame-${style} tw-relative tw-overflow-hidden tw-block tw-mx-auto ${className} ${
+          isClickable
+            ? 'clickable tw-cursor-pointer tw-transition-transform tw-duration-200 tw-ease-in-out'
+            : ''
+        } ${containerClass} ${
+          style === 'hero'
+            ? 'tw-w-full tw-max-w-5xl tw-mx-auto tw-px-8 tw--mt-lg tw-mb-lg tw-aspect-[8/3] md:tw-aspect-[8/3] sm:tw-aspect-[4/3]'
+            : ''
+        }`}
+        style={`${aspectRatio ? `aspect-ratio: ${aspectRatio};` : ''} ${style !== 'hero' && style !== 'simple' ? `width: ${finalWidth}; height: ${finalHeight};` : ''}`}
+        role={isClickable ? 'button' : undefined}
+        tabindex={isClickable ? '0' : undefined}
+        aria-label={
+          isClickable
+            ? `Click to toggle between ${alt} and ${alternateAlt || 'alternate image'}`
+            : undefined
+        }
+        aria-pressed={isClickable ? 'false' : undefined}
+        aria-describedby={hasCaption ? captionId : undefined}
+      >
+        {useCustomPositioning ? (
+          <div
+            class="image-wrapper primary-image tw-w-full tw-h-full tw-overflow-hidden tw-origin-center tw-relative"
+            style={`transform: scale(${finalScale}) translate(${finalPositionX}%, ${finalPositionY}%);`}
+          >
+            <div class="frame-image custom-positioning tw-w-full tw-h-full tw-block tw-absolute tw-top-1/2 tw-left-1/2 tw--translate-x-1/2 tw--translate-y-1/2 tw-overflow-hidden">
+              {typeof src === 'string' ? (
+                <img
+                  class="tw-w-full tw-h-full tw-object-contain tw-block"
+                  src={src}
+                  alt={alt}
+                  loading={effectiveLoading}
+                  fetchpriority={effectiveFetchPriority}
+                />
+              ) : (
+                <Image
+                  src={src}
+                  alt={alt}
+                  width={imageWidth}
+                  height={imageHeight}
+                  widths={responsiveWidths}
+                  sizes={style === 'hero' ? heroSizes : defaultSizes}
+                  format="webp"
+                  loading={effectiveLoading}
+                  class={`tw-w-full tw-h-full tw-object-contain tw-block`}
+                  fetchpriority={effectiveFetchPriority}
+                />
+              )}
+            </div>
+          </div>
+        ) : (
+          <div
+            class={`frame-image simple-fill fill-${fillMode} primary-image tw-w-full ${containerHeightClass} tw-block tw-overflow-hidden`}
+            style={aspectRatio ? `aspect-ratio: ${aspectRatio};` : undefined}
+          >
+            {typeof src === 'string' ? (
+              <img
+                class={`tw-w-full ${imageHeightClass} tw-block ${objectFitClass}`}
+                style={objectPositionStyle}
+                src={src}
+                alt={alt}
+                loading={effectiveLoading}
+                fetchpriority={effectiveFetchPriority}
+              />
+            ) : (
+              <Image
+                src={src}
+                alt={alt}
+                width={imageWidth}
+                height={imageHeight}
+                widths={responsiveWidths}
+                sizes={style === 'hero' ? heroSizes : defaultSizes}
+                format="webp"
+                loading={effectiveLoading}
+                class={`tw-w-full ${imageHeightClass} tw-block ${objectFitClass}`}
+                style={objectPositionStyle}
+                fetchpriority={effectiveFetchPriority}
+              />
+            )}
+          </div>
+        )}
+
+        {alternateSrc &&
+          (useAlternateCustomPositioning ? (
+            <div
+              class="image-wrapper alternate-image tw-opacity-0 tw-transition-opacity tw-duration-300 tw-ease-in-out tw-absolute tw-inset-0 tw-w-full tw-h-full tw-overflow-hidden tw-origin-center"
+              style={`transform: scale(${finalAlternateScale}) translate(${finalAlternatePositionX}%, ${finalAlternatePositionY}%);`}
+              aria-hidden="true"
+            >
+              <div class="frame-image custom-positioning tw-w-full tw-h-full tw-block tw-absolute tw-top-1/2 tw-left-1/2 tw--translate-x-1/2 tw--translate-y-1/2 tw-overflow-hidden">
+                {typeof alternateSrc === 'string' ? (
+                  <img
+                    class="tw-w-full tw-h-full tw-object-contain tw-block"
+                    src={alternateSrc}
+                    alt={alternateAlt || alt}
+                    loading="lazy"
+                  />
+                ) : (
+                  <Image
+                    src={alternateSrc}
+                    alt={alternateAlt || alt}
+                    width={imageWidth}
+                    height={imageHeight}
+                    widths={responsiveWidths}
+                    sizes={style === 'hero' ? heroSizes : defaultSizes}
+                    format="webp"
+                    loading="lazy"
+                    class={`tw-w-full tw-h-full tw-object-contain tw-block`}
+                  />
+                )}
+              </div>
+            </div>
+          ) : (
+            <div
+              class={`frame-image simple-fill fill-${finalAlternateFillMode} alternate-image tw-absolute tw-inset-0 tw-w-full ${containerHeightClass} tw-block tw-overflow-hidden tw-opacity-0 tw-transition-opacity tw-duration-300 tw-ease-in-out`}
+            >
+              {typeof alternateSrc === 'string' ? (
+                <img
+                  class={`tw-w-full tw-h-full tw-block ${alternateObjectFitClass}`}
+                  style={objectPositionStyle}
+                  src={alternateSrc}
+                  alt={alternateAlt || alt}
+                  loading="lazy"
+                />
+              ) : (
+                <Image
+                  src={alternateSrc}
+                  alt={alternateAlt || alt}
+                  width={imageWidth}
+                  height={imageHeight}
+                  widths={style === 'hero' ? [400, 600, 800, 1100] : [imageWidth]}
+                  sizes={style === 'hero' ? heroSizes : `${imageWidth}px`}
+                  format="webp"
+                  loading="lazy"
+                  class={`tw-w-full tw-h-full tw-block ${alternateObjectFitClass}`}
+                  style={objectPositionStyle}
+                />
+              )}
+            </div>
+          ))}
+      </div>
+      <figcaption class="image-caption" id={captionId}>
+        {caption}
+        <slot name="caption" />
+      </figcaption>
+    </figure>
+  ) : (
+    <div
+      class={`image-frame image-frame-${style} tw-relative tw-overflow-hidden tw-block tw-mx-auto ${className} ${
+        isClickable ? 'clickable tw-cursor-pointer' : ''
+      } ${containerClass} ${
+        style === 'hero'
+          ? 'tw-w-full tw-max-w-5xl tw-mx-auto tw-px-8 tw--mt-lg tw-mb-lg tw-aspect-[8/3] md:tw-aspect-[8/3] sm:tw-aspect-[4/3]'
+          : ''
+      }`}
+      style={`${aspectRatio ? `aspect-ratio: ${aspectRatio};` : ''} ${style !== 'hero' && style !== 'simple' ? `width: ${finalWidth}; height: ${finalHeight};` : ''}`}
+      role={isClickable ? 'button' : undefined}
+      tabindex={isClickable ? '0' : undefined}
+      aria-label={
+        isClickable
+          ? `Click to toggle between ${alt} and ${alternateAlt || 'alternate image'}`
+          : undefined
+      }
+      aria-pressed={isClickable ? 'false' : undefined}
+    >
+      {useCustomPositioning ? (
+        <div
+          class="image-wrapper primary-image tw-w-full tw-h-full tw-overflow-hidden tw-origin-center tw-relative"
+          style={`transform: scale(${finalScale}) translate(${finalPositionX}%, ${finalPositionY}%);`}
+        >
+          <div class="frame-image custom-positioning tw-w-full tw-h-full tw-block tw-absolute tw-top-1/2 tw-left-1/2 tw--translate-x-1/2 tw--translate-y-1/2 tw-overflow-hidden">
+            {typeof src === 'string' ? (
+              <img
+                class="tw-w-full tw-h-full tw-object-contain tw-block"
+                src={src}
+                alt={alt}
+                loading={effectiveLoading}
+                fetchpriority={effectiveFetchPriority}
+                decoding={decodingAttr}
+              />
+            ) : (
+              <Image
+                src={src}
+                alt={alt}
+                width={imageWidth}
+                height={imageHeight}
+                widths={style === 'hero' ? [400, 600, 800, 1100] : [imageWidth]}
+                sizes={style === 'hero' ? heroSizes : `${imageWidth}px`}
+                format="webp"
+                loading={effectiveLoading}
+                class={`tw-w-full tw-h-full tw-object-contain tw-block`}
+                fetchpriority={effectiveFetchPriority}
+              />
+            )}
+          </div>
+        </div>
+      ) : (
+        <div
+          class={`frame-image simple-fill fill-${fillMode} primary-image tw-w-full ${containerHeightClass} tw-block tw-overflow-hidden`}
+        >
+          {typeof src === 'string' ? (
+            <img
+              class={`tw-w-full tw-h-full tw-block ${objectFitClass}`}
+              style={objectPositionStyle}
+              src={src}
+              alt={alt}
+              loading={effectiveLoading}
+              fetchpriority={effectiveFetchPriority}
+              decoding={decodingAttr}
+            />
+          ) : (
+            <Image
+              src={src}
+              alt={alt}
+              width={imageWidth}
+              height={imageHeight}
+              widths={style === 'hero' ? [400, 600, 800, 1100] : [imageWidth]}
+              sizes={style === 'hero' ? heroSizes : `${imageWidth}px`}
+              format="webp"
+              loading={effectiveLoading}
+              class={`tw-w-full tw-h-full tw-block ${objectFitClass}`}
+              style={objectPositionStyle}
+              fetchpriority={effectiveFetchPriority}
+            />
+          )}
+        </div>
+      )}
+      {alternateSrc &&
+        (useAlternateCustomPositioning ? (
+          <div
+            class="image-wrapper alternate-image tw-opacity-0 tw-transition-opacity tw-duration-300 tw-ease-in-out tw-absolute tw-inset-0 tw-w-full tw-h-full tw-overflow-hidden tw-origin-center"
+            style={`transform: scale(${finalAlternateScale}) translate(${finalAlternatePositionX}%, ${finalAlternatePositionY}%);`}
+          >
+            <div class="frame-image custom-positioning tw-w-full tw-h-full tw-block tw-absolute tw-top-1/2 tw-left-1/2 tw--translate-x-1/2 tw--translate-y-1/2 tw-overflow-hidden">
+              {typeof alternateSrc === 'string' ? (
+                <img
+                  class="tw-w-full tw-h-full tw-object-contain tw-block"
+                  src={alternateSrc}
+                  alt={alternateAlt || alt}
+                  loading="lazy"
+                />
+              ) : (
+                <Image
+                  src={alternateSrc}
+                  alt={alternateAlt || alt}
+                  width={imageWidth}
+                  height={imageHeight}
+                  widths={style === 'hero' ? [400, 600, 800, 1100] : [imageWidth]}
+                  sizes={style === 'hero' ? heroSizes : `${imageWidth}px`}
+                  format="webp"
+                  loading="lazy"
+                  class={`tw-w-full tw-h-full tw-object-contain tw-block`}
+                />
+              )}
+            </div>
+          </div>
+        ) : (
+          <div
+            class={`frame-image simple-fill fill-${finalAlternateFillMode} alternate-image tw-absolute tw-inset-0 tw-w-full ${containerHeightClass} tw-block tw-overflow-hidden tw-opacity-0 tw-transition-opacity tw-duration-300 tw-ease-in-out`}
+            aria-hidden="true"
+          >
+            {typeof alternateSrc === 'string' ? (
+              <img
+                class={`tw-w-full tw-h-full tw-block ${alternateObjectFitClass}`}
+                style={objectPositionStyle}
+                src={alternateSrc}
+                alt={alternateAlt || alt}
+                loading="lazy"
+              />
+            ) : (
+              <Image
+                src={alternateSrc}
+                alt={alternateAlt || alt}
+                width={imageWidth}
+                height={imageHeight}
+                widths={responsiveWidths}
+                sizes={style === 'hero' ? heroSizes : defaultSizes}
+                format="webp"
+                loading="lazy"
+                class={`tw-w-full tw-h-full tw-block ${alternateObjectFitClass}`}
+                style={objectPositionStyle}
+              />
+            )}
+          </div>
+        ))}
+    </div>
+  )
+}
+
+<style>
+  /* Base image frame styles */
+  .image-frame {
+    position: relative;
+    margin: 0 auto;
+    overflow: hidden;
+    display: block;
+  }
+
+  .image-wrapper {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    transform-origin: center center;
+    position: relative;
+  }
+
+  /* Custom positioning mode - for precise control */
+  .frame-image.custom-positioning {
+    width: 100%;
+    height: 100%;
+    display: block;
+    transform: translate(-50%, -50%);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    overflow: hidden;
+  }
+
+  .frame-image.custom-positioning img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  /* Simple fill modes - for easy default usage */
+  .frame-image.simple-fill {
+    width: 100%;
+    /* Prevent baseline gap and reserve exactly content height */
+    line-height: 0;
+    height: 100%;
+    display: block;
+    overflow: hidden;
+  }
+
+  .frame-image.simple-fill img {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* object-fit handled via Tailwind utilities now */
+
+  /* Hero image style - for blog post headers */
+  .image-frame-hero {
+    background: var(--color-background);
+    /* No border-radius or box-shadow for seamless integration */
+  }
+
+  /* Simple image style - for basic usage */
+  .image-frame-simple {
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 12px rgba(139, 90, 60, 0.15);
+  }
+
+  /* Portrait frame styles - copied from PortraitFrame */
+  .image-frame-botanical,
+  .image-frame-polaroid,
+  .image-frame-gentle-oval {
+    border: 3px solid var(--color-parchment-light);
+    background-color: var(--color-parchment-light);
+    box-shadow: 0 6px 16px rgba(139, 90, 60, 0.2);
+  }
+
+  /* Clickable frame styles */
+  .image-frame.clickable {
+    cursor: pointer;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .image-frame.clickable:hover {
+    box-shadow: 0 8px 20px rgba(139, 90, 60, 0.25);
+  }
+
+  .image-frame.clickable:focus {
+    outline: none; /* Remove focus outline */
+  }
+
+  /* Only show focus outline when navigating with keyboard */
+  .image-frame.clickable:focus-visible {
+    outline: 2px solid var(--color-moss);
+    outline-offset: 2px;
+  }
+
+  /* Dual image toggle */
+  .alternate-image {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .alternate-image {
+      transition: none;
+    }
+  }
+
+  .image-frame.show-alternate .primary-image {
+    opacity: 0;
+  }
+
+  .image-frame.show-alternate .alternate-image {
+    opacity: 1;
+  }
+
+  /* Enhanced shadows for clickable frames */
+  .image-frame-botanical.clickable:hover {
+    box-shadow: 0 10px 22px rgba(139, 90, 60, 0.28);
+  }
+
+  .image-frame-polaroid.clickable:hover {
+    box-shadow: 0 10px 24px rgba(139, 90, 60, 0.3);
+  }
+
+  .image-frame-gentle-oval.clickable:hover {
+    box-shadow: 0 8px 20px rgba(139, 90, 60, 0.25);
+  }
+
+  /* Botanical Scallops Style */
+  .image-frame-botanical {
+    clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%);
+    border-radius: 0;
+    box-shadow: 0 8px 18px rgba(139, 90, 60, 0.22);
+  }
+
+  /* Vintage Polaroid Style */
+  .image-frame-polaroid {
+    border-radius: 8px;
+    border: 12px solid #fff;
+    border-bottom: 24px solid #fff;
+    box-shadow: 0 8px 20px rgba(139, 90, 60, 0.25);
+    background: #fff;
+  }
+
+  /* Gentle Oval Style */
+  .image-frame-gentle-oval {
+    border-radius: 50%;
+    box-shadow: 0 6px 16px rgba(139, 90, 60, 0.2);
+  }
+
+  /* Mobile responsiveness */
+  @media (max-width: 768px) {
+    .image-frame-botanical,
+    .image-frame-polaroid,
+    .image-frame-gentle-oval {
+      max-width: 140px;
+      max-height: 140px;
+    }
+
+    .image-frame-gentle-oval {
+      max-width: 120px;
+      max-height: 140px;
+    }
+  }
+</style>
+
+{isClickable && <script src="/scripts/image-frame-toggle.js" is:inline />}

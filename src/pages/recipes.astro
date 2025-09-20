@@ -1,0 +1,493 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import NoteCardStack from '../components/NoteCardStack.astro';
+import Search from 'astro-pagefind/components/Search';
+
+const allRecipes = await getCollection('recipes', ({ data }) => !data.draft);
+const recipes = allRecipes.sort((a, b) => a.data.title.localeCompare(b.data.title));
+const tags = Array.from(new Set(recipes.flatMap((r) => r.data.tags ?? []))).sort();
+---
+
+<BaseLayout
+  title="Recipes"
+  description="Personal kitchen notes and recipes."
+  footerVariant="kitchen"
+  tone="personal"
+  layout="listing"
+>
+  <div class="recipes-page">
+    <header class="recipes-header">
+      <h1 class="page-title">Recipes</h1>
+      <p class="page-description">Personal and seasonal — collected kitchen notes.</p>
+    </header>
+
+    <div class="recipes-container">
+      <main class="recipes-content">
+        <section aria-label="Recipes">
+          <NoteCardStack
+            columns={1}
+            items={recipes.map((r) => ({
+              id: r.slug,
+              title: r.data.title,
+              subtitle: r.data.description,
+              href: `/recipes/${r.slug}`,
+              tags: r.data.tags ?? [],
+              hero: r.data.heroImage
+                ? {
+                    kind: 'asset',
+                    src: r.data.heroImage,
+                    scale: (r.data as any).heroImageScale || 1,
+                    posX: (r.data as any).heroImagePositionX || 0,
+                    posY: (r.data as any).heroImagePositionY || 0,
+                  }
+                : undefined,
+            }))}
+          />
+        </section>
+      </main>
+      <aside class="recipes-filters">
+        <section class="sidebar-section" role="search" aria-labelledby="search-heading">
+          <h3 id="search-heading">Search recipes</h3>
+          <Search
+            id="search"
+            className="pagefind-ui"
+            uiOptions={{
+              showImages: false,
+              debounceTimeoutMs: 100,
+              pageSize: 5,
+              excerptLength: 80,
+              showResultsCount: true,
+              showEmptyFilters: true,
+              translations: {
+                placeholder: 'Search recipes...',
+                clear_search: 'Clear search',
+                load_more: 'Load more results',
+                search_label: 'Search recipes',
+                filters_label: 'Filters',
+                zero_results: 'No recipes found matching your search.',
+                many_results: '# recipes found',
+                one_result: '1 recipe found',
+                alt_search: 'Search for [SEARCH_TERM]',
+                search_suggestion: 'Try searching for a recipe name, ingredient, or cooking method',
+              },
+            }}
+          />
+          <div id="search-status" class="search-status" aria-live="polite" aria-atomic="true"></div>
+        </section>
+        <section class="sidebar-section" role="group" aria-labelledby="filter-heading">
+          <h3 id="filter-heading">Filter by tag</h3>
+          <ul class="filter-list" role="radiogroup" aria-labelledby="filter-heading">
+            <li>
+              <button
+                class="filter-btn active"
+                data-filter-tag=""
+                role="radio"
+                aria-checked="true"
+                aria-label="Show all recipes">All</button>
+            </li>
+            {
+              tags.map((t) => (
+                <li>
+                  <button
+                    class="filter-btn"
+                    data-filter-tag={t}
+                    role="radio"
+                    aria-checked="false"
+                    aria-label={`Filter by tag: ${t}`}
+                  >
+                    #{t}
+                  </button>
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .recipes-page {
+    max-width: 100%;
+  }
+
+  .recipes-header {
+    text-align: center;
+    max-width: var(--measure-listing);
+    margin: 0 auto var(--space-xs);
+  }
+
+  .page-title {
+    font-size: clamp(var(--text-2xl), 5vw, var(--text-3xl));
+    margin-bottom: var(--space-xs);
+    color: var(--color-ink-dark);
+  }
+
+  .page-description {
+    font-size: var(--text-lg);
+    line-height: 1.6;
+    color: var(--color-ink-medium);
+    font-style: italic;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .recipes-container {
+    position: relative;
+    max-width: var(--measure-listing);
+    margin: 0 auto;
+  }
+
+  .recipes-content {
+    position: relative;
+  }
+
+  .recipes-content.search-active .nc-item {
+    display: none !important;
+  }
+
+  .recipes-filters {
+    position: absolute;
+    /* Anchor to the centered card column: center (50%) + half card width + small gap */
+    left: calc(50% + (var(--card-max-width) / 2) + var(--sidebar-gap));
+    top: 0;
+    width: var(--sidebar-width);
+  }
+
+  .sidebar-section {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-lichen);
+    border-radius: var(--border-radius);
+    padding: 0 var(--space-sm) var(--space-xs);
+  }
+
+  .sidebar-section h3 {
+    font-size: var(--text-md);
+    margin: var(--space-xs) 0;
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .filter-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  .filter-btn {
+    color: var(--color-text-secondary);
+    background: var(--color-surface);
+    border: 1px solid var(--color-lichen);
+    font-size: var(--text-xs);
+    font-family: inherit;
+    padding: 0.1rem 0.35rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+
+  .filter-btn:hover {
+    color: var(--color-link-hover);
+    background: var(--wash-sage);
+    border-color: var(--color-sage);
+  }
+
+  .filter-btn.active {
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-semibold);
+    border-color: var(--color-link);
+  }
+
+  /* Pagefind search styling */
+  :global(.pagefind-ui__search-input) {
+    background: var(--color-surface);
+    border: 1px solid var(--color-lichen);
+    border-radius: var(--border-radius);
+    padding: 0.5rem 0.75rem;
+    font-size: var(--text-sm);
+    font-family: inherit;
+    color: var(--color-text-primary);
+    transition: border-color var(--transition-fast);
+  }
+
+  :global(.pagefind-ui__search-input:focus) {
+    outline: none;
+    border-color: var(--color-link);
+    box-shadow: 0 0 0 2px rgba(139, 90, 60, 0.1);
+  }
+
+  :global(.pagefind-ui__search-clear) {
+    background: var(--color-surface);
+    border: 1px solid var(--color-lichen);
+    color: var(--color-text-secondary);
+    border-radius: var(--border-radius);
+    transition: all var(--transition-fast);
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-indent: -9999px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  :global(.pagefind-ui__search-clear::before) {
+    content: '×';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-indent: 0;
+    font-size: var(--text-lg);
+    line-height: 1;
+  }
+
+  :global(.pagefind-ui__search-clear:hover) {
+    color: var(--color-link-hover);
+    background: var(--wash-sage);
+    border-color: var(--color-sage);
+  }
+
+  :global(.pagefind-ui__result) {
+    background: var(--color-surface);
+    border: 1px solid var(--color-lichen);
+    border-radius: var(--border-radius);
+    padding: var(--space-sm);
+    margin-bottom: var(--space-xs);
+    transition: all var(--transition-fast);
+  }
+
+  :global(.pagefind-ui__result:hover) {
+    border-color: var(--color-sage);
+    background: var(--wash-sage);
+  }
+
+  :global(.pagefind-ui__result-title) {
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin-bottom: 0.25rem;
+  }
+
+  :global(.pagefind-ui__result-excerpt) {
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+    line-height: 1.4;
+  }
+
+  .search-status {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    margin-top: var(--space-xs);
+    text-align: center;
+    font-style: italic;
+  }
+
+  :global(.pagefind-ui__message) {
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+    text-align: center;
+    padding: var(--space-sm);
+    background: var(--wash-sage);
+    border-radius: var(--border-radius);
+    margin-top: var(--space-xs);
+  }
+
+  @media (max-width: 1024px) {
+    .recipes-content {
+      position: static;
+    }
+    .recipes-filters {
+      position: static;
+      width: auto;
+      margin-top: var(--space-lg);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: var(--space-md);
+    }
+  }
+</style>
+
+<script>
+  let activeTag = '';
+  let searchActive = false;
+
+  function applyFilters() {
+    const cards = document.querySelectorAll('.nc-item');
+    cards.forEach((el) => {
+      const tagsAttr = el.getAttribute('data-tags') || '';
+      const tags = tagsAttr ? tagsAttr.split(',') : [];
+      const tagMatch = !activeTag || tags.includes(activeTag);
+
+      // Only apply tag filter if no search is active
+      if (!searchActive) {
+        (el as HTMLElement).style.display = tagMatch ? '' : 'none';
+      } else {
+        // When search is active, hide all recipe cards
+        (el as HTMLElement).style.display = 'none';
+      }
+    });
+  }
+
+  function updateActive() {
+    document.querySelectorAll('[data-filter-tag]').forEach((btn) => {
+      const tag = btn.getAttribute('data-filter-tag') || '';
+      const isActive = tag === activeTag && !searchActive;
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-checked', isActive.toString());
+    });
+  }
+
+  function handleSearchChange() {
+    const searchInput = document.querySelector('.pagefind-ui__search-input') as HTMLInputElement;
+    const searchStatus = document.getElementById('search-status');
+
+    if (searchInput && searchInput.value.trim()) {
+      searchActive = true;
+      // Clear tag filter when search is active
+      activeTag = '';
+      // Hide the recipe grid when search has results
+      document.querySelector('.recipes-content')?.classList.add('search-active');
+
+      // Update search status
+      if (searchStatus) {
+        searchStatus.textContent = 'Searching...';
+      }
+    } else {
+      searchActive = false;
+      document.querySelector('.recipes-content')?.classList.remove('search-active');
+
+      // Clear search status
+      if (searchStatus) {
+        searchStatus.textContent = '';
+      }
+    }
+
+    applyFilters();
+    updateActive();
+  }
+
+  function updateSearchStatus() {
+    const searchStatus = document.getElementById('search-status');
+    const searchInput = document.querySelector('.pagefind-ui__search-input') as HTMLInputElement;
+
+    if (!searchStatus || !searchInput) return;
+
+    if (searchInput.value.trim()) {
+      // Wait a bit for results to load
+      setTimeout(() => {
+        const resultItems = document.querySelectorAll('.pagefind-ui__result');
+        const resultCount = resultItems.length;
+
+        if (resultCount === 0 && searchInput.value.trim()) {
+          searchStatus.textContent = 'No recipes found. Try different keywords.';
+        } else if (resultCount > 0) {
+          searchStatus.textContent = `Found ${resultCount} recipe${resultCount === 1 ? '' : 's'}`;
+        } else {
+          searchStatus.textContent = '';
+        }
+      }, 300);
+    } else {
+      searchStatus.textContent = '';
+    }
+  }
+
+  // Set up tag filter listeners
+  const filterButtons = document.querySelectorAll('[data-filter-tag]');
+
+  filterButtons.forEach((btn, index) => {
+    btn.addEventListener('click', () => {
+      // Clear search when tag is clicked
+      const searchInput = document.querySelector('.pagefind-ui__search-input') as HTMLInputElement;
+      if (searchInput) {
+        searchInput.value = '';
+        searchActive = false;
+        document.querySelector('.recipes-content')?.classList.remove('search-active');
+      }
+
+      activeTag = btn.getAttribute('data-filter-tag') || '';
+      applyFilters();
+      updateActive();
+    });
+
+    // Add keyboard navigation for filter buttons
+    btn.addEventListener('keydown', (e) => {
+      const key = (e as KeyboardEvent).key;
+      let nextIndex = index;
+
+      switch (key) {
+        case 'ArrowRight':
+        case 'ArrowDown':
+          e.preventDefault();
+          nextIndex = (index + 1) % filterButtons.length;
+          break;
+        case 'ArrowLeft':
+        case 'ArrowUp':
+          e.preventDefault();
+          nextIndex = (index - 1 + filterButtons.length) % filterButtons.length;
+          break;
+        case 'Home':
+          e.preventDefault();
+          nextIndex = 0;
+          break;
+        case 'End':
+          e.preventDefault();
+          nextIndex = filterButtons.length - 1;
+          break;
+      }
+
+      if (nextIndex !== index) {
+        (filterButtons[nextIndex] as HTMLElement).focus();
+      }
+    });
+  });
+
+  // Monitor search input changes
+  document.addEventListener('DOMContentLoaded', () => {
+    // Use mutation observer to detect when pagefind UI is loaded
+    const observer = new MutationObserver(() => {
+      const searchInput = document.querySelector('.pagefind-ui__search-input') as HTMLInputElement;
+      if (searchInput && !searchInput.dataset.listenerAdded) {
+        searchInput.dataset.listenerAdded = 'true';
+
+        // Enhance accessibility
+        searchInput.setAttribute('aria-label', 'Search recipes');
+        searchInput.setAttribute('aria-describedby', 'search-status');
+        searchInput.setAttribute('autocomplete', 'off');
+
+        searchInput.addEventListener('input', () => {
+          handleSearchChange();
+          updateSearchStatus();
+        });
+        searchInput.addEventListener('keyup', () => {
+          handleSearchChange();
+          updateSearchStatus();
+        });
+      }
+
+      // Also monitor for results being added/removed
+      const resultsContainer = document.querySelector('.pagefind-ui__results') as HTMLElement;
+      if (resultsContainer && !resultsContainer.dataset.observerAdded) {
+        resultsContainer.dataset.observerAdded = 'true';
+        resultsContainer.setAttribute('aria-label', 'Search results');
+        const resultsObserver = new MutationObserver(updateSearchStatus);
+        resultsObserver.observe(resultsContainer, { childList: true, subtree: true });
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+  });
+
+  // Initialize from URL params
+  const params = new URLSearchParams(location.search);
+  const qTag = params.get('tag') || '';
+  if (qTag) activeTag = qTag;
+  applyFilters();
+  updateActive();
+</script>
