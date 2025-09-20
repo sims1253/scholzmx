@@ -36,6 +36,7 @@ jobs:
       - name: Setup R dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
+          cache: always
           packages: 'any::sessioninfo'
           extra-packages: |
             any::knitr
@@ -63,6 +64,17 @@ jobs:
       - name: Render Quarto posts
         run: bash build-blog.sh
 
+      - name: Debug - List generated files
+        run: |
+          echo "=== Generated markdown files ==="
+          find src/content/blog -name "*.md" -type f | head -20
+          echo "=== Generated index.md files ==="
+          find src/content/blog -name "index.md" -type f | head -20
+          echo "=== Directory structure ==="
+          ls -la src/content/blog/2022/*/
+          echo "=== Asset directories ==="
+          ls -la src/assets/images/blog/ || echo "No assets directory"
+
       - name: Upload rendered content artifact
         uses: actions/upload-artifact@v4
         with:
@@ -70,5 +82,5 @@ jobs:
           if-no-files-found: error
           compression-level: 6
           path: |
-            src/content/blog/**.md
+            src/content/blog/**/index.md
             src/assets/images/blog/**
