@@ -33,46 +33,23 @@ jobs:
         id: setup-r
         uses: r-lib/actions/setup-r@v2
 
-      - name: Cache R packages
-        uses: actions/cache@v4
+      - name: Setup R dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          path: ${{ env.R_LIBS_USER }}
-          key: heavy-r-packages-${{ runner.os }}-${{ hashFiles('**/DESCRIPTION') }}-brms-bayesim-${{ github.sha }}
-          restore-keys: |
-            heavy-r-packages-${{ runner.os }}-${{ hashFiles('**/DESCRIPTION') }}-brms-bayesim-
-            heavy-r-packages-${{ runner.os }}-
-
-      - name: Install R packages (all)
-        shell: Rscript {0}
-        run: |
-          options(repos = c(CRAN = 'https://cloud.r-project.org'))
-
-          # Function to install if missing
-          install_if_missing <- function(p) {
-            if (!requireNamespace(p, quietly = TRUE)) {
-              cat("Installing package:", p, "\n")
-              install.packages(p)
-            } else {
-              cat("Package already installed:", p, "\n")
-            }
-          }
-
-          # Install all required CRAN packages
-          cran_pkgs <- c(
-            'knitr', 'rmarkdown', 'tidyverse', 'brms', 'furrr', 'patchwork',
-            'extraDistr', 'loo', 'ggdag', 'GGally', 'dagitty'
-          )
-
-          for (p in cran_pkgs) install_if_missing(p)
-
-          # Install GitHub packages
-          if (!requireNamespace('remotes', quietly = TRUE)) install.packages('remotes')
-          if (!requireNamespace('bayesim', quietly = TRUE)) {
-            cat("Installing bayesim from GitHub\n")
-            remotes::install_github('sims1253/bayesim')
-          } else {
-            cat("Package already installed: bayesim\n")
-          }
+          packages: 'any::sessioninfo'
+          extra-packages: |
+            any::knitr
+            any::rmarkdown
+            any::tidyverse
+            any::brms
+            any::furrr
+            any::patchwork
+            any::extraDistr
+            any::loo
+            any::ggdag
+            any::GGally
+            any::dagitty
+            github::sims1253/bayesim
 
       - name: Cache render timestamps
         uses: actions/cache@v4
