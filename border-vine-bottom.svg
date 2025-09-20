@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 800 128" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+  <defs>
+    <filter id="roughTextureBottom" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence baseFrequency="0.04" numOctaves="3" result="noise" seed="1" />
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" />
+    </filter>
+    <filter id="shadowBottom" x="0%" y="0%" width="120%" height="120%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+      <feOffset dx="1" dy="2" result="offset"/>
+      <feFlood flood-color="rgba(139, 90, 60, 0.2)"/>
+      <feComposite in2="offset" operator="in"/>
+      <feMerge> 
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/> 
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Main border path (orange wave) -->
+  <path
+    d="M0,25 Q100,8 200,30 T400,18 T600,35 T800,25 L800,0 L0,0 Z"
+    fill="rgba(180,83,9,0.15)"
+    filter="url(#roughTextureBottom)"
+  />
+  
+  <!-- Scattered botanical elements -->
+  <g fill="rgba(90, 107, 71, 0.15)" filter="url(#shadowBottom)">
+    <ellipse cx="120" cy="20" rx="10" ry="5" transform="rotate(45 120 20)" />
+    <ellipse cx="320" cy="30" rx="8" ry="4" transform="rotate(-30 320 30)" />
+    <ellipse cx="520" cy="23" rx="9" ry="5" transform="rotate(60 520 23)" />
+    
+    <!-- Small flowers -->
+    <circle cx="180" cy="45" r="3" fill="rgba(168, 181, 160, 0.15)" />
+    <circle cx="380" cy="35" r="2.5" fill="rgba(168, 181, 160, 0.15)" />
+    <circle cx="580" cy="50" r="3.5" fill="rgba(168, 181, 160, 0.15)" />
+  </g>
+</svg>

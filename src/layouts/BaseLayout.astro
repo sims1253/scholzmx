@@ -1,0 +1,624 @@
+---
+import BotanicalBorder from '../components/BotanicalBorder.astro';
+import IllustratedFooter from '../components/IllustratedFooter.astro';
+import BackToTop from '../components/BackToTop.astro';
+
+// Import CSS files
+import '../styles/layers.css';
+import '../styles/tokens.colors.css';
+import '../styles/tokens.typography.css';
+import '../styles/tokens.spacing.css';
+import '../styles/tokens.layout.css';
+import '../styles/tokens.motion.css';
+import '../styles/fonts-critical.css';
+import '../styles/fonts.css';
+import '../styles/layout.css';
+import '../styles/base.css';
+import '../styles/modern.css';
+import '../styles/prose.css';
+import '../styles/typography-utils.css';
+import '../styles/dropcap.css';
+import '../styles/tailwind.css'; // Utilities only - preserves existing design
+import '../styles/tailwind-utilities.css'; // Force utility generation
+import '../styles/margin-notes.css';
+import '../styles/stacked-card.css';
+
+export interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  addBorders?: boolean;
+  footerVariant?: 'garden' | 'kitchen' | 'craft' | 'writing' | 'projects' | 'research' | 'default';
+  includeQuoteSection?: boolean;
+  /* Legacy props (for backward-compat) */
+  longform?: boolean;
+  personal?: boolean;
+  contentWidth?: 'default' | 'wide' | 'full';
+  /* New props */
+  tone?: 'personal' | 'serious';
+  layout?: 'prose' | 'listing' | 'wide' | 'full';
+  prose?: boolean;
+  leading?: 'default' | 'relaxed' | 'tight';
+}
+
+const {
+  title,
+  description = 'A digital garden and personal website - thoughtful, slow web principles with a warm, botanical aesthetic.',
+  image = '/img/portrait-DY3LVcsu_ZVN2ds.webp',
+  addBorders = true,
+  footerVariant = 'default',
+  includeQuoteSection = false,
+  /* legacy */
+  longform = false,
+  personal = true,
+  contentWidth = 'default',
+  /* new */
+  tone,
+  layout,
+  prose,
+  leading,
+} = Astro.props;
+
+/* Backward-compatible mapping */
+const resolvedTone = tone ?? (personal ? 'personal' : 'serious');
+const isProseLayoutLegacy = longform || contentWidth === 'default';
+const resolvedLayout =
+  layout ??
+  (isProseLayoutLegacy
+    ? 'prose'
+    : contentWidth === 'wide'
+      ? 'wide'
+      : contentWidth === 'full'
+        ? 'full'
+        : 'prose');
+const resolvedProse = prose ?? longform ?? false;
+const resolvedLeading = leading ?? 'default';
+
+const currentPath = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href={`https://www.scholzmx.com${Astro.url.pathname}`} />
+
+    <!-- RSS Feed autodiscovery -->
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Grotto RSS Feed"
+      href={new URL('rss.xml', Astro.site)}
+    />
+
+    <!-- Critical resource hints for performance -->
+
+    <slot name="head" />
+
+    <!-- Preload fonts based on page type for optimal performance -->
+    <!-- Always preload heading font (used on all pages) -->
+    <link
+      rel="preload"
+      href="/fonts/cormorant-garamond-600.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    {/* Conditional preloading based on tone */}
+    {
+      resolvedTone === 'personal' ? (
+        <link
+          rel="preload"
+          href="/fonts/Alegreya/alegreya-v38-latin-regular.woff2"
+          as="font"
+          type="font/woff2"
+          crossorigin
+        />
+      ) : (
+        <link
+          rel="preload"
+          href="/fonts/et-book-roman-old-style-figures.woff2"
+          as="font"
+          type="font/woff2"
+          crossorigin
+        />
+      )
+    }
+
+    {/* Only preload code fonts for content that likely has code blocks */}
+    {
+      (currentPath.includes('/blog/') ||
+        currentPath.includes('/notes/') ||
+        currentPath.includes('/projects')) && (
+        <>
+          <link
+            rel="preload"
+            href="/fonts/FiraCode-Regular.woff2"
+            as="font"
+            type="font/woff2"
+            crossorigin
+          />
+          <link
+            rel="preload"
+            href="/fonts/FiraCode-Medium.woff2"
+            as="font"
+            type="font/woff2"
+            crossorigin
+          />
+        </>
+      )
+    }
+
+    {/* Only preload math fonts for content that likely has equations */}
+    {
+      (currentPath.includes('/blog/') ||
+        currentPath.includes('/notes/') ||
+        currentPath.includes('/research')) && (
+        <>
+          <link
+            rel="preload"
+            href="/katex/fonts/KaTeX_Main-Regular.woff2"
+            as="font"
+            type="font/woff2"
+            crossorigin
+          />
+          <link
+            rel="preload"
+            href="/katex/katex.min.css"
+            as="style"
+            onload="this.onload=null;this.rel='stylesheet'"
+          />
+          <noscript>
+            <link rel="stylesheet" href="/katex/katex.min.css" />
+          </noscript>
+        </>
+      )
+    }
+
+    <!-- Specialty fonts loaded on demand -->
+    <link rel="stylesheet" href="/fonts/et-initials.css" />
+
+    <!-- Only preload fonts critical for initial render -->
+    <link
+      rel="preload"
+      href="/fonts/et-book-roman-old-style-figures.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/cormorant-garamond-400.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <!-- Performance hints - will be updated by theme toggle -->
+    <meta name="theme-color" content="#f9f6f2" />
+    <meta name="color-scheme" content="light dark" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={Astro.url.href} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={image} />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={Astro.url.href} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={image} />
+
+    <!-- Creative Commons License -->
+    <link rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/" />
+
+    <title>{title}</title>
+  </head>
+
+  <body class={resolvedTone === 'personal' ? 'personal-content' : 'serious-content'}>
+    <!-- Skip Links for Keyboard Navigation -->
+    <a href="#main-content" class="skip-link"
+      >Skip to main content (blog posts, articles, and page content)</a
+    >
+    <a href="#main-navigation" class="skip-link"
+      >Skip to site navigation (Blog, Projects, Research links)</a
+    >
+
+    <div class="page-wrapper">
+      <!-- Organic botanical borders -->
+      {
+        addBorders && (
+          <div>
+            <BotanicalBorder position="top" variant="vine" intensity="light" />
+            <BotanicalBorder position="left" variant="vine" intensity="light" />
+            <BotanicalBorder position="right" variant="vine" intensity="light" />
+          </div>
+        )
+      }
+
+      <!-- Navigation and Content in scrollable area -->
+      <div class="nav-and-content-area">
+        <nav
+          class="page-nav tw-w-full"
+          role="navigation"
+          aria-label="Main navigation"
+          id="main-navigation"
+        >
+          <div class="nav-content nav-wide tw-mx-auto">
+            <div class="nav-brand">
+              <a href="/" class="site-logo" aria-label="Home">
+                <span class="logo-text" aria-hidden="false">Grotto</span>
+              </a>
+            </div>
+
+            <div class="nav-links">
+              <a
+                href="/blog"
+                class={currentPath.startsWith('/blog') ? 'nav-link active' : 'nav-link'}>Blog</a
+              >
+              <span class="nav-separator">·</span>
+              <a
+                href="/projects"
+                class={currentPath.startsWith('/projects') ? 'nav-link active' : 'nav-link'}
+                >Projects</a
+              >
+              <span class="nav-separator">·</span>
+              <a
+                href="/recipes"
+                class={currentPath.startsWith('/recipes') ? 'nav-link active' : 'nav-link'}
+                >Recipes</a
+              >
+              <span class="nav-separator">·</span>
+              <a
+                href="/research"
+                class={currentPath.startsWith('/research') ? 'nav-link active' : 'nav-link'}
+                >Research</a
+              >
+              <button
+                id="nav-theme-toggle"
+                class="torch-toggle"
+                aria-label="Toggle theme"
+                title="Toggle day/night"
+                type="button"
+              >
+                <svg
+                  class="torch-icon"
+                  viewBox="0 0 64 64"
+                  width="22"
+                  height="22"
+                  aria-hidden="true"
+                >
+                  <defs>
+                    <linearGradient id="flame" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="var(--color-ochre)"></stop>
+                      <stop offset="60%" stop-color="var(--color-walnut)"></stop>
+                      <stop offset="100%" stop-color="var(--color-tansy)"></stop>
+                    </linearGradient>
+                  </defs>
+                  <path
+                    d="M32 8c6 7 4 13-1 18 5-1 8-5 8-10 5 5 7 13 2 19-4 5-12 6-18 3-7-4-7-12-2-17 0 6 6 9 10 7-3-2-5-6-5-9 0-2 1-5 6-11z"
+                    fill="url(#flame)"
+                    stroke="var(--color-ink-medium)"
+                    stroke-width="1"></path>
+                  <rect x="28" y="44" width="8" height="10" rx="2" fill="var(--color-ink-medium)"
+                  ></rect>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </nav>
+
+        <!-- Main content area -->
+        <main class="main-content" id="main-content">
+          <div
+            class={`layout-${resolvedLayout} ${resolvedProse ? 'prose' : ''} ${resolvedLeading !== 'default' ? `leading-${resolvedLeading}` : ''}`}
+          >
+            <slot />
+          </div>
+          <div class="notes-container" id="notesContainer"></div>
+        </main>
+
+        <!-- Illustrated Footer -->
+        <div class="footer-area">
+          <IllustratedFooter variant={footerVariant} includeQuoteSection={includeQuoteSection} />
+        </div>
+      </div>
+
+      <!-- Back to Top Button -->
+      <BackToTop />
+
+      <style is:global>
+        /* Shiki dual theme switching - component-specific theme handling */
+        [data-theme='dark'] .astro-code,
+        [data-theme='dark'] .astro-code span {
+          color: var(--shiki-dark) !important;
+          background-color: var(--shiki-dark-bg) !important;
+          font-style: var(--shiki-dark-font-style) !important;
+          font-weight: var(--shiki-dark-font-weight) !important;
+          text-decoration: var(--shiki-dark-text-decoration) !important;
+        }
+
+        @media (prefers-color-scheme: dark) {
+          :not([data-theme]) .astro-code,
+          :not([data-theme]) .astro-code span {
+            color: var(--shiki-dark) !important;
+            background-color: var(--shiki-dark-bg) !important;
+            font-style: var(--shiki-dark-font-style) !important;
+            font-weight: var(--shiki-dark-font-weight) !important;
+            text-decoration: var(--shiki-dark-text-decoration) !important;
+          }
+        }
+      </style>
+
+      <script>
+        (function () {
+          const KEY = 'theme-preference';
+          const root = document.documentElement;
+          const btn = document.getElementById('nav-theme-toggle');
+          function apply(v: string | null) {
+            if (!v) {
+              root.removeAttribute('data-theme');
+            } else {
+              root.setAttribute('data-theme', v);
+            }
+            const meta = document.querySelector(
+              'meta[name="theme-color"]'
+            ) as HTMLMetaElement | null;
+            if (meta) {
+              meta.content = v === 'dark' ? '#0f100e' : '#f9f6f2';
+            }
+          }
+          function get() {
+            return localStorage.getItem(KEY);
+          }
+          function set(v: string | null) {
+            if (v) localStorage.setItem(KEY, v);
+            else localStorage.removeItem(KEY);
+          }
+          function systemPref() {
+            return matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          }
+          function effective() {
+            return get() || systemPref();
+          }
+          function toggle() {
+            const cur = effective();
+            const next = cur === 'dark' ? 'light' : 'dark';
+            const run = () => {
+              set(next);
+              apply(next);
+            };
+            const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const doc = document as any;
+            if ('startViewTransition' in doc && !prefersReduced) {
+              (doc as any).startViewTransition(run);
+            } else {
+              run();
+            }
+          }
+          apply(get());
+          btn && btn.addEventListener('click', toggle);
+        })();
+
+        // Copy button functionality for code blocks
+        document.addEventListener('DOMContentLoaded', function () {
+          document.querySelectorAll('.astro-code').forEach(function (codeBlock) {
+            const button = document.createElement('button');
+            button.className = 'copy-button';
+            button.type = 'button';
+            button.setAttribute('aria-label', 'Copy code to clipboard');
+            button.innerHTML =
+              '<svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 0 24 24" width="16"><path d="M18 5.086L12.914 0H5a3 3 0 0 0-3 3v17h16zM4 18V3a1 1 0 0 1 1-1h7v4h4v12zm18-9v15H7v-2h13V7z" fill="currentColor"/></svg>';
+
+            button.addEventListener('click', async function (e) {
+              e.stopPropagation();
+              try {
+                const codeElement = codeBlock.querySelector('code');
+                const codeContent = codeElement ? codeElement.textContent || '' : '';
+                await navigator.clipboard.writeText(codeContent);
+                button.setAttribute('aria-label', 'Code copied to clipboard');
+                button.classList.add('copied');
+                button.innerHTML =
+                  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 507.506 507.506" width="16" height="16"><path d="M163.865 436.934c-14.406.006-28.222-5.72-38.4-15.915L9.369 304.966c-12.492-12.496-12.492-32.752 0-45.248h0c12.496-12.492 32.752-12.492 45.248 0l109.248 109.248L452.889 79.942c12.496-12.492 32.752-12.492 45.248 0h0c12.492 12.496 12.492 32.752 0 45.248L202.265 421.019c-10.178 10.195-23.994 15.921-38.4 15.915z" fill="currentColor"/></svg>';
+                setTimeout(function () {
+                  button.setAttribute('aria-label', 'Copy code to clipboard');
+                  button.classList.remove('copied');
+                  button.innerHTML =
+                    '<svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 0 24 24" width="16"><path d="M18 5.086L12.914 0H5a3 3 0 0 0-3 3v17h16zM4 18V3a1 1 0 0 1 1-1h7v4h4v12zm18-9v15H7v-2h13V7z" fill="currentColor"/></svg>';
+                }, 2000);
+              } catch (err) {
+                const codeElement = codeBlock.querySelector('code');
+                const codeContent = codeElement ? codeElement.textContent || '' : '';
+                const textArea = document.createElement('textarea');
+                textArea.value = codeContent;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                button.setAttribute('aria-label', 'Code copied to clipboard');
+                button.classList.add('copied');
+                button.innerHTML =
+                  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 507.506 507.506" width="16" height="16"><path d="M163.865 436.934c-14.406.006-28.222-5.72-38.4-15.915L9.369 304.966c-12.492-12.496-12.492-32.752 0-45.248h0c12.496-12.492 32.752-12.492 45.248 0l109.248 109.248L452.889 79.942c12.496-12.492 32.752-12.492 45.248 0h0c12.492 12.496 12.492 32.752 0 45.248L202.265 421.019c-10.178 10.195-23.994 15.921-38.4 15.915z" fill="currentColor"/></svg>';
+                setTimeout(function () {
+                  button.setAttribute('aria-label', 'Copy code to clipboard');
+                  button.classList.remove('copied');
+                  button.innerHTML =
+                    '<svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 0 24 24" width="16"><path d="M18 5.086L12.914 0H5a3 3 0 0 0-3 3v17h16zM4 18V3a1 1 0 0 1 1-1h7v4h4v12zm18-9v15H7v-2h13V7z" fill="currentColor"/></svg>';
+                }, 2000);
+              }
+            });
+
+            codeBlock.appendChild(button);
+          });
+        });
+
+        // Margin Notes positioning logic (progressive enhancement)
+        (function () {
+          function convertMarginBlockquotesToAnchors() {
+            const blockquotes = document.querySelectorAll('.post-body blockquote');
+            blockquotes.forEach((blockquote) => {
+              const firstP = blockquote.querySelector('p:first-child');
+              if (!firstP || !firstP.textContent) return;
+              const raw = firstP.textContent.trim();
+              if (!/^margin:/i.test(raw)) return;
+              const noteText = raw.replace(/^margin:\s*/i, '').trim();
+              const anchor = document.createElement('span');
+              anchor.className = 'note-anchor';
+              anchor.textContent = '';
+              anchor.setAttribute('data-note', noteText);
+              blockquote.parentElement?.insertBefore(anchor, blockquote);
+              blockquote.remove();
+            });
+          }
+          class MarginNotes {
+            anchors: NodeListOf<HTMLElement>;
+            notesContainer: HTMLElement | null;
+            notes: HTMLElement[];
+            constructor() {
+              this.anchors = document.querySelectorAll('.note-anchor');
+              this.notesContainer = document.getElementById('notesContainer');
+              this.notes = [];
+              if (!this.anchors.length || !this.notesContainer) return;
+              this.init();
+            }
+            init() {
+              this.createNotes();
+              this.positionNotesContainer();
+              this.positionNotes();
+              this.setupEventListeners();
+            }
+            createNotes() {
+              this.anchors.forEach((anchor, index) => {
+                const noteElement = document.createElement('div');
+                noteElement.className = 'margin-note';
+                noteElement.textContent = anchor.dataset.note || '';
+                noteElement.setAttribute('data-anchor-index', String(index));
+                this.notesContainer!.appendChild(noteElement);
+                this.notes.push(noteElement);
+              });
+            }
+            positionNotesContainer() {
+              const pageContainer =
+                (document.querySelector('.post-body.prose') as HTMLElement) ||
+                (document.querySelector('.layout-prose') as HTMLElement) ||
+                (document.querySelector('.container') as HTMLElement);
+              const wrapper = document.querySelector('.main-content');
+              if (!pageContainer || !wrapper || !this.notesContainer) return;
+              const contentRect = pageContainer.getBoundingClientRect();
+              const wrapperRect = (wrapper as HTMLElement).getBoundingClientRect();
+              const gap = 28; // matches --margin-note-gap
+              const leftPosition = contentRect.right - wrapperRect.left + gap;
+              this.notesContainer.style.left = leftPosition + 'px';
+            }
+            positionNotes() {
+              const wrapper = document.querySelector('.main-content');
+              if (!wrapper) return;
+              const wrapperRect = (wrapper as HTMLElement).getBoundingClientRect();
+              const used: { top: number; height: number }[] = [];
+              this.anchors.forEach((anchor, index) => {
+                const anchorRect = anchor.getBoundingClientRect();
+                const note = this.notes[index];
+                if (!note) return;
+                let top = anchorRect.top - wrapperRect.top;
+                top = this.avoidCollisions(top, used, note);
+                used.push({ top, height: this.getNoteHeight(note) });
+                note.style.top = top + 'px';
+                setTimeout(() => {
+                  note.classList.add('visible');
+                  // Ensure visibility even if CSS for .visible is purged/late
+                  note.style.opacity = '1';
+                  note.style.transform = 'translateY(0)';
+                }, index * 60);
+              });
+            }
+            getNoteHeight(note: HTMLElement) {
+              const od = note.style.display,
+                ov = note.style.visibility,
+                op = note.style.position,
+                ot = note.style.top;
+              note.style.display = 'block';
+              note.style.visibility = 'hidden';
+              note.style.position = 'absolute';
+              note.style.top = '0px';
+              const h = note.offsetHeight;
+              note.style.display = od;
+              note.style.visibility = ov;
+              note.style.position = op;
+              note.style.top = ot;
+              return h;
+            }
+            avoidCollisions(
+              desiredTop: number,
+              used: { top: number; height: number }[],
+              note: HTMLElement
+            ) {
+              let adjusted = desiredTop;
+              const height = this.getNoteHeight(note);
+              const minGap = 24;
+              const sorted = used.slice().sort((a, b) => a.top - b.top);
+              for (const u of sorted) {
+                if (adjusted < u.top + u.height + minGap && adjusted + height + minGap > u.top) {
+                  adjusted = u.top + u.height + minGap;
+                }
+              }
+              return adjusted;
+            }
+            setupEventListeners() {
+              let t: number | undefined;
+              const onResize = () => {
+                if (t) window.clearTimeout(t);
+                t = window.setTimeout(() => {
+                  this.positionNotesContainer();
+                  this.positionNotes();
+                }, 200);
+              };
+              window.addEventListener('resize', onResize);
+              window.addEventListener('load', () => this.refresh());
+            }
+            refresh() {
+              this.positionNotesContainer();
+              this.positionNotes();
+            }
+          }
+          (function initMarginNotesWhenReady() {
+            const tryInit = () => {
+              if (window.matchMedia('(max-width: 1100px)').matches) return;
+              if ((window as any).__mnotes_inited) return;
+              // Ensure anchors exist by converting any Quarto-style margin notes first
+              convertMarginBlockquotesToAnchors();
+              const anchors = document.querySelectorAll('.note-anchor');
+              const container = document.getElementById('notesContainer');
+              if (!anchors.length || !container) return;
+              new (MarginNotes as any)();
+              (window as any).__mnotes_inited = true;
+            };
+            document.addEventListener('DOMContentLoaded', () => {
+              // Run after DOM ready, then again in a microtask to wait for page-level mutations
+              tryInit();
+              setTimeout(tryInit, 0);
+            });
+            window.addEventListener('load', tryInit);
+            // If user resizes from narrow to wide, attempt init
+            const mql = window.matchMedia('(max-width: 1100px)');
+            mql.addEventListener?.('change', () => {
+              if (!mql.matches) {
+                // just became wide
+                setTimeout(tryInit, 50);
+              }
+            });
+          })();
+        })();
+      </script>
+    </div>
+  </body>
+</html>

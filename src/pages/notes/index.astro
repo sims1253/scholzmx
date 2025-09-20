@@ -1,0 +1,1488 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import HandDrawnDivider from '../../components/HandDrawnDivider.astro';
+
+// Get all notes, filter out drafts, and sort by creation date
+const allNotes = await getCollection('notes');
+const publishedNotes = allNotes
+  .filter((note) => !note.data.draft)
+  .sort((a, b) => new Date(b.data.created).getTime() - new Date(a.data.created).getTime());
+
+// Extract all unique tags
+const allTags = [...new Set(publishedNotes.flatMap((note) => note.data.tags || []))].sort();
+
+// Extract all note types
+const allTypes = [...new Set(publishedNotes.map((note) => note.data.type))].sort();
+
+const formatDate = (date: Date) => {
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+};
+
+// Note: No longer using symbol icons - using CSS-drawn elements instead
+---
+
+<BaseLayout
+  title="Notes - Digital Garden"
+  description="A collection of thoughts, observations, and ideas in various stages of development"
+  footerVariant="garden"
+  tone="serious"
+  layout="listing"
+>
+  <div class="notes-page">
+    <div class="notes-container">
+      <header class="notes-header">
+        <h1 class="page-title">Notes & Seedlings</h1>
+        <p class="page-description">
+          A digital garden where thoughts grow from seeds to saplings. Some ideas are polished,
+          others are works in progress. All are part of the ongoing journey of learning and
+          understanding.
+        </p>
+      </header>
+
+      <HandDrawnDivider variant="botanical" width="wide" />
+
+      {/* Main Content Layout */}
+      <div class="garden-layout">
+        {/* Sidebar with filters */}
+        <aside class="garden-sidebar">
+          {/* Hand-drawn ornamental header */}
+          <div class="sidebar-ornament">
+            <div class="ornamental-line"></div>
+            <div class="hand-flourish"></div>
+            <div class="ornamental-line"></div>
+          </div>
+
+          <div class="sidebar-section">
+            <h3 class="sidebar-title">
+              <span class="rubric-letter">S</span>cripta
+            </h3>
+            <div class="type-list" id="type-list">
+              <button class="filter-button manuscript-button active" data-type="">
+                <span class="initial-letter">O</span>
+                <span class="button-text">mnia</span>
+                <span class="roman-numeral">({publishedNotes.length})</span>
+              </button>
+              {
+                allTypes.map((type) => {
+                  const count = publishedNotes.filter((note) => note.data.type === type).length;
+                  return (
+                    <button class="filter-button manuscript-button" data-type={type}>
+                      <span class="type-marker" />
+                      <span class="button-text">{type}</span>
+                      <span class="roman-numeral">({count})</span>
+                    </button>
+                  );
+                })
+              }
+            </div>
+          </div>
+
+          <div class="sidebar-divider">
+            <div class="divider-vine"></div>
+          </div>
+
+          <div class="sidebar-section">
+            <h3 class="sidebar-title">
+              <span class="rubric-letter">T</span>hemata
+            </h3>
+            <div class="tag-list" id="tag-list">
+              <button class="filter-button manuscript-button active" data-tag="">
+                <span class="initial-letter">O</span>
+                <span class="button-text">mnia</span>
+                <span class="roman-numeral">({allTags.length})</span>
+              </button>
+              {
+                allTags.map((tag) => {
+                  const count = publishedNotes.filter((note) =>
+                    note.data.tags?.includes(tag)
+                  ).length;
+                  return (
+                    <button class="filter-button manuscript-button" data-tag={tag}>
+                      <span class="topic-marker" />
+                      <span class="button-text">{tag}</span>
+                      <span class="roman-numeral">({count})</span>
+                    </button>
+                  );
+                })
+              }
+            </div>
+          </div>
+
+          {/* Bottom with manuscript footer */}
+          <div class="sidebar-footer">
+            <div class="manuscript-colophon">
+              <span class="colophon-number" id="visible-count">{publishedNotes.length}</span>
+              <span class="colophon-text">scripta in hoc codice</span>
+            </div>
+          </div>
+        </aside>
+
+        {/* Notes Grid */}
+        <main class="notes-main">
+          <div class="notes-grid" id="notes-grid">
+            {
+              publishedNotes.map((note) => (
+                <article
+                  class="note-card manuscript-page"
+                  data-type={note.data.type}
+                  data-tags={note.data.tags?.join(',') || ''}
+                >
+                  {/* Binding holes and manuscript marks */}
+                  <div class="binding-holes" />
+
+                  {/* Ink stains and age marks */}
+                  <div class="manuscript-stains" />
+                  <div class="manuscript-aging" />
+
+                  {/* Torn/irregular edges */}
+                  <div class="paper-edge-top" />
+                  <div class="paper-edge-bottom" />
+
+                  <div class="manuscript-content">
+                    <div class="note-meta marginalia">
+                      <span class="manuscript-type-marker" data-type={note.data.type} />
+                      <time
+                        class="note-date scribal-note"
+                        datetime={note.data.created.toISOString()}
+                      >
+                        Anno {formatDate(note.data.created)}
+                      </time>
+                    </div>
+
+                    <div class="manuscript-body">
+                      <h3 class="note-title manuscript-heading">
+                        <a href={`/notes/${note.slug}`} class="note-link">
+                          {note.data.title}
+                        </a>
+                      </h3>
+
+                      {note.data.description && (
+                        <p class="note-description manuscript-text">{note.data.description}</p>
+                      )}
+
+                      {note.data.tags && note.data.tags.length > 0 && (
+                        <div class="note-tags manuscript-annotations">
+                          {note.data.tags.slice(0, 3).map((tag) => (
+                            <span class="tag scribal-annotation">{tag}</span>
+                          ))}
+                          {note.data.tags.length > 3 && (
+                            <span class="tag-more scribal-note">
+                              & {note.data.tags.length - 3} alia
+                            </span>
+                          )}
+                        </div>
+                      )}
+
+                      {note.data.connections && note.data.connections.length > 0 && (
+                        <div class="note-connections manuscript-reference">
+                          <span class="reference-mark" />
+                          <span class="connections-text">Vide etiam:</span>
+                          <span class="connections-count">
+                            {note.data.connections.length} scripta
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </article>
+              ))
+            }
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .notes-page {
+    min-height: 100vh;
+    padding: var(--space-lg) 0;
+    background: 
+      /* Ancient parchment base with deeper aging */
+      radial-gradient(ellipse at 20% 80%, rgba(139, 90, 60, 0.12) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(168, 181, 160, 0.09) 0%, transparent 50%),
+      radial-gradient(ellipse at 45% 30%, rgba(212, 175, 55, 0.06) 0%, transparent 40%),
+      radial-gradient(ellipse at 75% 85%, rgba(139, 90, 60, 0.07) 0%, transparent 35%),
+      /* More prominent age spots and foxing */
+        radial-gradient(circle at 15% 40%, rgba(139, 90, 60, 0.18) 1px, transparent 3px),
+      radial-gradient(circle at 85% 70%, rgba(139, 90, 60, 0.14) 2px, transparent 4px),
+      radial-gradient(circle at 30% 90%, rgba(139, 90, 60, 0.1) 1px, transparent 3px),
+      radial-gradient(circle at 70% 15%, rgba(212, 175, 55, 0.08) 1px, transparent 2px),
+      radial-gradient(circle at 25% 25%, rgba(139, 90, 60, 0.12) 1px, transparent 2px),
+      /* Grainy texture overlay */
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(139, 90, 60, 0.02) 2px,
+          rgba(139, 90, 60, 0.02) 3px,
+          transparent 3px,
+          transparent 6px
+        ),
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 3px,
+        rgba(139, 90, 60, 0.015) 3px,
+        rgba(139, 90, 60, 0.015) 4px,
+        transparent 4px,
+        transparent 8px
+      ),
+      /* Base aged parchment with more variation */
+        linear-gradient(135deg, #faf7f0 0%, #f8f4e9 25%, #f6f2e7 50%, #f8f5ef 75%, #faf7f0 100%);
+    background-size:
+      800px 600px,
+      700px 500px,
+      600px 400px,
+      500px 400px,
+      80px 80px,
+      120px 120px,
+      90px 90px,
+      60px 60px,
+      100px 100px,
+      15px 15px,
+      20px 20px,
+      100% 100%;
+  }
+
+  .notes-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 var(--space-lg);
+  }
+
+  .notes-header {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+  }
+
+  .page-title {
+    font-size: clamp(var(--text-xl), 4vw, var(--text-2xl));
+    line-height: 1.2;
+    margin-bottom: var(--space-md);
+    color: var(--color-ink-dark);
+  }
+
+  .page-description {
+    font-size: var(--text-md);
+    line-height: 1.6;
+    color: var(--color-ink-medium);
+    max-width: 72ch;
+    margin: 0 auto;
+    font-style: italic;
+  }
+
+  /* Layout */
+  .garden-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: var(--space-xl);
+    align-items: start;
+  }
+
+  /* Sidebar - Manuscript Index */
+  .garden-sidebar {
+    background: 
+      /* Aged vellum texture */
+      radial-gradient(ellipse at 30% 20%, rgba(139, 90, 60, 0.05) 0%, transparent 50%),
+      radial-gradient(ellipse at 70% 80%, rgba(212, 175, 55, 0.04) 0%, transparent 40%),
+      /* Ink stains and age marks */
+        radial-gradient(circle at 10% 30%, rgba(139, 90, 60, 0.08) 1px, transparent 3px),
+      radial-gradient(circle at 90% 70%, rgba(139, 90, 60, 0.06) 2px, transparent 4px),
+      linear-gradient(135deg, #faf8f2, #f6f2e8);
+
+    border: 2px solid rgba(139, 90, 60, 0.2);
+    border-radius: 0;
+    padding: var(--space-xl) var(--space-lg);
+    top: var(--space-lg);
+    box-shadow:
+      inset 0 0 20px rgba(139, 90, 60, 0.03),
+      0 8px 24px rgba(139, 90, 60, 0.12),
+      0 2px 6px rgba(139, 90, 60, 0.08);
+
+    /* Torn/aged paper edges */
+    clip-path: polygon(0% 2%, 3% 0%, 97% 1%, 100% 4%, 99% 96%, 96% 100%, 2% 99%, 0% 97%);
+
+    position: relative;
+  }
+
+  .garden-sidebar::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(
+      45deg,
+      rgba(139, 90, 60, 0.1) 0%,
+      rgba(168, 181, 160, 0.08) 50%,
+      rgba(139, 90, 60, 0.1) 100%
+    );
+    z-index: -1;
+    border-radius: 2px;
+  }
+
+  .sidebar-ornament {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--space-lg);
+    gap: var(--space-sm);
+  }
+
+  .ornamental-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(139, 90, 60, 0.3) 20%,
+      rgba(139, 90, 60, 0.6) 50%,
+      rgba(139, 90, 60, 0.3) 80%,
+      transparent 100%
+    );
+  }
+
+  .ornamental-flourish {
+    color: var(--color-walnut);
+    font-size: var(--text-lg);
+    text-shadow: 0 1px 2px rgba(139, 90, 60, 0.2);
+  }
+
+  .sidebar-section {
+    margin-bottom: var(--space-lg);
+  }
+
+  .sidebar-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .sidebar-title {
+    font-size: var(--text-md);
+    font-weight: 600;
+    color: var(--color-walnut);
+    margin-bottom: var(--space-md);
+    text-align: center;
+    font-family: var(--font-body-serious); /* ET Book Roman for serious content */
+    text-shadow: 0 1px 2px rgba(139, 90, 60, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xs);
+  }
+
+  /* Rubric letters - red initial capitals */
+  .rubric-letter {
+    color: #8b4513;
+    font-size: 1.2em;
+    font-weight: 700;
+    text-shadow:
+      0 1px 2px rgba(139, 69, 19, 0.3),
+      1px 0 0 rgba(139, 69, 19, 0.2);
+    position: relative;
+  }
+
+  .rubric-letter::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(139, 69, 19, 0.4) 20%,
+      rgba(139, 69, 19, 0.6) 50%,
+      rgba(139, 69, 19, 0.4) 80%,
+      transparent 100%
+    );
+  }
+
+  /* Hand-drawn flourish */
+  .hand-flourish {
+    width: 40px;
+    height: 20px;
+    background: radial-gradient(ellipse at center, rgba(139, 90, 60, 0.3) 0%, transparent 70%);
+    position: relative;
+  }
+
+  .hand-flourish::before,
+  .hand-flourish::after {
+    content: '';
+    position: absolute;
+    background: rgba(139, 90, 60, 0.4);
+    border-radius: 50%;
+  }
+
+  .hand-flourish::before {
+    width: 8px;
+    height: 3px;
+    top: 8px;
+    left: 5px;
+    transform: rotate(-20deg);
+  }
+
+  .hand-flourish::after {
+    width: 12px;
+    height: 2px;
+    top: 10px;
+    right: 8px;
+    transform: rotate(15deg);
+  }
+
+  /* Vine divider */
+  .sidebar-divider {
+    margin: var(--space-lg) 0;
+    position: relative;
+    height: 20px;
+  }
+
+  .divider-vine {
+    position: relative;
+    height: 2px;
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(139, 90, 60, 0.2) 20%,
+      rgba(139, 90, 60, 0.4) 50%,
+      rgba(139, 90, 60, 0.2) 80%,
+      transparent 100%
+    );
+    margin: var(--space-sm) 0;
+  }
+
+  .divider-vine::before,
+  .divider-vine::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: rgba(90, 107, 71, 0.3);
+    border-radius: 50% 0;
+    top: -2px;
+  }
+
+  .divider-vine::before {
+    left: 30%;
+    transform: rotate(-45deg);
+  }
+
+  .divider-vine::after {
+    right: 35%;
+    transform: rotate(135deg);
+  }
+
+  .type-list,
+  .tag-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .manuscript-button {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: var(--space-sm);
+    background: rgba(250, 247, 240, 0.4);
+    border: 1px solid rgba(139, 90, 60, 0.15);
+    border-radius: 0;
+    font-size: var(--text-xs);
+    color: var(--color-ink-medium);
+    cursor: pointer;
+    transition: all var(--transition-medium);
+    text-align: left;
+    font-family: var(--font-body-serious); /* ET Book Roman for serious content */
+    position: relative;
+
+    /* Slight manuscript page curve */
+    box-shadow:
+      inset 1px 1px 3px rgba(139, 90, 60, 0.06),
+      0 1px 3px rgba(139, 90, 60, 0.08);
+  }
+
+  .manuscript-button::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(139, 90, 60, 0.2) 20%,
+      rgba(139, 90, 60, 0.4) 50%,
+      rgba(139, 90, 60, 0.2) 80%,
+      transparent 100%
+    );
+  }
+
+  /* Initial letters for buttons */
+  .initial-letter {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle at 30% 30%, rgba(139, 69, 19, 0.8), rgba(139, 69, 19, 0.4));
+    border: 1px solid rgba(139, 69, 19, 0.3);
+    border-radius: 2px;
+    color: rgba(250, 247, 240, 0.9);
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+    line-height: 18px;
+    margin-right: var(--space-sm);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+    position: relative;
+  }
+
+  .initial-letter::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, transparent 50%);
+    border-radius: 3px;
+    z-index: -1;
+  }
+
+  /* Type and topic markers */
+  .type-marker,
+  .topic-marker {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-right: var(--space-sm);
+    position: relative;
+  }
+
+  .type-marker::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    background: rgba(139, 90, 60, 0.6);
+    border-radius: 50%;
+    border: 1px solid rgba(139, 90, 60, 0.8);
+  }
+
+  .topic-marker::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(45deg);
+    width: 6px;
+    height: 6px;
+    background: rgba(90, 107, 71, 0.6);
+    border: 1px solid rgba(90, 107, 71, 0.8);
+  }
+
+  /* Roman numerals styling */
+  .roman-numeral {
+    color: var(--color-ink-light);
+    font-size: 10px;
+    font-weight: 500;
+    font-family: var(--font-body-serious); /* ET Book Roman for serious content */
+    font-style: italic;
+  }
+
+  .button-text {
+    flex: 1;
+    font-style: italic;
+  }
+
+  .button-count {
+    color: var(--color-ink-light);
+    font-size: 10px;
+    font-weight: 500;
+  }
+
+  .manuscript-button:hover {
+    background: rgba(139, 90, 60, 0.08);
+    border-color: rgba(139, 90, 60, 0.25);
+    color: var(--color-ink-dark);
+    transform: translateX(2px);
+    box-shadow:
+      inset 1px 1px 3px rgba(139, 90, 60, 0.1),
+      0 2px 6px rgba(139, 90, 60, 0.12);
+  }
+
+  .manuscript-button.active {
+    background: rgba(139, 90, 60, 0.12);
+    border-color: var(--color-walnut);
+    color: var(--color-walnut);
+    font-weight: 500;
+    transform: translateX(4px);
+    box-shadow:
+      inset 2px 2px 4px rgba(139, 90, 60, 0.1),
+      0 3px 8px rgba(139, 90, 60, 0.15);
+  }
+
+  .manuscript-button.active .button-ornament {
+    color: var(--color-gold);
+    text-shadow: 0 1px 2px rgba(212, 175, 55, 0.3);
+  }
+
+  .sidebar-footer {
+    margin-top: var(--space-xl);
+    padding-top: var(--space-lg);
+    border-top: 1px solid rgba(139, 90, 60, 0.2);
+    text-align: center;
+  }
+
+  /* Manuscript colophon (scribal signature) */
+  .manuscript-colophon {
+    text-align: center;
+    padding: var(--space-sm);
+    background: linear-gradient(135deg, rgba(168, 181, 160, 0.05), rgba(139, 90, 60, 0.03));
+    border: 1px dotted rgba(139, 90, 60, 0.2);
+    font-style: italic;
+    position: relative;
+  }
+
+  .manuscript-colophon::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: 20%;
+    right: 20%;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(139, 90, 60, 0.3) 50%,
+      transparent 100%
+    );
+  }
+
+  .manuscript-colophon::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 25%;
+    right: 25%;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(139, 90, 60, 0.3) 50%,
+      transparent 100%
+    );
+  }
+
+  .colophon-number {
+    display: inline-block;
+    color: var(--color-walnut);
+    font-weight: 600;
+    font-size: var(--text-lg);
+    font-family: var(--font-body-serious); /* ET Book Roman for serious content */
+    margin-right: var(--space-xs);
+  }
+
+  .colophon-text {
+    color: var(--color-ink-medium);
+    font-size: var(--text-xs);
+    font-family: var(--font-body-serious); /* ET Book Roman for serious content */
+    text-transform: lowercase;
+  }
+
+  .sidebar-stats {
+    padding-top: var(--space-md);
+    border-top: 1px solid rgba(139, 90, 60, 0.1);
+  }
+
+  .stat-box {
+    text-align: center;
+    padding: var(--space-sm);
+    background: rgba(168, 181, 160, 0.1);
+    border-radius: var(--border-radius);
+  }
+
+  .stat-number {
+    display: block;
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--color-walnut);
+  }
+
+  .stat-label {
+    font-size: var(--text-xs);
+    color: var(--color-ink-light);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* Main content area */
+  .notes-main {
+    min-height: 400px;
+  }
+
+  .notes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--space-lg);
+    align-items: start;
+  }
+
+  /* Manuscript Pages with Rich Texture */
+  .manuscript-page {
+    position: relative;
+    background: 
+      /* Heavy aging and weathering */
+      radial-gradient(ellipse at 15% 25%, rgba(139, 90, 60, 0.12) 0%, transparent 30%),
+      radial-gradient(ellipse at 85% 75%, rgba(212, 175, 55, 0.08) 0%, transparent 25%),
+      radial-gradient(ellipse at 50% 5%, rgba(168, 181, 160, 0.06) 0%, transparent 20%),
+      radial-gradient(ellipse at 25% 85%, rgba(139, 90, 60, 0.07) 0%, transparent 35%),
+      /* Water stains and foxing */
+        radial-gradient(circle at 30% 40%, rgba(139, 90, 60, 0.08) 2px, transparent 8px),
+      radial-gradient(circle at 70% 20%, rgba(139, 90, 60, 0.06) 3px, transparent 10px),
+      radial-gradient(circle at 20% 80%, rgba(212, 175, 55, 0.05) 2px, transparent 6px),
+      radial-gradient(circle at 80% 60%, rgba(139, 90, 60, 0.04) 4px, transparent 12px),
+      /* Rough paper fiber texture */
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(139, 90, 60, 0.04) 2px,
+          rgba(139, 90, 60, 0.04) 4px,
+          transparent 4px,
+          transparent 8px
+        ),
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 2px,
+        rgba(139, 90, 60, 0.03) 2px,
+        rgba(139, 90, 60, 0.03) 4px,
+        transparent 4px,
+        transparent 6px
+      ),
+      /* Cross-hatch texture for authenticity */
+        repeating-linear-gradient(
+          45deg,
+          transparent,
+          transparent 4px,
+          rgba(139, 90, 60, 0.015) 4px,
+          rgba(139, 90, 60, 0.015) 6px,
+          transparent 6px,
+          transparent 16px
+        ),
+      repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 6px,
+        rgba(168, 181, 160, 0.012) 6px,
+        rgba(168, 181, 160, 0.012) 8px,
+        transparent 8px,
+        transparent 18px
+      ),
+      /* Base aged parchment with natural variation */
+        linear-gradient(125deg, #faf8f2 0%, #f6f3e9 25%, #faf7f0 50%, #f4f0e6 75%, #f8f5ef 100%);
+
+    border: none;
+    padding: var(--space-lg);
+    transition: all var(--transition-medium);
+    overflow: hidden;
+
+    /* Irregular hand-cut manuscript edges */
+    clip-path: polygon(
+      0.3% 1.2%,
+      1.8% 0.1%,
+      4.2% 0.7%,
+      7.1% 0.2%,
+      12.5% 0.9%,
+      18.3% 0.4%,
+      25.7% 0.8%,
+      32.1% 0.3%,
+      39.8% 0.6%,
+      47.2% 0.1%,
+      54.9% 0.7%,
+      62.4% 0.2%,
+      69.8% 0.5%,
+      77.1% 0.9%,
+      84.6% 0.3%,
+      91.2% 0.8%,
+      96.8% 1.1%,
+      98.9% 2.8%,
+      99.2% 8.4%,
+      99.7% 15.1%,
+      99.1% 22.8%,
+      99.6% 30.2%,
+      99.3% 37.9%,
+      99.8% 45.1%,
+      99.4% 52.7%,
+      99.7% 60.3%,
+      99.2% 67.8%,
+      99.6% 75.4%,
+      99.1% 82.9%,
+      99.5% 89.6%,
+      98.7% 95.8%,
+      96.9% 98.2%,
+      91.4% 98.9%,
+      84.7% 98.3%,
+      77.8% 98.8%,
+      70.2% 98.4%,
+      62.9% 98.7%,
+      55.1% 98.2%,
+      47.6% 98.6%,
+      39.9% 98.1%,
+      32.4% 98.5%,
+      24.8% 98.3%,
+      17.2% 98.7%,
+      9.7% 98.4%,
+      4.1% 98.8%,
+      1.9% 97.1%,
+      0.4% 93.7%,
+      0.1% 86.2%,
+      0.6% 78.9%,
+      0.2% 71.4%,
+      0.7% 63.8%,
+      0.3% 56.1%,
+      0.8% 48.7%,
+      0.4% 41.2%,
+      0.9% 33.6%,
+      0.5% 26.1%,
+      0.2% 18.7%,
+      0.6% 11.4%,
+      0.8% 5.9%
+    );
+
+    /* Very dark, highly visible shadows */
+    box-shadow: 
+      /* Extremely prominent main shadows */
+      0 16px 40px rgba(0, 0, 0, 0.35),
+      0 12px 28px rgba(139, 90, 60, 0.6),
+      0 8px 20px rgba(139, 90, 60, 0.5),
+      0 4px 12px rgba(139, 90, 60, 0.4),
+      0 2px 6px rgba(139, 90, 60, 0.3),
+      /* Additional dark depth layers */ 0 20px 50px rgba(0, 0, 0, 0.25),
+      0 24px 60px rgba(139, 90, 60, 0.35),
+      0 28px 70px rgba(0, 0, 0, 0.15),
+      /* Strong inner shadows for paper thickness */ inset 0 0 25px rgba(139, 90, 60, 0.2),
+      inset 0 0 12px rgba(139, 90, 60, 0.15),
+      inset 0 3px 6px rgba(139, 90, 60, 0.25);
+
+    /* More pronounced random rotation for manuscript authenticity */
+    &:nth-child(3n + 1) {
+      transform: rotate(1.2deg);
+    }
+    &:nth-child(3n + 2) {
+      transform: rotate(-0.9deg);
+    }
+    &:nth-child(3n + 3) {
+      transform: rotate(0.6deg);
+    }
+    &:nth-child(5n + 1) {
+      transform: rotate(-1.1deg);
+    }
+    &:nth-child(5n + 3) {
+      transform: rotate(1.4deg);
+    }
+    &:nth-child(7n + 2) {
+      transform: rotate(-0.5deg);
+    }
+    &:nth-child(11n + 1) {
+      transform: rotate(0.8deg);
+    }
+  }
+
+  .manuscript-page:hover {
+    transform: rotate(0deg) translateY(-16px) scale(1.06);
+    box-shadow: 
+      /* Extremely dramatic hover shadows */
+      0 32px 80px rgba(0, 0, 0, 0.45),
+      0 24px 60px rgba(139, 90, 60, 0.7),
+      0 16px 40px rgba(139, 90, 60, 0.6),
+      0 12px 28px rgba(139, 90, 60, 0.5),
+      0 8px 20px rgba(139, 90, 60, 0.4),
+      0 4px 12px rgba(139, 90, 60, 0.3),
+      /* Massive depth layers */ 0 40px 100px rgba(0, 0, 0, 0.3),
+      0 48px 120px rgba(139, 90, 60, 0.25),
+      inset 0 0 30px rgba(139, 90, 60, 0.15);
+    z-index: 10;
+  }
+
+  /* Binding holes for manuscript pages */
+  .binding-holes {
+    position: absolute;
+    left: 16px;
+    top: 30px;
+    bottom: 30px;
+    width: 8px;
+    z-index: 1;
+  }
+
+  .binding-holes::before,
+  .binding-holes::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: rgba(139, 90, 60, 0.4);
+    border-radius: 50%;
+    border: 1px solid rgba(139, 90, 60, 0.6);
+    box-shadow: inset 0 1px 2px rgba(139, 90, 60, 0.3);
+  }
+
+  .binding-holes::before {
+    top: 20px;
+  }
+
+  .binding-holes::after {
+    bottom: 20px;
+  }
+
+  /* Type markers for manuscript pages */
+  .manuscript-type-marker {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-right: var(--space-sm);
+    position: relative;
+  }
+
+  .manuscript-type-marker[data-type='thought']::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    border: 2px solid rgba(168, 181, 160, 0.6);
+    border-radius: 50%;
+    background: rgba(168, 181, 160, 0.2);
+  }
+
+  .manuscript-type-marker[data-type='observation']::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    border: 2px solid rgba(90, 107, 71, 0.6);
+    background: rgba(90, 107, 71, 0.2);
+  }
+
+  .manuscript-type-marker[data-type='draft']::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(45deg);
+    width: 6px;
+    height: 6px;
+    border: 2px solid rgba(204, 139, 92, 0.6);
+    background: rgba(204, 139, 92, 0.2);
+  }
+
+  .manuscript-type-marker[data-type='idea']::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-bottom: 6px solid rgba(212, 175, 55, 0.6);
+  }
+
+  .manuscript-type-marker[data-type='reference']::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 2px;
+    background: rgba(139, 90, 60, 0.6);
+  }
+
+  .manuscript-type-marker[data-type='reference']::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(90deg);
+    width: 8px;
+    height: 2px;
+    background: rgba(139, 90, 60, 0.6);
+  }
+
+  /* Enhanced Ink Stains and Age Marks */
+  .manuscript-stains {
+    position: absolute;
+    inset: 0;
+    background: 
+      /* More prominent ink blots and stains */
+      radial-gradient(
+        circle at 12% 30%,
+        rgba(139, 90, 60, 0.15) 1px,
+        rgba(139, 90, 60, 0.08) 3px,
+        transparent 8px
+      ),
+      radial-gradient(
+        circle at 88% 75%,
+        rgba(139, 90, 60, 0.12) 2px,
+        rgba(139, 90, 60, 0.06) 4px,
+        transparent 10px
+      ),
+      radial-gradient(
+        circle at 25% 90%,
+        rgba(139, 90, 60, 0.1) 1px,
+        rgba(139, 90, 60, 0.04) 2px,
+        transparent 6px
+      ),
+      radial-gradient(
+        circle at 78% 18%,
+        rgba(139, 90, 60, 0.13) 2px,
+        rgba(139, 90, 60, 0.07) 3px,
+        transparent 7px
+      ),
+      radial-gradient(circle at 45% 15%, rgba(139, 90, 60, 0.08) 1px, transparent 4px),
+      /* Quill pen splatters */
+        radial-gradient(
+          circle at 65% 85%,
+          rgba(139, 90, 60, 0.18) 0.5px,
+          rgba(139, 90, 60, 0.1) 1px,
+          transparent 3px
+        ),
+      radial-gradient(
+        circle at 35% 25%,
+        rgba(139, 90, 60, 0.14) 0.5px,
+        rgba(139, 90, 60, 0.08) 1.5px,
+        transparent 4px
+      );
+    pointer-events: none;
+  }
+
+  .manuscript-aging {
+    position: absolute;
+    inset: 0;
+    background: 
+      /* More visible age spotting (foxing) */
+      radial-gradient(
+        ellipse at 18% 22%,
+        rgba(139, 90, 60, 0.16) 0%,
+        rgba(139, 90, 60, 0.08) 15%,
+        transparent 35%
+      ),
+      radial-gradient(
+        ellipse at 82% 88%,
+        rgba(139, 90, 60, 0.14) 0%,
+        rgba(139, 90, 60, 0.07) 20%,
+        transparent 40%
+      ),
+      radial-gradient(
+        ellipse at 55% 45%,
+        rgba(212, 175, 55, 0.12) 0%,
+        rgba(212, 175, 55, 0.06) 10%,
+        transparent 25%
+      ),
+      radial-gradient(
+        ellipse at 25% 75%,
+        rgba(139, 90, 60, 0.11) 0%,
+        rgba(139, 90, 60, 0.05) 18%,
+        transparent 32%
+      ),
+      /* Water damage marks */
+        radial-gradient(
+          ellipse at 75% 25%,
+          rgba(168, 181, 160, 0.08) 0%,
+          rgba(168, 181, 160, 0.04) 12%,
+          transparent 28%
+        ),
+      radial-gradient(
+        ellipse at 40% 80%,
+        rgba(139, 90, 60, 0.09) 0%,
+        rgba(139, 90, 60, 0.04) 15%,
+        transparent 30%
+      );
+    pointer-events: none;
+  }
+
+  /* Vary stains per card for uniqueness */
+  .manuscript-page:nth-child(even) .manuscript-stains {
+    background:
+      radial-gradient(
+        circle at 20% 40%,
+        rgba(139, 90, 60, 0.14) 1px,
+        rgba(139, 90, 60, 0.07) 3px,
+        transparent 7px
+      ),
+      radial-gradient(
+        circle at 80% 20%,
+        rgba(139, 90, 60, 0.11) 2px,
+        rgba(139, 90, 60, 0.05) 4px,
+        transparent 9px
+      ),
+      radial-gradient(circle at 60% 85%, rgba(139, 90, 60, 0.09) 1px, transparent 5px);
+  }
+
+  .manuscript-page:nth-child(3n) .manuscript-aging {
+    background:
+      radial-gradient(
+        ellipse at 15% 85%,
+        rgba(212, 175, 55, 0.13) 0%,
+        rgba(212, 175, 55, 0.06) 12%,
+        transparent 30%
+      ),
+      radial-gradient(
+        ellipse at 85% 15%,
+        rgba(139, 90, 60, 0.15) 0%,
+        rgba(139, 90, 60, 0.08) 18%,
+        transparent 38%
+      );
+  }
+
+  /* Torn Paper Edges */
+  .paper-edge-top,
+  .paper-edge-bottom {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent 3px,
+      rgba(139, 90, 60, 0.1) 3px,
+      rgba(139, 90, 60, 0.1) 4px
+    );
+    pointer-events: none;
+  }
+
+  .paper-edge-top {
+    top: 0;
+  }
+  .paper-edge-bottom {
+    bottom: 0;
+  }
+
+  /* Manuscript Content Layout */
+  .manuscript-content {
+    position: relative;
+    z-index: 2;
+  }
+
+  .manuscript-body {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden; /* Ensure proper text wrapping around float */
+  }
+
+  /* Marginalia (side notes) */
+  .marginalia {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+    font-size: var(--text-sm);
+    color: var(--color-ink-light);
+    border-bottom: 1px dotted rgba(139, 90, 60, 0.2);
+    padding-bottom: var(--space-xs);
+  }
+
+  .manuscript-type {
+    font-weight: 600;
+    font-size: var(--text-sm);
+    text-shadow: 0 1px 1px rgba(139, 90, 60, 0.1);
+  }
+
+  .scribal-note {
+    font-style: italic;
+    font-family: var(--font-body-serious); /* ET Book Roman for serious content */
+    font-size: var(--text-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* Manuscript Heading */
+  .manuscript-heading {
+    margin: 0 0 var(--space-sm) 0;
+    font-size: var(--text-xl);
+    line-height: 1.3;
+    font-weight: 600;
+    font-family: var(--font-body-serious); /* ET Book Roman for serious content */
+    text-shadow: 0 1px 2px rgba(139, 90, 60, 0.1);
+  }
+
+  .note-link {
+    color: var(--color-ink-dark);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    border-bottom: 1px dotted rgba(139, 90, 60, 0.3);
+  }
+
+  .note-link:hover {
+    color: var(--color-walnut);
+    border-bottom-color: var(--color-walnut);
+    border-bottom-style: solid;
+  }
+
+  /* Manuscript Text */
+  .manuscript-text {
+    font-size: var(--text-lg);
+    line-height: 1.5;
+    color: var(--color-ink-medium);
+    margin-bottom: var(--space-sm);
+    font-style: italic;
+    text-align: justify;
+  }
+
+  /* Scribal Annotations (tags) */
+  .manuscript-annotations {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-sm);
+    padding: var(--space-xs) 0;
+    border-top: 1px dotted rgba(139, 90, 60, 0.2);
+    border-bottom: 1px dotted rgba(139, 90, 60, 0.2);
+  }
+
+  .scribal-annotation {
+    font-size: 9px;
+    color: var(--color-moss);
+    font-style: italic;
+    font-family: var(--font-body-serious); /* ET Book Roman for serious content */
+    padding: 0.1em 0.3em;
+    background: rgba(90, 107, 71, 0.08);
+    border: 1px solid rgba(90, 107, 71, 0.15);
+    text-transform: lowercase;
+    letter-spacing: 0.02em;
+  }
+
+  .scribal-note {
+    font-size: var(--text-sm);
+    color: var(--color-ink-light);
+    font-style: italic;
+    font-family: var(--font-body-serious); /* ET Book Roman for serious content */
+  }
+
+  /* Manuscript References */
+  .manuscript-reference {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: 10px;
+    color: var(--color-ink-light);
+    font-style: italic;
+    margin-top: var(--space-sm);
+    padding-top: var(--space-xs);
+    border-top: 1px solid rgba(139, 90, 60, 0.15);
+  }
+
+  /* Hand-drawn reference mark */
+  .reference-mark {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-right: var(--space-xs);
+    position: relative;
+  }
+
+  .reference-mark::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    border: 1px solid rgba(139, 90, 60, 0.6);
+    border-radius: 50%;
+    background: rgba(139, 90, 60, 0.1);
+  }
+
+  .reference-mark::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 4px;
+    height: 1px;
+    background: rgba(139, 90, 60, 0.8);
+  }
+
+  .connections-text {
+    font-family: var(--font-body-serious); /* ET Book Roman for serious content */
+    text-transform: lowercase;
+    letter-spacing: 0.03em;
+  }
+
+  .connections-count {
+    font-weight: 600;
+    color: var(--color-walnut);
+    font-family: var(--font-body-serious); /* ET Book Roman for serious content */
+  }
+
+  /* Mobile responsiveness */
+  @media (max-width: 1024px) {
+    .garden-layout {
+      grid-template-columns: 240px 1fr;
+      gap: var(--space-lg);
+    }
+
+    .garden-sidebar {
+      padding: var(--space-md);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .notes-container {
+      padding: 0 var(--space-md);
+    }
+
+    .garden-layout {
+      grid-template-columns: 1fr;
+      gap: var(--space-md);
+    }
+
+    .garden-sidebar {
+      position: static;
+      margin-bottom: var(--space-lg);
+    }
+
+    .sidebar-section {
+      margin-bottom: var(--space-md);
+    }
+
+    .type-list,
+    .tag-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: var(--space-xs);
+    }
+
+    .notes-grid {
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: var(--space-md);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .notes-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .note-card {
+      /* Reduce rotation on mobile for easier reading */
+      &:nth-child(3n + 1) {
+        transform: rotate(0.2deg);
+      }
+      &:nth-child(3n + 2) {
+        transform: rotate(-0.1deg);
+      }
+      &:nth-child(3n + 3) {
+        transform: rotate(0.1deg);
+      }
+      &:nth-child(5n + 1) {
+        transform: rotate(-0.2deg);
+      }
+      &:nth-child(5n + 3) {
+        transform: rotate(0.3deg);
+      }
+    }
+
+    .type-list,
+    .tag-list {
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    }
+  }
+</style>
+
+<script>
+  // Client-side filtering functionality
+  document.addEventListener('DOMContentLoaded', () => {
+    const typeButtons = document.querySelectorAll('[data-type]') as NodeListOf<HTMLButtonElement>;
+    const tagButtons = document.querySelectorAll('[data-tag]') as NodeListOf<HTMLButtonElement>;
+    const notesGrid = document.getElementById('notes-grid') as HTMLElement;
+    const noteCards = Array.from(notesGrid.querySelectorAll('.note-card')) as HTMLElement[];
+    const visibleCountElement = document.getElementById('visible-count') as HTMLElement;
+
+    let selectedType = '';
+    let selectedTag = '';
+
+    function updateActiveButtons() {
+      // Update type buttons
+      typeButtons.forEach((button) => {
+        const buttonType = button.dataset.type || '';
+        if (buttonType === selectedType) {
+          button.classList.add('active');
+        } else {
+          button.classList.remove('active');
+        }
+      });
+
+      // Update tag buttons
+      tagButtons.forEach((button) => {
+        const buttonTag = button.dataset.tag || '';
+        if (buttonTag === selectedTag) {
+          button.classList.add('active');
+        } else {
+          button.classList.remove('active');
+        }
+      });
+    }
+
+    function filterNotes() {
+      let visibleCount = 0;
+
+      noteCards.forEach((card) => {
+        const cardType = card.dataset.type || '';
+        const cardTags = card.dataset.tags || '';
+
+        const typeMatch = !selectedType || cardType === selectedType;
+        const tagMatch = !selectedTag || cardTags.includes(selectedTag);
+
+        if (typeMatch && tagMatch) {
+          card.style.display = 'block';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      // Update visible count
+      if (visibleCountElement) {
+        visibleCountElement.textContent = visibleCount.toString();
+      }
+
+      updateActiveButtons();
+    }
+
+    // Type filter event listeners
+    typeButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        selectedType = button.dataset.type || '';
+        filterNotes();
+      });
+    });
+
+    // Tag filter event listeners
+    tagButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        selectedTag = button.dataset.tag || '';
+        filterNotes();
+      });
+    });
+
+    // Initialize filters
+    filterNotes();
+  });
+</script>

@@ -1,9 +1,78 @@
-.Rproj.user
-.Rhistory
-.RData
-.Ruserdata
-/public/
-/resources/
-Thumbs.db
-.hugo_build.lock
+# Astro build output and generated types
+dist/
+.astro/
+
+# Dependencies
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment variables
+.env
+.env.production
+
+# macOS-specific files
 .DS_Store
+
+# IDE settings
+.idea/
+.vscode/
+
+# Quarto temporary/cache files (keep .qmd and .md sources)
+*_cache/**
+*_files/**
+/.quarto/
+_site/
+
+# Blog build system
+.blog-cache/
+
+# Development and temporary files
+dev.log
+*.log
+production-report.*
+index.html
+
+# Keep source images but ignore Astro's optimized variants
+# (Astro generates these in dist/ and various cache locations)
+public/img/optimized/
+public/demo/
+
+# Development directories that aren't part of the site
+inspiration/
+design_guide.md
+refinde.md
+
+# Claude AI assistant files
+.claude/
+
+# Crush agent working directory
+.crush/
+
+watercolor/
+water-svg/
+svg-export/
+
+**.rmarkdown
+crush.md
+_freeze
+
+
+**.rdx
+**.RData
+**.rdb
+**__packages
+
+
+tailwind_refactor.md
+
+.playwright-mcp/
+
+todo.md
+TODO.md
+GUIDE.md
+plans.db

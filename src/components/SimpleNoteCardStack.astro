@@ -1,0 +1,60 @@
+---
+import SimpleCard from './SimpleCard.astro';
+
+interface CardItem {
+  id: string;
+  title: string;
+  subtitle?: string;
+  href?: string;
+}
+
+interface Props {
+  items: CardItem[];
+  class?: string;
+}
+
+const { items, class: className } = Astro.props as Props;
+
+// Define rotation variations for organic feel using your existing Tailwind classes
+const rotations = [
+  'tw-rotate-1',
+  '-tw-rotate-1',
+  'tw-rotate-2',
+  '-tw-rotate-2',
+  'tw-rotate-1',
+  '-tw-rotate-1',
+];
+
+const backgroundRotations = [
+  'tw-rotate-1',
+  '-tw-rotate-1',
+  'tw-rotate-2',
+  '-tw-rotate-2',
+  'tw-rotate-1',
+  '-tw-rotate-1',
+];
+
+// No background images needed - using CSS colors instead
+---
+
+<div
+  class={`tw-grid tw-gap-lg ${className || ''}`}
+  style="grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: var(--space-lg);"
+>
+  {
+    items.map((item, index) => {
+      const rotation = rotations[index % rotations.length];
+      const backgroundRotation = backgroundRotations[index % backgroundRotations.length];
+
+      return (
+        <SimpleCard
+          title={item.title}
+          subtitle={item.subtitle}
+          href={item.href}
+          rotation={rotation}
+          backgroundRotation={backgroundRotation}
+        />
+      );
+    })
+  }
+</div>

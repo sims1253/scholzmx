@@ -1,0 +1,346 @@
+---
+export interface Props {
+  position?: 'top' | 'bottom' | 'left' | 'right' | 'corner';
+  variant?: 'vine' | 'leaves' | 'flowers' | 'geometric';
+  intensity?: 'light' | 'medium' | 'heavy';
+  className?: string;
+}
+
+const { position = 'top', variant = 'vine', intensity = 'medium', className = '' } = Astro.props;
+
+const opacity = intensity === 'light' ? 0.15 : intensity === 'medium' ? 0.25 : 0.35;
+const strokeWidth = intensity === 'light' ? '2' : intensity === 'medium' ? '3' : '4';
+---
+
+<div class={`botanical-border ${position} ${variant} ${className}`}>
+  {
+    position === 'top' && (
+      <svg class="border-svg" viewBox="0 0 820 160" preserveAspectRatio="none">
+        <defs>
+          {/* Subtle organic texture - much gentler */}
+          <filter id="gentleTexture" x="-20%" y="-20%" width="140%" height="140%">
+            <feTurbulence baseFrequency="0.02" numOctaves="1" result="noise" seed="1" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="0.8" />
+          </filter>
+
+          {/* Very soft shadow */}
+          <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur in="SourceAlpha" stdDeviation="1" />
+            <feOffset dx="0" dy="0.5" result="offset" />
+            <feFlood flood-color="rgba(139, 90, 60, 0.1)" />
+            <feComposite in2="offset" operator="in" />
+            <feMerge>
+              <feMergeNode />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+
+        {/* Main border path (orange wave) - COMMENTED OUT */}
+        {/* <path
+        d="M0,25 Q100,8 200,30 T400,18 T600,35 T800,25 L800,0 L0,0 Z"
+        fill={`rgba(180,83,9,${opacity})`}
+        filter="url(#roughTexture)"
+      /> */}
+
+        {/* Simple organic vine - calm and subtle */}
+        <path
+          d="M50,50 Q150,30 250,55 T450,40 T650,60 T800,50"
+          stroke={`rgba(139, 90, 60, ${opacity + 0.1})`}
+          stroke-width={strokeWidth}
+          fill="none"
+          filter="url(#gentleTexture)"
+        />
+
+        {/* Simple scattered botanical elements */}
+        <g fill={`rgba(90, 107, 71, ${opacity})`} filter="url(#softShadow)">
+          {/* Simple leaves */}
+          <ellipse cx="120" cy="20" rx="8" ry="4" transform="rotate(45 120 20)" />
+          <ellipse cx="320" cy="30" rx="7" ry="3.5" transform="rotate(-30 320 30)" />
+          <ellipse cx="520" cy="23" rx="8" ry="4.5" transform="rotate(60 520 23)" />
+
+          {/* Small flowers */}
+          <circle cx="180" cy="45" r="2.5" fill={`rgba(168, 181, 160, ${opacity + 0.1})`} />
+          <circle cx="380" cy="35" r="2" fill={`rgba(168, 181, 160, ${opacity + 0.1})`} />
+          <circle cx="580" cy="50" r="2.8" fill={`rgba(168, 181, 160, ${opacity + 0.1})`} />
+        </g>
+      </svg>
+    )
+  }
+
+  {
+    position === 'left' && (
+      <svg class="border-svg vertical" viewBox="0 0 180 800">
+        <defs>
+          <filter id="organicTexture" x="-20%" y="-20%" width="140%" height="140%">
+            <feTurbulence baseFrequency="0.02" numOctaves="2" result="noise" seed="2" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.5" />
+          </filter>
+        </defs>
+
+        {/* Main vine with organic texture */}
+        <path
+          d="M25,0 Q35,120 30,240 Q25,360 35,480 Q40,600 30,720 Q25,800 35,800"
+          stroke={`rgba(139, 90, 60, ${opacity + 0.15})`}
+          stroke-width={strokeWidth}
+          fill="none"
+          filter="url(#organicTexture)"
+        />
+
+        {/* Botanical elements with depth */}
+        <g fill={`rgba(90, 107, 71, ${opacity})`} filter="url(#organicTexture)">
+          {/* Leaves with shadow layers */}
+          <path d="M30,100 Q42,95 48,108 Q42,120 30,115 Q18,108 30,100" />
+          <path
+            d="M28,102 Q38,98 43,108 Q38,118 28,113 Q18,108 28,102"
+            fill={`rgba(139,69,19,${opacity - 0.05})`}
+          />
+
+          <path d="M35,220 Q47,215 53,228 Q47,240 35,235 Q23,228 35,220" />
+          <path
+            d="M33,222 Q43,218 48,228 Q43,238 33,233 Q23,228 33,222"
+            fill={`rgba(139,69,19,${opacity - 0.05})`}
+          />
+
+          <path d="M27,340 Q39,335 45,348 Q39,360 27,355 Q15,348 27,340" />
+          <path
+            d="M25,342 Q35,338 40,348 Q35,358 25,353 Q15,348 25,342"
+            fill={`rgba(139,69,19,${opacity - 0.05})`}
+          />
+
+          {/* Flowers with multiple layers */}
+          <circle cx="40" cy="150" r="5" />
+          <circle cx="38" cy="148" r="4" fill={`rgba(139,69,19,${opacity + 0.05})`} />
+          <circle cx="37" cy="147" r="2.5" fill={`rgba(168, 181, 160, ${opacity + 0.15})`} />
+
+          <circle cx="23" cy="380" r="4" />
+          <circle cx="21" cy="378" r="3" fill={`rgba(139,69,19,${opacity + 0.05})`} />
+          <circle cx="20" cy="377" r="2" fill={`rgba(168, 181, 160, ${opacity + 0.15})`} />
+        </g>
+      </svg>
+    )
+  }
+
+  {
+    position === 'corner' && (
+      <svg class="border-svg corner" viewBox="0 0 100 100">
+        <defs>
+          <filter id="cornerEmboss" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+            <feOffset dx="3" dy="3" result="offset" />
+            <feFlood flood-color={`rgba(139, 90, 60, ${opacity + 0.1})`} />
+            <feComposite in2="offset" operator="in" />
+            <feMerge>
+              <feMergeNode />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+
+        <path
+          d="M10,10 Q40,5 70,10 Q75,40 70,70 Q40,75 10,70 Q5,40 10,10"
+          stroke={`rgba(139, 90, 60, ${opacity + 0.2})`}
+          stroke-width={strokeWidth}
+          fill="none"
+          filter="url(#cornerEmboss)"
+        />
+        <circle
+          cx="40"
+          cy="40"
+          r="12"
+          fill={`rgba(90, 107, 71, ${opacity + 0.1})`}
+          filter="url(#cornerEmboss)"
+        />
+      </svg>
+    )
+  }
+
+  {
+    position === 'bottom' && (
+      <svg class="border-svg" viewBox="0 0 820 160" preserveAspectRatio="none">
+        <defs>
+          <filter id="roughTextureBottom" x="-20%" y="-20%" width="140%" height="140%">
+            <feTurbulence baseFrequency="0.04" numOctaves="3" result="noise" seed="1" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" />
+          </filter>
+          <filter id="shadowBottom" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur in="SourceAlpha" stdDeviation="2" />
+            <feOffset dx="1" dy="2" result="offset" />
+            <feFlood flood-color="rgba(139, 90, 60, 0.2)" />
+            <feComposite in2="offset" operator="in" />
+            <feMerge>
+              <feMergeNode />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+
+        {/* Main border path (orange wave) */}
+        <path
+          d="M0,25 Q100,8 200,30 T400,18 T600,35 T800,25 L800,0 L0,0 Z"
+          fill={`rgba(180,83,9,${opacity})`}
+          filter="url(#roughTextureBottom)"
+        />
+
+        {/* Organic vine pattern - COMMENTED OUT */}
+        {/*
+      <path
+        d="M50,50 Q150,30 250,55 T450,40 T650,60 T800,50"
+        stroke={`rgba(139, 90, 60, ${opacity + 0.1})`}
+        stroke-width={strokeWidth}
+        fill="none"
+        filter="url(#roughTextureBottom)"
+      />
+      */}
+
+        {/* Scattered botanical elements */}
+        <g fill={`rgba(90, 107, 71, ${opacity})`} filter="url(#shadowBottom)">
+          <ellipse cx="120" cy="20" rx="10" ry="5" transform="rotate(45 120 20)" />
+          <ellipse cx="320" cy="30" rx="8" ry="4" transform="rotate(-30 320 30)" />
+          <ellipse cx="520" cy="23" rx="9" ry="5" transform="rotate(60 520 23)" />
+
+          {/* Small flowers */}
+          <circle cx="180" cy="45" r="3" fill={`rgba(168, 181, 160, ${opacity})`} />
+          <circle cx="380" cy="35" r="2.5" fill={`rgba(168, 181, 160, ${opacity})`} />
+          <circle cx="580" cy="50" r="3.5" fill={`rgba(168, 181, 160, ${opacity})`} />
+        </g>
+      </svg>
+    )
+  }
+
+  {
+    position === 'right' && (
+      <svg class="border-svg vertical" viewBox="0 0 180 800">
+        <defs>
+          <filter id="organicTextureRight" x="-20%" y="-20%" width="140%" height="140%">
+            <feTurbulence baseFrequency="0.02" numOctaves="2" result="noise" seed="2" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.5" />
+          </filter>
+        </defs>
+
+        {/* Main vine with organic texture */}
+        <path
+          d="M25,0 Q35,120 30,240 Q25,360 35,480 Q40,600 30,720 Q25,800 35,800"
+          stroke={`rgba(139, 90, 60, ${opacity + 0.15})`}
+          stroke-width={strokeWidth}
+          fill="none"
+          filter="url(#organicTextureRight)"
+        />
+
+        {/* Botanical elements */}
+        <g fill={`rgba(90, 107, 71, ${opacity})`} filter="url(#organicTextureRight)">
+          <path d="M30,100 Q42,95 48,108 Q42,120 30,115 Q18,108 30,100" />
+          <path d="M35,220 Q47,215 53,228 Q47,240 35,235 Q23,228 35,220" />
+          <path d="M28,340 Q40,335 46,348 Q40,360 28,355 Q16,348 28,340" />
+          <path d="M32,460 Q44,455 50,468 Q44,480 32,475 Q20,468 32,460" />
+          <path d="M30,580 Q42,575 48,588 Q42,600 30,595 Q18,588 30,580" />
+          <path d="M35,700 Q47,695 53,708 Q47,720 35,715 Q23,708 35,700" />
+
+          {/* Small flowers */}
+          <circle cx="45" cy="150" r="3" fill={`rgba(168, 181, 160, ${opacity})`} />
+          <circle cx="40" cy="300" r="2.5" fill={`rgba(168, 181, 160, ${opacity})`} />
+          <circle cx="48" cy="500" r="3.5" fill={`rgba(168, 181, 160, ${opacity})`} />
+          <circle cx="42" cy="650" r="3" fill={`rgba(168, 181, 160, ${opacity})`} />
+        </g>
+      </svg>
+    )
+  }
+</div>
+
+<style>
+  .botanical-border {
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Top and bottom borders span full width and stay with page content */
+  .botanical-border.top,
+  .botanical-border.bottom {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100vw;
+  }
+
+  /* Side borders use fixed positioning to float at sides */
+  .botanical-border.left,
+  .botanical-border.right {
+    position: fixed;
+  }
+
+  /* Hide borders on smaller screens to avoid content interference */
+  @media (max-width: 1200px) {
+    .botanical-border.left,
+    .botanical-border.right {
+      display: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .botanical-border {
+      display: none;
+    }
+  }
+
+  .border-svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 2px 4px rgba(139, 90, 60, 0.1));
+  }
+
+  .botanical-border.top {
+    top: 0;
+    height: 128px;
+  }
+
+  .botanical-border.bottom {
+    bottom: 0;
+    height: 128px;
+    transform: translateX(-50%) scaleY(-1);
+  }
+
+  .botanical-border.left {
+    top: 178px;
+    left: 0;
+    width: 160px;
+    height: calc(100vh - 306px);
+    opacity: 0.6;
+  }
+
+  .botanical-border.right {
+    top: 178px;
+    right: 0;
+    width: 160px;
+    height: calc(100vh - 306px);
+    opacity: 0.4;
+    transform: scaleX(-1);
+  }
+
+  .botanical-border.corner {
+    width: 80px;
+    height: 80px;
+  }
+
+  .botanical-border.corner:nth-of-type(1) {
+    top: 12px;
+    left: 12px;
+  }
+
+  .botanical-border.corner:nth-of-type(2) {
+    top: 12px;
+    right: 12px;
+    transform: scaleX(-1);
+  }
+
+  .botanical-border.corner:nth-of-type(3) {
+    bottom: 12px;
+    left: 12px;
+    transform: scaleY(-1);
+  }
+
+  .botanical-border.corner:nth-of-type(4) {
+    bottom: 12px;
+    right: 12px;
+    transform: scale(-1);
+  }
+</style>

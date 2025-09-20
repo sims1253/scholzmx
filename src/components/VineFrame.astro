@@ -1,0 +1,90 @@
+---
+export interface Props {
+  className?: string;
+}
+
+const { className = '' } = Astro.props;
+
+// Consistent design tokens - same as BotanicalBorder and HandDrawnDivider
+const vineColor = `rgba(139, 90, 60, 0.6)`; // --color-walnut with opacity
+const leafColor = `rgba(90, 107, 71, 0.5)`; // --color-moss with opacity
+const strokeWeight = 2; // Slightly thinner for frame
+---
+
+<div class={`vine-frame ${className}`}>
+  <!-- Complete vine border as one continuous frame -->
+  <svg class="vine-border" viewBox="0 0 100 100" preserveAspectRatio="none">
+    <!-- Continuous vine border -->
+    <path
+      d="M10,10 Q30,5 50,10 Q70,5 90,10 L90,90 Q70,95 50,90 Q30,95 10,90 Z"
+      stroke={vineColor}
+      stroke-width={strokeWeight}
+      fill="none"></path>
+
+    <!-- Larger leaves along the border -->
+    <ellipse cx="25" cy="8" rx="4" ry="2" fill={leafColor} transform="rotate(30 25 8)"></ellipse>
+    <ellipse cx="50" cy="6" rx="3" ry="2" fill={leafColor} transform="rotate(-10 50 6)"></ellipse>
+    <ellipse cx="75" cy="8" rx="4" ry="2" fill={leafColor} transform="rotate(45 75 8)"></ellipse>
+
+    <ellipse cx="92" cy="30" rx="3" ry="2" fill={leafColor} transform="rotate(80 92 30)"></ellipse>
+    <ellipse cx="92" cy="70" rx="4" ry="2" fill={leafColor} transform="rotate(100 92 70)"></ellipse>
+
+    <ellipse cx="75" cy="92" rx="3" ry="2" fill={leafColor} transform="rotate(-45 75 92)"></ellipse>
+    <ellipse cx="50" cy="94" rx="4" ry="2" fill={leafColor} transform="rotate(10 50 94)"></ellipse>
+    <ellipse cx="25" cy="92" rx="3" ry="2" fill={leafColor} transform="rotate(-30 25 92)"></ellipse>
+
+    <ellipse cx="8" cy="70" rx="4" ry="2" fill={leafColor} transform="rotate(-80 8 70)"></ellipse>
+    <ellipse cx="8" cy="30" rx="3" ry="2" fill={leafColor} transform="rotate(-100 8 30)"></ellipse>
+  </svg>
+
+  <div class="vine-content">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .vine-frame {
+    position: relative;
+    margin: var(--spacing-component) 0;
+    padding: var(--space-md);
+    background: var(--color-surface);
+    border-radius: var(--border-radius-lg);
+    display: inline-block;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .vine-border {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .vine-content {
+    position: relative;
+    z-index: 2;
+    min-height: fit-content;
+  }
+
+  /* Hover effect */
+  .vine-frame:hover {
+    transform: translateY(-1px);
+    transition: all var(--transition-medium);
+  }
+
+  /* Mobile adjustments */
+  @media (max-width: 768px) {
+    .vine-frame {
+      margin: var(--space-md) 0;
+      padding: var(--space-sm);
+    }
+
+    .vine-content {
+      padding: var(--space-md);
+    }
+  }
+</style>

@@ -1,0 +1,99 @@
+/* Dropcap styles (global) */
+.dropcap {
+  float: left;
+  display: inline-block;
+  vertical-align: top;
+  shape-outside: margin-box;
+  user-select: none;
+  position: relative;
+  font-weight: 600;
+}
+
+/* Personal variant - warm and playful for welcome/recipes */
+.dropcap--personal {
+  font-size: 3.7rem;
+  line-height: 1;
+  margin-right: 0.08em;
+  margin-top: 0.06em;
+  shape-margin: 0.03em;
+  font-weight: 500;
+}
+
+/* Serious variant - formal and elegant for blog/notes */
+.dropcap--serious {
+  font-size: 3.6rem;
+  line-height: 1;
+  margin-right: 0.08em;
+  margin-top: 0.04em;
+  shape-margin: 0.05em;
+  font-weight: 500;
+}
+
+/* Simple */
+.dropcap--simple {
+  font-family: var(--font-heading);
+}
+
+/* Ornate layered */
+.dropcap--ornate {
+  font-family: var(--font-dropcap-foreground), var(--font-heading), serif;
+  color: var(--dropcap-color-foreground);
+}
+.dropcap--ornate::before {
+  content: attr(data-first-letter);
+  position: absolute;
+  font-family: var(--font-dropcap-background), var(--font-heading), serif;
+  color: var(--dropcap-color-background);
+  z-index: -1;
+  left: 0;
+  top: 0;
+}
+
+/* Botanical layered */
+.dropcap--botanical {
+  font-family: var(--font-dropcap-foreground), var(--font-heading), serif;
+}
+.dropcap--botanical::before {
+  content: attr(data-first-letter);
+  position: absolute;
+  font-family: var(--font-dropcap-background), var(--font-heading), serif;
+  color: var(--dropcap-color-foreground);
+  z-index: -1;
+  left: 0;
+  top: 0;
+}
+
+/* Color variants apply to swirls (::before) only */
+.dropcap--gold::before {
+  color: var(--color-tansy);
+}
+.dropcap--walnut::before {
+  color: var(--color-walnut);
+}
+.dropcap--moss::before {
+  color: var(--color-moss);
+}
+.dropcap--ochre::before {
+  color: var(--color-ochre);
+}
+.dropcap--sage::before {
+  color: var(--color-sage);
+}
+
+@media (max-width: 600px) {
+  .dropcap--personal {
+    font-size: 2.8rem !important;
+    margin-right: 0.06rem;
+    margin-top: 0.02rem;
+    shape-outside: none;
+    shape-margin: 0;
+  }
+
+  .dropcap--serious {
+    font-size: 3.4rem !important;
+    margin-right: 0.08rem;
+    margin-top: 0.04rem;
+    shape-outside: none;
+    shape-margin: 0;
+  }
+}

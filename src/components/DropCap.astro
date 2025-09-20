@@ -1,0 +1,16 @@
+---
+export interface Props {
+  letter: string;
+  color?: 'gold' | 'walnut' | 'moss' | 'ochre' | 'sage';
+  style?: 'simple' | 'ornate' | 'botanical';
+  variant?: 'personal' | 'serious';
+}
+const { letter, color = 'sage', style = 'ornate', variant = 'personal' } = Astro.props;
+const dropCapLetter = (letter ?? '').charAt(0).toUpperCase();
+---
+
+<span
+  class={`dropcap dropcap--${color} dropcap--${style} dropcap--${variant}`}
+  data-first-letter={dropCapLetter}
+  aria-hidden="true">{dropCapLetter}</span
+>
