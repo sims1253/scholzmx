@@ -48,16 +48,19 @@ needs_rendering() {
 
     # Force rebuild if requested
     if [ "$FORCE_REBUILD" = true ]; then
+        echo "  → Force rebuild requested"
         return 0
     fi
 
     # If markdown doesn't exist, needs rendering
     if [ ! -f "$md_file" ]; then
+        echo "  → No MD file found"
         return 0
     fi
 
     # If hash file doesn't exist, needs rendering
     if [ ! -f "$hash_file" ]; then
+        echo "  → No hash cache found"
         return 0
     fi
 
@@ -67,10 +70,12 @@ needs_rendering() {
 
     # If content changed, needs rendering
     if [ "$current_hash" != "$cached_hash" ]; then
+        echo "  → Content changed (${current_hash:0:8} != ${cached_hash:0:8})"
         return 0
     fi
 
     # Content unchanged, skip rendering
+    echo "  → Content unchanged, using cache"
     return 1
 }
 
@@ -324,9 +329,9 @@ if [ -n "$SPECIFIC_FILE" ]; then
     process_qmd_file "$SPECIFIC_FILE"
 else
     # Find and render all index.qmd files in the new structure
-    find src/content/blog -name "index.qmd" -path "*/[0-9][0-9][0-9][0-9]/*/*" -type f | while read qmd_file; do
+    while IFS= read -r -d '' qmd_file; do
         process_qmd_file "$qmd_file"
-    done
+    done < <(find src/content/blog -name "index.qmd" -path "*/[0-9][0-9][0-9][0-9]/*/*" -type f -print0)
 fi
 
 echo "Rendered: $rendered_count, Cached: $cached_count"
