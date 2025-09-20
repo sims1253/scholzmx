@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   workflow_run:
-    workflows: ["Content Render (Quarto → Markdown)"]
+    workflows: ['Content Render (Quarto → Markdown)']
     types: [completed]
     branches: [main, master]
   push:
@@ -59,6 +59,30 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
           run-id: ${{ github.event.workflow_run.id }}
+
+      # Debug - Show what files were downloaded and where
+      - name: Debug - Show downloaded files
+        if: github.event_name == 'workflow_run'
+        run: |
+          echo "=== Root directory contents ==="
+          ls -la
+          echo "=== Check extra content directory ==="
+          if [ -d "./content" ]; then
+            echo "Found ./content directory!"
+            find ./content -name "*.md" -type f | head -10
+            echo "=== content directory structure ==="
+            tree ./content || ls -la ./content/*/
+          else
+            echo "No ./content directory found"
+          fi
+          echo "=== src/content/blog structure ==="
+          find src/content/blog -type f -name "*.md" | head -20
+          echo "=== All downloaded content ==="
+          find . -path "./src/content/blog/*/*/index.md" -type f
+          echo "=== Search for ANY index.md files ==="
+          find . -name "index.md" -type f
+          echo "=== Directory tree of blog content ==="
+          tree src/content/blog || ls -la src/content/blog/*/
 
       # Build Astro site
       - name: Build site
