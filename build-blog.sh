@@ -46,27 +46,18 @@ needs_rendering() {
     local md_file="${qmd_file%.qmd}.md"
     local hash_file=".blog-cache/$(echo "$qmd_file" | sed 's|/|_|g').hash"
 
-    # Debug: Show file info for CI troubleshooting
-    echo "Debug info for $qmd_file:"
-    echo "  QMD exists: $([ -f "$qmd_file" ] && echo 'yes' || echo 'no')"
-    echo "  MD exists:  $([ -f "$md_file" ] && echo 'yes' || echo 'no')"
-    echo "  Hash file exists: $([ -f "$hash_file" ] && echo 'yes' || echo 'no')"
-
     # Force rebuild if requested
     if [ "$FORCE_REBUILD" = true ]; then
-        echo "  Decision: REBUILD (force flag)"
         return 0
     fi
 
     # If markdown doesn't exist, needs rendering
     if [ ! -f "$md_file" ]; then
-        echo "  Decision: REBUILD (no MD file)"
         return 0
     fi
 
     # If hash file doesn't exist, needs rendering
     if [ ! -f "$hash_file" ]; then
-        echo "  Decision: REBUILD (no hash cache)"
         return 0
     fi
 
@@ -74,16 +65,12 @@ needs_rendering() {
     local current_hash=$(sha256sum "$qmd_file" | cut -d' ' -f1)
     local cached_hash=$(cat "$hash_file" 2>/dev/null || echo "")
 
-    echo "  Current hash: ${current_hash:0:8}..."
-    echo "  Cached hash:  ${cached_hash:0:8}..."
-
     # If content changed, needs rendering
     if [ "$current_hash" != "$cached_hash" ]; then
-        echo "  Decision: REBUILD (content changed)"
         return 0
     fi
 
-    echo "  Decision: SKIP (cached, content unchanged)"
+    # Content unchanged, skip rendering
     return 1
 }
 
@@ -231,7 +218,6 @@ process_qmd_file() {
               find "$post_dir/src/assets/images/blog/${year}/${post_folder}" -type f \( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.gif" -o -name "*.svg" -o -name "*.webp" \) | while read img; do
                 base=$(basename "$img")
                 cp -f "$img" "${assets_dir}/$base"
-                echo "  Moved image: $base to ${assets_dir}/"
               done
               rm -rf "$post_dir/src"
             fi
@@ -318,8 +304,6 @@ process_qmd_file() {
                 }
             }' "$md_file" > "${md_file}.tmp" && mv "${md_file}.tmp" "$md_file"
             
-            echo "  Fixed image paths and extracted code output from collapsible blocks in: $md_file"
-            echo "  Removed Quarto-generated title/date from: $md_file"
         fi
         
         update_cache "$qmd_file"
