@@ -115,3 +115,39 @@
   font-style: italic;
   font-display: swap;
 }
+
+/* === EB Garamond (fallback for both tones) === */
+
+@font-face {
+  font-family: 'EB Garamond';
+  src: url('/fonts/eb-garamond-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'EB Garamond';
+  src: url('/fonts/eb-garamond-400-italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* ET Book additional weights */
+
+@font-face {
+  font-family: 'ET Book Roman';
+  src: url('/fonts/et-book-semi-bold-old-style-figures.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ET Book Roman';
+  src: url('/fonts/et-book-bold-line-figures.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
