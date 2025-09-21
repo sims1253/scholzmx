@@ -17,8 +17,15 @@
   font-size: clamp(2.2rem, 5vw + 1rem, 3.7rem);
   line-height: 1;
   margin-right: clamp(0.04em, 0.8vw, 0.08em);
-  margin-top: clamp(0.12em, 0.6vw, 0.18em);
+  margin-top: 0.11em; /* Mobile default */
   font-weight: 500;
+}
+
+/* Container query for larger prose containers */
+@container (min-width: 768px) {
+  .dropcap--personal {
+    margin-top: 0.05em; /* Desktop: move dropcap up */
+  }
 }
 
 /* Serious variant - formal and elegant for blog/notes */

@@ -24,6 +24,7 @@
     minmax(var(--space-md), 1fr);
   padding-inline: 0; /* Grid handles spacing */
   width: 100%;
+  container-type: inline-size; /* Enable container queries */
 }
 
 .layout-prose > * {
