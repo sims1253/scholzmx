@@ -62,6 +62,43 @@ jobs:
             render-cache-${{ runner.os }}-r${{ steps.setup-r.outputs.installed-r-version }}-
             render-cache-${{ runner.os }}-
 
+      # Download previous rendered content to enable caching
+      - name: Get latest content render run
+        id: latest-render
+        run: |
+          latest_run=$(gh run list \
+            --workflow="Content Render (Quarto → Markdown)" \
+            --status=success \
+            --limit=1 \
+            --json=databaseId \
+            --jq='.[0].databaseId' || echo "")
+          echo "run-id=$latest_run" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      - name: Download previous rendered content
+        uses: actions/download-artifact@v4
+        with:
+          name: rendered-content
+          path: .
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ steps.latest-render.outputs.run-id }}
+        continue-on-error: true
+
+      # Debug - Show what files were downloaded for caching
+      - name: Debug - Show downloaded files for caching
+        run: |
+          echo "=== Root directory contents ==="
+          ls -la
+          echo "=== src/content/blog structure ==="
+          find src/content/blog -type f -name "*.md" | head -20 || echo "No MD files found"
+          echo "=== Cache directory ==="
+          ls -la .blog-cache/ || echo "No cache directory"
+          echo "=== Assets directory ==="
+          ls -la src/assets/images/blog/ || echo "No assets directory"
+
       - name: Render Quarto posts
         run: bash build-blog.sh
 
