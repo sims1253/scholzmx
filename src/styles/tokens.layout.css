@@ -2,8 +2,8 @@
   /* ===== Layout Tokens ===== */
 
   /* Prose reading measures (ch units ensure optimal character count per line) */
-  --measure-prose-personal: 61ch; /* Warmer, more intimate reading width */
-  --measure-prose-serious: 70ch; /* Wider for academic/technical content */
+  --measure-prose-personal: 55ch; /* Warmer, more intimate reading width */
+  --measure-prose-serious: 63ch; /* Wider for academic/technical content */
   --measure-prose: var(--measure-prose-personal); /* Default, set dynamically by tone */
 
   /* Page layout measures */
