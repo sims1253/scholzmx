@@ -11,7 +11,11 @@
     max-width: min(var(--site-width, 1280px), calc(100vw - 2 * var(--space-md)));
     margin-inline: auto;
     width: 100%;
-    gap: clamp(0.5rem, 3vw, 2rem); /* Tighter gap on mobile */
+    gap: clamp(
+      0.4rem,
+      2.5vw,
+      2rem
+    ); /* Balanced gap to prevent overlap while keeping nav on one line */
   }
 }
 
@@ -87,7 +91,7 @@
   gap: var(--space-xs);
   text-decoration: none;
   font-family: var(--font-heading);
-  font-size: clamp(1rem, 3vw, var(--text-xl)); /* Compact on mobile */
+  font-size: clamp(0.9rem, 3vw, var(--text-xl)); /* Extra compact on mobile */
   font-weight: 600;
   color: var(--color-ink-dark);
   margin-left: 0;
@@ -110,14 +114,14 @@
 .nav-links {
   display: flex;
   align-items: center;
-  gap: clamp(0.25rem, 1.5vw, 1rem); /* Much tighter gap on mobile */
-  font-size: clamp(0.85rem, 2.2vw, var(--text-lg)); /* More aggressive mobile scaling */
+  gap: clamp(0.15rem, 1vw, 1rem); /* Ultra tight gap on mobile */
+  font-size: clamp(0.8rem, 2.2vw, var(--text-lg)); /* Even more aggressive mobile scaling */
   font-family: var(--font-heading);
   margin-inline-start: auto;
   min-width: 0;
   flex: 1 1 auto;
   justify-content: flex-end;
-  flex-wrap: wrap;
+  flex-wrap: nowrap; /* Keep everything on one line */
 }
 
 /* Simplified responsive adjustments - most handled by fluid design */
@@ -276,5 +280,26 @@
 @media (max-width: 480px) {
   .nav-separator {
     display: none;
+  }
+}
+
+/* Extra optimizations for very narrow screens like Pixel 5 */
+@media (max-width: 400px) {
+  .nav-content {
+    gap: 0.3rem; /* Fixed small gap */
+    padding-inline: var(--space-sm) 0.5rem; /* Reduce right padding significantly */
+  }
+
+  .nav-brand .site-logo {
+    font-size: 0.9rem; /* Slightly larger title */
+  }
+
+  .nav-links {
+    font-size: 0.8rem; /* Slightly larger nav links */
+    gap: 0.12rem; /* Minimal gap between nav items */
+  }
+
+  .torch-toggle {
+    margin-right: 0; /* Remove any right margin from toggle */
   }
 }

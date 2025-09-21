@@ -12,6 +12,7 @@ on:
       - '_quarto.yml'
       - 'build-blog.sh'
       - '.github/workflows/content-render.yml'
+      - '.github/workflows/deploy.yml' # Don't trigger deploy when deploy workflow changes
   workflow_dispatch:
 
 permissions:

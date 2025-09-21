@@ -74,6 +74,7 @@ jobs:
             hash_file=".blog-cache/$(echo "$qmd_file" | sed 's|/|_|g').hash"
 
             echo "Checking $qmd_file..."
+            echo "  Looking for hash file: $hash_file"
 
             # If markdown doesn't exist, needs rendering
             if [ ! -f "$md_file" ]; then
@@ -84,7 +85,9 @@ jobs:
 
             # If hash file doesn't exist, needs rendering
             if [ ! -f "$hash_file" ]; then
-              echo "  → No hash cache found"
+              echo "  → No hash cache found at $hash_file"
+              echo "  → Available hash files:"
+              ls -la .blog-cache/*.hash 2>/dev/null || echo "    (none found)"
               needs_render=true
               break
             fi
