@@ -1,8 +1,8 @@
 ---
-title: "Blog Post Template"
-description: "Copy-paste template for new blog posts with examples of everything I use."
-date: 2025-01-15
-lastUpdated: 2025-01-15
+title: "New page, who dis?"
+description: "My new blog-post template with examples of what I can do :)"
+date: 2025-09-15
+lastUpdated: 2025-09-21
 categories: [Meta]
 tags: ["template", "quarto"]
 heroImage: ../../../../assets/images/homepage/self.jpg
@@ -34,7 +34,7 @@ knitr:
     fig.path: "src/assets/images/blog/2025/01-15-blog-post-features-template/"
 ---
 
-<span class="dropcap dropcap--ornate dropcap--serious" data-first-letter="T" aria-hidden="true">T</span> his is my copy-paste template for new blog posts. I got tired of looking up the same Quarto features every time, so here's everything I use with working examples.
+<span class="dropcap dropcap--ornate dropcap--serious" data-first-letter="T" aria-hidden="true">T</span> his is my copy-paste template for new blog posts. I got tired of looking up the same Quarto features every time, so this is essentially just a growing example for me.
 
 ## YAML frontmatter
 
@@ -44,7 +44,7 @@ Copy this header and adjust:
 title: "Your Title Here"
 description: "Brief description for SEO and social cards"
 date: 2025-01-15
-categories: [Statistics, R]  # or whatever
+categories: [Statistics, R]
 tags: ["brms", "Bayesian"]
 draft: false  # set to true to hide
 cache: true   # speeds up builds for R-heavy posts
@@ -56,19 +56,22 @@ Optional stuff:
 
 ## Typography
 
-Drop caps for long posts:
+Drop caps are gorgeous:
 ```html
 <span class="dropcap dropcap--ornate dropcap--serious" data-first-letter="T" aria-hidden="true">T</span> ext starts here...
 ```
 
-Math: inline like $\mu = \sum_{i=1}^n x_i$ or display:
-$$\hat{\beta} = (X^TX)^{-1}X^Ty$$
+Math: inline like $\mu = \sum_{i=1}^n x_i$
 
 Citations: [@cinelliCrashCourseGood2020] if you have a `references.bib` file.
 
 Margin notes:
 
-> margin: This appears in the right margin. Good for tangents or extra context.
+> margin: This appears in the right margin.
+
+Normal notes:
+
+> I am not in the morgin but in the middle of the text instead.
 
 ## R Code
 
@@ -89,12 +92,9 @@ data <- data.frame(
 head(data, 3)
 ```
 
-Plots with options:
+Plots
 ```{r}
 #| label: sample-plot
-#| fig-cap: "Simple scatter plot"
-#| fig-width: 8
-#| fig-height: 5
 
 ggplot(data, aes(x = x, y = y, color = group)) +
   geom_point(alpha = 0.7) +
@@ -102,11 +102,19 @@ ggplot(data, aes(x = x, y = y, color = group)) +
   labs(title = "Sample Data", x = "X values", y = "Y values")
 ```
 
-> margin: Chunk options go after `#|`. Main ones: `echo`, `eval`, `fig-cap`, `fig-width`.
+> margin: Chunk options go after `#|`. Main ones: `label`, `echo`, `eval`, `include`, `warning`, `error`.
 
 ## Collapsible code
 
 For longer setup that would clutter the post:
+
+```html
+<details class="code-collapse">
+<summary>Show data processing</summary>
+  Code goes here
+</details>
+```
+
 
 <details class="code-collapse">
 <summary>Show data processing</summary>
@@ -127,35 +135,6 @@ head(processed_data, 3)
 ```
 
 </details>
-
-## Useful chunk options
-
-Show code, don't run:
-```{r}
-#| eval: false
-
-expensive_computation <- function(x) {
-  Sys.sleep(10)  # This won't actually run
-  return(x^2)
-}
-```
-
-Run code, don't show:
-```{r}
-#| echo: false
-
-result <- "This code runs but doesn't show"
-print(result)
-```
-
-## Quick reference
-
-| Option | What it does |
-|--------|-------------|
-| `echo: false` | Hide code, show output |
-| `eval: false` | Show code, don't run |
-| `fig-width: 8` | Plot width |
-| `cache: true` | Save chunk results |
 
 ## Standard markdown
 
