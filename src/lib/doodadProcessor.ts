@@ -5,7 +5,7 @@
  * based on the configuration system.
  */
 
-import type { DoodadCategory, DoodadResults, DoodadProps } from '../config/doodadConfig';
+import type { DoodadCategory, DoodadResults } from '../config/doodadConfig';
 
 export interface RngFunctions {
   random: () => number;

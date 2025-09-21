@@ -5,7 +5,6 @@ interface Props {
   href?: string;
   class?: string;
   rotation?: string; // e.g., "-rotate-[0.5deg]", "rotate-[0.3deg]"
-  backgroundImage?: string;
   backgroundRotation?: string; // e.g., "rotate-1", "-rotate-2"
 }
 
@@ -15,7 +14,6 @@ const {
   href,
   class: className,
   rotation = 'tw-rotate-1',
-  backgroundImage = '',
   backgroundRotation = 'tw-rotate-1',
 } = Astro.props as Props;
 ---

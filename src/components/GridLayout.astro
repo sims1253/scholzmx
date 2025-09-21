@@ -69,13 +69,14 @@ const gridStyle =
   columns === 'auto'
     ? `grid-template-columns: repeat(auto-fit, minmax(${itemMinWidth ?? '18rem'}, 1fr));`
     : undefined;
-const gapVarMap = {
-  xs: 'var(--space-xs)',
-  sm: 'var(--space-sm)',
-  md: 'var(--space-md)',
-  lg: 'var(--space-lg)',
-  xl: 'var(--space-xl)',
-};
+// Future gap functionality - variables removed for now to avoid TS warnings
+// const gapVarMap = {
+//   xs: 'var(--space-xs)',
+//   sm: 'var(--space-sm)',
+//   md: 'var(--space-md)',
+//   lg: 'var(--space-lg)',
+//   xl: 'var(--space-xl)',
+// };
 const mergedStyle = [gridStyle].filter(Boolean).join('; ');
 ---
 

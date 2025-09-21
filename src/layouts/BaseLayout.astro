@@ -173,7 +173,7 @@ const currentPath = Astro.url.pathname;
             rel="preload"
             href="/katex/katex.min.css"
             as="style"
-            onload="this.onload=null;this.rel='stylesheet'"
+            onload={"this.onload=null;this.rel='stylesheet'"}
           />
           <noscript>
             <link rel="stylesheet" href="/katex/katex.min.css" />
@@ -440,6 +440,7 @@ const currentPath = Astro.url.pathname;
                 textArea.value = codeContent;
                 document.body.appendChild(textArea);
                 textArea.select();
+                // @ts-ignore - Fallback for older browsers that don't support navigator.clipboard
                 document.execCommand('copy');
                 document.body.removeChild(textArea);
                 button.setAttribute('aria-label', 'Code copied to clipboard');
@@ -617,7 +618,7 @@ const currentPath = Astro.url.pathname;
               if (mainContent) resizeObserver.observe(mainContent);
             } else {
               // Fallback for older browsers
-              window.addEventListener('resize', () => {
+              (window as any).addEventListener('resize', () => {
                 if (!(window as any).__mnotes_inited) setTimeout(tryInit, 50);
               });
             }

@@ -5,9 +5,16 @@ on:
     branches: [main, master]
     paths:
       - 'src/content/**/*.qmd'
+      - 'src/content/**/*.md'
       - 'build-blog.sh'
       - '_quarto.yml'
       - '.github/workflows/content-render.yml'
+      - 'astro.config.mjs'
+      - 'package.json'
+      - 'src/**/*.astro'
+      - 'src/**/*.ts'
+      - 'src/**/*.js'
+      - 'src/styles/**/*.css'
   workflow_dispatch:
   schedule:
     - cron: '17 3 * * *'
@@ -87,7 +94,9 @@ jobs:
             if [ ! -f "$hash_file" ]; then
               echo "  → No hash cache found at $hash_file"
               echo "  → Available hash files:"
-              ls -la .blog-cache/*.hash 2>/dev/null || echo "    (none found)"
+              find .blog-cache -name "*.hash" -type f 2>/dev/null | head -10 || echo "    (none found)"
+              echo "  → Cache directory contents:"
+              ls -la .blog-cache/ 2>/dev/null || echo "    (directory not found)"
               needs_render=true
               break
             fi
