@@ -59,15 +59,15 @@ const { Content } = await recipe.render();
           <div class="recipe-info">
             <div class="info-item">
               <span class="info-label">Servings:</span>
-              <span class="info-value" itemprop="recipeYield">👥 {recipe.data.servings}</span>
+              <span class="info-value" itemprop="recipeYield">{recipe.data.servings}</span>
             </div>
             <div class="info-item">
               <span class="info-label">Time:</span>
-              <span class="info-value" itemprop="totalTime">⏱️ {recipe.data.time}</span>
+              <span class="info-value" itemprop="totalTime">{recipe.data.time}</span>
             </div>
             <div class="info-item">
               <span class="info-label">Season:</span>
-              <span class="info-value" data-pagefind-meta="season">🌿 {recipe.data.season}</span>
+              <span class="info-value" data-pagefind-meta="season">{recipe.data.season}</span>
             </div>
           </div>
           {

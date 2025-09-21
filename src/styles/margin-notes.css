@@ -5,12 +5,18 @@
   --margin-note-gap: 28px;
 }
 
+/* Modern container with container queries support */
+.main-content {
+  container-type: inline-size;
+  container-name: main-content;
+}
+
 /* Container lives inside .main-content and is absolutely positioned */
 .notes-container {
   position: absolute;
   top: 0;
-  width: var(--margin-note-width);
-  pointer-events: auto; /* allow selecting/copying note text */
+  width: clamp(200px, 20vw, var(--margin-note-width));
+  pointer-events: auto;
   z-index: 10;
   display: block;
 }
@@ -63,7 +69,30 @@
   }
 }
 
-/* Responsive: collapse to inline notes on narrow viewports */
+/* Modern responsive behavior using container queries */
+@container main-content (max-width: 68rem) {
+  .notes-container {
+    display: none;
+  }
+
+  .note-anchor::after {
+    content: attr(data-note);
+    display: block;
+    margin-block: clamp(0.5rem, 2vw, 0.75rem);
+    padding: clamp(0.625rem, 3vw, 0.875rem);
+    background: var(--color-surface);
+    border-top: 2px solid color-mix(in srgb, var(--color-lichen) 60%, transparent);
+    border-radius: 6px;
+    font-size: clamp(0.8em, 2vw, 0.85em);
+    line-height: 1.45;
+    color: var(--color-text-secondary);
+    box-shadow:
+      0 2px 8px color-mix(in srgb, var(--color-walnut) 8%, transparent),
+      0 1px 3px color-mix(in srgb, var(--color-sage) 12%, transparent);
+  }
+}
+
+/* Fallback for browsers without container query support */
 @media (max-width: 1100px) {
   .notes-container {
     display: none;
@@ -72,13 +101,16 @@
   .note-anchor::after {
     content: attr(data-note);
     display: block;
-    margin: 0.5rem 0;
+    margin-block: 0.5rem;
     padding: 0.75rem;
     background: var(--color-surface);
     border-top: 2px solid color-mix(in srgb, var(--color-lichen) 60%, transparent);
-    border-radius: 4px;
+    border-radius: 6px;
     font-size: 0.85em;
     line-height: 1.45;
     color: var(--color-text-secondary);
+    box-shadow:
+      0 2px 8px color-mix(in srgb, var(--color-walnut) 8%, transparent),
+      0 1px 3px color-mix(in srgb, var(--color-sage) 12%, transparent);
   }
 }

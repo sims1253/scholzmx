@@ -592,8 +592,10 @@ const currentPath = Astro.url.pathname;
           }
           (function initMarginNotesWhenReady() {
             const tryInit = () => {
-              if (window.matchMedia('(max-width: 1100px)').matches) return;
+              const mainContent = document.querySelector('.main-content') as HTMLElement;
+              if (mainContent && mainContent.offsetWidth < 1088) return; // ~68rem
               if ((window as any).__mnotes_inited) return;
+
               // Ensure anchors exist by converting any Quarto-style margin notes first
               convertMarginBlockquotesToAnchors();
               const anchors = document.querySelectorAll('.note-anchor');
@@ -602,20 +604,26 @@ const currentPath = Astro.url.pathname;
               new (MarginNotes as any)();
               (window as any).__mnotes_inited = true;
             };
+
             document.addEventListener('DOMContentLoaded', () => {
-              // Run after DOM ready, then again in a microtask to wait for page-level mutations
               tryInit();
               setTimeout(tryInit, 0);
             });
             window.addEventListener('load', tryInit);
-            // If user resizes from narrow to wide, attempt init
-            const mql = window.matchMedia('(max-width: 1100px)');
-            mql.addEventListener?.('change', () => {
-              if (!mql.matches) {
-                // just became wide
+
+            if ('ResizeObserver' in window) {
+              const resizeObserver = new ResizeObserver(() => {
+                if ((window as any).__mnotes_inited) return;
                 setTimeout(tryInit, 50);
-              }
-            });
+              });
+              const mainContent = document.querySelector('.main-content');
+              if (mainContent) resizeObserver.observe(mainContent);
+            } else {
+              // Fallback for older browsers
+              window.addEventListener('resize', () => {
+                if (!(window as any).__mnotes_inited) setTimeout(tryInit, 50);
+              });
+            }
           })();
         })();
       </script>

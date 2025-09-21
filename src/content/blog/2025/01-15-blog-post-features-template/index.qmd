@@ -67,6 +67,7 @@ $$\hat{\beta} = (X^TX)^{-1}X^Ty$$
 Citations: [@cinelliCrashCourseGood2020] if you have a `references.bib` file.
 
 Margin notes:
+
 > margin: This appears in the right margin. Good for tangents or extra context.
 
 ## R Code

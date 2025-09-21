@@ -1,52 +1,83 @@
 @layer components {
   /* Layout and navigation styles for BaseLayout */
 
-  /* Navigation styles */
+  /* Modern flexible navigation with mobile-optimized padding */
   .nav-content {
     display: flex;
     align-items: center;
-    padding: var(--space-lg);
+    padding-block: clamp(0.5rem, 2vw, var(--space-lg)); /* Dramatically less on mobile */
+    padding-inline: var(--space-md);
     position: relative;
-    max-width: min(var(--site-width, 1280px), calc(100vw - 2rem));
-    margin: 0 auto;
+    max-width: min(var(--site-width, 1280px), calc(100vw - 2 * var(--space-md)));
+    margin-inline: auto;
     width: 100%;
+    gap: clamp(0.5rem, 3vw, 2rem); /* Tighter gap on mobile */
   }
 }
 
+/* Modern CSS Grid layouts with logical properties */
 .layout-prose {
+  display: grid;
+  grid-template-columns:
+    minmax(var(--space-md), 1fr)
+    min(var(--measure-prose), 100% - 2 * var(--space-md))
+    minmax(var(--space-md), 1fr);
+  padding-inline: 0; /* Grid handles spacing */
   width: 100%;
-  max-width: var(--measure-prose);
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: var(--space-md);
-  padding-right: var(--space-md);
+}
+
+.layout-prose > * {
+  grid-column: 2; /* Center content in middle column */
 }
 
 .layout-listing {
+  display: grid;
+  grid-template-columns:
+    minmax(var(--space-md), 1fr)
+    min(var(--measure-listing), 100% - 2 * var(--space-md))
+    minmax(var(--space-md), 1fr);
+  padding-inline: 0;
   width: 100%;
-  max-width: var(--measure-listing);
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: var(--space-md);
-  padding-right: var(--space-md);
+}
+
+.layout-listing > * {
+  grid-column: 2;
 }
 
 .layout-wide {
+  display: grid;
+  grid-template-columns:
+    minmax(var(--space-md), 1fr)
+    min(var(--measure-wide), 100% - 2 * var(--space-md))
+    minmax(var(--space-md), 1fr);
+  padding-inline: 0;
   width: 100%;
-  max-width: var(--measure-wide);
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: var(--space-md);
-  padding-right: var(--space-md);
+}
+
+.layout-wide > * {
+  grid-column: 2;
 }
 
 .layout-full {
+  display: grid;
+  grid-template-columns:
+    minmax(var(--space-sm), 1fr)
+    min(var(--measure-full), 100% - 2 * var(--space-sm))
+    minmax(var(--space-sm), 1fr);
+  padding-inline: 0;
   width: 100%;
-  max-width: var(--measure-full);
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: var(--space-md);
-  padding-right: var(--space-md);
+}
+
+.layout-full > * {
+  grid-column: 2;
+}
+
+/* Breakout utility for full-width elements */
+.layout-prose .breakout,
+.layout-listing .breakout,
+.layout-wide .breakout,
+.layout-full .breakout {
+  grid-column: 1 / -1; /* Span all columns */
 }
 
 .nav-brand .site-logo {
@@ -55,7 +86,7 @@
   gap: var(--space-xs);
   text-decoration: none;
   font-family: var(--font-heading);
-  font-size: var(--text-xl);
+  font-size: clamp(1rem, 3vw, var(--text-xl)); /* Compact on mobile */
   font-weight: 600;
   color: var(--color-ink-dark);
   margin-left: 0;
@@ -78,35 +109,29 @@
 .nav-links {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
-  font-size: var(--text-lg);
+  gap: clamp(0.25rem, 1.5vw, 1rem); /* Much tighter gap on mobile */
+  font-size: clamp(0.85rem, 2.2vw, var(--text-lg)); /* More aggressive mobile scaling */
   font-family: var(--font-heading);
-  margin-left: auto;
-  margin-right: 0;
-  /* Allow the links block to shrink and wrap within the nav wrapper */
+  margin-inline-start: auto;
   min-width: 0;
   flex: 1 1 auto;
   justify-content: flex-end;
   flex-wrap: wrap;
 }
 
-@media (max-width: 900px) {
-  .nav-links {
-    flex-wrap: wrap;
-    gap: var(--space-xs);
-  }
-}
+/* Simplified responsive adjustments - most handled by fluid design */
 
 .torch-toggle {
-  margin-left: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: clamp(28px, 6vw, 40px); /* More compact on mobile */
+  height: clamp(28px, 6vw, 40px);
+  min-width: 40px; /* Reduced minimum for space efficiency */
+  min-height: 40px;
   border: none;
   background: transparent;
-  padding: 4px;
+  padding: clamp(2px, 0.5vw, 6px); /* Tighter padding */
   border-radius: 50%;
   color: var(--color-walnut);
 }
@@ -115,26 +140,30 @@
   background: color-mix(in srgb, var(--color-surface) 70%, var(--color-walnut));
 }
 
+.torch-toggle .torch-icon {
+  width: clamp(16px, 4vw, 22px); /* Fluid icon size */
+  height: clamp(16px, 4vw, 22px);
+}
+
 .torch-toggle:focus {
   outline: 2px solid var(--color-tansy);
   outline-offset: 2px;
 }
 
-@media (max-width: 768px) {
-  .torch-toggle {
-    width: 32px;
-    height: 32px;
-  }
-}
+/* Torch toggle now uses fluid sizing - no breakpoint needed */
 
 .nav-link {
   text-decoration: none;
   color: var(--color-ink-light);
-  padding: 4px 8px;
+  padding-block: clamp(4px, 1vw, 8px); /* More compact mobile padding */
+  padding-inline: clamp(6px, 1.5vw, 12px);
   font-weight: 400;
   letter-spacing: 0.01em;
   position: relative;
   border-radius: 4px;
+  min-height: clamp(36px, 8vw, 44px); /* Reduced min-height on mobile */
+  display: flex;
+  align-items: center;
 }
 
 .nav-link:focus {
@@ -166,8 +195,9 @@
 .nav-separator {
   color: var(--color-ink-light);
   opacity: 0.5;
-  margin: 0;
+  margin-inline: clamp(0px, 1vw, 4px); /* Minimal margin on mobile */
   font-weight: 300;
+  font-size: clamp(0.7rem, 2vw, 1rem); /* Smaller on mobile */
 }
 
 /* Page layout structure */
@@ -226,38 +256,23 @@
   contain-intrinsic-size: 400px 600px;
 }
 
-/* Mobile responsiveness */
-@media (max-width: 768px) {
-  .nav-scroll {
-    flex-direction: column;
-    gap: var(--space-xs);
-    padding: 0 var(--space-md);
-  }
+/* Modern responsive layout using logical properties */
+.main-content {
+  padding-block: clamp(0.25rem, 1vw, var(--space-sm)) 0; /* Minimal top padding on mobile */
+  flex: 1 1 auto;
+  display: block;
+  position: relative;
+}
 
-  .nav-links {
-    font-size: var(--text-xs);
-  }
-
-  .nav-link {
-    padding: var(--space-xs);
-  }
-
+/* Smart separator visibility using modern CSS */
+@container (max-width: 30rem) {
   .nav-separator {
-    margin: 0 var(--space-xs);
-  }
-
-  .main-content {
-    padding: calc(70px + var(--space-md)) 0 var(--space-xl);
+    display: none;
   }
 }
 
+/* Fallback for browsers without container query support */
 @media (max-width: 480px) {
-  .nav-links {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: var(--space-xs);
-  }
-
   .nav-separator {
     display: none;
   }

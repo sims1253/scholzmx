@@ -1,7 +1,7 @@
 /* Force Tailwind to generate the utilities we need */
 @import url('tailwindcss/utilities');
 
-/* Force generation of commonly used grid utilities */
+/* Modern responsive grid utilities that work with our fluid design */
 .tw-grid {
   display: grid;
 }
@@ -14,9 +14,49 @@
 .tw-grid-cols-3 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
-.tw-gap-4 {
-  gap: 1rem;
+
+/* Fluid spacing utilities that complement our design system */
+.tw-gap-fluid {
+  gap: clamp(1rem, 3vw, 1.5rem);
 }
-.tw-gap-6 {
-  gap: 1.5rem;
+.tw-gap-fluid-lg {
+  gap: clamp(1.5rem, 4vw, 2rem);
+}
+
+/* Modern responsive spacing */
+.tw-p-fluid {
+  padding: clamp(0.75rem, 3vw, 1.5rem);
+}
+.tw-px-fluid {
+  padding-inline: clamp(0.75rem, 3vw, 1.5rem);
+}
+.tw-py-fluid {
+  padding-block: clamp(0.5rem, 2vw, 1rem);
+}
+
+/* Container query utilities for modern responsive design */
+.tw-container-responsive {
+  container-type: inline-size;
+}
+
+/* Logical property utilities */
+.tw-text-start {
+  text-align: start;
+}
+.tw-text-end {
+  text-align: end;
+}
+
+/* Modern width utilities */
+.tw-w-full {
+  width: 100%;
+}
+.tw-w-fluid {
+  width: clamp(20rem, 50vw, 60rem);
+}
+
+/* Touch-friendly utilities */
+.tw-min-touch {
+  min-width: 44px;
+  min-height: 44px;
 }
