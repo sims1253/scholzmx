@@ -175,10 +175,33 @@ let imageHeight = typeof finalHeight === 'string' ? NaN : (finalHeight as number
 if (!Number.isFinite(imageHeight)) {
   imageHeight = ar ? Math.round((imageWidth as number) * (ar.h / ar.w)) : 400;
 }
-const responsiveWidths =
-  style === 'hero' ? [400, 600, 800, 1100] : [320, 480, 640, 800, 960, 1200, 1440, 1600];
-// Approximate sizes for a centered content area with a 3-column card layout
-const defaultSizes = '(min-width: 80rem) 30vw, (min-width: 48rem) 45vw, 94vw';
+// Mobile-first responsive widths optimized for actual device usage
+const responsiveWidths = (() => {
+  switch (style) {
+    case 'hero':
+      return [393, 768, 1024, 1200]; // Start with Pixel 5 width
+    case 'botanical':
+    case 'polaroid':
+    case 'gentle-oval':
+      return [160, 240, 320, 480, 640, 960]; // Portrait frames with desktop high-res support
+    default:
+      return [320, 480, 640, 800, 1024]; // Content images - removed oversized options
+  }
+})();
+
+// Content-specific sizes attributes for optimal loading
+const defaultSizes = (() => {
+  switch (style) {
+    case 'hero':
+      return '(min-width: 90rem) 1100px, (min-width: 72rem) 72rem, 100vw';
+    case 'botanical':
+    case 'polaroid':
+    case 'gentle-oval':
+      return '(min-width: 1200px) 240px, (min-width: 768px) 200px, 160px'; // Responsive portrait sizes
+    default:
+      return '(min-width: 768px) 640px, 100vw'; // Prose content width
+  }
+})();
 
 // Hero performance hints
 const effectiveLoading = style === 'hero' ? 'eager' : loading;
@@ -237,7 +260,7 @@ const captionId = hasCaption
                   height={imageHeight}
                   widths={responsiveWidths}
                   sizes={style === 'hero' ? heroSizes : defaultSizes}
-                  format="webp"
+                  formats={['avif', 'webp']}
                   loading={effectiveLoading}
                   class={`tw-w-full tw-h-full tw-object-contain tw-block`}
                   fetchpriority={effectiveFetchPriority}
@@ -267,7 +290,7 @@ const captionId = hasCaption
                 height={imageHeight}
                 widths={responsiveWidths}
                 sizes={style === 'hero' ? heroSizes : defaultSizes}
-                format="webp"
+                formats={['avif', 'webp']}
                 loading={effectiveLoading}
                 class={`tw-w-full ${imageHeightClass} tw-block ${objectFitClass}`}
                 style={objectPositionStyle}
@@ -300,7 +323,7 @@ const captionId = hasCaption
                     height={imageHeight}
                     widths={responsiveWidths}
                     sizes={style === 'hero' ? heroSizes : defaultSizes}
-                    format="webp"
+                    formats={['avif', 'webp']}
                     loading="lazy"
                     class={`tw-w-full tw-h-full tw-object-contain tw-block`}
                   />
@@ -325,9 +348,9 @@ const captionId = hasCaption
                   alt={alternateAlt || alt}
                   width={imageWidth}
                   height={imageHeight}
-                  widths={style === 'hero' ? [400, 600, 800, 1100] : [imageWidth]}
-                  sizes={style === 'hero' ? heroSizes : `${imageWidth}px`}
-                  format="webp"
+                  widths={responsiveWidths}
+                  sizes={style === 'hero' ? heroSizes : defaultSizes}
+                  formats={['avif', 'webp']}
                   loading="lazy"
                   class={`tw-w-full tw-h-full tw-block ${alternateObjectFitClass}`}
                   style={objectPositionStyle}
@@ -381,9 +404,9 @@ const captionId = hasCaption
                 alt={alt}
                 width={imageWidth}
                 height={imageHeight}
-                widths={style === 'hero' ? [400, 600, 800, 1100] : [imageWidth]}
-                sizes={style === 'hero' ? heroSizes : `${imageWidth}px`}
-                format="webp"
+                widths={responsiveWidths}
+                sizes={style === 'hero' ? heroSizes : defaultSizes}
+                formats={['avif', 'webp']}
                 loading={effectiveLoading}
                 class={`tw-w-full tw-h-full tw-object-contain tw-block`}
                 fetchpriority={effectiveFetchPriority}
@@ -411,9 +434,9 @@ const captionId = hasCaption
               alt={alt}
               width={imageWidth}
               height={imageHeight}
-              widths={style === 'hero' ? [400, 600, 800, 1100] : [imageWidth]}
-              sizes={style === 'hero' ? heroSizes : `${imageWidth}px`}
-              format="webp"
+              widths={responsiveWidths}
+              sizes={style === 'hero' ? heroSizes : defaultSizes}
+              formats={['avif', 'webp']}
               loading={effectiveLoading}
               class={`tw-w-full tw-h-full tw-block ${objectFitClass}`}
               style={objectPositionStyle}
@@ -442,9 +465,9 @@ const captionId = hasCaption
                   alt={alternateAlt || alt}
                   width={imageWidth}
                   height={imageHeight}
-                  widths={style === 'hero' ? [400, 600, 800, 1100] : [imageWidth]}
-                  sizes={style === 'hero' ? heroSizes : `${imageWidth}px`}
-                  format="webp"
+                  widths={responsiveWidths}
+                  sizes={style === 'hero' ? heroSizes : defaultSizes}
+                  formats={['avif', 'webp']}
                   loading="lazy"
                   class={`tw-w-full tw-h-full tw-object-contain tw-block`}
                 />

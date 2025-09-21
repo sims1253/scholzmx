@@ -25,7 +25,7 @@ export interface Options {
   eagerFirst?: boolean;
 }
 
-const DEFAULT_SIZES = '(min-width: 768px) 680px, 100vw';
+const DEFAULT_SIZES = '(min-width: 768px) 640px, 100vw'; // Optimized for prose content
 
 export const rehypeImageAstro: Plugin<[Options?], Root> = (options = {}) => {
   const sizes = options.sizes ?? DEFAULT_SIZES;
@@ -107,6 +107,8 @@ export const rehypeImageAstro: Plugin<[Options?], Root> = (options = {}) => {
             src: `{await import('${astroImportPath}')}`,
             alt: alt || '',
             sizes,
+            formats: '{["avif", "webp"]}',
+            widths: '{[320, 480, 640, 800, 1024]}', // Mobile-first responsive widths
             loading: eager ? 'eager' : 'lazy',
             decoding: 'async',
             ...(eager ? { fetchpriority: 'high' } : {}),
