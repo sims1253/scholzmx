@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
   pages: write
   id-token: write
 
@@ -21,7 +22,6 @@ jobs:
     runs-on: ubuntu-latest
     if: |
       (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') ||
-      (github.event_name == 'push') ||
       (github.event_name == 'workflow_dispatch')
     steps:
       - name: Checkout
@@ -37,7 +37,9 @@ jobs:
       - name: Cache bun dependencies
         uses: actions/cache@v4
         with:
-          path: ~/.bun/install/cache
+          path: |
+            ~/.bun/install/cache
+            ~/.cache/bun
           key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock*') }}
           restore-keys: |
             ${{ runner.os }}-bun-
@@ -45,21 +47,30 @@ jobs:
       - name: Install JavaScript dependencies
         run: bun install --frozen-lockfile
 
-      # Find and download latest rendered content artifact
-      - name: Get latest content render run
+      # Download rendered content artifact from the triggering workflow run
+      - name: Get content render run ID
         id: latest-render
         run: |
-          latest_run=$(gh run list \
-            --workflow="Content Render (Quarto → Markdown)" \
-            --status=success \
-            --limit=1 \
-            --json=databaseId \
-            --jq='.[0].databaseId')
-          echo "run-id=$latest_run" >> $GITHUB_OUTPUT
+          if [ "${{ github.event_name }}" = "workflow_run" ]; then
+            # Use the run that triggered this workflow
+            triggering_run_id="${{ github.event.workflow_run.id }}"
+            echo "run-id=$triggering_run_id" >> $GITHUB_OUTPUT
+            echo "Using triggering workflow run: $triggering_run_id"
+          else
+            # For manual dispatch, get the latest successful render run
+            latest_run=$(gh run list \
+              --workflow="Content Render (Quarto → Markdown)" \
+              --status=success \
+              --limit=1 \
+              --json=databaseId \
+              --jq='.[0].databaseId')
+            echo "run-id=$latest_run" >> $GITHUB_OUTPUT
+            echo "Using latest successful run: $latest_run"
+          fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Download latest rendered content
+      - name: Download rendered content
         uses: actions/download-artifact@v4
         with:
           name: rendered-content

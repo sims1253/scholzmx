@@ -16,11 +16,10 @@ on:
       - 'src/**/*.js'
       - 'src/styles/**/*.css'
   workflow_dispatch:
-  schedule:
-    - cron: '17 3 * * *'
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: 'render-${{ github.ref }}'
@@ -35,37 +34,35 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      # Download previous artifacts to check cache validity
-      - name: Get latest content render run (excluding current)
-        id: latest-render
-        run: |
-          latest_run=$(gh run list \
-            --workflow="Content Render (Quarto → Markdown)" \
-            --status=success \
-            --limit=5 \
-            --json=databaseId \
-            --jq="map(select(.databaseId != ${{ github.run_id }})) | .[0].databaseId // empty" || echo "")
-          echo "run-id=$latest_run" >> $GITHUB_OUTPUT
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        continue-on-error: true
-
-      - name: Download previous rendered content
-        uses: actions/download-artifact@v4
         with:
-          name: rendered-content
-          path: .
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ github.repository }}
-          run-id: ${{ steps.latest-render.outputs.run-id }}
-        continue-on-error: true
+          fetch-depth: 2
 
-      # Quick cache check using downloaded artifacts
+      # Check for force rebuild flag
+      - name: Check for force rebuild
+        id: force-check
+        run: |
+          # Check if commit message contains [force-rebuild]
+          if git log -1 --pretty=%B | grep -q "\[force-rebuild\]"; then
+            echo "Force rebuild requested in commit message"
+            echo "force-rebuild=true" >> $GITHUB_OUTPUT
+          else
+            echo "force-rebuild=false" >> $GITHUB_OUTPUT
+          fi
+
+      # Quick cache check without downloading artifacts first
       - name: Check if rendering is needed
         id: cache-check
         run: |
           needs_render=false
+          force_rebuild="${{ steps.force-check.outputs.force-rebuild }}"
+
+          # Force rebuild if requested
+          if [ "$force_rebuild" = "true" ]; then
+            echo "Force rebuild requested - will render all content"
+            needs_render=true
+            echo "needs-render=$needs_render" >> $GITHUB_OUTPUT
+            exit 0
+          fi
 
           # First check if we have any QMD files to process
           qmd_files=$(find src/content/blog -name "index.qmd" -path "*/[0-9][0-9][0-9][0-9]/*/*" -type f | wc -l)
@@ -75,50 +72,36 @@ jobs:
             exit 0
           fi
 
-          # Check each QMD file against downloaded artifacts and cache
+          # Check each QMD file for changes (without relying on downloaded cache)
           while IFS= read -r -d '' qmd_file; do
-            md_file="${qmd_file%.qmd}.md"
-            hash_file=".blog-cache/$(echo "$qmd_file" | sed 's|/|_|g').hash"
-
             echo "Checking $qmd_file..."
-            echo "  Looking for hash file: $hash_file"
 
-            # If markdown doesn't exist, needs rendering
-            if [ ! -f "$md_file" ]; then
-              echo "  → No MD file found"
-              needs_render=true
-              break
-            fi
-
-            # If hash file doesn't exist, needs rendering
-            if [ ! -f "$hash_file" ]; then
-              echo "  → No hash cache found at $hash_file"
-              echo "  → Available hash files:"
-              find .blog-cache -name "*.hash" -type f 2>/dev/null | head -10 || echo "    (none found)"
-              echo "  → Cache directory contents:"
-              ls -la .blog-cache/ 2>/dev/null || echo "    (directory not found)"
-              needs_render=true
-              break
-            fi
-
-            # Calculate current hash and compare with cached hash
-            current_hash=$(sha256sum "$qmd_file" | cut -d' ' -f1)
-            cached_hash=$(cat "$hash_file" 2>/dev/null || echo "")
-
-            if [ "$current_hash" != "$cached_hash" ]; then
-              echo "  → Content changed (${current_hash:0:8} != ${cached_hash:0:8})"
-              needs_render=true
-              break
+            # For initial assessment, if this is a push event, assume content may have changed
+            # We'll do proper cache checking in the render job with fresh downloads
+            if [ "${{ github.event_name }}" = "push" ]; then
+              # Check if this specific file was modified in the push
+              changed_files=$(git diff --name-only ${{ github.event.before }}..${{ github.event.after }} 2>/dev/null || git diff --name-only HEAD~1..HEAD)
+              if echo "$changed_files" | grep -q "$(basename $(dirname $qmd_file))\|$(basename $qmd_file)\|build-blog.sh\|_quarto.yml"; then
+                echo "  → File or related content was modified in this push"
+                needs_render=true
+                break
+              fi
             else
-              echo "  → Content unchanged (${current_hash:0:8})"
+              # For manual runs or schedule, check if any content exists
+              md_file="${qmd_file%.qmd}.md"
+              if [ ! -f "$md_file" ]; then
+                echo "  → No MD file found"
+                needs_render=true
+                break
+              fi
             fi
           done < <(find src/content/blog -name "index.qmd" -path "*/[0-9][0-9][0-9][0-9]/*/*" -type f -print0)
 
           echo "needs-render=$needs_render" >> $GITHUB_OUTPUT
           if [ "$needs_render" = "true" ]; then
-            echo "Rendering needed - content has changed"
+            echo "Rendering needed - content changes detected"
           else
-            echo "No rendering needed - all content unchanged"
+            echo "No rendering needed - no relevant changes detected"
           fi
 
   render:
@@ -165,9 +148,10 @@ jobs:
             render-cache-${{ runner.os }}-r${{ steps.setup-r.outputs.installed-r-version }}-
             render-cache-${{ runner.os }}-
 
-      # Download previous rendered content to enable caching
+      # Download previous rendered content to enable caching (only if not force rebuilding)
       - name: Get latest content render run (excluding current)
         id: latest-render
+        if: ${{ !contains(github.event.head_commit.message, '[force-rebuild]') }}
         run: |
           latest_run=$(gh run list \
             --workflow="Content Render (Quarto → Markdown)" \
@@ -176,12 +160,14 @@ jobs:
             --json=databaseId \
             --jq="map(select(.databaseId != ${{ github.run_id }})) | .[0].databaseId // empty" || echo "")
           echo "run-id=$latest_run" >> $GITHUB_OUTPUT
+          echo "Found previous run: $latest_run"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         continue-on-error: true
 
       - name: Download previous rendered content
         uses: actions/download-artifact@v4
+        if: ${{ !contains(github.event.head_commit.message, '[force-rebuild]') && steps.latest-render.outputs.run-id != '' }}
         with:
           name: rendered-content
           path: .

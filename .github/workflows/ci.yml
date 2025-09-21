@@ -9,7 +9,7 @@ on:
 permissions:
   contents: read
 
-# Allow one concurrent deployment
+# Allow one concurrent CI run
 concurrency:
   group: 'ci-${{ github.ref }}'
   cancel-in-progress: true
@@ -30,7 +30,9 @@ jobs:
       - name: Cache bun dependencies
         uses: actions/cache@v4
         with:
-          path: ~/.bun/install/cache
+          path: |
+            ~/.bun/install/cache
+            ~/.cache/bun
           key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock*') }}
           restore-keys: |
             ${{ runner.os }}-bun-
@@ -69,7 +71,9 @@ jobs:
       - name: Cache bun dependencies
         uses: actions/cache@v4
         with:
-          path: ~/.bun/install/cache
+          path: |
+            ~/.bun/install/cache
+            ~/.cache/bun
           key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock*') }}
           restore-keys: |
             ${{ runner.os }}-bun-

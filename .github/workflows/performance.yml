@@ -28,7 +28,9 @@ jobs:
       - name: Cache bun dependencies
         uses: actions/cache@v4
         with:
-          path: ~/.bun/install/cache
+          path: |
+            ~/.bun/install/cache
+            ~/.cache/bun
           key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock*') }}
           restore-keys: |
             ${{ runner.os }}-bun-
@@ -59,6 +61,7 @@ jobs:
           budgetPath: .lighthouse-budget.json
           uploadArtifacts: true
           temporaryPublicStorage: true
+        timeout-minutes: 15
 
       - name: Performance Summary
         if: always()
@@ -98,6 +101,16 @@ jobs:
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: 'latest'
+
+      - name: Cache bun dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            ~/.cache/bun
+          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock*') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
