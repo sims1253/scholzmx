@@ -96,6 +96,52 @@ jobs:
           echo "=== Assets directory ==="
           ls -la src/assets/images/blog/ || echo "No assets directory"
 
+      - name: Check if Markdown content is present
+        id: has-md
+        run: |
+          if find src/content/blog -path '*/index.md' -type f | grep -q .; then
+            echo "has-md=true" >> $GITHUB_OUTPUT
+          else
+            echo "has-md=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Fallback - Get latest successful render run
+        id: fallback-run
+        if: steps.has-md.outputs.has-md != 'true'
+        run: |
+          latest_run=$(gh run list \
+            --workflow="Content Render (Quarto → Markdown)" \
+            --status=success \
+            --limit=1 \
+            --json=databaseId \
+            --jq='.[0].databaseId // empty' || echo "")
+          echo "run-id=$latest_run" >> $GITHUB_OUTPUT
+          if [ -z "$latest_run" ]; then
+            echo "No previous successful render run available for fallback" >&2
+          else
+            echo "Falling back to run: $latest_run"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Fallback - Download rendered content
+        if: steps.has-md.outputs.has-md != 'true' && steps.fallback-run.outputs.run-id != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: rendered-content
+          path: .
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ steps.fallback-run.outputs.run-id }}
+
+      - name: Verify rendered content present before build
+        run: |
+          count=$(find src/content/blog -path '*/index.md' -type f | wc -l || echo 0)
+          if [ "$count" -eq 0 ]; then
+            echo "Error: No rendered Markdown content found. Aborting deploy to avoid publishing an incomplete site." >&2
+            exit 1
+          fi
+
       # Build Astro site
       - name: Build site
         run: bun run build

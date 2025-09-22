@@ -1,9 +1,9 @@
 name: Performance Monitoring
 
 on:
-  push:
-    branches: [main, master]
-  pull_request:
+  workflow_run:
+    workflows: ['Deploy to GitHub Pages']
+    types: [completed]
     branches: [main, master]
   workflow_dispatch:
 
@@ -16,47 +16,36 @@ jobs:
   lighthouse:
     name: Lighthouse Performance Audit
     runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
     steps:
-      - name: Checkout code
+      - name: Checkout code (for LH config)
         uses: actions/checkout@v4
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: 'latest'
-
-      - name: Cache bun dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.bun/install/cache
-            ~/.cache/bun
-          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock*') }}
-          restore-keys: |
-            ${{ runner.os }}-bun-
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Build site
-        run: bun run build
-
-      - name: Serve site
+      - name: Resolve deployed site URL
+        id: site
         run: |
-          bun run preview &
-          sleep 5
-          # Verify site is running
-          curl -f http://localhost:4321 || exit 1
+          if [ -f public/CNAME ]; then
+            domain=$(cat public/CNAME | tr -d '\n' | tr -d '\r')
+            echo "Using custom domain: $domain"
+            echo "base-url=https://$domain" >> $GITHUB_OUTPUT
+          else
+            # Fall back to GitHub Pages project URL
+            owner="${{ github.repository_owner }}"
+            repo="${{ github.event.repository.name }}"
+            echo "base-url=https://$owner.github.io/$repo" >> $GITHUB_OUTPUT
+          fi
 
       - name: Run Lighthouse CI Audit
         uses: treosh/lighthouse-ci-action@v12
         with:
           urls: |
-            http://localhost:4321/
-            http://localhost:4321/blog/
-            http://localhost:4321/research/
-            http://localhost:4321/projects/
-            http://localhost:4321/notes/
+            ${{ steps.site.outputs.base-url }}/
+            ${{ steps.site.outputs.base-url }}/blog/
+            ${{ steps.site.outputs.base-url }}/research/
+            ${{ steps.site.outputs.base-url }}/projects/
+            ${{ steps.site.outputs.base-url }}/notes/
           configPath: .lighthouserc.cjs
           budgetPath: .lighthouse-budget.json
           uploadArtifacts: true
@@ -97,31 +86,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: 'latest'
-
-      - name: Cache bun dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.bun/install/cache
-            ~/.cache/bun
-          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock*') }}
-          restore-keys: |
-            ${{ runner.os }}-bun-
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Build and test accessibility
+      - name: Resolve deployed site URL
+        id: site
         run: |
-          bun run build
-          bun run preview &
-          sleep 5
-          # Run accessibility audit with PA11y for detailed a11y testing
-          bun run a11y || echo "Some accessibility issues found - check output"
+          if [ -f public/CNAME ]; then
+            domain=$(cat public/CNAME | tr -d '\n' | tr -d '\r')
+            echo "base-url=https://$domain" >> $GITHUB_OUTPUT
+          else
+            owner="${{ github.repository_owner }}"
+            repo="${{ github.event.repository.name }}"
+            echo "base-url=https://$owner.github.io/$repo" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Test accessibility against live site
+        run: |
+          echo "Testing: ${{ steps.site.outputs.base-url }}"
+          npx -y pa11y ${{ steps.site.outputs.base-url }} || echo "Some accessibility issues found - check output"
         timeout-minutes: 10
 
       - name: Accessibility Summary
