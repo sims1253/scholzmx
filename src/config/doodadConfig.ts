@@ -84,25 +84,25 @@ export const doodadCategories: DoodadCategory[] = [
   {
     id: 'primaryAccents',
     enabled: true,
-    probability: 0.8, // Testing: increased to 80%
+    probability: 0.95,
     exclusive: true, // Only one primary accent per card
     items: [
       {
         id: 'bookmarkRibbon',
-        probability: 0.5, // Testing: increased chance
+        probability: 0.4,
         layerTypes: ['all'],
         kind: 'element',
         generate: ({ pick }) => ({ side: pick(0.5) ? 'right' : 'left' }),
       },
       {
         id: 'tapeCorners',
-        probability: 0.3, // Testing: reduced to make room for others
+        probability: 0.3,
         layerTypes: ['all'],
         kind: 'element',
       },
       {
         id: 'tab',
-        probability: 0.4, // Testing: much higher chance
+        probability: 0.4,
         layerTypes: ['single'],
         kind: 'element',
       },
@@ -131,7 +131,7 @@ export const doodadCategories: DoodadCategory[] = [
   {
     id: 'svgDoodles',
     enabled: true,
-    probability: 0.5, // Testing: increased to 50%
+    probability: 0.7, // Increased to 70% for better visual consistency
     exclusive: true, // Only one SVG doodle per card for cleaner visuals
     items: [
       {
@@ -280,7 +280,7 @@ export const doodadCategories: DoodadCategory[] = [
       },
       {
         id: 'ringEffect',
-        probability: 0.3,
+        probability: 0.1,
         layerTypes: ['all'],
         kind: 'background',
         generate: ({ map }) => ({

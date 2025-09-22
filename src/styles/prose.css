@@ -58,8 +58,64 @@
   }
 
   .prose li {
-    margin-bottom: var(--space-xs);
+    margin-bottom: 0.1rem;
     line-height: inherit;
+  }
+
+  /* Recipe specs styling */
+  .prose .recipe-specs {
+    background: var(--color-surface);
+    border: 1px solid var(--color-lichen);
+    border-radius: var(--border-radius);
+    padding: var(--space-sm);
+    margin: var(--space-xs) 0;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.1rem var(--space-md);
+    max-width: 100%;
+  }
+
+  .prose .recipe-specs dt {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-walnut);
+    margin: 0;
+    align-self: baseline;
+  }
+
+  .prose .recipe-specs dd {
+    margin: 0;
+    color: var(--color-text-primary);
+    align-self: baseline;
+  }
+
+  /* Equipment list styling */
+  .prose .equipment-list {
+    background: var(--wash-sage);
+    border: 1px solid var(--color-sage);
+    border-radius: var(--border-radius);
+    padding: var(--space-sm);
+    margin: var(--space-xs) 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.1rem var(--space-sm);
+    max-width: 100%;
+    list-style: none;
+    padding-left: var(--space-sm);
+  }
+
+  .prose .equipment-list li {
+    margin-bottom: 0;
+    color: var(--color-text-primary);
+    position: relative;
+    padding-left: 1rem;
+  }
+
+  .prose .equipment-list li::before {
+    content: '•';
+    color: var(--color-sage-dark);
+    font-weight: bold;
+    position: absolute;
+    left: 0;
   }
 
   /* Optional: tighter excerpt variant for cards */

@@ -28,7 +28,6 @@ const recipes = defineCollection({
       description: z.string(),
       servings: z.string(),
       time: z.string(),
-      season: z.string(),
       tags: z.array(z.string()).optional(),
       ingredients: z.array(z.string()).optional(),
       equipment: z.array(z.string()).optional(),
