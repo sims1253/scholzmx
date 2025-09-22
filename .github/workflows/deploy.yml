@@ -74,7 +74,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: rendered-content
-          path: .
+          path: rendered
           github-token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
           run-id: ${{ steps.latest-render.outputs.run-id }}
@@ -85,21 +85,19 @@ jobs:
         run: |
           echo "=== Root directory contents ==="
           ls -la
-          echo "=== src/content/blog structure ==="
-          find src/content/blog -type f -name "*.md" | head -20
-          echo "=== All downloaded content ==="
-          find . -path "./src/content/blog/*/*/index.md" -type f
-          echo "=== Search for ANY index.md files ==="
-          find . -name "index.md" -type f
-          echo "=== Directory tree of blog content ==="
-          tree src/content/blog || ls -la src/content/blog/*/
-          echo "=== Assets directory ==="
+          echo "=== Repo blog content (sample) ==="
+          find src/content/blog -type f -name "*.md" | head -20 || true
+          echo "=== Downloaded artifact content (rendered) ==="
+          find rendered -path "rendered/src/content/blog/*/*/index.md" -type f || true
+          echo "=== Directory tree of rendered blog content ==="
+          tree rendered/src/content/blog || ls -la rendered/src/content/blog/*/ || true
+          echo "=== Assets directory (repo) ==="
           ls -la src/assets/images/blog/ || echo "No assets directory"
 
-      - name: Check if Markdown content is present
+      - name: Check if Markdown content is present in artifact
         id: has-md
         run: |
-          if find src/content/blog -path '*/index.md' -type f | grep -q .; then
+          if find rendered/src/content/blog -path '*/index.md' -type f | grep -q .; then
             echo "has-md=true" >> $GITHUB_OUTPUT
           else
             echo "has-md=false" >> $GITHUB_OUTPUT
@@ -129,16 +127,38 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: rendered-content
-          path: .
+          path: rendered
           github-token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
           run-id: ${{ steps.fallback-run.outputs.run-id }}
 
-      - name: Verify rendered content present before build
+      # Merge the rendered blog outputs into the repo without clobbering other content
+      - name: Merge rendered blog content
         run: |
-          count=$(find src/content/blog -path '*/index.md' -type f | wc -l || echo 0)
-          if [ "$count" -eq 0 ]; then
-            echo "Error: No rendered Markdown content found. Aborting deploy to avoid publishing an incomplete site." >&2
+          set -e
+          if [ -d rendered/src/content/blog ]; then
+            echo "Merging rendered blog markdown into repo..."
+            rsync -a rendered/src/content/blog/ src/content/blog/
+
+            echo "Merging rendered blog assets per post..."
+            while IFS= read -r -d '' f; do
+              year=$(echo "$f" | sed -E 's|.*/blog/([0-9]{4})/.*|\1|')
+              slug=$(basename "$(dirname "$f")")
+              if [ -d "rendered/src/assets/images/blog/$year/$slug" ]; then
+                mkdir -p "src/assets/images/blog/$year/$slug"
+                rsync -a "rendered/src/assets/images/blog/$year/$slug/" "src/assets/images/blog/$year/$slug/"
+              fi
+            done < <(find rendered/src/content/blog -path '*/index.md' -type f -print0)
+          else
+            echo "No rendered content directory found; continuing with repo content only."
+          fi
+
+      - name: Verify content present before build
+        run: |
+          count_repo=$(find src/content/blog -name '*.md' -type f | wc -l || echo 0)
+          count_rendered=$(find rendered/src/content/blog -path '*/index.md' -type f | wc -l || echo 0)
+          if [ "$count_repo" -eq 0 ] && [ "$count_rendered" -eq 0 ]; then
+            echo "Error: No Markdown content found (neither repo nor rendered). Aborting deploy to avoid publishing an empty site." >&2
             exit 1
           fi
 

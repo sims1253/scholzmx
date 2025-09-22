@@ -216,8 +216,10 @@ jobs:
           name: rendered-content
           if-no-files-found: error
           compression-level: 6
+          # Only upload generated blog outputs, not the entire src tree
           path: |
-            src/
+            src/content/blog/*/*/index.md
+            src/assets/images/blog/
             .blog-cache/
 
   reuse-artifact:
@@ -275,6 +277,8 @@ jobs:
           name: rendered-content
           if-no-files-found: error
           compression-level: 6
+          # Only upload generated blog outputs, not the entire src tree
           path: |
-            src/
+            src/content/blog/*/*/index.md
+            src/assets/images/blog/
             .blog-cache/
