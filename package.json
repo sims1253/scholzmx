@@ -20,7 +20,7 @@
     "quality:fix": "bun run lint:js:fix && bun run lint:css:fix && bun run format",
     "quality:full": "bun run quality:check && bun run build && bun run test:a11y",
     "lighthouse": "lighthouse http://localhost:4321 --output html --output-path ./lighthouse-report.html",
-    "lighthouse:ci": "lhci autorun",
+    "lighthouse:ci": "lhci autorun --url http://localhost:4321/ --url http://localhost:4321/blog/ --url http://localhost:4321/research/ --url http://localhost:4321/projects/ --url http://localhost:4321/notes/",
     "perf:local": "bun run build && bun run preview & sleep 3 && bun run lighthouse; kill $!",
     "perf:budget": "bun run build && bun run preview & sleep 3 && bun run lighthouse:ci; kill $!",
     "a11y": "pa11y http://localhost:4321",

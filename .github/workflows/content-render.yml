@@ -35,7 +35,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0 # full history to diff across multi-commit pushes
 
       # Check for force rebuild flag
       - name: Check for force rebuild
@@ -56,6 +56,11 @@ jobs:
           needs_render=false
           force_rebuild="${{ steps.force-check.outputs.force-rebuild }}"
 
+          echo "[debug] Event: ${{ github.event_name }}"
+          echo "[debug] Repository: ${{ github.repository }}"
+          echo "[debug] SHA: ${{ github.sha }}"
+          echo "[debug] Before: '${{ github.event.before }}' After: '${{ github.event.after }}'"
+
           # Force rebuild if requested
           if [ "$force_rebuild" = "true" ]; then
             echo "Force rebuild requested - will render all content"
@@ -72,6 +77,30 @@ jobs:
             exit 0
           fi
 
+          # Compute changed files once for push events and show for debugging
+          if [ "${{ github.event_name }}" = "push" ]; then
+            before="${{ github.event.before }}"
+            after="${{ github.event.after }}"
+            zeros="0000000000000000000000000000000000000000"
+            used_range=""
+
+            if [ -n "$before" ] && [ "$before" != "$zeros" ] && git cat-file -e "$before^{commit}" 2>/dev/null && git cat-file -e "$after^{commit}" 2>/dev/null; then
+              used_range="$before..$after"
+              changed_files=$(git diff --name-only "$used_range")
+            else
+              used_range="HEAD~1..HEAD (fallback)"
+              changed_files=$(git diff --name-only HEAD~1..HEAD || true)
+            fi
+
+            echo "[debug] Diff range used: $used_range"
+            echo "[debug] Changed files in push:"
+            if [ -n "$changed_files" ]; then
+              echo "$changed_files" | sed 's/^/  - /'
+            else
+              echo "  - (none detected)"
+            fi
+          fi
+
           # Check each QMD file for changes (without relying on downloaded cache)
           while IFS= read -r -d '' qmd_file; do
             echo "Checking $qmd_file..."
@@ -79,17 +108,16 @@ jobs:
             # For initial assessment, if this is a push event, assume content may have changed
             # We'll do proper cache checking in the render job with fresh downloads
             if [ "${{ github.event_name }}" = "push" ]; then
-              # If corresponding Markdown does not exist in the repo, we must render
+              # If corresponding Markdown does not exist in the repo, note it for debugging only
               md_file="${qmd_file%.qmd}.md"
               if [ ! -f "$md_file" ]; then
-                echo "  → No MD file present in repo for $qmd_file"
-                needs_render=true
-                break
+                echo "  → [debug] MD missing in repo for $qmd_file (expected for generated files ignored by VCS)"
+              else
+                echo "  → [debug] MD exists in repo for $qmd_file"
               fi
 
-              # Check if this specific file was modified in the push
-              changed_files=$(git diff --name-only ${{ github.event.before }}..${{ github.event.after }} 2>/dev/null || git diff --name-only HEAD~1..HEAD)
-              if echo "$changed_files" | grep -q "$(basename $(dirname $qmd_file))\|$(basename $qmd_file)\|build-blog.sh\|_quarto.yml"; then
+              # Check if this specific file or related files were modified in the push
+              if echo "$changed_files" | grep -E -q "$(basename $(dirname "$qmd_file"))|$(basename "$qmd_file")|build-blog.sh|_quarto.yml"; then
                 echo "  → File or related content was modified in this push"
                 needs_render=true
                 break

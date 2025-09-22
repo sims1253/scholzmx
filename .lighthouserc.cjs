@@ -2,9 +2,6 @@ module.exports = {
   ci: {
     collect: {
       numberOfRuns: 3, // Run Lighthouse 3 times and take median for more reliable results
-      startServerCommand: 'bun run preview',
-      startServerReadyPattern: 'Local:',
-      startServerReadyTimeout: 30000,
     },
     assert: {
       preset: 'lighthouse:recommended',
