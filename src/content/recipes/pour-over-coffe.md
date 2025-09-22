@@ -1,6 +1,6 @@
 ---
 title: 'Simple Pour-Over Coffee'
-description: "While I don't like coffe, many people in my life tend to think something is wrong with me for that..."
+description: "While I don't like coffee, many people in my life tend to think something is wrong with me for that..."
 servings: '1 cup'
 time: '4 minutes'
 tags: ['Drinks']
