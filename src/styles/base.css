@@ -542,20 +542,18 @@
 
   details.code-collapse summary {
     position: relative;
-    padding: var(--space-xs) var(--space-lg);
-    padding-left: calc(var(--space-lg) + 10px);
+    padding: var(--space-xs) calc(var(--space-lg));
     background: var(--color-surface);
     font-family: var(--font-heading);
     font-weight: 500;
     font-size: var(--text-md);
-    line-height: 1.2;
+    line-height: 1;
     color: var(--color-walnut);
     cursor: pointer;
     user-select: none;
     list-style: none;
     display: flex;
     align-items: center;
-    gap: var(--space-xs);
     min-height: auto;
     transition: all 0.2s ease;
     border-bottom: 1px solid color-mix(in srgb, var(--color-lichen) 40%, transparent);
@@ -563,7 +561,7 @@
   }
 
   details.code-collapse summary p {
-    margin: 0;
+    margin: 0 !important;
     line-height: inherit;
   }
 
@@ -574,27 +572,17 @@
   details.code-collapse summary::before {
     content: '▸';
     color: var(--color-moss);
-    font-size: 0.85em;
     line-height: 1;
+    position: absolute;
+    left: var(--space-xs);
+    top: 50%;
+    transform: translateY(-50%);
     transition: transform 0.2s ease;
     transform-origin: center;
-    flex-shrink: 0;
   }
 
   details.code-collapse[open] summary::before {
-    transform: rotate(90deg);
-  }
-
-  details.code-collapse summary::after {
-    content: '';
-    position: absolute;
-    left: var(--space-sm);
-    top: 50%;
-    transform: translateY(-50%);
-    width: 6px;
-    height: 22px;
-    border-radius: 3px;
-    background: color-mix(in srgb, var(--color-walnut) 15%, transparent);
+    transform: translateY(-50%) rotate(90deg);
   }
 
   details.code-collapse summary:hover {

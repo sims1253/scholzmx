@@ -15,9 +15,9 @@ const initialQuote = getRandomQuote();
     id="quote-wrapper-button"
   >
     <blockquote class="daily-quote">
-      <p class="quote-text" id="quote-text">{initialQuote.text}</p>
+      <p class="quote-text" id="quote-text">{initialQuote!.text}</p>
       <footer class="quote-attribution">
-        <cite class="quote-author" id="quote-author">— {initialQuote.author}</cite>
+        <cite class="quote-author" id="quote-author">— {initialQuote!.author}</cite>
       </footer>
     </blockquote>
   </button>
@@ -43,15 +43,15 @@ const initialQuote = getRandomQuote();
       container.style.transform = 'translateY(5px)';
 
       setTimeout(() => {
-        quoteText.textContent = newQuote.text;
-        quoteAuthor.textContent = `— ${newQuote.author}`;
+        quoteText.textContent = newQuote!.text;
+        quoteAuthor.textContent = `— ${newQuote!.author}`;
 
         // Fade back in
         container.style.opacity = '1';
         container.style.transform = 'translateY(0)';
 
         // Create accessible announcement for screen readers
-        const announcement = `New quote: ${newQuote.text} by ${newQuote.author}`;
+        const announcement = `New quote: ${newQuote!.text} by ${newQuote!.author}`;
 
         // Update the aria-label for immediate announcement
         container.setAttribute('aria-label', `Quote of the day: ${announcement}`);
@@ -134,13 +134,15 @@ const initialQuote = getRandomQuote();
     line-height: var(--spacing-line-height);
     color: var(--color-ink-dark);
     margin: 0;
-    padding: 0;
+    padding: var(--space-sm) 0 0 var(--space-xs);
     font-family: var(--font-body-personal); /* Ensure consistent Alegreya usage */
+    white-space: pre-line;
   }
 
   .quote-attribution {
     text-align: right;
     margin: 0;
+    padding: 0 0 var(--space-sm) 0;
   }
 
   .quote-author {
