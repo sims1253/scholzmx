@@ -74,23 +74,27 @@ export const personalQuotes = [
     author: 'Buster Odeholm',
   },
   {
-    text: "I need to see their fear\nI need them to understand\nLet the world sing in despair\nWe don't belong here anymore\nIn time they will know",    author: 'Buster Odeholm',
+    text: "I need to see their fear\nI need them to understand\nLet the world sing in despair\nWe don't belong here anymore\nIn time they will know",
+    author: 'Buster Odeholm',
   },
   {
-    text: "Fall on me amber moon",    author: 'Lars Marcus Johansson-Vik',
+    text: 'Fall on me amber moon',
+    author: 'Lars Marcus Johansson-Vik',
   },
   {
-    text: "I am enough\nI am whole\I am enough",    author: 'Lars Marcus Johansson-Vik',
+    text: 'I am enough\nI am whole\I am enough',
+    author: 'Lars Marcus Johansson-Vik',
   },
   {
-    text: "Well, somebody has to fight entropy.",    author: 'Richard Torkar',
+    text: 'Well, somebody has to fight entropy.',
+    author: 'Richard Torkar',
   },
   {
     text: "What benefit is eloquence\nIf I can't call and tell my friends\nThat I love them?\nCause I love them",
     author: 'Thomas Wwaver',
   },
   {
-    text: "I hope you still remember every morning rain\nAnd if there ever was beauty in my eyes, in me",
+    text: 'I hope you still remember every morning rain\nAnd if there ever was beauty in my eyes, in me',
     author: 'Sadness',
   },
   {
@@ -98,7 +102,7 @@ export const personalQuotes = [
     author: 'Garret Russell',
   },
   {
-    text: "Intricate: I watched the world dance inside your head\nEphemeral: everything created must expire\nMisery: losing hope for a dying world\nOr did we lose hope in ourselves, my ineffable?",
+    text: 'Intricate: I watched the world dance inside your head\nEphemeral: everything created must expire\nMisery: losing hope for a dying world\nOr did we lose hope in ourselves, my ineffable?',
     author: 'Garret Russell',
   },
   {
@@ -111,7 +115,7 @@ export const personalQuotes = [
     author: 'Garret Russell',
   },
   {
-    text: "To the flowwers",
+    text: 'To the flowwers',
     author: 'Sean Long, Aaran McKenzie',
   },
   {
@@ -119,7 +123,7 @@ export const personalQuotes = [
     author: 'Allison Ruth (Tom Bloom)',
   },
   {
-    text: "What would finishing your project look like if it was an act of self-love instead of self-violation?",
+    text: 'What would finishing your project look like if it was an act of self-love instead of self-violation?',
     author: 'Esmeralda',
   },
   {
@@ -127,7 +131,7 @@ export const personalQuotes = [
     author: 'Michael McGough, Joel Quartuccio',
   },
   {
-    text: "People dance under the moon\nIn circles\nBone to rune\nAnd Skull to dust\nIce melts the thoughts of the gods\nRoot promises blossom",
+    text: 'People dance under the moon\nIn circles\nBone to rune\nAnd Skull to dust\nIce melts the thoughts of the gods\nRoot promises blossom',
     author: 'Michael McGough, Joel Quartuccio',
-  }
+  },
 ];
