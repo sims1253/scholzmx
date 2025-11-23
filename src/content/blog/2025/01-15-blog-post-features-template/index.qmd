@@ -9,8 +9,6 @@ heroImage: ../../../../assets/images/homepage/self.jpg
 heroImagePositionX: 0
 heroImagePositionY: 0.235
 heroImageScale: 3.5
-images:
-  - ../../../../assets/images/blog/2025/01-15-blog-post-features-template/sample-plot-1.png
 draft: false
 execute:
   echo: true
