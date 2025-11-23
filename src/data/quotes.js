@@ -134,4 +134,24 @@ export const personalQuotes = [
     text: 'People dance under the moon\nIn circles\nBone to rune\nAnd Skull to dust\nIce melts the thoughts of the gods\nRoot promises blossom',
     author: 'Michael McGough, Joel Quartuccio',
   },
+  {
+    text: 'I try to sleep\nYet your words are haunting me',
+    author: 'Baby J',
+  },
+  {
+    text: "Speak to me as if I'm all that's left\n A broken soul in the wasteland",
+    author: 'Lars Marcus Johansson-Vik',
+  },
+  {
+    text: 'I love how housewify you are',
+    author: 'Memories',
+  },
+  {
+    text: 'Be a guest wherever you go',
+    author: 'mO2hawk',
+  },
+  {
+    text: 'Do you remember when you said to me\n"My friend, hope is a prison."',
+    author: 'Tom Searle',
+  },
 ];

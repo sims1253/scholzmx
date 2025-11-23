@@ -86,3 +86,5 @@ todo.md
 TODO.md
 GUIDE.md
 plans.db
+**/*.quarto_ipynb
+.Rproj.user/

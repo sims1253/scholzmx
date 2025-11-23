@@ -34,10 +34,10 @@ const tags = Array.from(new Set(posts.flatMap((p) => p.data.tags ?? []))).sort()
           <NoteCardStack
             columns={1}
             items={posts.map((p) => ({
-              id: p.slug,
+              id: p.id,
               title: p.data.title,
               subtitle: p.data.description,
-              href: `/blog/${p.slug}`,
+              href: `/blog/${p.id}`,
               writtenDate: p.data.date.toISOString().slice(0, 10),
               updatedDate: p.data.lastUpdated
                 ? p.data.lastUpdated.toISOString().slice(0, 10)

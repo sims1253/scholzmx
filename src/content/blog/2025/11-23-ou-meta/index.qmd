@@ -1,0 +1,98 @@
+---
+title: "Run a Charity they Said. It will be fun they said."
+description: "Running a charity in a month-long 1.5k player play-by-post mothership wargame."
+date: 2025-11-23
+lastUpdated: 2025-11-23
+categories: [RPG]
+tags: ["over/under", "RPG"]
+heroImage: ../../../../assets/images/blog/2025/11-23-ou-meta/explain-ou.png
+heroImagePositionX: 0
+heroImagePositionY: 0
+heroImageScale: 1
+draft: false
+execute:
+  echo: true
+  eval: true
+  warning: false
+  message: false
+format:
+  md:
+    variant: gfm
+    preserve-yaml: true
+    code-fold: false
+    code-block-bg: false
+    code-tools: false
+    title-block-style: none
+cache: true
+freeze: false
+---
+
+<span class="dropcap dropcap--ornate dropcap--serious" data-first-letter="I" aria-hidden="true">I</span> gave myself some time before writing this but it wants out. If you are curious about how it feels to run a charity in a 1500 player megagame, this series might be for you.
+
+## The Game
+
+> margin: Everyone figured that this was a huge roleplaying thing, which to my confusion, confused Sam, the mastermind behind the entire thing.
+
+From October 14th til November 11th 2025, I participated in [over/under](https://samsorensen.blot.im/mothership-month-2025-wargame-over/under), a play-by-post wargame turned RPG, where some thousand and a few players pretended to be on a dystopian space station.
+The premise was simple. There are 6 factions fighting over the station, each having their own goals.
+Each faction has a number of bosses, who play a wargame kinda like risk. The rest of the players are simple denizens of the station and outside of having access to credits and being required to vote for some of the factions' actions couldn't interact with the game in a mechanical way.
+
+
+## Preparations
+
+When the Server opened a day before the actual event started, I had no idea what I wanted to do in the game. My first idea was to run an exchange for the two currencies besides credits (tokens and shares) in the game. I quickly found a few players who had similar ideas and were interested in this kind of financial roleplaying. However, after giving it some thought, I figured I'd rather not play a broker for a month for monopoly money. Instead, I ended up deciding to run the equivalent of a soup kitchen. In o/u, players had two kinds of daily expenses. There was a lifestyle expense that ranged from squalid to luxurious that abstractly represented... your lifestyle. This was tied to a leaderboard where at the end of the game the 10 players with the most days in the top 10 of lifestyle spending would get some swag. The other daily expense was the O2 tax. You see, mothership is one of those capitalist dystopia settings. And on Prospero's Dream, the station we were playing on, you had to pay your daily oxygen tax or be sent to the choke, which killed your character.
+I got the idea from *In Time*, the dystopia where time is currency and the poor queue at a hole-in-the-wall for minutes instead of money. Apparently the image impressed me enough to make me want to do the same a decade later.  
+
+The game was played on a Discord server with two basic channels everyone had access to: The Blocks and The Market. If you joined a faction or improved your lifestyle, you got access to more exclusive channels. So shortly after the game began, I opened a thread for the O2 Kitchen in the blocks.
+In the beginning everyone was a little confused how to play, what to do and where to go. Nobody had a lot of credits and there wasn't anything to do with your credits besides buying yourself access to exclusive channels or paying other players for imaginary things, like tipping someone for serving you a crewbrew. The crewbrew didn't exist in terms of mechanics but it didn't take long for players essentially paying for good roleplay moments that way.
+
+## Running a Charity in a Dystopian Space Station
+
+After some basic fumbling around I quickly decided that my character (mO2hawk) would run the O2 Kitchen from her own apartment. She put a counter in front of the kitchen, collected chairs and tables from everywhere and that was it. First thing I started serving was crewbrew. A coffee-ish thing that only tasted like coffee if you squinted really hard. And with that I started to roleplay running this hole-in-the-wall place where people could come if they needed help. As everyone started with enough credits for a few days of O2 tax, in the beginning the Kitchen was mainly a social hub where people came to hang out in a cozy environment. I made it a rule early on that the Kitchen was to be neutral ground. "Leave your differences at the door" was a sentence I used often. In the Kitchen, the only affiliation that mattered was you being my guest.
+This seemed to resonate with some people, as I quickly noticed the first regulars showing up.
+Remember, that the game was running 24/7. So no matter when you logged in, someone was running around doing something. Which is fitting for a space-station I think.
+
+One of the nicest memories of the game I have is when two of the early regulars, Aphelion and Xelor, decided to run the Kitchen while I was sleeping. mO2 had a lounge chair that she slept in behind the counter and when people came in, some random stranger from the other side of the world was greeting players coming into the Kitchen, offering crewbrew and support in my stead. This was the first moment that the Kitchen truly felt alive to me. It was no longer just me doing this, but a small community was forming around the idea.
+But, what quickly became apparent was that nobody was actually running out of credits for the O2 tax, as the game provided more than enough ways to earn money and not enough ways to take money out of the pockets of the players, unless they chose so.
+The leaderboard was quickly taken over by players obviously making several orders of magnitude more money than you could get from a simple faction job.
+And even I, who was solely relying on donations and *trying* to give away money, as a charity does, was making more than enough.
+This led to a bit of an existential crisis for me. Here I was, running a charity, but nobody needed it. The game mechanics simply didn't provide the struggle I had expected.
+There were two big events before this realization hit me: The Bratva (think space mafia) ball and the Chokespawn Incursion ([onslaught six](https://onslaughtsix.com/2025/10/27/the-chokespawn-incursion/) has a good blog post about the details). But I will write about those in a later post, as they deserve their own treatment.
+
+## Community over Charity
+
+As mentioned, even before the idea that charity wasn't relevant in the game, I started to see the community factor of the Kitchen becoming an important part.
+The idea to become more of a community figure came from one of the things that, as far as I know, I brought to the game: Using Discord's emoji system to create an inventory system for my Kitchen.
+The idea came to me when I was asking around in the market if someone could sell me some tea, as one of my regulars told me it reminded them of their homeworld that they missed. This was when I realized that I just gave another player a quest: Find me tea. This player could now RP the acquisition or conjure it up out of thin air, but either way, I had created content for another player. And if I needed to buy tea, why not other ingredients as well?
+I noticed that someone had opened a thread for selling food (Old Man Arbuckle) and someone else had opened a distillery. So why not roleplay me buying the ingredients for the food and drinks I am serving in the Kitchen, I thought. I had enough credits, as people seemed to like the idea of the Kitchen and were generous with donations. So I contacted both players and arranged daily deliveries (which were also often roleplayed by some regulars!). I then wrote daily menus for the Kitchen that listed what was available that day with an emoji next to each item. Players then reacted with an emoji and I knew when I was running out of things.
+This simple system created a tactile sense of *ordering* something. Players could see what was available, decide what they wanted and then react to the message. It was a small thing, but it made the Kitchen feel more alive and interactive.
+
+![A screnshot showing the daily menu post](../../../../assets/images/blog/2025/11-23-ou-meta/menu.png)
+
+I now also had a reason to talk to all the other small businesses that players were spinning up around the station. For example, a character named "Mister Eyes" opened up a small bookstore. I used an experience I had with an android character as the reason to visit the bookstore, to find books about android culture and how to be a better host for android guests. So this player now had the opportunity to come up with books written by a human that lived in an android colony and wrote about his experiences. On top of that, I also rented some of his books for the Kitchen, so my guests had something to read while waiting for their crewbrew.
+The Player of Mister Eyes wrote a blog post about his experience [here](https://calumnm.substack.com/p/being-mister-eyes).
+The idea of having inventory also led to adding a character called "They Are Worm" to the Kitchen's crew. Playing a human with a benign brain-worm, they already were coming by regularly. But as it was ambiguous in the beginning if the character was a human or a worm, I offered them all our leftovers every morning. I could save on imaginary waste-processing costs and they got to roleplay being a worm eating scraps. Win-win. Turns out, They Are Worm was a human after all, so they used the leftovers for a composting project, but it became a running gag that they liked their crewbrew with extra coffee grounds.
+
+## Becoming an NPC in a Wargame
+
+> mO2hawk is a 1.85m valkyrie of a woman with warm, brown hair, tied in a Dutch braid over her left shoulder. Soft, warm face, freckles, with green-brown eyes that are usually caring. Carrying a mischievous smirk. Until you're breaking Kitchen rules. Then she becomes mama bear.
+
+This is the description I wrote for mO2 when I bought her a profile pictures from angelic_penguin (left) and Kyle Ferrin (right):
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+
+![mO2hawk character portrait by angelic_penguin](../../../../assets/images/blog/2025/11-23-ou-meta/mO2-1.png)
+
+![mO2hawk character portrait by Kyle Ferrin](../../../../assets/images/blog/2025/11-23-ou-meta/mO2-2.png)
+
+</div>
+
+
+And while that sounds very heroic, and many players have treated mO2 as such, I think the real power of mO2 was being an NPC in a wargame.
+Now, some might disagree with this perspective of mine, but I think at least this community building aspect of what mO2 was doing, made her an (important!) NPC in the supposed wargame of o/u.
+Rather than going for power and changing the world by being a boss, mO2 offered a third place besides the faction channels and the market where players could go to hang out. The Kitchen also became one of the first places that offered scenario-based quests outside of the factions, when I started a questline to expand the space.
+She has given an interview that was published in the first installment of the in-game newspaper [Dreamcatcher](https://overunderarchive.neocities.org/raw/34b172cf693889be1c4f4ec4fce94a83-The_Dreamcatcher_E01_amended.md/) and from all the feedback that I have received after the game was over, many players enjoyed the character immensely.
+I liked to play her as kind of the mom or even grandma of the station, who was watching the children play their wargames and hoped everyone was having fun.
+And people liking mO2 and the Kitchen has led to some fun in-game moments, such as this commercial Xelor published in [The Dispatch](https://overunderarchive.neocities.org/raw/d7a156cef3ee5707cf5b5fba53f0def7-Dispatch_Oct_14.png/) for the Kitchen.
+
+This is not to say that I view my role as purely passive. Just that I don't think I actively shaped the wargame. Though the Kitchen played a role on the big stage when mO2 was invited to the birthday ball of Obshchak Sylvana, one of the bratva bosses. A story for next time :)

@@ -1,18 +1,18 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import HandDrawnDivider from '../../components/HandDrawnDivider.astro';
 
 export async function getStaticPaths() {
   const notes = await getCollection('notes');
   return notes.map((note) => ({
-    params: { slug: note.slug },
+    params: { slug: note.id },
     props: { note },
   }));
 }
 
 const { note } = Astro.props;
-const { Content } = await note.render();
+const { Content } = await render(note);
 
 // Get all notes for backlinks functionality
 const allNotes = await getCollection('notes');
@@ -20,13 +20,13 @@ const allNotes = await getCollection('notes');
 // Find notes that reference this note (backlinks)
 const backlinks = allNotes.filter(
   (n) =>
-    n.data.connections?.includes(note.slug) ||
-    n.body.includes(`[[${note.data.title}]]`) ||
-    n.body.includes(`[[${note.slug}]]`)
+    n.data.connections?.includes(note.id) ||
+    n.body?.includes(`[[${note.data.title}]]`) ||
+    n.body?.includes(`[[${note.id}]]`)
 );
 
 // Find notes that this note connects to (forward links)
-const forwardLinks = allNotes.filter((n) => note.data.connections?.includes(n.slug));
+const forwardLinks = allNotes.filter((n) => note.data.connections?.includes(n.id));
 
 const formatDate = (date: Date) => {
   return date.toLocaleDateString('en-US', {
@@ -120,7 +120,7 @@ const getTypeColor = (type: string) => {
                     <h3 class="connection-group-title">Seeds from this note:</h3>
                     <div class="connection-list">
                       {forwardLinks.map((linkedNote) => (
-                        <a href={`/notes/${linkedNote.slug}`} class="connection-link">
+                        <a href={`/notes/${linkedNote.id}`} class="connection-link">
                           <span class="connection-icon">
                             <span class="manuscript-type-marker" data-type={linkedNote.data.type} />
                           </span>
@@ -137,7 +137,7 @@ const getTypeColor = (type: string) => {
                     <h3 class="connection-group-title">Notes that reference this one:</h3>
                     <div class="connection-list">
                       {backlinks.map((backlinkNote) => (
-                        <a href={`/notes/${backlinkNote.slug}`} class="connection-link">
+                        <a href={`/notes/${backlinkNote.id}`} class="connection-link">
                           <span class="connection-icon">
                             <span
                               class="manuscript-type-marker"

@@ -1,5 +1,5 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import GridLayout from '../../components/GridLayout.astro';
 import FaintLineDivider from '../../components/FaintLineDivider.astro';
@@ -8,7 +8,7 @@ import ImageFrame from '../../components/ImageFrame.astro';
 export async function getStaticPaths() {
   const posts = (await getCollection('blog')).filter((post) => !post.data.draft);
   return posts.map((post) => ({
-    params: { slug: post.slug },
+    params: { slug: post.id },
     props: { post },
   }));
 }
@@ -21,7 +21,7 @@ const getRelatedPosts = async (currentPost: any) => {
   if (currentTags.length === 0) return [];
 
   return allPosts
-    .filter((post) => post.slug !== currentPost.slug && !post.data.draft)
+    .filter((post) => post.id !== currentPost.id && !post.data.draft)
     .map((post) => {
       const commonTags = (post.data.tags || []).filter((tag) => currentTags.includes(tag));
       return { post, score: commonTags.length };
@@ -39,7 +39,7 @@ const getAdjacentPosts = async (currentPost: any) => {
     .filter((post) => !post.data.draft)
     .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 
-  const currentIndex = publishedPosts.findIndex((post) => post.slug === currentPost.slug);
+  const currentIndex = publishedPosts.findIndex((post) => post.id === currentPost.id);
 
   return {
     prev: currentIndex > 0 ? publishedPosts[currentIndex - 1] : null,
@@ -48,7 +48,7 @@ const getAdjacentPosts = async (currentPost: any) => {
 };
 
 const { post } = Astro.props;
-const { Content } = await post.render();
+const { Content } = await render(post);
 
 // Get related and adjacent posts
 const relatedPosts = await getRelatedPosts(post);
@@ -148,7 +148,7 @@ const formatDate = (date: Date) => {
           <div class="nav-links">
             {
               prev && (
-                <a href={`/blog/${prev.slug}`} class="nav-link prev-link" rel="prev">
+                <a href={`/blog/${prev.id}`} class="nav-link prev-link" rel="prev">
                   <span class="nav-direction">← Previous</span>
                   <span class="nav-title">{prev.data.title}</span>
                 </a>
@@ -156,7 +156,7 @@ const formatDate = (date: Date) => {
             }
             {
               next && (
-                <a href={`/blog/${next.slug}`} class="nav-link next-link" rel="next">
+                <a href={`/blog/${next.id}`} class="nav-link next-link" rel="next">
                   <span class="nav-direction">Next →</span>
                   <span class="nav-title">{next.data.title}</span>
                 </a>
@@ -174,7 +174,7 @@ const formatDate = (date: Date) => {
                 {relatedPosts.map((relatedPost) => (
                   <article class="related-card">
                     <h3 class="card-title">
-                      <a href={`/blog/${relatedPost.slug}`}>{relatedPost.data.title}</a>
+                      <a href={`/blog/${relatedPost.id}`}>{relatedPost.data.title}</a>
                     </h3>
                     <p class="card-excerpt">{relatedPost.data.description}</p>
                     <time class="card-date" datetime={relatedPost.data.date.toISOString()}>

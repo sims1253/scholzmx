@@ -31,10 +31,10 @@ const tags = Array.from(new Set(recipes.flatMap((r) => r.data.tags ?? []))).sort
           <NoteCardStack
             columns={1}
             items={recipes.map((r) => ({
-              id: r.slug,
+              id: r.id,
               title: r.data.title,
               subtitle: r.data.description,
-              href: `/recipes/${r.slug}`,
+              href: `/recipes/${r.id}`,
               tags: r.data.tags ?? [],
               hero: r.data.heroImage
                 ? {
