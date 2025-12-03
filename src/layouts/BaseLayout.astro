@@ -463,7 +463,9 @@ const currentPath = Astro.url.pathname;
         // Margin Notes positioning logic (progressive enhancement)
         (function () {
           function convertMarginBlockquotesToAnchors() {
-            const blockquotes = document.querySelectorAll('.post-body blockquote');
+            const blockquotes = document.querySelectorAll(
+              '.post-body blockquote, .recipe-body blockquote'
+            );
             blockquotes.forEach((blockquote) => {
               const firstP = blockquote.querySelector('p:first-child');
               if (!firstP || !firstP.textContent) return;
@@ -508,6 +510,7 @@ const currentPath = Astro.url.pathname;
             positionNotesContainer() {
               const pageContainer =
                 (document.querySelector('.post-body.prose') as HTMLElement) ||
+                (document.querySelector('.recipe-body.prose') as HTMLElement) ||
                 (document.querySelector('.layout-prose') as HTMLElement) ||
                 (document.querySelector('.container') as HTMLElement);
               const wrapper = document.querySelector('.main-content');

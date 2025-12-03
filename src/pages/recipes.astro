@@ -30,6 +30,7 @@ const tags = Array.from(new Set(recipes.flatMap((r) => r.data.tags ?? []))).sort
         <section aria-label="Recipes">
           <NoteCardStack
             columns={1}
+            aspectRatio="3/2"
             items={recipes.map((r) => ({
               id: r.id,
               title: r.data.title,

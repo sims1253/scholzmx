@@ -37,9 +37,17 @@ interface Props {
   layers?: 1 | 2 | 3 | 4; // Allow forcing single-layer cards
   columns?: 1 | 'auto';
   itemMinWidth?: string;
+  aspectRatio?: string; // Aspect ratio for card images (e.g., "8/3", "3/2")
 }
 
-const { items, class: className, layers, columns = 'auto', itemMinWidth } = Astro.props as Props;
+const {
+  items,
+  class: className,
+  layers,
+  columns = 'auto',
+  itemMinWidth,
+  aspectRatio = '8/3',
+} = Astro.props as Props;
 ---
 
 <GridLayout columns={columns} itemMinWidth={itemMinWidth ?? '22rem'} gap="xl" class={className}>
@@ -63,7 +71,7 @@ const { items, class: className, layers, columns = 'auto', itemMinWidth } = Astr
               <ImageFrame
                 src={it.hero.kind === 'url' ? it.hero.src : it.hero.src}
                 alt=""
-                aspectRatio="8/3"
+                aspectRatio={aspectRatio}
                 style="simple"
                 fillMode="cover"
                 positionX={it.hero.posX !== undefined ? it.hero.posX * 100 : undefined}

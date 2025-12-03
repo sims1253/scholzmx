@@ -82,7 +82,7 @@ export const personalQuotes = [
     author: 'Lars Marcus Johansson-Vik',
   },
   {
-    text: 'I am enough\nI am whole\I am enough',
+    text: 'I am enough\nI am whole\nI am enough',
     author: 'Lars Marcus Johansson-Vik',
   },
   {
@@ -109,13 +109,12 @@ export const personalQuotes = [
     text: "I wonder if we could fill\nThe gaps between the stars\nWith everything left unsaid\nIt's gonna tear us apart",
     author: 'Garret Russell',
   },
-  ,
   {
     text: "If you're breathing again, you'll hold your vows and say goodbye\nIf you're breathing again, spell out the world with open eyes\nAnd speak with the caution of colliding satellites\n",
     author: 'Garret Russell',
   },
   {
-    text: 'To the flowwers',
+    text: 'To the flowers',
     author: 'Sean Long, Aaran McKenzie',
   },
   {
