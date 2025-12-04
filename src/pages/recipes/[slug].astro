@@ -105,6 +105,27 @@ const { Content } = await render(recipe);
   </div>
 </BaseLayout>
 
+<script>
+  // Convert Quarto-style "> margin:" blockquotes into inline anchors with data-note
+  document.addEventListener('DOMContentLoaded', function () {
+    const blockquotes = document.querySelectorAll('.recipe-body blockquote');
+    blockquotes.forEach((blockquote) => {
+      const firstP = blockquote.querySelector('p:first-child');
+      if (!firstP || !firstP.textContent) return;
+      const raw = firstP.textContent.trim();
+      if (!/^margin:/i.test(raw)) return;
+      const noteText = raw.replace(/^margin:\s*/i, '').trim();
+      // Replace the blockquote with a span anchor placed before it, then remove the blockquote
+      const anchor = document.createElement('span');
+      anchor.className = 'note-anchor';
+      anchor.textContent = '';
+      anchor.setAttribute('data-note', noteText);
+      blockquote.parentElement?.insertBefore(anchor, blockquote);
+      blockquote.remove();
+    });
+  });
+</script>
+
 <style>
   .recipe-post {
     max-width: 100%;

@@ -329,7 +329,7 @@
   }
 
   blockquote::before {
-    content: '"';
+    content: '';
     color: var(--color-tansy);
     position: absolute;
     inset-inline-start: var(--space-sm);
