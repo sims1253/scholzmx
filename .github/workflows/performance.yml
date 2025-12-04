@@ -7,20 +7,26 @@ on:
     branches: [main, master]
   workflow_dispatch:
 
-# Cancel old runs when new ones are triggered
 concurrency:
   group: 'performance-${{ github.ref }}'
   cancel-in-progress: true
+
+env:
+  # Define audited pages centrally - easier to maintain
+  AUDIT_PATHS: '/ /blog/ /research/ /projects/ /notes/'
 
 jobs:
   lighthouse:
     name: Lighthouse Performance Audit
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     if: |
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+    outputs:
+      base-url: ${{ steps.site.outputs.base-url }}
     steps:
-      - name: Checkout code (for LH config)
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Resolve deployed site URL
@@ -28,14 +34,27 @@ jobs:
         run: |
           if [ -f public/CNAME ]; then
             domain=$(cat public/CNAME | tr -d '\n' | tr -d '\r')
-            echo "Using custom domain: $domain"
-            echo "base-url=https://$domain" >> $GITHUB_OUTPUT
+            base_url="https://$domain"
           else
-            # Fall back to GitHub Pages project URL
             owner="${{ github.repository_owner }}"
             repo="${{ github.event.repository.name }}"
-            echo "base-url=https://$owner.github.io/$repo" >> $GITHUB_OUTPUT
+            base_url="https://$owner.github.io/$repo"
           fi
+          echo "base-url=$base_url" >> $GITHUB_OUTPUT
+          echo "Site URL: $base_url"
+
+      - name: Build Lighthouse URL list
+        id: urls
+        run: |
+          base_url="${{ steps.site.outputs.base-url }}"
+          urls=""
+          for path in $AUDIT_PATHS; do
+            urls="${urls}${base_url}${path}"$'\n'
+          done
+          # Write to file for the action (handles newlines better)
+          echo "$urls" > /tmp/lighthouse-urls.txt
+          echo "URLs to audit:"
+          cat /tmp/lighthouse-urls.txt
 
       - name: Run Lighthouse CI Audit
         uses: treosh/lighthouse-ci-action@v12
@@ -50,74 +69,70 @@ jobs:
           budgetPath: .lighthouse-budget.json
           uploadArtifacts: true
           temporaryPublicStorage: true
-        timeout-minutes: 15
 
       - name: Performance Summary
         if: always()
         run: |
           echo "## 🚀 Performance Audit Complete" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 📊 Key Metrics Monitored" >> $GITHUB_STEP_SUMMARY
-          echo "- **Performance Score**: Core web vitals and loading metrics" >> $GITHUB_STEP_SUMMARY
-          echo "- **Accessibility**: WCAG compliance and usability" >> $GITHUB_STEP_SUMMARY
-          echo "- **Best Practices**: Modern web development standards" >> $GITHUB_STEP_SUMMARY
-          echo "- **SEO**: Search engine optimization metrics" >> $GITHUB_STEP_SUMMARY
-          echo "- **Performance Budget**: Resource size limits to prevent bloat" >> $GITHUB_STEP_SUMMARY
+          echo "**Site:** ${{ steps.site.outputs.base-url }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📊 Metrics Monitored" >> $GITHUB_STEP_SUMMARY
+          echo "- Performance Score (Core Web Vitals)" >> $GITHUB_STEP_SUMMARY
+          echo "- Accessibility (WCAG compliance)" >> $GITHUB_STEP_SUMMARY
+          echo "- Best Practices" >> $GITHUB_STEP_SUMMARY
+          echo "- SEO" >> $GITHUB_STEP_SUMMARY
+          echo "- Performance Budget" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 📈 Pages Audited" >> $GITHUB_STEP_SUMMARY
-          echo "- Homepage" >> $GITHUB_STEP_SUMMARY
-          echo "- Blog listing" >> $GITHUB_STEP_SUMMARY
-          echo "- Research page" >> $GITHUB_STEP_SUMMARY
-          echo "- Projects page" >> $GITHUB_STEP_SUMMARY
-          echo "- Notes section" >> $GITHUB_STEP_SUMMARY
+          for path in $AUDIT_PATHS; do
+            echo "- \`$path\`" >> $GITHUB_STEP_SUMMARY
+          done
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 💡 Performance Tips" >> $GITHUB_STEP_SUMMARY
-          echo "- Check the detailed Lighthouse reports in the action artifacts" >> $GITHUB_STEP_SUMMARY
-          echo "- Performance budgets will fail the build if exceeded" >> $GITHUB_STEP_SUMMARY
-          echo "- Aim for Performance Score ≥90 and all other categories ≥80" >> $GITHUB_STEP_SUMMARY
+          echo "### 💡 Tips" >> $GITHUB_STEP_SUMMARY
+          echo "- Check detailed reports in the action artifacts" >> $GITHUB_STEP_SUMMARY
+          echo "- Target: Performance ≥90, other categories ≥80" >> $GITHUB_STEP_SUMMARY
 
-  # Separate accessibility validation with PA11y (from your existing setup)
   accessibility:
     name: Deep Accessibility Audit
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: lighthouse
-    if: github.event_name != 'pull_request' || github.actor != 'dependabot[bot]'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Resolve deployed site URL
-        id: site
+      - name: Test accessibility with Pa11y
         run: |
-          if [ -f public/CNAME ]; then
-            domain=$(cat public/CNAME | tr -d '\n' | tr -d '\r')
-            echo "base-url=https://$domain" >> $GITHUB_OUTPUT
-          else
-            owner="${{ github.repository_owner }}"
-            repo="${{ github.event.repository.name }}"
-            echo "base-url=https://$owner.github.io/$repo" >> $GITHUB_OUTPUT
-          fi
+          base_url="${{ needs.lighthouse.outputs.base-url }}"
+          echo "Testing: $base_url"
 
-      - name: Test accessibility against live site
-        run: |
-          echo "Testing: ${{ steps.site.outputs.base-url }}"
-          npx -y pa11y ${{ steps.site.outputs.base-url }} || echo "Some accessibility issues found - check output"
-        timeout-minutes: 10
+          # Run Pa11y and capture exit code
+          set +e
+          npx -y pa11y "$base_url" --reporter cli
+          exit_code=$?
+          set -e
+
+          if [ $exit_code -ne 0 ]; then
+            echo "::warning::Accessibility issues detected (exit code: $exit_code)"
+          else
+            echo "✓ No accessibility issues found"
+          fi
 
       - name: Accessibility Summary
         if: always()
         run: |
           echo "## ♿ Accessibility Audit Complete" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 🎯 Accessibility Standards" >> $GITHUB_STEP_SUMMARY
-          echo "- **WCAG 2.1 AA Compliance**: Industry standard accessibility" >> $GITHUB_STEP_SUMMARY
-          echo "- **PA11y Testing**: Automated accessibility validation" >> $GITHUB_STEP_SUMMARY
-          echo "- **Lighthouse a11y**: Additional accessibility scoring" >> $GITHUB_STEP_SUMMARY
+          echo "### 🎯 Standards" >> $GITHUB_STEP_SUMMARY
+          echo "- WCAG 2.1 AA Compliance" >> $GITHUB_STEP_SUMMARY
+          echo "- PA11y automated validation" >> $GITHUB_STEP_SUMMARY
+          echo "- Lighthouse accessibility scoring" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 📋 What's Tested" >> $GITHUB_STEP_SUMMARY
-          echo "- Keyboard navigation support" >> $GITHUB_STEP_SUMMARY
+          echo "### 📋 Tested" >> $GITHUB_STEP_SUMMARY
+          echo "- Keyboard navigation" >> $GITHUB_STEP_SUMMARY
           echo "- Screen reader compatibility" >> $GITHUB_STEP_SUMMARY
-          echo "- Color contrast ratios" >> $GITHUB_STEP_SUMMARY
-          echo "- Image alt text coverage" >> $GITHUB_STEP_SUMMARY
-          echo "- Form label associations" >> $GITHUB_STEP_SUMMARY
-          echo "- Heading structure hierarchy" >> $GITHUB_STEP_SUMMARY
+          echo "- Color contrast" >> $GITHUB_STEP_SUMMARY
+          echo "- Image alt text" >> $GITHUB_STEP_SUMMARY
+          echo "- Form labels" >> $GITHUB_STEP_SUMMARY
+          echo "- Heading hierarchy" >> $GITHUB_STEP_SUMMARY

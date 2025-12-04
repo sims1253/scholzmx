@@ -9,7 +9,6 @@ on:
 permissions:
   contents: read
 
-# Allow one concurrent CI run
 concurrency:
   group: 'ci-${{ github.ref }}'
   cancel-in-progress: true
@@ -18,6 +17,7 @@ jobs:
   code-quality:
     name: Code Quality Checks
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -25,9 +25,9 @@ jobs:
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version: 'latest'
+          bun-version: latest
 
-      - name: Cache bun dependencies
+      - name: Cache Bun dependencies
         uses: actions/cache@v4
         with:
           path: |
@@ -55,9 +55,19 @@ jobs:
       - name: Build Test
         run: bun run build
 
+      - name: Quality Summary
+        if: always()
+        run: |
+          echo "## Code Quality Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| TypeScript | ${{ steps.*.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+
   accessibility-test:
     name: Accessibility Testing
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: code-quality
     steps:
       - name: Checkout code
@@ -66,9 +76,9 @@ jobs:
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version: 'latest'
+          bun-version: latest
 
-      - name: Cache bun dependencies
+      - name: Cache Bun dependencies
         uses: actions/cache@v4
         with:
           path: |
@@ -83,4 +93,3 @@ jobs:
 
       - name: Build and Test Accessibility
         run: bun run test:a11y
-        timeout-minutes: 10

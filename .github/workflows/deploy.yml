@@ -17,9 +17,13 @@ concurrency:
   group: 'deploy-${{ github.ref }}'
   cancel-in-progress: true
 
+env:
+  ARTIFACT_RETENTION_DAYS: 7
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     if: |
       (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') ||
       (github.event_name == 'workflow_dispatch')
@@ -27,14 +31,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Install Bun for Astro toolchain
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
 
-      # Cache Bun dependencies
-      - name: Cache bun dependencies
+      - name: Cache Bun dependencies
         uses: actions/cache@v4
         with:
           path: |
@@ -47,83 +49,76 @@ jobs:
       - name: Install JavaScript dependencies
         run: bun install --frozen-lockfile
 
-      # Download rendered content artifact from the triggering workflow run
       - name: Get content render run ID
-        id: latest-render
+        id: render-run
         run: |
           if [ "${{ github.event_name }}" = "workflow_run" ]; then
-            # Use the run that triggered this workflow
-            triggering_run_id="${{ github.event.workflow_run.id }}"
-            echo "run-id=$triggering_run_id" >> $GITHUB_OUTPUT
-            echo "Using triggering workflow run: $triggering_run_id"
+            run_id="${{ github.event.workflow_run.id }}"
+            echo "Using triggering workflow run: $run_id"
           else
-            # For manual dispatch, get the latest successful render run
-            latest_run=$(gh run list \
+            run_id=$(gh run list \
               --workflow="Content Render (Quarto → Markdown)" \
               --status=success \
               --limit=1 \
               --json=databaseId \
-              --jq='.[0].databaseId')
-            echo "run-id=$latest_run" >> $GITHUB_OUTPUT
-            echo "Using latest successful run: $latest_run"
+              --jq='.[0].databaseId // empty')
+            
+            if [ -z "$run_id" ]; then
+              echo "::error::No successful render run found"
+              exit 1
+            fi
+            echo "Using latest successful run: $run_id"
           fi
+          echo "run-id=$run_id" >> $GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download rendered content
+        id: download-content
         uses: actions/download-artifact@v4
         with:
           name: rendered-content
           path: rendered
           github-token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.repository }}
-          run-id: ${{ steps.latest-render.outputs.run-id }}
-        continue-on-error: true
+          run-id: ${{ steps.render-run.outputs.run-id }}
 
-      # Debug - Show what files were downloaded and where
-      - name: Debug - Show downloaded files
+      - name: Verify downloaded content
+        id: verify-content
         run: |
-          echo "=== Root directory contents ==="
-          ls -la
-          echo "=== Repo blog content (sample) ==="
-          find src/content/blog -type f -name "*.md" | head -20 || true
-          echo "=== Downloaded artifact content (rendered) ==="
-          find rendered -path "rendered/src/content/blog/*/*/index.md" -type f || true
-          echo "=== Directory tree of rendered blog content ==="
-          tree rendered/src/content/blog || ls -la rendered/src/content/blog/*/ || true
-          echo "=== Assets directory (repo) ==="
-          ls -la src/assets/images/blog/ || echo "No assets directory"
-
-      - name: Check if Markdown content is present in artifact
-        id: has-md
-        run: |
-          if find rendered/src/content/blog -path '*/index.md' -type f | grep -q .; then
-            echo "has-md=true" >> $GITHUB_OUTPUT
+          count=$(find rendered/src/content/blog -path '*/index.md' -type f 2>/dev/null | wc -l || echo 0)
+          if [ "$count" -eq 0 ]; then
+            echo "::warning::No markdown content in primary artifact"
+            echo "has-content=false" >> $GITHUB_OUTPUT
           else
-            echo "has-md=false" >> $GITHUB_OUTPUT
+            echo "✓ Found $count rendered markdown files"
+            echo "has-content=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Fallback - Get latest successful render run
+      - name: Fallback - Find alternative render run
         id: fallback-run
-        if: steps.has-md.outputs.has-md != 'true'
+        if: steps.verify-content.outputs.has-content != 'true'
         run: |
-          latest_run=$(gh run list \
+          echo "::warning::Primary artifact empty, searching for fallback..."
+          fallback_run=$(gh run list \
             --workflow="Content Render (Quarto → Markdown)" \
             --status=success \
-            --limit=1 \
+            --limit=5 \
             --json=databaseId \
-            --jq='.[0].databaseId // empty' || echo "")
-          echo "run-id=$latest_run" >> $GITHUB_OUTPUT
-          if [ -z "$latest_run" ]; then
-            echo "No previous successful render run available for fallback" >&2
-          else
-            echo "Falling back to run: $latest_run"
+            --jq="map(select(.databaseId != ${{ steps.render-run.outputs.run-id }})) | .[0].databaseId // empty" || echo "")
+
+          if [ -z "$fallback_run" ]; then
+            echo "::error::No fallback render run available"
+            exit 1
           fi
+
+          echo "Falling back to run: $fallback_run"
+          echo "run-id=$fallback_run" >> $GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Fallback - Download rendered content
-        if: steps.has-md.outputs.has-md != 'true' && steps.fallback-run.outputs.run-id != ''
+        if: steps.verify-content.outputs.has-content != 'true' && steps.fallback-run.outputs.run-id != ''
         uses: actions/download-artifact@v4
         with:
           name: rendered-content
@@ -132,49 +127,48 @@ jobs:
           repository: ${{ github.repository }}
           run-id: ${{ steps.fallback-run.outputs.run-id }}
 
-      # Merge the rendered blog outputs into the repo without clobbering other content
       - name: Merge rendered blog content
         run: |
           set -e
-          if [ -d rendered/src/content/blog ]; then
-            echo "Merging rendered blog markdown into repo..."
-            rsync -a rendered/src/content/blog/ src/content/blog/
-
-            echo "Merging rendered blog assets per post..."
-            while IFS= read -r -d '' f; do
-              year=$(echo "$f" | sed -E 's|.*/blog/([0-9]{4})/.*|\1|')
-              slug=$(basename "$(dirname "$f")")
-              if [ -d "rendered/src/assets/images/blog/$year/$slug" ]; then
-                mkdir -p "src/assets/images/blog/$year/$slug"
-                rsync -a "rendered/src/assets/images/blog/$year/$slug/" "src/assets/images/blog/$year/$slug/"
-              fi
-            done < <(find rendered/src/content/blog -path '*/index.md' -type f -print0)
-          else
-            echo "No rendered content directory found; continuing with repo content only."
-          fi
-
-      - name: Verify content present before build
-        run: |
-          count_repo=$(find src/content/blog -name '*.md' -type f | wc -l || echo 0)
-          count_rendered=$(find rendered/src/content/blog -path '*/index.md' -type f | wc -l || echo 0)
-          if [ "$count_repo" -eq 0 ] && [ "$count_rendered" -eq 0 ]; then
-            echo "Error: No Markdown content found (neither repo nor rendered). Aborting deploy to avoid publishing an empty site." >&2
+          if [ ! -d rendered/src/content/blog ]; then
+            echo "::error::No rendered content directory found"
             exit 1
           fi
 
-      # Build Astro site
+          echo "Merging rendered blog markdown..."
+          rsync -av rendered/src/content/blog/ src/content/blog/
+
+          echo "Merging rendered blog assets..."
+          if [ -d rendered/src/assets/images/blog ]; then
+            rsync -av rendered/src/assets/images/blog/ src/assets/images/blog/
+          fi
+
+          echo "::group::Merged Content Summary"
+          find src/content/blog -name '*.md' -type f | wc -l | xargs -I {} echo "Total markdown files: {}"
+          echo "::endgroup::"
+
+      - name: Final content verification
+        run: |
+          count=$(find src/content/blog -name '*.md' -type f | wc -l || echo 0)
+          if [ "$count" -eq 0 ]; then
+            echo "::error::No Markdown content found. Aborting to prevent empty site deployment."
+            exit 1
+          fi
+          echo "✓ Ready to build with $count markdown files"
+
       - name: Build site
         run: bun run build
 
-      # Upload the built site as artifact for Pages
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist
+          retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -182,3 +176,9 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Deployment summary
+        run: |
+          echo "## 🚀 Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Site URL:** ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY

@@ -1,9 +1,9 @@
 ---
 title: 'Pumpkin Softies'
-description: 'Fluffy dinner rolls with roasted red kuri squash, spiced with cinnamon and cardamom. The pumpkin gives them that golden glow and makes them impossibly soft.'
+description: 'Fluffy dinner rolls with Hokkaido squash, spiced with cinnamon, cardamom and nutmeg. Perfect allrounder to bring to any occasion.'
 servings: '15 rolls'
 time: '3 hours (2h rising)'
-tags: ['Autumn', 'Yeast dough', 'Vegan optional']
+tags: ['Snack', 'Bread', 'Vegan']
 heroImage: '../../assets/images/recipes/hokkaido-dinner-rolls/stack.jpg'
 draft: false
 ---
