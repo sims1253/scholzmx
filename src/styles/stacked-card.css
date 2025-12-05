@@ -25,6 +25,7 @@
       0 1px 3px color-mix(in srgb, var(--color-sage) 18%, transparent),
       inset 0 1px 0 color-mix(in srgb, var(--color-parchment-light) 70%, white);
     overflow: hidden; /* ensure overlays clip to rounded corners */
+    contain: layout paint; /* prevent CLS from oversized wash pseudo-elements */
   }
   .sc-content {
     position: relative;

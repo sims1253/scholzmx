@@ -64,8 +64,9 @@ const optimizeExternalImage = (url: string) => {
           <section aria-label="Projects">
             <GridLayout columns={1} gap="xl" class="projects-grid">
               {
-                sortedProjects.map((project) => {
+                sortedProjects.map((project, index) => {
                   const primaryLink = project.links?.[0]?.url;
+                  const isFirst = index === 0;
                   return (
                     <div class="nc-item project-item">
                       <StackedCard
@@ -83,6 +84,7 @@ const optimizeExternalImage = (url: string) => {
                               alt={project.title}
                               style="simple"
                               fillMode="contain"
+                              loading={isFirst ? 'eager' : 'lazy'}
                             />
                           </div>
                         )}

@@ -73,25 +73,30 @@ jobs:
       - name: Performance Summary
         if: always()
         run: |
-          echo "## 🚀 Performance Audit Complete" >> $GITHUB_STEP_SUMMARY
+          echo "## Lighthouse Audit Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Site:** ${{ steps.site.outputs.base-url }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 📊 Metrics Monitored" >> $GITHUB_STEP_SUMMARY
-          echo "- Performance Score (Core Web Vitals)" >> $GITHUB_STEP_SUMMARY
-          echo "- Accessibility (WCAG compliance)" >> $GITHUB_STEP_SUMMARY
-          echo "- Best Practices" >> $GITHUB_STEP_SUMMARY
-          echo "- SEO" >> $GITHUB_STEP_SUMMARY
-          echo "- Performance Budget" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 📈 Pages Audited" >> $GITHUB_STEP_SUMMARY
-          for path in $AUDIT_PATHS; do
-            echo "- \`$path\`" >> $GITHUB_STEP_SUMMARY
-          done
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 💡 Tips" >> $GITHUB_STEP_SUMMARY
-          echo "- Check detailed reports in the action artifacts" >> $GITHUB_STEP_SUMMARY
-          echo "- Target: Performance ≥90, other categories ≥80" >> $GITHUB_STEP_SUMMARY
+
+          if [ -f .lighthouseci/manifest.json ]; then
+            echo "| Page | Perf | A11y | Best Practices | SEO |" >> $GITHUB_STEP_SUMMARY
+            echo "|------|------|------|----------------|-----|" >> $GITHUB_STEP_SUMMARY
+
+            jq -r '.[] | "\(.url)|\(.summary.performance)|\(.summary.accessibility)|\(.summary["best-practices"])|\(.summary.seo)"' .lighthouseci/manifest.json | while IFS='|' read -r url perf a11y bp seo; do
+              path=$(echo "$url" | sed "s|${{ steps.site.outputs.base-url }}||")
+              [ -z "$path" ] && path="/"
+              perf_pct=$(awk "BEGIN {printf \"%.0f\", $perf * 100}")
+              a11y_pct=$(awk "BEGIN {printf \"%.0f\", $a11y * 100}")
+              bp_pct=$(awk "BEGIN {printf \"%.0f\", $bp * 100}")
+              seo_pct=$(awk "BEGIN {printf \"%.0f\", $seo * 100}")
+              echo "| \`$path\` | $perf_pct | $a11y_pct | $bp_pct | $seo_pct |" >> $GITHUB_STEP_SUMMARY
+            done
+
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Targets: Performance >= 90, others >= 80" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No Lighthouse results available" >> $GITHUB_STEP_SUMMARY
+          fi
 
   accessibility:
     name: Deep Accessibility Audit
@@ -105,34 +110,51 @@ jobs:
       - name: Test accessibility with Pa11y
         run: |
           base_url="${{ needs.lighthouse.outputs.base-url }}"
-          echo "Testing: $base_url"
+          echo "Testing pages with Pa11y..."
 
-          # Run Pa11y and capture exit code
-          set +e
-          npx -y pa11y "$base_url" --reporter cli
-          exit_code=$?
-          set -e
+          passed=0
+          failed=0
+          results=""
 
-          if [ $exit_code -ne 0 ]; then
-            echo "::warning::Accessibility issues detected (exit code: $exit_code)"
-          else
-            echo "✓ No accessibility issues found"
+          for path in $AUDIT_PATHS; do
+            url="${base_url}${path}"
+            echo "Testing: $url"
+
+            set +e
+            output=$(npx -y pa11y "$url" \
+              --reporter cli \
+              --chromeLaunchConfig.args='["--no-sandbox","--disable-setuid-sandbox"]' 2>&1)
+            exit_code=$?
+            set -e
+
+            if [ $exit_code -eq 0 ]; then
+              ((passed++))
+              results="${results}| \`${path}\` | Pass | 0 |\n"
+              echo "  Pass"
+            else
+              ((failed++))
+              issues=$(echo "$output" | grep -c "^  " || echo "?")
+              results="${results}| \`${path}\` | Fail | ${issues} |\n"
+              echo "  Fail ($issues issues)"
+              echo "$output"
+            fi
+          done
+
+          echo "PASSED=$passed" >> $GITHUB_ENV
+          echo "FAILED=$failed" >> $GITHUB_ENV
+          echo -e "$results" > /tmp/pa11y-results.txt
+
+          if [ $failed -gt 0 ]; then
+            echo "::warning::$failed page(s) have accessibility issues"
           fi
 
       - name: Accessibility Summary
         if: always()
         run: |
-          echo "## ♿ Accessibility Audit Complete" >> $GITHUB_STEP_SUMMARY
+          echo "## Accessibility Audit (Pa11y)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 🎯 Standards" >> $GITHUB_STEP_SUMMARY
-          echo "- WCAG 2.1 AA Compliance" >> $GITHUB_STEP_SUMMARY
-          echo "- PA11y automated validation" >> $GITHUB_STEP_SUMMARY
-          echo "- Lighthouse accessibility scoring" >> $GITHUB_STEP_SUMMARY
+          echo "| Page | Status | Issues |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|--------|--------|" >> $GITHUB_STEP_SUMMARY
+          cat /tmp/pa11y-results.txt >> $GITHUB_STEP_SUMMARY 2>/dev/null || echo "| - | No results | - |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 📋 Tested" >> $GITHUB_STEP_SUMMARY
-          echo "- Keyboard navigation" >> $GITHUB_STEP_SUMMARY
-          echo "- Screen reader compatibility" >> $GITHUB_STEP_SUMMARY
-          echo "- Color contrast" >> $GITHUB_STEP_SUMMARY
-          echo "- Image alt text" >> $GITHUB_STEP_SUMMARY
-          echo "- Form labels" >> $GITHUB_STEP_SUMMARY
-          echo "- Heading hierarchy" >> $GITHUB_STEP_SUMMARY
+          echo "Standard: WCAG 2.1 AA" >> $GITHUB_STEP_SUMMARY

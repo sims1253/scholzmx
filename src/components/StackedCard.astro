@@ -26,6 +26,8 @@ interface Props {
   class?: string;
   ornament?: boolean;
   layout?: 'stacked' | 'side';
+  // Heading level for accessibility (defaults to h2 for proper document outline)
+  headingLevel?: 2 | 3 | 4;
 }
 
 const {
@@ -40,7 +42,10 @@ const {
   class: className,
   ornament = true,
   layout = 'stacked',
+  headingLevel = 2,
 } = Astro.props as Props;
+
+const HeadingTag = `h${headingLevel}` as 'h2' | 'h3' | 'h4';
 
 // TWEAK: Split RNG streams to prevent ripple changes when extending features
 const layoutRng = createSeededRng(seed, 'stackedcard-v3:layout');
@@ -201,13 +206,13 @@ const styleInline = Object.entries(styleVars)
             <div class="sc-col content">
               {title &&
                 (href ? (
-                  <h3 class="sc-title">
+                  <HeadingTag class="sc-title">
                     <a href={href} class="sc-title-link" aria-label={title}>
                       {title}
                     </a>
-                  </h3>
+                  </HeadingTag>
                 ) : (
-                  <h3 class="sc-title">{title}</h3>
+                  <HeadingTag class="sc-title">{title}</HeadingTag>
                 ))}
               {subtitle && <p class="sc-subtitle">{subtitle}</p>}
               <slot />
@@ -223,13 +228,13 @@ const styleInline = Object.entries(styleVars)
             <slot name="media" />
             {title &&
               (href ? (
-                <h3 class="sc-title">
+                <HeadingTag class="sc-title">
                   <a href={href} class="sc-title-link" aria-label={title}>
                     {title}
                   </a>
-                </h3>
+                </HeadingTag>
               ) : (
-                <h3 class="sc-title">{title}</h3>
+                <HeadingTag class="sc-title">{title}</HeadingTag>
               ))}
             {subtitle && <p class="sc-subtitle">{subtitle}</p>}
             <slot />
