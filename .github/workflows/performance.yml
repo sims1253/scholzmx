@@ -113,62 +113,33 @@ jobs:
         with:
           chrome-version: stable
 
-      - name: Test accessibility with Pa11y
+      - name: Test accessibility with Pa11y CI
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'true'
           PUPPETEER_EXECUTABLE_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
         run: |
-          base_url="${{ needs.lighthouse.outputs.base-url }}"
-          echo "Testing pages with Pa11y..."
+          echo "Testing pages with Pa11y CI..."
           echo "Using Chrome at: $PUPPETEER_EXECUTABLE_PATH"
-
-          passed=0
-          failed=0
-          results=""
-
-          for path in $AUDIT_PATHS; do
-            url="${base_url}${path}"
-            echo "Testing: $url"
-
-            set +e
-            output=$(npx -y pa11y "$url" \
-              --runner htmlcs \
-              --standard WCAG2AA \
-              --reporter cli \
-              --timeout 30000 \
-              2>&1)
-            exit_code=$?
-            echo "Exit code: $exit_code"
-            set -e
-
-            if [ $exit_code -eq 0 ]; then
-              passed=$((passed + 1))
-              results="${results}| \`${path}\` | Pass | 0 |\n"
-              echo "  Pass"
-            else
-              failed=$((failed + 1))
-              issues=$(echo "$output" | grep -c "^  " || true)
-              results="${results}| \`${path}\` | Fail | ${issues:-?} |\n"
-              echo "  Fail ($issues issues)"
-              echo "Output: $output"
-            fi
-          done
-
+          npx -y pa11y-ci --config .pa11yci.json 2>&1 | tee /tmp/pa11y-output.txt || true
+          
+          # Count results for summary
+          passed=$(grep -c "✔" /tmp/pa11y-output.txt || echo "0")
+          failed=$(grep -c "✖" /tmp/pa11y-output.txt || echo "0")
           echo "PASSED=$passed" >> $GITHUB_ENV
           echo "FAILED=$failed" >> $GITHUB_ENV
-          echo -e "$results" > /tmp/pa11y-results.txt
-
-          if [ $failed -gt 0 ]; then
+          
+          if [ "$failed" -gt 0 ]; then
             echo "::warning::$failed page(s) have accessibility issues"
           fi
 
       - name: Accessibility Summary
         if: always()
         run: |
-          echo "## Accessibility Audit (Pa11y)" >> $GITHUB_STEP_SUMMARY
+          echo "## Accessibility Audit (Pa11y CI)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Page | Status | Issues |" >> $GITHUB_STEP_SUMMARY
-          echo "|------|--------|--------|" >> $GITHUB_STEP_SUMMARY
-          cat /tmp/pa11y-results.txt >> $GITHUB_STEP_SUMMARY 2>/dev/null || echo "| - | No results | - |" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat /tmp/pa11y-output.txt >> $GITHUB_STEP_SUMMARY 2>/dev/null || echo "No results available"
+          echo '```' >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Standard: WCAG 2.1 AA" >> $GITHUB_STEP_SUMMARY
+

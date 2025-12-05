@@ -1,17 +1,21 @@
 {
   "defaults": {
     "chromeLaunchConfig": {
+      "executablePath": "/opt/hostedtoolcache/setup-chrome/chrome/stable/x64/chrome",
       "args": [
         "--no-sandbox",
         "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--disable-gpu",
-        "--disable-software-rasterizer",
-        "--single-process"
-      ],
-      "executablePath": null,
-      "headless": true
+        "--disable-dev-shm-usage"
+      ]
     },
-    "timeout": 30000
-  }
+    "timeout": 30000,
+    "standard": "WCAG2AA"
+  },
+  "urls": [
+    "https://scholzmx.com/",
+    "https://scholzmx.com/blog/",
+    "https://scholzmx.com/research/",
+    "https://scholzmx.com/projects/",
+    "https://scholzmx.com/notes/"
+  ]
 }
