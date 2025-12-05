@@ -121,13 +121,13 @@ jobs:
           echo "Testing pages with Pa11y CI..."
           echo "Using Chrome at: $PUPPETEER_EXECUTABLE_PATH"
           npx -y pa11y-ci --config .pa11yci.json 2>&1 | tee /tmp/pa11y-output.txt || true
-          
+
           # Count results for summary
           passed=$(grep -c "✔" /tmp/pa11y-output.txt || echo "0")
           failed=$(grep -c "✖" /tmp/pa11y-output.txt || echo "0")
           echo "PASSED=$passed" >> $GITHUB_ENV
           echo "FAILED=$failed" >> $GITHUB_ENV
-          
+
           if [ "$failed" -gt 0 ]; then
             echo "::warning::$failed page(s) have accessibility issues"
           fi
@@ -142,4 +142,3 @@ jobs:
           echo '```' >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Standard: WCAG 2.1 AA" >> $GITHUB_STEP_SUMMARY
-
