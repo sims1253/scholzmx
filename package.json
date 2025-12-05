@@ -21,11 +21,11 @@
     "quality:full": "bun run quality:check && bun run build && bun run test:a11y",
     "lighthouse": "lighthouse http://localhost:4321 --output html --output-path ./lighthouse-report.html",
     "lighthouse:ci": "lhci autorun --url http://localhost:4321/ --url http://localhost:4321/blog/ --url http://localhost:4321/research/ --url http://localhost:4321/projects/ --url http://localhost:4321/notes/",
-    "perf:local": "bun run build && bun run preview & sleep 3 && bun run lighthouse; kill $!",
-    "perf:budget": "bun run build && bun run preview & sleep 3 && bun run lighthouse:ci; kill $!",
+    "perf:local": "bun run build && bun run preview & wait-on http://localhost:4321 && bun run lighthouse; kill $!",
+    "perf:budget": "bun run build && bun run preview & wait-on http://localhost:4321 && bun run lighthouse:ci; kill $!",
     "a11y": "pa11y http://localhost:4321",
-    "a11y:full": "pa11y --sitemap http://localhost:4321/sitemap.xml",
-    "test:a11y": "bun run build && bun run preview & sleep 3 && bun run a11y; kill $!"
+    "a11y:wait": "wait-on http://localhost:4321 && bun run a11y",
+    "test:a11y": "bun run build && bun run preview & bun run a11y:wait; kill $!"
   },
   "dependencies": {
     "@astrojs/check": "0.9.5",
@@ -59,6 +59,7 @@
     "stylelint-config-html": "^1.1.0",
     "stylelint-config-standard": "^39.0.1",
     "tailwindcss": "^4.1.17",
-    "vite-plugin-lightningcss": "^0.0.5"
+    "vite-plugin-lightningcss": "^0.0.5",
+    "wait-on": "^9.0.3"
   }
 }
