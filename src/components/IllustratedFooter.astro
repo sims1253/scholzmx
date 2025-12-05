@@ -36,7 +36,7 @@ const { variant = 'default', className = '', includeQuoteSection = false } = Ast
           <stop offset="100%" style="stop-color:rgba(139, 90, 60, 0.12);stop-opacity:1"></stop>
         </linearGradient>
 
-        <filter id="blur" x="-25%" y="-25%" width="150%" height="150%">
+        <filter id="footerBlur" x="-25%" y="-25%" width="150%" height="150%">
           <feGaussianBlur stdDeviation="1"></feGaussianBlur>
         </filter>
 
@@ -74,7 +74,7 @@ const { variant = 'default', className = '', includeQuoteSection = false } = Ast
         stroke="rgba(99, 123, 103, 0.12)"
         stroke-width="8"
         fill="none"
-        filter="url(#blur)"
+        filter="url(#footerBlur)"
         stroke-linecap="round"></path>
 
       <path
@@ -100,7 +100,7 @@ const { variant = 'default', className = '', includeQuoteSection = false } = Ast
         stroke="url(#earthGradient)"
         stroke-width="6"
         fill="none"
-        filter="url(#blur)"
+        filter="url(#footerBlur)"
         stroke-linecap="round"></path>
 
       {/* Botanical elements based on variant */}

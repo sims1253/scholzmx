@@ -120,15 +120,26 @@ jobs:
         run: |
           echo "Testing pages with Pa11y CI..."
           echo "Using Chrome at: $PUPPETEER_EXECUTABLE_PATH"
-          npx -y pa11y-ci --config .pa11yci.json 2>&1 | tee /tmp/pa11y-output.txt || true
+          set +e
+          npx -y pa11y-ci --config .pa11yci.json 2>&1 | tee /tmp/pa11y-output.txt
+          exit_code=$?
+          set -e
 
-          # Count results for summary
-          passed=$(grep -c "✔" /tmp/pa11y-output.txt || echo "0")
-          failed=$(grep -c "✖" /tmp/pa11y-output.txt || echo "0")
+          # Parse the summary line (e.g., "✘ 4/5 URLs passed" or "✔ 5/5 URLs passed")
+          if grep -q "URLs passed" /tmp/pa11y-output.txt; then
+            summary=$(grep "URLs passed" /tmp/pa11y-output.txt | tail -1)
+            passed=$(echo "$summary" | grep -oP '\d+(?=/\d+ URLs)')
+            total=$(echo "$summary" | grep -oP '\d+(?= URLs)')
+            failed=$((total - passed))
+          else
+            passed=0
+            failed=0
+          fi
+
           echo "PASSED=$passed" >> $GITHUB_ENV
           echo "FAILED=$failed" >> $GITHUB_ENV
 
-          if [ "$failed" -gt 0 ]; then
+          if [ "$exit_code" -ne 0 ]; then
             echo "::warning::$failed page(s) have accessibility issues"
           fi
 

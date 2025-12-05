@@ -42,7 +42,7 @@ const strokeWeight = 3;
             <feGaussianBlur in="displaced" stdDeviation="5" result="finalSmooth" />
           </filter>
 
-          <filter id="blur" x="-40%" y="-40%" width="180%" height="180%">
+          <filter id="dividerBlur" x="-40%" y="-40%" width="180%" height="180%">
             <feGaussianBlur stdDeviation="0.005" />
           </filter>
         </defs>
@@ -125,7 +125,7 @@ const strokeWeight = 3;
             <feDisplacementMap in="SourceGraphic" in2="noise" scale="1" />
           </filter>
 
-          <filter id="blur" x="-40%" y="-40%" width="180%" height="180%">
+          <filter id="botanicalBlur" x="-40%" y="-40%" width="180%" height="180%">
             <feGaussianBlur stdDeviation="0.5" />
           </filter>
         </defs>
@@ -137,7 +137,7 @@ const strokeWeight = 3;
           stroke={`color-mix(in srgb, ${vineColor} 50%, transparent)`}
           stroke-width="3"
           fill="none"
-          filter="url(#blur)"
+          filter="url(#botanicalBlur)"
           stroke-linecap="round"
         />
 
