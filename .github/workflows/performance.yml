@@ -107,12 +107,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@v2
+        id: setup-chrome
+        with:
+          chrome-version: stable
+
       - name: Test accessibility with Pa11y
         env:
-          PUPPETEER_ARGS: '--no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage --disable-gpu'
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'true'
+          PUPPETEER_EXECUTABLE_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
         run: |
           base_url="${{ needs.lighthouse.outputs.base-url }}"
           echo "Testing pages with Pa11y..."
+          echo "Using Chrome at: $PUPPETEER_EXECUTABLE_PATH"
 
           passed=0
           failed=0
@@ -128,7 +136,6 @@ jobs:
               --standard WCAG2AA \
               --reporter cli \
               --timeout 30000 \
-              --launch-options '{"args": ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage", "--disable-gpu"]}' \
               2>&1)
             exit_code=$?
             echo "Exit code: $exit_code"
