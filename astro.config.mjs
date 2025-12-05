@@ -128,7 +128,7 @@ export default defineConfig({
     rehypePlugins: [rehypeKatex],
     shikiConfig: {
       themes: {
-        light: 'solarized-light',
+        light: 'gruvbox-light-hard',
         dark: 'gruvbox-dark-hard',
       },
       wrap: false,
