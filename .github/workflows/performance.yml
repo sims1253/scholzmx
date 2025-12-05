@@ -13,7 +13,7 @@ concurrency:
 
 env:
   # Define audited pages centrally - easier to maintain
-  AUDIT_PATHS: '/ /blog/ /research/ /projects/ /notes/'
+  AUDIT_PATHS: '/ /blog/ /research/ /projects/ /notes/ /blog/2025/01-15-blog-post-features-template/ /recipes/hokkaido-dinner-rolls/'
 
 jobs:
   lighthouse:
@@ -65,6 +65,8 @@ jobs:
             ${{ steps.site.outputs.base-url }}/research/
             ${{ steps.site.outputs.base-url }}/projects/
             ${{ steps.site.outputs.base-url }}/notes/
+            ${{ steps.site.outputs.base-url }}/blog/2025/01-15-blog-post-features-template/
+            ${{ steps.site.outputs.base-url }}/recipes/hokkaido-dinner-rolls/
           configPath: .lighthouserc.cjs
           budgetPath: .lighthouse-budget.json
           uploadArtifacts: true
