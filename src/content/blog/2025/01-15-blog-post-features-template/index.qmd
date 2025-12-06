@@ -93,6 +93,7 @@ head(data, 3)
 Plots
 ```{r}
 #| label: sample-plot
+#| fig-alt: "Scatter plot showing X values versus Y values with points colored by group A, B, and C"
 
 ggplot(data, aes(x = x, y = y, color = group)) +
   geom_point(alpha = 0.7) +

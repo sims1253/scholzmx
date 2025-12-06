@@ -2,7 +2,7 @@
 title: April Community Team Update
 description: Community team update covering GSoC 2017, projects page development, and member guidelines.
 date: 2017-04-19
-tags: ['coala', 'community', 'gsoc']
+tags: ['coala', 'Community', 'GSoC']
 draft: false
 ---
 

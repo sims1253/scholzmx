@@ -2,7 +2,7 @@
 title: 'GSoC 2017 Postmortem Part 2: Org Application'
 description: In the beginning, there was an organization application. And with it, the need for someone responsible. That one was me.
 date: 2017-11-13
-tags: ['coala', 'community']
+tags: ['coala', 'Community']
 draft: false
 ---
 

@@ -2,7 +2,7 @@
 title: 'GSoC 2017 Postmortem Part 1: Overview'
 description: The 2017 GSoC is over and it was awesome. We had 10 great students (Yes all of them!) and a tremendous experience for all of us.
 date: 2017-11-02
-tags: ['coala', 'community']
+tags: ['coala', 'Community']
 draft: false
 ---
 

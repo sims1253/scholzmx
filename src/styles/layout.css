@@ -303,3 +303,23 @@
     margin-right: 0; /* Remove any right margin from toggle */
   }
 }
+
+/* Ultra-narrow screens - allow nav to wrap if needed */
+@media (max-width: 360px) {
+  .nav-content {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem 0.5rem;
+  }
+
+  .nav-brand {
+    flex-basis: 100%;
+    text-align: center;
+  }
+
+  .nav-links {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.2rem 0.4rem;
+  }
+}

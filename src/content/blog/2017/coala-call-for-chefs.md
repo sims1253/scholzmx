@@ -2,7 +2,7 @@
 title: "coala's Call for Chefs"
 description: A story about building community through food.
 date: 2017-04-15
-tags: ['coala', 'community']
+tags: ['coala', 'Community']
 draft: false
 ---
 

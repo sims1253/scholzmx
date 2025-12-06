@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import NoteCardStack from '../components/NoteCardStack.astro';
+import Search from 'astro-pagefind/components/Search';
 
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
 const posts = allPosts.sort(
@@ -69,6 +70,33 @@ const tags = Array.from(new Set(posts.flatMap((p) => p.data.tags ?? []))).sort()
         </section>
       </main>
       <aside class="blog-filters">
+        <section class="sidebar-section" role="search" aria-labelledby="search-heading">
+          <h3 id="search-heading">Search posts</h3>
+          <Search
+            id="blog-search"
+            className="pagefind-ui"
+            uiOptions={{
+              showImages: false,
+              debounceTimeoutMs: 100,
+              pageSize: 5,
+              excerptLength: 80,
+              showResultsCount: true,
+              showEmptyFilters: true,
+              translations: {
+                placeholder: 'Search posts...',
+                clear_search: 'Clear search',
+                load_more: 'Load more results',
+                search_label: 'Search posts',
+                filters_label: 'Filters',
+                zero_results: 'No posts found matching your search.',
+                many_results: '# posts found',
+                one_result: '1 post found',
+                alt_search: 'Search for [SEARCH_TERM]',
+                search_suggestion: 'Try searching for a topic, tag, or keyword',
+              },
+            }}
+          />
+        </section>
         <section class="sidebar-section">
           <h3>Filter by year</h3>
           <ul class="filter-list">
