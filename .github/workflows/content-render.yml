@@ -159,6 +159,14 @@ jobs:
             any::ggdag
             any::GGally
             any::dagitty
+            any::plotly
+            any::DT
+            any::htmlwidgets
+            any::tidybayes
+            any::here
+            any::readr
+            any::lubridate
+            any::ragg
             github::sims1253/bayesim
 
       - name: Cache render hashes
