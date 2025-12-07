@@ -128,8 +128,8 @@ export default defineConfig({
     rehypePlugins: [rehypeKatex],
     shikiConfig: {
       themes: {
-        light: 'gruvbox-light-hard',
-        dark: 'gruvbox-dark-hard',
+        light: 'kanagawa-lotus',
+        dark: 'kanagawa-dragon',
       },
       wrap: false,
     },

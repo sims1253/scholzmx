@@ -4,8 +4,15 @@ format:
     wrap: preserve
     title-block-banner: false
     title-block-style: none
+    fig-format: png
+    fig-dpi: 300
+    fig-width: 7
+    fig-height: 5
 knitr:
   opts_chunk:
     echo: true
     warning: false
     message: false
+    dev: ragg_png
+    dev.args:
+      bg: transparent

@@ -22,9 +22,6 @@ bibliography: references.bib
 link-citations: true
 cache: true
 freeze: false
-knitr:
-  opts_chunk:
-    fig.path: "../../../../assets/images/blog/2022/03-14-kumaraswamy-custom-brms-family/"
 ---
 
 *Update:* We finally published [bayesfam](https://github.com/sims1253/bayesfam),

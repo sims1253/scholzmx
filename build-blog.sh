@@ -90,17 +90,17 @@ update_cache() {
 # Function to move code block output outside of code-collapse details blocks
 extract_output_from_details() {
     local md_file="$1"
-    
+
     # Use awk to process the file and extract output after code blocks from code-collapse details blocks
     awk '
-    BEGIN { 
+    BEGIN {
         in_details = 0
         details_content = ""
         extracted_output = ""
         in_code_block = 0
         found_code_block = 0
     }
-    
+
     # Start of code-collapse details block
     /^<details class="code-collapse">/ {
         in_details = 1
@@ -108,19 +108,19 @@ extract_output_from_details() {
         found_code_block = 0
         next
     }
-    
+
     # End of details block
     /^<\/details>$/ && in_details == 1 {
         # Print the details block without extracted output
         printf "%s", details_content
         print "</details>"
-        
+
         # Print any extracted output after the details block
         if (extracted_output != "") {
             print ""
             printf "%s", extracted_output
         }
-        
+
         # Reset variables
         in_details = 0
         details_content = ""
@@ -129,7 +129,7 @@ extract_output_from_details() {
         found_code_block = 0
         next
     }
-    
+
     # Inside details block
     in_details == 1 {
         # Track code blocks
@@ -146,25 +146,25 @@ extract_output_from_details() {
             }
             next
         }
-        
+
         # Inside a code block - keep in details
         if (in_code_block == 1) {
             details_content = details_content $0 "\n"
             next
         }
-        
+
         # After code block has been found and we are outside code block
         if (found_code_block == 1 && in_code_block == 0) {
             # This is output after the code block - extract it
             extracted_output = extracted_output $0 "\n"
             next
         }
-        
+
         # Before any code block or other content - keep in details
         details_content = details_content $0 "\n"
         next
     }
-    
+
     # Outside details block - print as-is
     { print }
     ' "$md_file" > "${md_file}.tmp" && mv "${md_file}.tmp" "$md_file"
@@ -177,10 +177,10 @@ cached_count=0
 process_qmd_file() {
     local qmd_file="$1"
     local dir=$(dirname "$qmd_file")
-    
+
     if needs_rendering "$qmd_file"; then
         echo "Rendering $qmd_file"
-        
+
         # Change to the post directory and render
         cd "$dir"
         mkdir -p .blog-cache
@@ -191,7 +191,7 @@ process_qmd_file() {
           return 0
         fi
         cd - > /dev/null
-        
+
         # Post-processing: clean up Quarto output for Astro
         local md_file="${qmd_file%.qmd}.md"
         if [ -f "$md_file" ]; then
@@ -199,65 +199,63 @@ process_qmd_file() {
             year=$(echo "$qmd_file" | sed 's|.*/\([0-9]\{4\}\)/.*|\1|')
             post_folder=$(basename "$(dirname "$qmd_file")")
 
-            # Move Quarto index_files assets to src/assets and rewrite refs
-            # Use absolute path to ensure we create directory in project root
-            project_root=$(pwd)
-            assets_dir="${project_root}/src/assets/images/blog/${year}/${post_folder}"
-            mkdir -p "$assets_dir"
+            # Move Quarto index_files assets to the POST DIRECTORY (colocation)
+            # This allows Astro Content Layer to resolve relative paths properly
             post_dir=$(dirname "$md_file")
 
             # Handle both index_files (older Quarto) and nested src structure (newer Quarto)
             if [ -d "$post_dir/index_files" ]; then
               find "$post_dir/index_files" -type f \( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.gif" -o -name "*.svg" -o -name "*.webp" \) | while read img; do
                 base=$(basename "$img")
-                cp -f "$img" "${assets_dir}/$base"
+                cp -f "$img" "${post_dir}/$base"
                 rel_index_path=$(echo "$img" | sed "s|$post_dir/||")
-                # Replace both markdown and HTML refs
-                sed -i "s|$rel_index_path|$base|g" "$md_file"
+                # Replace markdown refs with simple relative path
+                sed -i "s|$rel_index_path|./$base|g" "$md_file"
               done
               rm -rf "$post_dir/index_files"
             fi
 
-            # Handle nested src/assets structure created by Quarto
+            # Handle nested src/assets structure created by Quarto (from fig.path setting)
             if [ -d "$post_dir/src/assets/images/blog/${year}/${post_folder}" ]; then
               find "$post_dir/src/assets/images/blog/${year}/${post_folder}" -type f \( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" -o -name "*.gif" -o -name "*.svg" -o -name "*.webp" \) | while read img; do
                 base=$(basename "$img")
-                cp -f "$img" "${assets_dir}/$base"
+                cp -f "$img" "${post_dir}/$base"
               done
               rm -rf "$post_dir/src"
             fi
 
-            # 1. Fix markdown body image paths: use proper relative paths to src/assets
-            sed -i "s|src/assets/images/blog/${year}/${post_folder}/|../../../../assets/images/blog/${year}/${post_folder}/|g" "$md_file"
-            # Convert plain image references to relative paths 
-            sed -i "s|!\[\](\([^/]*\.png\))|![](../../../../assets/images/blog/${year}/${post_folder}/\1)|g" "$md_file"
-            # Keep ../../../../assets paths as-is (they're correct for our nested structure)
-            
-            # 2. Fix frontmatter images: convert to proper src/assets paths for Astro content collections
-            sed -i '/^images:$/,/^[^ ]/ {
-                # Convert multiline YAML "- >-" + next line to single line format
-                /^  - >-$/N
-                s/^  - >-\n    /  - /
-                # Convert ../../../../assets to src/assets in frontmatter
-                s|../../../../assets/|src/assets/|g
-            }' "$md_file"
-            
+            # 1. Fix markdown body image paths: use simple relative paths for colocation
+            # Remove any deep path prefixes, keep just the filename with ./
+            sed -i "s|src/assets/images/blog/${year}/${post_folder}/\([^)]*\)|./\1|g" "$md_file"
+
+            # CRITICAL: Also catch any remaining index_files paths that weren't replaced in the loop
+            # This handles cases where the subfolder structure varies (figure-commonmark, figure-gfm, etc.)
+            sed -i 's|index_files/[^/]*/\([^)]*\)|./\1|g' "$md_file"
+
+            # Convert plain image references (no path) to relative paths with ./
+            sed -i "s|!\[\](\([^/.][^/)]*\.\(png\|jpg\|jpeg\|gif\|svg\|webp\)\))|![](./\1)|g" "$md_file"
+
+            # 2. Fix frontmatter images: heroImage should still use ../../../../assets/ path
+            # (these work because Astro handles frontmatter images via content config schema)
+            # No change needed for frontmatter - keep existing paths
+
+
             # 3. Extract code block output from code-collapse details blocks
             extract_output_from_details "$md_file"
 
             # 4. Remove Quarto-generated title and date from the markdown body
             # Extract title from frontmatter (handle both quoted and unquoted titles)
             title_from_yaml=$(awk '/^title:/ {sub(/^title: */, ""); gsub(/^["'\'']|["'\'']$/, ""); print; exit}' "$md_file")
-            
+
             # More precise AWK script to remove duplicate title/date and clean up blank lines
             awk -v title="$title_from_yaml" '
-            BEGIN { 
+            BEGIN {
                 in_body = 0
                 found_frontmatter_end = 0
                 content_started = 0
                 skip_blanks = 0
             }
-            
+
             # Track when we exit the frontmatter
             /^---$/ && NR > 1 && !found_frontmatter_end {
                 found_frontmatter_end = 1
@@ -266,13 +264,13 @@ process_qmd_file() {
                 print
                 next
             }
-            
+
             # Skip everything before frontmatter ends
             !in_body {
                 print
                 next
             }
-            
+
             # In body content after frontmatter
             in_body == 1 {
                 # Skip duplicate title (exact match with # prefix)
@@ -280,37 +278,37 @@ process_qmd_file() {
                     skip_blanks = 1
                     next
                 }
-                
+
                 # Skip standalone date pattern (YYYY-MM-DD format)
                 if ($0 ~ /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/) {
                     skip_blanks = 1
                     next
                 }
-                
+
                 # Skip standalone author line (typically appears after title)
                 if ($0 ~ /^[A-Z][a-z]+ [A-Z][a-z]+$/ && skip_blanks == 1) {
                     next
                 }
-                
+
                 # Skip blank lines when we are still cleaning up
                 if ($0 == "" && skip_blanks == 1) {
                     next
                 }
-                
+
                 # Found real content - stop skipping blanks and start printing
                 if ($0 != "") {
                     skip_blanks = 0
                     content_started = 1
                 }
-                
+
                 # Only print if we have started real content or this is not a blank line
                 if (content_started == 1 || $0 != "") {
                     print
                 }
             }' "$md_file" > "${md_file}.tmp" && mv "${md_file}.tmp" "$md_file"
-            
+
         fi
-        
+
         update_cache "$qmd_file"
         rendered_count=$((rendered_count + 1))
     else

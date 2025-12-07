@@ -17,9 +17,6 @@ bibliography: references.bib
 link-citations: true
 cache: true
 freeze: auto
-knitr:
-  opts_chunk:
-    fig.path: "../../../../assets/images/blog/2022/01-26-simulating-dags/"
 ---
 
 <span class="dropcap dropcap--ornate dropcap--serious" data-first-letter="I" aria-hidden="true">I</span> came across a cool example for a DAG (thanks to a comment by [Paul Bürkner](https://twitter.com/paulbuerkner))

@@ -81,7 +81,8 @@ const tags = Array.from(new Set(posts.flatMap((p) => p.data.tags ?? []))).sort()
               pageSize: 5,
               excerptLength: 80,
               showResultsCount: true,
-              showEmptyFilters: true,
+              showEmptyFilters: false,
+              filters: { type: 'blog' },
               translations: {
                 placeholder: 'Search posts...',
                 clear_search: 'Clear search',

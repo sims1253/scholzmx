@@ -235,8 +235,7 @@ jobs:
           compression-level: 6
           retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
           path: |
-            src/content/blog/*/*/index.md
-            src/assets/images/blog/
+            src/content/blog/*/*/
             .blog-cache/
 
   reuse-artifact:
@@ -293,6 +292,5 @@ jobs:
           compression-level: 6
           retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
           path: |
-            src/content/blog/*/*/index.md
-            src/assets/images/blog/
+            src/content/blog/*/*/
             .blog-cache/

@@ -24,6 +24,7 @@ const { Content } = await render(recipe);
 <BaseLayout
   title={`${recipe.data.title} - Scholz MX`}
   description={recipe.data.description}
+  image={recipe.data.heroImage?.src}
   footerVariant="kitchen"
   tone="personal"
   layout="prose"
@@ -90,7 +91,12 @@ const { Content } = await render(recipe);
 
       <FaintLineDivider width="wide" />
 
-      <section class="recipe-body prose" itemprop="recipeInstructions" data-pagefind-body>
+      <section
+        class="recipe-body prose"
+        itemprop="recipeInstructions"
+        data-pagefind-body
+        data-pagefind-filter="type:recipe"
+      >
         <Content components={{ DropCap }} />
       </section>
 

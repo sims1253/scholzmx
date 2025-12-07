@@ -27,9 +27,6 @@ bibliography: references.bib
 link-citations: true
 cache: true
 freeze: false
-knitr:
-  opts_chunk:
-    fig.path: "src/assets/images/blog/2025/01-15-blog-post-features-template/"
 ---
 
 <span class="dropcap dropcap--ornate dropcap--serious" data-first-letter="T" aria-hidden="true">T</span> his is my copy-paste template for new blog posts. I got tired of looking up the same Quarto features every time, so this is essentially just a growing example for me.

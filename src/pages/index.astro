@@ -2,10 +2,41 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import DropCap from '../components/DropCap.astro';
 import ImageFrame from '../components/ImageFrame.astro';
+import { getCollection } from 'astro:content';
 
 /* Optimized local images */
 import selfImage from '../assets/images/homepage/self.jpg';
 import portraitImage from '../assets/images/homepage/portrait.jpg';
+
+/* Get newest post (blog or recipe) */
+const allBlogPosts = await getCollection('blog');
+const allRecipes = await getCollection('recipes');
+
+const latestBlog = allBlogPosts
+  .filter((p) => !p.data.draft)
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())[0];
+
+// Recipes use 'created' instead of 'date'
+const latestRecipe = allRecipes.sort(
+  (a, b) => new Date(b.data.created).getTime() - new Date(a.data.created).getTime()
+)[0];
+
+// Compare dates and pick the newest
+const blogDate = latestBlog?.data.date ? new Date(latestBlog.data.date) : null;
+const recipeDate = latestRecipe?.data.created ? new Date(latestRecipe.data.created) : null;
+
+const newestPost =
+  blogDate && recipeDate
+    ? blogDate > recipeDate
+      ? { type: 'blog' as const, post: latestBlog, date: blogDate }
+      : { type: 'recipe' as const, post: latestRecipe, date: recipeDate }
+    : blogDate
+      ? { type: 'blog' as const, post: latestBlog, date: blogDate }
+      : recipeDate
+        ? { type: 'recipe' as const, post: latestRecipe, date: recipeDate }
+        : null;
+
+const formatDate = (date: Date) => date.toISOString().split('T')[0];
 ---
 
 <BaseLayout
@@ -45,15 +76,26 @@ import portraitImage from '../assets/images/homepage/portrait.jpg';
     </div>
 
     <div class="about-preview">
-      <!-- <div class="garden-note">
-        <span>
-          <p>
-            Think of this as a digital commonplace book - a collection of
-            thoughts, discoveries, and creations that have meaning to me.
-            And maybe have some fun while browsing.
-          </p>
-        </span>
-      </div> -->
+      {
+        newestPost && (
+          <aside class="latest-scribble">
+            <span class="scribble-label">Newest post</span>
+            <a
+              href={
+                newestPost.type === 'blog'
+                  ? `/blog/${newestPost.post.id}`
+                  : `/recipes/${newestPost.post.id}`
+              }
+              class="scribble-title"
+            >
+              {newestPost.post.data.title}
+            </a>
+            <time class="scribble-date" datetime={newestPost.date.toISOString()}>
+              {formatDate(newestPost.date)}
+            </time>
+          </aside>
+        )
+      }
       <div class="prose content">
         <p class="prose">
           <DropCap letter="I" variant="personal" />'m Maximilian. My best friend once painted me a
@@ -128,6 +170,7 @@ import portraitImage from '../assets/images/homepage/portrait.jpg';
   }
 
   .about-preview {
+    position: relative;
     margin-bottom: var(--space-xs);
     margin-top: var(--space-xs);
     margin-left: auto;
@@ -172,6 +215,63 @@ import portraitImage from '../assets/images/homepage/portrait.jpg';
   @media (max-width: 480px) {
     .site-title {
       font-size: var(--text-lg);
+    }
+  }
+
+  /* Latest Scribble - margin note style */
+  .latest-scribble {
+    position: absolute;
+    right: -240px;
+    top: 0;
+    width: 200px;
+    background: var(--color-surface);
+    border-left: 3px solid color-mix(in srgb, var(--color-lichen) 60%, transparent);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: 6px;
+    box-shadow:
+      0 1px 3px color-mix(in srgb, var(--color-walnut) 12%, transparent),
+      0 0 0 1px color-mix(in srgb, var(--color-lichen) 22%, transparent);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xxs);
+  }
+
+  .scribble-label {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    font-weight: 600;
+  }
+
+  .scribble-title {
+    font-size: var(--text-sm);
+    color: var(--color-walnut);
+    text-decoration: none;
+    font-weight: 500;
+    line-height: 1.3;
+    transition: color var(--transition-fast);
+  }
+
+  .scribble-title:hover {
+    color: var(--color-moss);
+  }
+
+  .scribble-date {
+    font-size: var(--text-xs);
+    color: var(--color-ink-light);
+    font-style: italic;
+  }
+
+  /* On narrow screens, hide the margin note entirely or show inline */
+  @media (max-width: 1200px) {
+    .latest-scribble {
+      position: static;
+      width: auto;
+      max-width: 100%;
+      margin-bottom: var(--space-md);
+      border-left: none;
+      border-top: 2px solid color-mix(in srgb, var(--color-lichen) 60%, transparent);
+      padding: var(--space-sm);
+      text-align: center;
     }
   }
 </style>

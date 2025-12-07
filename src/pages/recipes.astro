@@ -62,7 +62,8 @@ const tags = Array.from(new Set(recipes.flatMap((r) => r.data.tags ?? []))).sort
               pageSize: 5,
               excerptLength: 80,
               showResultsCount: true,
-              showEmptyFilters: true,
+              showEmptyFilters: false,
+              filters: { type: 'recipe' },
               translations: {
                 placeholder: 'Search recipes...',
                 clear_search: 'Clear search',
