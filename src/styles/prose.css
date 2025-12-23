@@ -3,7 +3,7 @@
   .prose {
     font-family: var(--font-body);
     font-size: var(--text-md);
-    line-height: 1.35;
+    line-height: 1.55;
     color: var(--color-text-primary);
     font-feature-settings:
       'liga' 1,
@@ -14,11 +14,11 @@
 
   /* Slightly looser line-height for personal tone by default */
   .personal-content .prose {
-    line-height: 1.4;
+    line-height: 1.6;
   }
 
   .prose p {
-    margin: 0 0 1.25em;
+    margin: 0 0 1.45em;
     line-height: inherit;
   }
 

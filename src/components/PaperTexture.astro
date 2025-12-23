@@ -1,11 +1,13 @@
 ---
 export interface Props {
   intensity?: 'light' | 'medium' | 'heavy';
-  pattern?: 'paper' | 'linen' | 'parchment' | 'botanical';
+  pattern?: 'paper' | 'linen' | 'parchment' | 'botanical' | 'watercolor';
   className?: string;
 }
 
 const { intensity = 'medium', pattern = 'paper', className = '' } = Astro.props;
+
+const opacity = intensity === 'light' ? 0.4 : intensity === 'medium' ? 0.6 : 0.8;
 ---
 
 <div class={`paper-texture paper-texture--${intensity} paper-texture--${pattern} ${className}`}>
@@ -114,6 +116,35 @@ const { intensity = 'medium', pattern = 'paper', className = '' } = Astro.props;
       25px 25px,
       15px 15px,
       40px 40px;
+  }
+
+  /* Watercolor pattern - warm, hand-painted feel */
+  .paper-texture--watercolor::before {
+    background-image:
+      /* Warm fiber texture diagonal */
+      linear-gradient(
+        45deg,
+        transparent 40%,
+        rgba(180, 130, 90, 0.08) 41%,
+        rgba(180, 130, 90, 0.08) 43%,
+        transparent 44%
+      ),
+      /* Subtle grain */
+      radial-gradient(circle at 30% 80%, rgba(160, 120, 80, 0.06) 1px, transparent 2px),
+      /* Occasional pigment spots */
+      radial-gradient(circle at 70% 20%, rgba(139, 90, 60, 0.04) 2px, transparent 4px),
+      /* Soft wash effect */
+      radial-gradient(
+        ellipse at 50% 50%,
+        rgba(250, 245, 235, 0.1) 0%,
+        transparent 70%
+      );
+    background-size:
+      16px 16px,
+      6px 6px,
+      40px 40px,
+      100% 100%;
+    background-position: 0 0, 0 0, 20px 30px, 0 0;
   }
 
   /* Additional overlay for depth */
