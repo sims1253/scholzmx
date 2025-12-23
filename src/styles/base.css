@@ -693,7 +693,7 @@
       text-decoration: underline;
     }
   }
-  
+
   /* ===== Organic Shapes ===== */
   /* Irregular border-radius for hand-crafted, organic feel */
   :root {
@@ -702,24 +702,24 @@
     --organic-lg: 30% 70% 70% 30% / 30% 30% 70% 70%;
     --organic-paper: 2px 4px 8px 2px / 4px 2px 8px 4px;
   }
-  
+
   /* Utility classes for organic shapes */
   .organic-sm {
     border-radius: var(--organic-sm);
   }
-  
+
   .organic-md {
     border-radius: var(--organic-md);
   }
-  
+
   .organic-lg {
     border-radius: var(--organic-lg);
   }
-  
+
   .organic-paper {
     border-radius: var(--organic-paper);
   }
-  
+
   /* ===== Organic Links ===== */
   /* Hand-drawn wavy underlines for a more artisanal feel */
   a.organic-link {
@@ -730,11 +730,11 @@
     text-underline-offset: 3px;
     transition: text-decoration-color 0.2s ease;
   }
-  
+
   a.organic-link:hover {
     text-decoration-color: var(--color-ochre);
   }
-  
+
   /* Special styling for inline organic links in prose */
   .prose a:not(.scribble-title):not(.nav-link) {
     text-decoration: underline;
@@ -742,7 +742,7 @@
     text-decoration-thickness: 1.6px;
     text-underline-offset: 2px;
   }
-  
+
   .prose a:not(.scribble-title):not(.nav-link):hover {
     text-decoration-color: var(--color-underline-hover);
     text-decoration-thickness: 2px;
