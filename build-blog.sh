@@ -232,6 +232,10 @@ process_qmd_file() {
             # This handles cases where the subfolder structure varies (figure-commonmark, figure-gfm, etc.)
             sed -i 's|index_files/[^/]*/\([^)]*\)|./\1|g' "$md_file"
 
+            # Fix old-style ../../../../assets/images/blog paths (from cached/legacy markdown files)
+            # These should be converted to simple relative paths since images are colocated
+            sed -i "s|\.\./\.\./\.\./\.\./assets/images/blog/${year}/${post_folder}/\([^)]*\)|./\1|g" "$md_file"
+
             # Convert plain image references (no path) to relative paths with ./
             sed -i "s|!\[\](\([^/.][^/)]*\.\(png\|jpg\|jpeg\|gif\|svg\|webp\)\))|![](./\1)|g" "$md_file"
 
