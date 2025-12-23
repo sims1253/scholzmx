@@ -6,8 +6,6 @@ export interface Props {
 }
 
 const { intensity = 'medium', pattern = 'paper', className = '' } = Astro.props;
-
-const opacity = intensity === 'light' ? 0.4 : intensity === 'medium' ? 0.6 : 0.8;
 ---
 
 <div class={`paper-texture paper-texture--${intensity} paper-texture--${pattern} ${className}`}>
