@@ -14,9 +14,9 @@
 
 /* Personal variant - warm and playful for welcome/recipes */
 .dropcap--personal {
-  font-size: clamp(2.2rem, 5vw + 1rem, 3.7rem);
+  font-size: 4.3rem; /* 3 lines at 1.6 line-height, scales with base font */
   line-height: 1;
-  margin-right: clamp(0.04em, 0.8vw, 0.08em);
+  margin-right: 0.06em;
   margin-top: 0.11em; /* Mobile default */
   font-weight: 500;
 }
@@ -30,10 +30,10 @@
 
 /* Serious variant - formal and elegant for blog/notes */
 .dropcap--serious {
-  font-size: clamp(2.4rem, 4.5vw + 1rem, 3.6rem);
+  font-size: 4.15rem; /* 3 lines at 1.55 line-height, scales with base font */
   line-height: 1;
-  margin-right: clamp(0.04em, 0.6vw, 0.08em);
-  margin-top: clamp(0.02em, 0.3vw, 0.04em);
+  margin-right: 0.06em;
+  margin-top: 0.03em;
   font-weight: 500;
 }
 

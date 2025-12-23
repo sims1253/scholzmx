@@ -1,0 +1,119 @@
+---
+export interface Props {
+  variant?: 'note' | 'recipe' | 'journal';
+  className?: string;
+}
+
+const { variant = 'note', className = '' } = Astro.props;
+---
+
+<article class={`handcrafted-card card-${variant} ${className}`}>
+  <slot />
+</article>
+
+<style>
+  .handcrafted-card {
+    background: var(--color-parchment-light);
+    border: 1px solid color-mix(in srgb, var(--color-walnut) 15%, transparent);
+    border-radius: var(--organic-paper);
+    padding: var(--space-md);
+    box-shadow:
+      0 2px 6px rgba(139, 90, 60, 0.08),
+      0 4px 12px rgba(90, 107, 71, 0.06);
+    position: relative;
+    transition:
+      box-shadow 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .handcrafted-card:hover {
+    box-shadow:
+      0 4px 10px rgba(139, 90, 60, 0.12),
+      0 8px 20px rgba(90, 107, 71, 0.08);
+    transform: translateY(-2px);
+  }
+
+  /* Tape/fixative effect */
+  .handcrafted-card::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 20px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(210, 180, 120, 0.3) 20%,
+      rgba(210, 180, 120, 0.3) 80%,
+      transparent 100%
+    );
+    clip-path: polygon(10% 0%, 90% 0%, 100% 100%, 0% 100%);
+  }
+
+  /* Variant: Recipe - warmer, kitchen feel */
+  .handcrafted-card.card-recipe {
+    background: linear-gradient(
+      135deg,
+      var(--color-parchment-light) 0%,
+      rgba(250, 245, 235, 0.8) 100%
+    );
+    border-color: color-mix(in srgb, var(--color-ochre) 20%, transparent);
+  }
+
+  .handcrafted-card.card-recipe::before {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(176, 110, 73, 0.2) 20%,
+      rgba(176, 110, 73, 0.2) 80%,
+      transparent 100%
+    );
+  }
+
+  /* Variant: Journal - more aged feel */
+  .handcrafted-card.card-journal {
+    background: var(--color-surface);
+    border-color: color-mix(in srgb, var(--color-ink-light) 20%, transparent);
+    box-shadow:
+      0 2px 6px rgba(139, 90, 60, 0.05),
+      0 4px 12px rgba(90, 107, 71, 0.04),
+      inset 0 0 30px rgba(139, 90, 60, 0.03);
+  }
+
+  .handcrafted-card.card-journal::before {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(139, 90, 60, 0.15) 20%,
+      rgba(139, 90, 60, 0.15) 80%,
+      transparent 100%
+    );
+    height: 16px;
+    width: 50px;
+  }
+
+  /* Mobile responsiveness */
+  @media (max-width: 640px) {
+    .handcrafted-card {
+      padding: var(--space-sm);
+    }
+
+    .handcrafted-card::before {
+      width: 50px;
+      height: 16px;
+    }
+  }
+
+  /* Reduce motion */
+  @media (prefers-reduced-motion: reduce) {
+    .handcrafted-card {
+      transition: none;
+    }
+
+    .handcrafted-card:hover {
+      transform: none;
+    }
+  }
+</style>

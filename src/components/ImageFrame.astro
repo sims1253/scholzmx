@@ -606,6 +606,10 @@ const captionId = hasCaption
   }
 
   /* Dual image toggle */
+  .primary-image {
+    transition: opacity 0.3s ease;
+  }
+
   .alternate-image {
     opacity: 0;
     transition: opacity 0.3s ease;
@@ -617,6 +621,7 @@ const captionId = hasCaption
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .primary-image,
     .alternate-image {
       transition: none;
     }

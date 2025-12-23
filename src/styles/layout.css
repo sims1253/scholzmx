@@ -210,6 +210,7 @@
   min-height: 100svh;
   display: flex;
   flex-direction: column;
+  overflow: visible;
 }
 
 .page-nav {
@@ -228,6 +229,7 @@
   flex: 1 1 auto;
   display: block; /* Prevent flex from shrinking inner layout wrappers */
   position: relative; /* required for margin-notes absolute container */
+  overflow: visible; /* Allow margin cards to extend into margins */
 }
 
 .main-content .container {

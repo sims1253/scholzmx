@@ -19,6 +19,7 @@
   pointer-events: auto;
   z-index: 10;
   display: block;
+  transition: left 0.15s ease-out;
 }
 
 /* Individual margin notes */
@@ -39,7 +40,8 @@
   transform: translateY(-10px);
   transition:
     opacity 0.3s ease,
-    transform 0.3s ease;
+    transform 0.3s ease,
+    top 0.15s ease-out;
 }
 
 .margin-note.visible {

@@ -76,51 +76,53 @@ const formatDate = (date: Date) => date.toISOString().split('T')[0];
     </div>
 
     <div class="about-preview">
-      {
-        newestPost && (
-          <aside class="latest-scribble">
-            <span class="scribble-label">Newest post</span>
-            <a
-              href={
-                newestPost.type === 'blog'
-                  ? `/blog/${newestPost.post.id}`
-                  : `/recipes/${newestPost.post.id}`
-              }
-              class="scribble-title"
-            >
-              {newestPost.post.data.title}
-            </a>
-            <time class="scribble-date" datetime={newestPost.date.toISOString()}>
-              {formatDate(newestPost.date)}
-            </time>
-          </aside>
-        )
-      }
-      <div class="prose content">
-        <p class="prose">
-          <DropCap letter="I" variant="personal" />'m Maximilian. My best friend once painted me a
-          t-shirt that read <em>verspielt und liebenswürdig</em> (playful and endearing) and I've yet
-          to find a better description. The best feedback I've ever gotten described me as a <em
-            >herder of cat herders</em
-          > and my music taste has been characterized as being <em
-            >an atmospheric futurist with a nostalgic heart</em
-          >.<br /><br />
+      <div class="prose-wrapper">
+        {
+          newestPost && (
+            <aside class="latest-scribble">
+              <span class="scribble-label">Newest post</span>
+              <a
+                href={
+                  newestPost.type === 'blog'
+                    ? `/blog/${newestPost.post.id}`
+                    : `/recipes/${newestPost.post.id}`
+                }
+                class="scribble-title"
+              >
+                {newestPost.post.data.title}
+              </a>
+              <time class="scribble-date" datetime={newestPost.date.toISOString()}>
+                {formatDate(newestPost.date)}
+              </time>
+            </aside>
+          )
+        }
+        <div class="prose content">
+          <p class="prose">
+            <DropCap letter="I" variant="personal" />'m Maximilian. My best friend once painted me a
+            t-shirt that read <em>verspielt und liebenswürdig</em> (playful and endearing) and I've yet
+            to find a better description. The best feedback I've ever gotten described me as a <em
+              >herder of cat herders</em
+            > and my music taste has been characterized as being <em
+              >an atmospheric futurist with a nostalgic heart</em
+            >.<br /><br />
 
-          I tend to make things: software infrastructure that hopefully helps others, harsh vocals
-          and guitar covers, a concept Call of Cthulhu campaign for a deathcore album (much to my
-          players' confusion), and kitchen experiments where I try something new each month. I'm
-          easy to nerdsnipe, if you couldn't tell. When I'm not building something, you'll find me
-          on the mats failing triangle escapes, or somewhere between a barbell and a book.<br /><br
-          />
+            I tend to make things: software infrastructure that hopefully helps others, harsh vocals
+            and guitar covers, a concept Call of Cthulhu campaign for a deathcore album (much to my
+            players' confusion), and kitchen experiments where I try something new each month. I'm
+            easy to nerdsnipe, if you couldn't tell. When I'm not building something, you'll find me
+            on the mats failing triangle escapes, or somewhere between a barbell and a book.<br
+            /><br />
 
-          Somewhere along the way I collected a B.Sc. in <em>Computer Science in Engineering</em>, a
-          M.Sc. in <em>Software Engineering and Technology</em>, and, if the gods of bureaucracy
-          ever look kindly upon me, a PhD in <em>Bayesian statistics</em> will follow.
-        </p>
-        <p class="prose">
-          I've hidden a growing number of easter eggs around the site. Let me know when you find
-          them :)
-        </p>
+            Somewhere along the way I collected a B.Sc. in <em>Computer Science in Engineering</em>,
+            a M.Sc. in <em>Software Engineering and Technology</em>, and, if the gods of bureaucracy
+            ever look kindly upon me, a PhD in <em>Bayesian statistics</em> will follow.
+          </p>
+          <p class="prose">
+            I've hidden a growing number of easter eggs around the site. Let me know when you find
+            them :)
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -173,8 +175,43 @@ const formatDate = (date: Date) => date.toISOString().split('T')[0];
     position: relative;
     margin-bottom: var(--space-xs);
     margin-top: var(--space-xs);
-    margin-left: auto;
-    margin-right: auto;
+  }
+
+  /* On wide screens, break out of the layout-prose grid to allow margin note */
+  @media (min-width: 1100px) {
+    .about-preview {
+      grid-column: 1 / -1; /* Break out of parent layout-prose grid */
+      display: flex;
+      justify-content: center;
+    }
+  }
+
+  /* Prose wrapper - mobile first: simple block layout */
+  .prose-wrapper {
+    position: relative;
+    max-width: var(--measure-prose);
+    width: 100%;
+  }
+
+  /* On wide screens (>1100px), use grid to position margin note beside content */
+  @media (min-width: 1100px) {
+    .prose-wrapper {
+      display: grid;
+      grid-template-columns: var(--measure-prose) 220px;
+      gap: var(--space-lg);
+      max-width: none;
+      width: auto;
+    }
+
+    .prose-wrapper .prose.content {
+      grid-column: 1;
+    }
+
+    .prose-wrapper .latest-scribble {
+      grid-column: 2;
+      grid-row: 1;
+      align-self: start;
+    }
   }
 
   /* Mobile Responsiveness */
@@ -218,12 +255,12 @@ const formatDate = (date: Date) => date.toISOString().split('T')[0];
     }
   }
 
-  /* Latest Scribble - margin note style */
+  /* Latest Scribble - card styling */
   .latest-scribble {
-    position: absolute;
-    right: -240px;
-    top: 0;
-    width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xxs);
+    margin-bottom: var(--space-md);
     background: var(--color-surface);
     border-left: 3px solid color-mix(in srgb, var(--color-lichen) 60%, transparent);
     padding: var(--space-sm) var(--space-md);
@@ -231,9 +268,14 @@ const formatDate = (date: Date) => date.toISOString().split('T')[0];
     box-shadow:
       0 1px 3px color-mix(in srgb, var(--color-walnut) 12%, transparent),
       0 0 0 1px color-mix(in srgb, var(--color-lichen) 22%, transparent);
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-xxs);
+  }
+
+  /* On wide screens, card is positioned by grid */
+  @media (min-width: 1100px) {
+    .latest-scribble {
+      margin-bottom: 0;
+      width: 220px;
+    }
   }
 
   .scribble-label {
@@ -259,19 +301,5 @@ const formatDate = (date: Date) => date.toISOString().split('T')[0];
     font-size: var(--text-xs);
     color: var(--color-ink-light);
     font-style: italic;
-  }
-
-  /* On narrow screens, hide the margin note entirely or show inline */
-  @media (max-width: 1200px) {
-    .latest-scribble {
-      position: static;
-      width: auto;
-      max-width: 100%;
-      margin-bottom: var(--space-md);
-      border-left: none;
-      border-top: 2px solid color-mix(in srgb, var(--color-lichen) 60%, transparent);
-      padding: var(--space-sm);
-      text-align: center;
-    }
   }
 </style>

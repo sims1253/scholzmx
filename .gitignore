@@ -89,5 +89,5 @@ plans.db
 **/*.quarto_ipynb
 .Rproj.user/
 
-src/content/blog**/*.svg
-src/content/blog**/*.png
+src/content/blog/**/*.svg
+src/content/blog/**/*.png
