@@ -142,11 +142,11 @@ export const personalQuotes = [
     author: 'Lars Marcus Johansson-Vik',
   },
   {
-    text: 'I love how housewify you are',
+    text: 'I love how housewify you are.',
     author: 'Memories',
   },
   {
-    text: 'Be a guest wherever you go',
+    text: 'Be a guest wherever you go.',
     author: 'mO2hawk',
   },
   {
