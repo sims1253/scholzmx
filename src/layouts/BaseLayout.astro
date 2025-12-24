@@ -404,7 +404,7 @@ const currentPath = Astro.url.pathname;
             }
           }
           apply(get());
-          btn && btn.addEventListener('click', toggle);
+          if (btn) btn.addEventListener('click', toggle);
         })();
 
         // Copy button functionality for code blocks
