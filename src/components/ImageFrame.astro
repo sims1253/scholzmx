@@ -186,6 +186,7 @@ const responsiveWidths = (() => {
     case 'botanical':
     case 'polaroid':
     case 'gentle-oval':
+    case 'watercolor':
       return [160, 240, 320, 480, 640, 960]; // Portrait frames with desktop high-res support
     default:
       return [320, 480, 640, 800, 1024]; // Content images - removed oversized options
@@ -200,6 +201,7 @@ const defaultSizes = (() => {
     case 'botanical':
     case 'polaroid':
     case 'gentle-oval':
+    case 'watercolor':
       return '(min-width: 1200px) 240px, (min-width: 768px) 200px, 160px'; // Responsive portrait sizes
     default:
       return '(min-width: 768px) 640px, 100vw'; // Prose content width
