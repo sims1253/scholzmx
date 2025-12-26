@@ -187,7 +187,6 @@
     margin: 0;
     padding: 0;
     position: relative;
-    overflow-x: hidden;
   }
 
   /* Typography token switching: serious vs personal contexts (fonts only) */
