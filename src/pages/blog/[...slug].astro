@@ -69,12 +69,7 @@ const getReadingTime = (content: string): string => {
 const readingTime = getReadingTime(post.body || '');
 
 // Helper to map hero image data to NoteCardStack format
-const mapHeroImage = (
-  heroImage: any,
-  scale?: number,
-  posX?: number,
-  posY?: number,
-) => {
+const mapHeroImage = (heroImage: any, scale?: number, posX?: number, posY?: number) => {
   if (typeof heroImage === 'string') {
     return {
       kind: 'url' as const,
@@ -238,7 +233,7 @@ const mapHeroImage = (
                     relatedPost.data.heroImage,
                     relatedPost.data.heroImageScale,
                     relatedPost.data.heroImagePositionX,
-                    relatedPost.data.heroImagePositionY,
+                    relatedPost.data.heroImagePositionY
                   ),
                 }))}
               />
