@@ -395,6 +395,7 @@ const { variant = 'default', className = '', includeQuoteSection = false } = Ast
     color: var(--color-ink-light);
     line-height: 1.5;
     margin-top: var(--space-md);
+    max-width: 300px;
   }
 
   .footer-meta p {
@@ -423,7 +424,9 @@ const { variant = 'default', className = '', includeQuoteSection = false } = Ast
     display: flex;
     justify-content: center;
     gap: var(--space-sm);
-    margin-bottom: var(--space-sm);
+    margin-bottom: var(--space-md);
+    padding-bottom: var(--space-sm);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-lichen) 30%, transparent);
   }
 
   .social-link {

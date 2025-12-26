@@ -280,6 +280,8 @@
     color: var(--color-link-hover);
     text-decoration-color: var(--color-underline-hover);
     text-decoration-thickness: 2px;
+    background-color: color-mix(in srgb, var(--color-walnut) 6%, transparent);
+    border-radius: 2px;
   }
 
   /* Baseline for default links (classless) for clearer affordance */

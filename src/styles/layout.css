@@ -134,8 +134,8 @@
   height: clamp(28px, 6vw, 40px);
   min-width: 40px; /* Reduced minimum for space efficiency */
   min-height: 40px;
-  border: none;
-  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--color-lichen) 50%, transparent);
+  background: color-mix(in srgb, var(--color-surface) 40%, transparent);
   padding: clamp(2px, 0.5vw, 6px); /* Tighter padding */
   border-radius: 50%;
   color: var(--color-walnut);
@@ -198,8 +198,8 @@
 }
 
 .nav-separator {
-  color: var(--color-ink-light);
-  opacity: 0.5;
+  color: var(--color-lichen);
+  opacity: 0.4;
   margin-inline: clamp(0px, 1vw, 4px); /* Minimal margin on mobile */
   font-weight: 300;
   font-size: clamp(0.7rem, 2vw, 1rem); /* Smaller on mobile */
