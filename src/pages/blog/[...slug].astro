@@ -67,6 +67,36 @@ const getReadingTime = (content: string): string => {
 };
 
 const readingTime = getReadingTime(post.body || '');
+
+// Helper to map hero image data to NoteCardStack format
+const mapHeroImage = (
+  heroImage: any,
+  scale?: number,
+  posX?: number,
+  posY?: number,
+) => {
+  if (typeof heroImage === 'string') {
+    return {
+      kind: 'url' as const,
+      src: heroImage,
+      scale: scale || 1,
+      posX: posX || 0,
+      posY: posY || 0,
+    };
+  }
+
+  if (heroImage) {
+    return {
+      kind: 'asset' as const,
+      src: heroImage,
+      scale: scale || 1,
+      posX: posX || 0,
+      posY: posY || 0,
+    };
+  }
+
+  return undefined;
+};
 ---
 
 <BaseLayout
@@ -204,26 +234,12 @@ const readingTime = getReadingTime(post.body || '');
                     : undefined,
                   tags: relatedPost.data.tags ?? [],
                   year: new Date(relatedPost.data.date).getFullYear(),
-                  hero:
-                    typeof relatedPost.data.heroImage === 'string'
-                      ? {
-                          kind: 'url',
-                          src: relatedPost.data.heroImage,
-                          scale: relatedPost.data.heroImageScale || 1,
-                          posX: relatedPost.data.heroImagePositionX || 0,
-                          posY: relatedPost.data.heroImagePositionY || 0,
-                        }
-                      : relatedPost.data.heroImage
-                        ? {
-                            kind: 'asset',
-                            src: relatedPost.data.heroImage,
-                            width: 800,
-                            height: 600,
-                            scale: relatedPost.data.heroImageScale || 1,
-                            posX: relatedPost.data.heroImagePositionX || 0,
-                            posY: relatedPost.data.heroImagePositionY || 0,
-                          }
-                        : undefined,
+                  hero: mapHeroImage(
+                    relatedPost.data.heroImage,
+                    relatedPost.data.heroImageScale,
+                    relatedPost.data.heroImagePositionX,
+                    relatedPost.data.heroImagePositionY,
+                  ),
                 }))}
               />
             </section>

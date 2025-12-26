@@ -253,13 +253,12 @@ const strokeWidth = intensity === 'light' ? '2' : intensity === 'medium' ? '3' :
     z-index: 1;
   }
 
-  /* Top and bottom borders span full width and stay with page content */
+  /* Top and bottom borders span container width */
   .botanical-border.top,
   .botanical-border.bottom {
     position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100vw;
+    left: 0;
+    width: 100%;
   }
 
   /* Side borders use fixed positioning to float at sides */

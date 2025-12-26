@@ -502,7 +502,10 @@ const currentPath = Astro.url.pathname;
               const wrapperRect = (wrapper as HTMLElement).getBoundingClientRect();
               const gap = 28; // matches --margin-note-gap
               const leftPosition = contentRect.right - wrapperRect.left + gap;
-              this.notesContainer.style.left = leftPosition + 'px';
+              // Ensure notes don't overflow right edge of wrapper
+              const notesWidth = this.notesContainer.offsetWidth || 240;
+              const maxLeft = wrapperRect.width - notesWidth - gap;
+              this.notesContainer.style.left = Math.min(leftPosition, maxLeft) + 'px';
             }
             positionNotes() {
               const wrapper = document.querySelector('.main-content');
