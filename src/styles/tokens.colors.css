@@ -8,7 +8,7 @@
   /* Inks */
   --color-ink-dark: #2a2318; /* Primary text ink (warm) */
   --color-ink-medium: #3a3022; /* Secondary text / rules */
-  --color-ink-light: #6b6252; /* Tertiary text (legacy muted) */
+  --color-ink-light: #5a5244; /* Tertiary text - darkened for WCAG AA (4.5:1) */
   --color-ink-plate: #1f1912; /* Deep plate for initials/rare contrast */
 
   /* Warms */
@@ -47,6 +47,7 @@
   --rule-ink: color-mix(in srgb, var(--color-ink-dark) 18%, var(--color-parchment));
   --wash-sage: color-mix(in srgb, var(--color-sage) 6%, var(--color-parchment-light));
   --btn-walnut-hover: color-mix(in srgb, var(--color-walnut) 88%, black);
+  --color-highlight: color-mix(in srgb, var(--color-tansy) 15%, transparent);
 }
 
 /* Torchlight Night Theme — same vibe, dusk parchment, ember inks, moss shadows */
@@ -90,6 +91,7 @@
 
     --rule-ink: color-mix(in srgb, var(--color-ink-light) 20%, var(--color-parchment));
     --wash-sage: color-mix(in srgb, var(--color-sage) 10%, var(--color-parchment-light));
+    --color-highlight: color-mix(in srgb, var(--color-tansy) 20%, transparent);
   }
 }
 
@@ -130,7 +132,4 @@
 
   --color-background: var(--color-parchment);
   --color-surface: var(--color-parchment-light);
-
-  --rule-ink: color-mix(in srgb, var(--color-ink-light) 20%, var(--color-parchment));
-  --wash-sage: color-mix(in srgb, var(--color-sage) 10%, var(--color-parchment-light));
 }

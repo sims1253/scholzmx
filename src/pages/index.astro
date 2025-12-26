@@ -188,10 +188,6 @@ const formatDate = (date: Date) => date.toISOString().split('T')[0];
     .manuscript-text {
       text-align: center;
     }
-
-    .portrait-frame {
-      order: -1;
-    }
   }
 
   @media (max-width: 640px) {
@@ -272,6 +268,9 @@ const formatDate = (date: Date) => date.toISOString().split('T')[0];
       border-top: 2px solid color-mix(in srgb, var(--color-lichen) 60%, transparent);
       padding: var(--space-sm);
       text-align: center;
+      transition:
+        position 0.3s ease,
+        border 0.3s ease;
     }
   }
 </style>

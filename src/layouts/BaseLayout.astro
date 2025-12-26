@@ -264,31 +264,33 @@ const currentPath = Astro.url.pathname;
             <div class="nav-links">
               <a
                 href="/blog"
-                class={currentPath.startsWith('/blog') ? 'nav-link active' : 'nav-link'}>Blog</a
+                class={currentPath.startsWith('/blog') ? 'nav-link active' : 'nav-link'}
+                aria-current={currentPath.startsWith('/blog') ? 'page' : undefined}>Blog</a
               >
               <span class="nav-separator">·</span>
               <a
                 href="/projects"
                 class={currentPath.startsWith('/projects') ? 'nav-link active' : 'nav-link'}
-                >Projects</a
+                aria-current={currentPath.startsWith('/projects') ? 'page' : undefined}>Projects</a
               >
               <span class="nav-separator">·</span>
               <a
                 href="/recipes"
                 class={currentPath.startsWith('/recipes') ? 'nav-link active' : 'nav-link'}
-                >Recipes</a
+                aria-current={currentPath.startsWith('/recipes') ? 'page' : undefined}>Recipes</a
               >
               <span class="nav-separator">·</span>
               <a
                 href="/research"
                 class={currentPath.startsWith('/research') ? 'nav-link active' : 'nav-link'}
-                >Research</a
+                aria-current={currentPath.startsWith('/research') ? 'page' : undefined}>Research</a
               >
               <button
                 id="nav-theme-toggle"
                 class="torch-toggle"
-                aria-label="Toggle theme"
-                title="Toggle day/night"
+                aria-label="Toggle theme between light and dark mode"
+                title="Toggle light/dark mode"
+                aria-pressed="false"
                 type="button"
               >
                 <svg
@@ -355,6 +357,36 @@ const currentPath = Astro.url.pathname;
             background-color: var(--shiki-dark-bg) !important;
           }
         }
+
+        /* Torch toggle size - WCAG 44x44px minimum touch target */
+        .torch-toggle {
+          width: 44px;
+          height: 44px;
+          min-width: 44px;
+          min-height: 44px;
+        }
+
+        /* Mobile navigation spacing improvements */
+        @media (max-width: 640px) {
+          .nav-links {
+            gap: var(--space-sm);
+          }
+
+          .nav-link {
+            padding: var(--space-xs) var(--space-sm);
+          }
+        }
+
+        @media (max-width: 360px) {
+          .nav-links {
+            flex-wrap: wrap;
+            justify-content: center;
+          }
+
+          .nav-separator {
+            display: none;
+          }
+        }
       </style>
 
       <script>
@@ -373,6 +405,12 @@ const currentPath = Astro.url.pathname;
             ) as HTMLMetaElement | null;
             if (meta) {
               meta.content = v === 'dark' ? '#0f100e' : '#f9f6f2';
+            }
+            const themeBtn = document.getElementById(
+              'nav-theme-toggle'
+            ) as HTMLButtonElement | null;
+            if (themeBtn) {
+              themeBtn.setAttribute('aria-pressed', v === 'dark' ? 'true' : 'false');
             }
           }
           function get() {

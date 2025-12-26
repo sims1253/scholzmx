@@ -154,6 +154,10 @@
     scroll-behavior: smooth;
   }
 
+  ::selection {
+    background-color: var(--color-highlight);
+  }
+
   /* Respect user motion preferences */
   @media (prefers-reduced-motion: reduce) {
     *,
@@ -233,6 +237,7 @@
     font-feature-settings:
       'liga' 1,
       'kern' 1;
+    font-optical-sizing: auto;
     text-rendering: optimizelegibility;
   }
 
@@ -265,6 +270,7 @@
     text-decoration-color: var(--color-underline);
     text-underline-offset: 2px;
     text-decoration-thickness: 1.6px;
+    text-decoration-skip-ink: auto;
   }
 
   a:hover {
@@ -277,6 +283,17 @@
   a:not([class]) {
     text-decoration-thickness: max(0.08em, 1px);
     text-underline-offset: 0.15em;
+    text-decoration-skip-ink: auto;
+  }
+
+  /* External link indicator */
+  a[href^="http://"]:not([href*="scholzmx.com"]):not([href*="localhost"])::after,
+  a[href^="https://"]:not([href*="scholzmx.com"]):not([href*="localhost"])::after
+  {
+    content: ' ↗';
+    font-size: 0.8em;
+    opacity: 0.7;
+    vertical-align: super;
   }
 
   a:focus {
@@ -397,7 +414,7 @@
 
   /* Utility classes */
   .logo-text {
-    letter-spacing: 0.03em;
+    letter-spacing: 0.08em;
     font-variant-caps: small-caps;
   }
 
