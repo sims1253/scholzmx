@@ -195,7 +195,7 @@ const formatDate = (date: Date) => date.toISOString().split('T')[0];
   @media (min-width: 1100px) {
     .prose-wrapper {
       display: grid;
-      grid-template-columns: var(--measure-prose) 220px;
+      grid-template-columns: var(--measure-prose) var(--latest-scribble-width);
       gap: var(--space-lg);
       max-width: none;
       width: auto;
@@ -255,6 +255,8 @@ const formatDate = (date: Date) => date.toISOString().split('T')[0];
 
   /* Latest Scribble - card styling */
   .latest-scribble {
+    --latest-scribble-width: 220px;
+
     display: flex;
     flex-direction: column;
     gap: var(--space-xxs);
@@ -272,7 +274,7 @@ const formatDate = (date: Date) => date.toISOString().split('T')[0];
   @media (min-width: 1100px) {
     .latest-scribble {
       margin-bottom: 0;
-      width: 220px;
+      width: var(--latest-scribble-width);
     }
   }
 
