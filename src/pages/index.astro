@@ -75,7 +75,7 @@ const formatDate = (date: Date) => date.toISOString().split('T')[0];
       />
     </div>
 
-    <div class="about-preview">
+    <div class="about-preview breakout">
       <div class="prose-wrapper">
         <div class="prose content">
           <p class="prose">
@@ -178,7 +178,6 @@ const formatDate = (date: Date) => date.toISOString().split('T')[0];
   /* On wide screens, break out of the layout-prose grid to allow margin note */
   @media (min-width: 1100px) {
     .about-preview {
-      grid-column: 1 / -1; /* Break out of parent layout-prose grid */
       display: flex;
       justify-content: center;
     }
@@ -295,6 +294,12 @@ const formatDate = (date: Date) => date.toISOString().split('T')[0];
 
   .scribble-title:hover {
     color: var(--color-moss);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scribble-title {
+      transition: none;
+    }
   }
 
   .scribble-date {
