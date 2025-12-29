@@ -12,6 +12,9 @@ function getThemePreference(): string | null {
 function setThemePreference(value: string | null): void {
   try {
     if (value) {
+      if (value !== 'dark' && value !== 'light') {
+        return;
+      }
       localStorage.setItem(KEY, value);
     } else {
       localStorage.removeItem(KEY);
@@ -26,7 +29,11 @@ function getSystemPreference(): 'dark' | 'light' {
 }
 
 function getEffectiveTheme(): 'dark' | 'light' {
-  return (getThemePreference() || getSystemPreference()) as 'dark' | 'light';
+  const pref = getThemePreference();
+  if (pref === 'dark' || pref === 'light') {
+    return pref;
+  }
+  return getSystemPreference();
 }
 
 function applyTheme(theme: string): void {
@@ -77,4 +84,8 @@ export function initThemeToggle(): void {
 }
 
 // Auto-initialize
-initThemeToggle();
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initThemeToggle);
+} else {
+  initThemeToggle();
+}
