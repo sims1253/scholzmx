@@ -41,9 +41,9 @@ const tags = Array.from(new Set(recipes.flatMap((r) => r.data.tags ?? []))).sort
                 ? {
                     kind: 'asset',
                     src: r.data.heroImage,
-                    scale: (r.data as any).heroImageScale || 1,
-                    posX: (r.data as any).heroImagePositionX || 0,
-                    posY: (r.data as any).heroImagePositionY || 0,
+                    scale: r.data.heroImageScale ?? 1,
+                    posX: r.data.heroImagePositionX ?? 0,
+                    posY: r.data.heroImagePositionY ?? 0,
                   }
                 : undefined,
             }))}

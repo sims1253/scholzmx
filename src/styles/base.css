@@ -238,6 +238,7 @@
     line-height: 1.25;
     font-family: var(--font-heading);
     font-weight: var(--heading-weight-strong);
+    font-optical-sizing: auto;
     font-feature-settings:
       'liga' 1,
       'kern' 1;
@@ -296,6 +297,34 @@
     background: color-mix(in srgb, var(--color-parchment-light) 60%, transparent);
     border-radius: 3px;
     outline: none;
+  }
+
+  /* External link indicator - adds ↗ arrow after off-site links */
+  a[href^='http']:not([href*='scholzmx.com']):not([href*='localhost']):not(
+      .no-external-indicator
+    )::after {
+    content: ' ↗';
+    font-size: 0.75em;
+    vertical-align: super;
+    opacity: 0.7;
+    margin-left: 0.1em;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  /* Ensure external indicator doesn't get underline styling */
+  a[href^='http']:not([href*='scholzmx.com']):not([href*='localhost']):not(
+      .no-external-indicator
+    ):hover::after {
+    text-decoration: none;
+  }
+
+  /* Hide external indicator for image links and nav elements */
+  a[href^='http'].nav-link::after,
+  a[href^='http'].site-logo::after,
+  a[href^='http'] img + ::after,
+  .nav-links a[href^='http']::after {
+    display: none;
   }
 
   /* Lists with logical properties */
