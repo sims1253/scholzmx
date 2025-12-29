@@ -319,10 +319,9 @@
     text-decoration: none;
   }
 
-  /* Hide external indicator for image links and nav elements */
+  /* Hide external indicator for nav elements */
   a[href^='http'].nav-link::after,
   a[href^='http'].site-logo::after,
-  a[href^='http'] img + ::after,
   .nav-links a[href^='http']::after {
     display: none;
   }

@@ -75,9 +75,9 @@ const mapHeroImage = (heroImage: HeroImageInput, scale?: number, posX?: number, 
     return {
       kind: 'url' as const,
       src: heroImage,
-      scale: scale || 1,
-      posX: posX || 0,
-      posY: posY || 0,
+      scale: scale ?? 1,
+      posX: posX ?? 0,
+      posY: posY ?? 0,
     };
   }
 
@@ -85,9 +85,9 @@ const mapHeroImage = (heroImage: HeroImageInput, scale?: number, posX?: number, 
     return {
       kind: 'asset' as const,
       src: heroImage,
-      scale: scale || 1,
-      posX: posX || 0,
-      posY: posY || 0,
+      scale: scale ?? 1,
+      posX: posX ?? 0,
+      posY: posY ?? 0,
     };
   }
 
