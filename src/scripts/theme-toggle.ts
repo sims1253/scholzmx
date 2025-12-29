@@ -2,14 +2,22 @@
 const KEY = 'theme-preference';
 
 function getThemePreference(): string | null {
-  return localStorage.getItem(KEY);
+  try {
+    return localStorage.getItem(KEY);
+  } catch {
+    return null;
+  }
 }
 
 function setThemePreference(value: string | null): void {
-  if (value) {
-    localStorage.setItem(KEY, value);
-  } else {
-    localStorage.removeItem(KEY);
+  try {
+    if (value) {
+      localStorage.setItem(KEY, value);
+    } else {
+      localStorage.removeItem(KEY);
+    }
+  } catch {
+    // Ignore storage errors (e.g., private browsing mode)
   }
 }
 
@@ -65,12 +73,9 @@ function toggleTheme(): void {
 export function initThemeToggle(): void {
   const btn = document.getElementById('nav-theme-toggle');
 
-  // Apply saved preference
-  applyTheme(getThemePreference());
+  applyTheme(getEffectiveTheme());
 
-  // Set initial aria-pressed
   if (btn) {
-    btn.setAttribute('aria-pressed', getEffectiveTheme() === 'dark' ? 'true' : 'false');
     btn.addEventListener('click', toggleTheme);
   }
 }

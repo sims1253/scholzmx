@@ -77,26 +77,6 @@ const formatDate = (date: Date) => date.toISOString().split('T')[0];
 
     <div class="about-preview">
       <div class="prose-wrapper">
-        {
-          newestPost && (
-            <aside class="latest-scribble">
-              <span class="scribble-label">Newest post</span>
-              <a
-                href={
-                  newestPost.type === 'blog'
-                    ? `/blog/${newestPost.post.id}`
-                    : `/recipes/${newestPost.post.id}`
-                }
-                class="scribble-title"
-              >
-                {newestPost.post.data.title}
-              </a>
-              <time class="scribble-date" datetime={newestPost.date.toISOString()}>
-                {formatDate(newestPost.date)}
-              </time>
-            </aside>
-          )
-        }
         <div class="prose content">
           <p class="prose">
             <DropCap letter="I" variant="personal" />'m Maximilian. My best friend once painted me a
@@ -121,6 +101,26 @@ const formatDate = (date: Date) => date.toISOString().split('T')[0];
             them :)
           </p>
         </div>
+        {
+          newestPost && (
+            <aside class="latest-scribble">
+              <span class="scribble-label">Newest post</span>
+              <a
+                href={
+                  newestPost.type === 'blog'
+                    ? `/blog/${newestPost.post.id}`
+                    : `/recipes/${newestPost.post.id}`
+                }
+                class="scribble-title"
+              >
+                {newestPost.post.data.title}
+              </a>
+              <time class="scribble-date" datetime={newestPost.date.toISOString()}>
+                {formatDate(newestPost.date)}
+              </time>
+            </aside>
+          )
+        }
       </div>
     </div>
   </div>
