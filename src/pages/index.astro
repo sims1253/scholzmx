@@ -194,6 +194,8 @@ const formatDate = (date: Date) => date.toISOString().split('T')[0];
   /* On wide screens (>1100px), use grid to position margin note beside content */
   @media (min-width: 1100px) {
     .prose-wrapper {
+      --latest-scribble-width: 220px;
+
       display: grid;
       grid-template-columns: var(--measure-prose) var(--latest-scribble-width);
       gap: var(--space-lg);
@@ -255,8 +257,6 @@ const formatDate = (date: Date) => date.toISOString().split('T')[0];
 
   /* Latest Scribble - card styling */
   .latest-scribble {
-    --latest-scribble-width: 220px;
-
     display: flex;
     flex-direction: column;
     gap: var(--space-xxs);
