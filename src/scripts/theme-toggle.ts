@@ -25,19 +25,15 @@ function getSystemPreference(): 'dark' | 'light' {
   return matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
-function getEffectiveTheme(): string {
-  return getThemePreference() || getSystemPreference();
+function getEffectiveTheme(): 'dark' | 'light' {
+  return (getThemePreference() || getSystemPreference()) as 'dark' | 'light';
 }
 
-function applyTheme(theme: string | null): void {
+function applyTheme(theme: string): void {
   const root = document.documentElement;
   const btn = document.getElementById('nav-theme-toggle');
 
-  if (!theme) {
-    root.removeAttribute('data-theme');
-  } else {
-    root.setAttribute('data-theme', theme);
-  }
+  root.setAttribute('data-theme', theme);
 
   // Update theme-color meta tag
   const meta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;
