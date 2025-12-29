@@ -503,7 +503,7 @@
     display: flex;
     flex-wrap: wrap;
     margin-top: var(--space-xs);
-    gap: var(--space-xxs);
+    gap: var(--space-xs) var(--space-xxs);
   }
   .sc-chip + .sc-chip {
     margin-left: var(--space-sm);
