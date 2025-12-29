@@ -20,7 +20,7 @@
   --heading-weight-medium: var(--font-weight-medium);
 
   /* Typography scale (rem units scale with user font preferences) */
-  --text-xxs: 0.65rem;
+  --text-xxs: 0.75rem; /* Was 0.65rem - increased to 12px minimum for accessibility */
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
   --text-md: 1rem;
@@ -36,5 +36,5 @@
   --dropcap-color-foreground: var(--color-ink-dark);
 
   /* Typography spacing */
-  --spacing-line-height: 1.45;
+  --spacing-line-height: 1.6; /* Was 1.45 - increased for better readability */
 }

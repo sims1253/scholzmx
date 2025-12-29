@@ -1,4 +1,4 @@
-import type { Root } from 'hast';
+import type { Element, Root } from 'hast';
 import type { Plugin } from 'unified';
 import { visit } from 'unist-util-visit';
 import path from 'node:path';
@@ -100,7 +100,7 @@ export const rehypeImageAstro: Plugin<[Options?], Root> = (options = {}) => {
         // Build new element representing <Image ... />
         // We emit as raw HTML via hast element with tagName 'Image' and keep attributes;
         // Astro will resolve <Image /> if the page/component imports { Image } from 'astro:assets'.
-        const newNode = {
+        const newNode: Element = {
           type: 'element',
           tagName: 'Image',
           properties: {
@@ -108,14 +108,13 @@ export const rehypeImageAstro: Plugin<[Options?], Root> = (options = {}) => {
             alt: alt || '',
             sizes,
             formats: '{["avif", "webp"]}',
-            widths: '{[320, 480, 640, 800, 1024]}', // Mobile-first responsive widths
+            widths: '{[320, 480, 640, 800, 1024]}',
             loading: eager ? 'eager' : 'lazy',
             decoding: 'async',
             ...(eager ? { fetchpriority: 'high' } : {}),
-            // Width/height optional; allow intrinsic sizing via CSS
           },
           children: [],
-        } as any;
+        };
 
         parent.children[index] = newNode;
       }

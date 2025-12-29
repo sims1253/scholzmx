@@ -1,4 +1,20 @@
 @layer components {
+  /* Standardized shadow scale for consistent elevation */
+  :root {
+    --shadow-sm:
+      0 1px 2px color-mix(in srgb, var(--color-walnut) 4%, transparent),
+      0 1px 3px color-mix(in srgb, var(--color-sage) 8%, transparent);
+    --shadow-md:
+      0 4px 12px color-mix(in srgb, var(--color-walnut) 6%, transparent),
+      0 2px 4px color-mix(in srgb, var(--color-sage) 12%, transparent);
+    --shadow-lg:
+      0 10px 22px color-mix(in srgb, var(--color-walnut) 6%, transparent),
+      0 4px 8px color-mix(in srgb, var(--color-sage) 18%, transparent);
+    --shadow-xl:
+      0 16px 32px color-mix(in srgb, var(--color-walnut) 8%, transparent),
+      0 6px 12px color-mix(in srgb, var(--color-sage) 20%, transparent);
+  }
+
   /* TWEAK: Core card presentation container */
   .sc-card {
     position: relative;
@@ -27,6 +43,18 @@
     overflow: hidden; /* ensure overlays clip to rounded corners */
     contain: layout paint; /* prevent CLS from oversized wash pseudo-elements */
   }
+
+  /* Subtle hover lift - reduced from original dramatic transforms */
+  .sc-link:hover .sc-card {
+    transform: translate(var(--offx, 0), calc(var(--offy, 0) - 2px));
+    transition: transform 0.15s ease-out;
+  }
+
+  .sc-link:hover .sc-face {
+    box-shadow: var(--shadow-lg);
+    transition: box-shadow 0.15s ease-out;
+  }
+
   .sc-content {
     position: relative;
     z-index: 1;
@@ -500,5 +528,21 @@
     margin: 0;
     color: var(--color-ink-light);
     font-size: var(--text-sm);
+  }
+
+  /* Respect reduced motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    .sc-card,
+    .sc-face,
+    .sc-link,
+    .sc-title-link,
+    .sc-chip {
+      transition: none !important;
+    }
+
+    .sc-card:hover,
+    .sc-link:hover .sc-card {
+      transform: translate(var(--offx, 0), var(--offy, 0)) !important;
+    }
   }
 }
