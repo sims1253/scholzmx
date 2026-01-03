@@ -2,6 +2,8 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import HandDrawnDivider from '../../components/HandDrawnDivider.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
 
 export async function getStaticPaths() {
   const notes = await getCollection('notes');
@@ -58,6 +60,8 @@ const getTypeColor = (type: string) => {
 >
   <div class="note-page">
     <div class="note-container">
+      <Breadcrumb items={[{ label: 'Notes', href: '/notes' }, { label: note.data.title }]} />
+
       <article class="note-content">
         <header class="note-header">
           <div class="note-meta">
@@ -96,6 +100,8 @@ const getTypeColor = (type: string) => {
             )
           }
         </header>
+
+        <TableOfContents maxDepth={3} />
 
         <HandDrawnDivider variant="botanical" width="wide" />
 

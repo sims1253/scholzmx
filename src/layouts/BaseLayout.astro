@@ -2,6 +2,8 @@
 import BotanicalBorder from '../components/BotanicalBorder.astro';
 import IllustratedFooter from '../components/IllustratedFooter.astro';
 import BackToTop from '../components/BackToTop.astro';
+import ReadingProgress from '../components/ReadingProgress.astro';
+import FontSizeControl from '../components/FontSizeControl.astro';
 
 // Import CSS files
 import '../styles/layers.css';
@@ -235,6 +237,9 @@ const currentPath = Astro.url.pathname;
     >
 
     <div class="page-wrapper">
+      <!-- Reading Progress Indicator -->
+      <ReadingProgress color="moss" height={3} />
+
       <!-- Organic botanical borders -->
       {
         addBorders && (
@@ -316,6 +321,8 @@ const currentPath = Astro.url.pathname;
                   ></rect>
                 </svg>
               </button>
+
+              <FontSizeControl />
             </div>
           </div>
         </nav>
@@ -363,6 +370,7 @@ const currentPath = Astro.url.pathname;
         import '../scripts/theme-toggle';
         import '../scripts/copy-button';
         import '../scripts/margin-notes';
+        import '../scripts/swipe-navigation';
       </script>
     </div>
   </body>

@@ -57,6 +57,56 @@
       text-decoration-color 150ms ease-out;
   }
 
+  /* Touch feedback system - visual feedback on tap */
+  @media (hover: none) and (pointer: coarse) {
+    .nav-link,
+    .torch-toggle,
+    .copy-button,
+    .site-logo,
+    button,
+    .sc-item,
+    .note-card,
+    .project-item,
+    a[href],
+    input[type='button'],
+    input[type='submit'] {
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Ripple effect on touch */
+    .nav-link:active,
+    .torch-toggle:active,
+    .copy-button:active,
+    .site-logo:active,
+    button:active,
+    .sc-item:active,
+    .note-card:active,
+    .project-item:active {
+      transform: scale(0.97);
+    }
+
+    /* Subtle scale on touch for better feedback */
+    .nav-link,
+    .torch-toggle,
+    .copy-button,
+    button,
+    .sc-item,
+    .note-card,
+    .project-item {
+      transition: transform 0.1s ease-out;
+    }
+
+    /* Enhanced tap area for small buttons */
+    .nav-link,
+    .torch-toggle,
+    .copy-button,
+    button {
+      min-height: 44px;
+      min-width: 44px;
+    }
+  }
+
   .nav-link:hover,
   .torch-toggle:hover,
   .copy-button:hover,
@@ -150,6 +200,63 @@
     }
   }
 
+  /* Touch device optimizations */
+  @media (hover: none) and (pointer: coarse) {
+    /* Remove hover effects on touch devices to prevent stuck states */
+    .nav-link:hover,
+    .torch-toggle:hover,
+    .copy-button:hover,
+    .site-logo:hover,
+    a:not(.nav-link):not(.site-logo):hover,
+    button:not(.torch-toggle):not(.copy-button):hover,
+    details.code-collapse summary:hover {
+      background-color: transparent;
+      color: inherit;
+    }
+
+    /* Only apply active state for touch feedback */
+    .nav-link:active,
+    .torch-toggle:active,
+    .copy-button:active,
+    .site-logo:active,
+    a:not(.nav-link):not(.site-logo):active,
+    button:not(.torch-toggle):not(.copy-button):active,
+    details.code-collapse summary:active {
+      background-color: var(--color-walnut);
+      color: var(--color-parchment-light);
+    }
+
+    /* Larger tap targets for all interactive elements */
+    .nav-link,
+    button,
+    a,
+    input[type='button'],
+    input[type='submit'] {
+      min-height: 44px;
+      min-width: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Cards have touch feedback */
+    .sc-item,
+    .note-card,
+    .project-item,
+    .manuscript-page,
+    .handcrafted-card {
+      transition: transform 0.1s ease-out;
+    }
+
+    .sc-item:active,
+    .note-card:active,
+    .project-item:active,
+    .manuscript-page:active,
+    .handcrafted-card:active {
+      transform: scale(0.98);
+    }
+  }
+
   /* Global base styles */
   *,
   *::before,
@@ -159,6 +266,13 @@
 
   html {
     font-size: clamp(18px, 2.5vw, 21px); /* Fluid base font size */
+    line-height: var(--spacing-line-height);
+    scroll-behavior: smooth;
+  }
+
+  /* Font size scaling from FontSizeControl component */
+  html {
+    font-size: clamp(18px, 2.5vw, 21px);
     line-height: var(--spacing-line-height);
     scroll-behavior: smooth;
   }

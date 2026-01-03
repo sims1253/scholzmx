@@ -130,13 +130,13 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: clamp(28px, 6vw, 40px); /* More compact on mobile */
-  height: clamp(28px, 6vw, 40px);
-  min-width: 40px; /* Reduced minimum for space efficiency */
-  min-height: 40px;
+  width: clamp(44px, 10vw, 48px);
+  height: clamp(44px, 10vw, 48px);
+  min-width: 44px;
+  min-height: 44px;
   border: 1px solid color-mix(in srgb, var(--color-lichen) 50%, transparent);
   background: color-mix(in srgb, var(--color-surface) 40%, transparent);
-  padding: clamp(2px, 0.5vw, 6px); /* Tighter padding */
+  padding: clamp(4px, 1vw, 8px);
   border-radius: 50%;
   color: var(--color-walnut);
 }
@@ -160,15 +160,17 @@
 .nav-link {
   text-decoration: none;
   color: var(--color-ink-light);
-  padding-block: clamp(4px, 1vw, 8px); /* More compact mobile padding */
-  padding-inline: clamp(6px, 1.5vw, 12px);
+  padding-block: clamp(6px, 1.5vw, 10px);
+  padding-inline: clamp(8px, 2vw, 16px);
   font-weight: 400;
   letter-spacing: 0.01em;
   position: relative;
   border-radius: 4px;
-  min-height: clamp(36px, 8vw, 44px); /* Reduced min-height on mobile */
-  display: flex;
+  min-height: clamp(44px, 10vw, 48px);
+  min-width: 44px;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
 }
 
 .nav-link:focus {
@@ -200,9 +202,12 @@
 .nav-separator {
   color: var(--color-lichen);
   opacity: 0.4;
-  margin-inline: clamp(0px, 1vw, 4px); /* Minimal margin on mobile */
+  margin-inline: clamp(2px, 0.5vw, 6px);
   font-weight: 300;
-  font-size: clamp(0.7rem, 2vw, 1rem); /* Smaller on mobile */
+  font-size: clamp(0.7rem, 2vw, 1rem);
+  display: inline-flex;
+  align-items: center;
+  padding: 0 2px;
 }
 
 /* Page layout structure */

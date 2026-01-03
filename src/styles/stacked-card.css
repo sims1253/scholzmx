@@ -457,6 +457,21 @@
     display: block;
     color: inherit;
     text-decoration: none;
+    min-height: 44px;
+  }
+
+  @media (hover: none) and (pointer: coarse) {
+    .sc-link {
+      min-height: 48px;
+    }
+
+    .sc-link:active .sc-card {
+      transform: translate(var(--offx, 0), calc(var(--offy, 0) + 1px));
+    }
+
+    .sc-link:active .sc-face {
+      box-shadow: var(--shadow-sm);
+    }
   }
   .sc-title {
     margin: 0 0 var(--space-xxs);

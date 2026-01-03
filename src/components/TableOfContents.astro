@@ -1,0 +1,388 @@
+---
+export interface Props {
+  maxDepth?: number;
+  className?: string;
+}
+
+const { maxDepth = 3, className = '' } = Astro.props;
+---
+
+<div class={`toc-container ${className}`} data-max-depth={maxDepth}>
+  <button
+    class="toc-toggle"
+    aria-expanded="false"
+    aria-controls="toc-content"
+    aria-label="Toggle table of contents"
+    type="button"
+  >
+    <svg class="toc-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+      <path
+        d="M3 5h18M3 12h18M3 19h18"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"></path>
+    </svg>
+    <span class="toc-label">Contents</span>
+    <svg class="toc-chevron" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+      <path
+        d="M6 9l6 6 6-6"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"></path>
+    </svg>
+  </button>
+
+  <div id="toc-content" class="toc-content">
+    <nav aria-label="Table of contents">
+      <ol class="toc-list"></ol>
+    </nav>
+  </div>
+</div>
+<style>
+  .toc-container {
+    position: sticky;
+    top: calc(var(--space-md) + 44px);
+    z-index: 100;
+  }
+
+  .toc-toggle {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-sm);
+    background: color-mix(in srgb, var(--color-surface) 60%, transparent);
+    border: 1px solid var(--color-lichen);
+    border-radius: var(--border-radius);
+    color: var(--color-walnut);
+    font-family: var(--font-heading);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .toc-toggle:hover {
+    background: color-mix(in srgb, var(--color-walnut) 8%, transparent);
+    border-color: var(--color-sage);
+  }
+
+  .toc-toggle:focus {
+    outline: 2px solid var(--color-tansy);
+    outline-offset: 2px;
+  }
+
+  .toc-icon {
+    flex-shrink: 0;
+  }
+
+  .toc-chevron {
+    flex-shrink: 0;
+    transition: transform var(--transition-fast);
+  }
+
+  .toc-toggle[aria-expanded='true'] .toc-chevron {
+    transform: rotate(180deg);
+  }
+
+  .toc-label {
+    flex: 1;
+    text-align: center;
+  }
+
+  .toc-content {
+    background: var(--color-surface);
+    border: 1px solid var(--color-lichen);
+    border-radius: var(--border-radius);
+    margin-top: var(--space-sm);
+    max-height: 0;
+    overflow: hidden;
+    transition:
+      max-height var(--transition-medium),
+      opacity var(--transition-medium),
+      padding var(--transition-medium);
+    opacity: 0;
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--color-walnut) 6%, transparent);
+  }
+
+  .toc-content[aria-expanded='true'] {
+    max-height: 60vh;
+    overflow-y: auto;
+    opacity: 1;
+    padding: var(--space-md);
+  }
+
+  .toc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .toc-item {
+    margin-bottom: var(--space-xxs);
+  }
+
+  .toc-link {
+    display: block;
+    color: var(--color-walnut);
+    text-decoration: none;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: 4px;
+    font-size: var(--text-sm);
+    line-height: 1.4;
+    transition:
+      background-color var(--transition-fast),
+      color var(--transition-fast),
+      transform var(--transition-fast);
+    border-left: 2px solid transparent;
+  }
+
+  .toc-link:hover {
+    background: color-mix(in srgb, var(--color-sage) 15%, transparent);
+    border-left-color: var(--color-sage);
+    transform: translateX(2px);
+  }
+
+  .toc-link.active {
+    background: color-mix(in srgb, var(--color-moss) 20%, transparent);
+    border-left-color: var(--color-moss);
+    font-weight: 500;
+  }
+
+  .toc-link:focus {
+    outline: 2px solid var(--color-tansy);
+    outline-offset: 2px;
+    background: color-mix(in srgb, var(--color-tansy) 10%, transparent);
+  }
+
+  .toc-h3 {
+    margin-left: var(--space-lg);
+    font-size: var(--text-xs);
+  }
+
+  .toc-h4 {
+    margin-left: var(--space-lg);
+    margin-top: var(--space-xxs);
+    font-size: var(--text-xs);
+  }
+
+  /* Hand-drawn vine decoration */
+  .toc-list::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--space-sm);
+    width: 1px;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      color-mix(in srgb, var(--color-sage) 40%, transparent) 10%,
+      color-mix(in srgb, var(--color-sage) 40%, transparent) 90%,
+      transparent 100%
+    );
+  }
+
+  /* Desktop: Sidebar position on left */
+  @media (min-width: 1400px) {
+    .toc-container {
+      position: fixed;
+      left: calc(50% - var(--measure-prose-serious) / 2 - 280px);
+      top: calc(var(--space-lg) + var(--space-sm) + 16px);
+      width: 240px;
+    }
+
+    .toc-content {
+      max-height: 70vh;
+    }
+  }
+
+  /* Mobile: Keep in sidebar position, not bottom sheet */
+  @media (max-width: 1399px) {
+    .toc-container {
+      position: static;
+      margin-bottom: var(--space-md);
+    }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .toc-content {
+      transition: none;
+    }
+
+    .toc-chevron {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  interface Heading {
+    level: number;
+    text: string;
+    id: string;
+  }
+
+  function initTableOfContents() {
+    const tocContainer = document.querySelector('.toc-container') as HTMLElement;
+    const proseContent = document.querySelector('.prose') as HTMLElement;
+    const tocToggle = document.querySelector('.toc-toggle') as HTMLButtonElement;
+    const tocContent = document.querySelector('.toc-content') as HTMLElement;
+    const tocList = document.querySelector('.toc-list') as HTMLOListElement;
+
+    if (!tocContainer || !proseContent || !tocToggle || !tocContent || !tocList) return;
+
+    // Get max depth from data attribute
+    const maxDepth = parseInt(tocContainer.dataset.maxDepth || '3', 10);
+
+    // Extract headings from prose content
+    const headings = Array.from(
+      proseContent.querySelectorAll('h2, h3, h4')
+    ) as HTMLHeadingElement[];
+
+    if (headings.length < 2) {
+      // Not enough headings to warrant a TOC
+      return;
+    }
+
+    // Filter headings by max depth
+    const filteredHeadings = headings.filter((h) => parseInt(h.tagName[1]) <= maxDepth);
+
+    // Generate TOC structure
+    const headingData: Heading[] = filteredHeadings.map((h) => ({
+      level: parseInt(h.tagName[1]),
+      text: h.textContent || '',
+      id: h.id || '',
+    }));
+
+    // Create TOC HTML
+    tocList.innerHTML = headingData
+      .map(
+        (h) => `
+        <li class="toc-item">
+          <a href="#${h.id}" class="toc-link toc-h${h.level}" data-target="${h.id}">
+            ${h.text}
+          </a>
+        </li>
+      `
+      )
+      .join('');
+
+    // Ensure headings have IDs for navigation
+    headings.forEach((h, i) => {
+      if (!h.id) {
+        h.id = `heading-${i}`;
+        // Update TOC link
+        const link = tocList.querySelector(`[data-target="heading-${i}"]`);
+        if (link) {
+          link.setAttribute('href', `#heading-${i}`);
+        }
+      }
+    });
+
+    // Toggle functionality
+    let isExpanded = false;
+
+    function toggle() {
+      isExpanded = !isExpanded;
+      tocToggle.setAttribute('aria-expanded', String(isExpanded));
+      tocContent.setAttribute('aria-expanded', String(isExpanded));
+    }
+
+    tocToggle.addEventListener('click', toggle);
+
+    // Smooth scroll to section
+    tocList.addEventListener('click', (e) => {
+      const link = (e.target as HTMLElement).closest('.toc-link') as HTMLAnchorElement;
+      if (!link) return;
+
+      e.preventDefault();
+      const targetId = link.getAttribute('data-target');
+      const target = document.getElementById(targetId!) as HTMLElement;
+      if (target) {
+        const offset = 80; // Account for nav
+        const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - offset;
+        window.scrollTo({
+          top: targetPosition,
+          behavior: 'smooth',
+        });
+      }
+
+      // Close TOC on mobile after selection
+      if (window.innerWidth < 768 && isExpanded) {
+        toggle();
+      }
+    });
+
+    // Highlight active section while scrolling
+    let ticking = false;
+
+    function updateActiveSection() {
+      if (ticking) return;
+      ticking = true;
+
+      requestAnimationFrame(() => {
+        const scrollPosition = window.pageYOffset + 120; // Offset for nav + spacing
+        let activeHeading: HTMLAnchorElement | null = null;
+
+        headingData.forEach((h) => {
+          const heading = document.getElementById(h.id) as HTMLElement;
+          if (!heading) return;
+
+          const headingPosition = heading.getBoundingClientRect().top + window.pageYOffset;
+
+          if (headingPosition <= scrollPosition) {
+            activeHeading = tocList.querySelector(`[data-target="${h.id}"]`);
+          }
+        });
+
+        // Remove active class from all links
+        tocList.querySelectorAll('.toc-link.active').forEach((link) => {
+          link.classList.remove('active');
+        });
+
+        // Add active class to current link
+        if (activeHeading) {
+          (activeHeading as HTMLElement).classList.add('active');
+        }
+
+        ticking = false;
+      });
+    }
+
+    // Passive scroll listener for performance
+    window.addEventListener('scroll', updateActiveSection, { passive: true });
+
+    // Initial check
+    updateActiveSection();
+
+    // Close TOC when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!tocToggle.contains(e.target as Node) && !tocContent.contains(e.target as Node)) {
+        if (isExpanded) {
+          toggle();
+        }
+      }
+    });
+
+    // Handle keyboard
+    tocToggle.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggle();
+      }
+    });
+  }
+
+  // Initialize after DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTableOfContents);
+  } else {
+    initTableOfContents();
+  }
+</script>

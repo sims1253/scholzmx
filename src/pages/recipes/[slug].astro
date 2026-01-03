@@ -4,6 +4,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import DropCap from '../../components/DropCap.astro';
 import ImageFrame from '../../components/ImageFrame.astro';
 import FaintLineDivider from '../../components/FaintLineDivider.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
 
 /* Note: Content markdown cannot render Astro components by default.
    To allow components inside markdown, pass them via the 'components' prop on <Content />. */
@@ -32,6 +34,8 @@ const { Content } = await render(recipe);
   leading="relaxed"
 >
   <div class="recipe-post">
+    <Breadcrumb items={[{ label: 'Kitchen', href: '/recipes' }, { label: recipe.data.title }]} />
+
     <article class="recipe-content" itemscope itemtype="https://schema.org/Recipe">
       {
         recipe.data.heroImage && (
@@ -88,6 +92,8 @@ const { Content } = await render(recipe);
           {recipe.data.description}
         </p>
       </header>
+
+      <TableOfContents maxDepth={3} />
 
       <FaintLineDivider width="wide" />
 

@@ -4,6 +4,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import FaintLineDivider from '../../components/FaintLineDivider.astro';
 import ImageFrame from '../../components/ImageFrame.astro';
 import NoteCardStack from '../../components/NoteCardStack.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
 
 export async function getStaticPaths() {
   const posts = (await getCollection('blog')).filter((post) => !post.data.draft);
@@ -105,6 +107,8 @@ const mapHeroImage = (heroImage: HeroImageInput, scale?: number, posX?: number, 
   prose={true}
 >
   <div class="blog-post">
+    <Breadcrumb items={[{ label: 'Blog', href: '/blog' }, { label: post.data.title }]} />
+
     <article class="post-content" itemscope itemtype="https://schema.org/Article">
       {
         post.data.heroImage && (
@@ -172,6 +176,8 @@ const mapHeroImage = (heroImage: HeroImageInput, scale?: number, posX?: number, 
           }
         </div>
       </header>
+
+      <TableOfContents maxDepth={3} />
 
       <FaintLineDivider width="wide" />
 
