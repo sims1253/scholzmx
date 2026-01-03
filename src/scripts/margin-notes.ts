@@ -163,13 +163,26 @@ declare global {
 export { MarginNotes };
 export let marginNotesInstance: MarginNotes | null = null;
 
+let initResizeObserver: ResizeObserver | null = null;
+let initResizeHandler: (() => void) | null = null;
+
+function cleanupInitListeners(): void {
+  if (initResizeObserver) {
+    initResizeObserver.disconnect();
+    initResizeObserver = null;
+  }
+  if (initResizeHandler) {
+    window.removeEventListener('resize', initResizeHandler);
+    initResizeHandler = null;
+  }
+}
+
 export function initMarginNotes(): void {
   const tryInit = () => {
     const mainContent = document.querySelector('.main-content') as HTMLElement;
-    if (mainContent && mainContent.offsetWidth < MARGIN_NOTES_BREAKPOINT) return; // ~68rem
+    if (mainContent && mainContent.offsetWidth < MARGIN_NOTES_BREAKPOINT) return;
     if (window.__mnotes_inited) return;
 
-    // Ensure anchors exist by converting any Quarto-style margin notes first
     convertMarginBlockquotesToAnchors();
     const anchors = document.querySelectorAll('.note-anchor');
     const container = document.getElementById('notesContainer');
@@ -177,6 +190,7 @@ export function initMarginNotes(): void {
     window.__mnotes_instance = new MarginNotes();
     marginNotesInstance = window.__mnotes_instance;
     window.__mnotes_inited = true;
+    cleanupInitListeners();
   };
 
   document.addEventListener('DOMContentLoaded', () => {
@@ -186,18 +200,18 @@ export function initMarginNotes(): void {
   window.addEventListener('load', tryInit);
 
   if ('ResizeObserver' in window) {
-    const resizeObserver = new ResizeObserver(() => {
+    initResizeObserver = new ResizeObserver(() => {
       if (window.__mnotes_inited) return;
       setTimeout(tryInit, 50);
     });
     const mainContent = document.querySelector('.main-content');
-    if (mainContent) resizeObserver.observe(mainContent);
+    if (mainContent) initResizeObserver.observe(mainContent);
   }
 
-  // Also listen for resize as fallback (works in all browsers)
-  window.addEventListener('resize', () => {
+  initResizeHandler = () => {
     if (!window.__mnotes_inited) setTimeout(tryInit, 50);
-  });
+  };
+  window.addEventListener('resize', initResizeHandler);
 }
 
 // Auto-initialize

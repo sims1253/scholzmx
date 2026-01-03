@@ -123,13 +123,11 @@ const { className = '' } = Astro.props;
     }
   }
 
-  /* Extra-small screens */
+  /* Extra-small screens - larger tap target for touch accessibility */
   @media (max-width: 400px) {
     .back-to-top {
       width: 52px;
       height: 52px;
-      min-width: 52px;
-      min-height: 52px;
       bottom: var(--space-sm);
       right: var(--space-sm);
     }

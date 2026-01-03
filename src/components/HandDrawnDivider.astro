@@ -42,13 +42,6 @@ const strokeWeight = 3;
             </feMerge>
           </filter>
 
-          <filter id={`fillTexture-${uniqueId}`} x="-100%" y="-100%" width="400%" height="400%">
-            <feTurbulence baseFrequency="0.002" numOctaves="3" result="noise" seed="5" />
-            <feGaussianBlur in="noise" stdDeviation="5" result="smoothed" />
-            <feDisplacementMap in="SourceGraphic" in2="smoothed" scale="25" result="displaced" />
-            <feGaussianBlur in="displaced" stdDeviation="5" result="finalSmooth" />
-          </filter>
-
           <filter id={`dividerBlur-${uniqueId}`} x="-40%" y="-40%" width="180%" height="180%">
             <feGaussianBlur stdDeviation="0.005" />
           </filter>

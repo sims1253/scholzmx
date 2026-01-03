@@ -12,7 +12,7 @@ const colorMap: Record<'moss' | 'walnut' | 'tansy', string> = {
   walnut: 'var(--color-walnut)',
   tansy: 'var(--color-tansy)',
 };
-const progressColor = colorMap[color || 'moss'];
+const progressColor = colorMap[color];
 const progressHeight = height;
 ---
 
@@ -98,8 +98,12 @@ const progressHeight = height;
 </style>
 
 <script>
-  // Only initialize on pages with prose content
+  let initialized = false;
+
   function initReadingProgress() {
+    if (initialized) return;
+    initialized = true;
+
     const progressBar = document.querySelector('.reading-progress') as HTMLElement;
     if (!progressBar) return;
 
@@ -135,17 +139,11 @@ const progressHeight = height;
       });
     }
 
-    // Passive scroll listener for performance
     window.addEventListener('scroll', updateProgress, { passive: true });
-
-    // Update on resize
     window.addEventListener('resize', updateProgress, { passive: true });
-
-    // Initial check
     updateProgress();
   }
 
-  // Initialize after DOM is ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initReadingProgress);
   } else {

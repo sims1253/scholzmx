@@ -99,15 +99,6 @@
       transition: transform 0.1s ease-out;
     }
 
-    /* Enhanced tap area for small buttons */
-    .nav-link,
-    .torch-toggle,
-    .copy-button,
-    button {
-      min-height: 44px;
-      min-width: 44px;
-    }
-
     /* Remove hover effects on touch devices to prevent stuck states */
     .nav-link:hover,
     .torch-toggle:hover,
@@ -134,6 +125,8 @@
 
     /* Larger tap targets for all interactive elements */
     .nav-link,
+    .torch-toggle,
+    .copy-button,
     button,
     a,
     input[type='button'],
