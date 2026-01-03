@@ -1,5 +1,7 @@
 // Margin Notes positioning logic (progressive enhancement)
 
+const MARGIN_NOTES_BREAKPOINT = 1088;
+
 function convertMarginBlockquotesToAnchors(): void {
   const blockquotes = document.querySelectorAll('.post-body blockquote, .recipe-body blockquote');
   blockquotes.forEach((blockquote) => {
@@ -21,6 +23,9 @@ class MarginNotes {
   private anchors: NodeListOf<HTMLElement>;
   private notesContainer: HTMLElement | null;
   private notes: HTMLElement[] = [];
+  private onResize?: () => void;
+  private onLoad?: () => void;
+  private timeout?: number;
 
   constructor() {
     this.anchors = document.querySelectorAll('.note-anchor');
@@ -74,9 +79,10 @@ class MarginNotes {
       const anchorRect = anchor.getBoundingClientRect();
       const note = this.notes[index];
       if (!note) return;
+      const height = this.getNoteHeight(note);
       let top = anchorRect.top - wrapperRect.top;
-      top = this.avoidCollisions(top, used, note);
-      used.push({ top, height: this.getNoteHeight(note) });
+      top = this.avoidCollisions(top, used, height);
+      used.push({ top, height });
       note.style.top = top + 'px';
       setTimeout(() => {
         note.classList.add('visible');
@@ -106,10 +112,9 @@ class MarginNotes {
   private avoidCollisions(
     desiredTop: number,
     used: { top: number; height: number }[],
-    note: HTMLElement
+    height: number
   ): number {
     let adjusted = desiredTop;
-    const height = this.getNoteHeight(note);
     const minGap = 24;
     const sorted = used.slice().sort((a, b) => a.top - b.top);
     for (const u of sorted) {
@@ -121,34 +126,47 @@ class MarginNotes {
   }
 
   private setupEventListeners(): void {
-    let timeout: number | undefined;
-    const onResize = () => {
-      if (timeout) window.clearTimeout(timeout);
-      timeout = window.setTimeout(() => {
+    this.onResize = () => {
+      if (this.timeout) window.clearTimeout(this.timeout);
+      this.timeout = window.setTimeout(() => {
         this.positionNotesContainer();
         this.positionNotes();
       }, 200);
     };
-    window.addEventListener('resize', onResize);
-    window.addEventListener('load', () => this.refresh());
+    this.onLoad = () => this.refresh();
+    window.addEventListener('resize', this.onResize);
+    window.addEventListener('load', this.onLoad);
   }
 
   public refresh(): void {
     this.positionNotesContainer();
     this.positionNotes();
   }
+
+  public destroy(): void {
+    if (this.onResize) window.removeEventListener('resize', this.onResize);
+    if (this.onLoad) window.removeEventListener('load', this.onLoad);
+    if (this.timeout) window.clearTimeout(this.timeout);
+    this.onResize = undefined;
+    this.onLoad = undefined;
+    this.timeout = undefined;
+  }
 }
 
 declare global {
   interface Window {
     __mnotes_inited?: boolean;
+    __mnotes_instance?: MarginNotes;
   }
 }
+
+export { MarginNotes };
+export let marginNotesInstance: MarginNotes | null = null;
 
 export function initMarginNotes(): void {
   const tryInit = () => {
     const mainContent = document.querySelector('.main-content') as HTMLElement;
-    if (mainContent && mainContent.offsetWidth < 1088) return; // ~68rem
+    if (mainContent && mainContent.offsetWidth < MARGIN_NOTES_BREAKPOINT) return; // ~68rem
     if (window.__mnotes_inited) return;
 
     // Ensure anchors exist by converting any Quarto-style margin notes first
@@ -156,7 +174,8 @@ export function initMarginNotes(): void {
     const anchors = document.querySelectorAll('.note-anchor');
     const container = document.getElementById('notesContainer');
     if (!anchors.length || !container) return;
-    new MarginNotes();
+    window.__mnotes_instance = new MarginNotes();
+    marginNotesInstance = window.__mnotes_instance;
     window.__mnotes_inited = true;
   };
 

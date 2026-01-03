@@ -7,6 +7,8 @@ export interface Props {
 
 const { variant = 'vine', width = 'medium', className = '' } = Astro.props;
 
+const uniqueId = Math.random().toString(36).substring(7);
+
 // Use semantic color tokens via CSS variables
 const vineColor = 'var(--color-walnut)';
 const leafColor = 'var(--color-accent-secondary)';
@@ -17,14 +19,19 @@ const strokeWeight = 3;
 <div class={`hand-drawn-divider hand-drawn-divider--${width} ${className}`}>
   {
     variant === 'vine' && (
-      <svg class="divider-svg" viewBox="0 0 800 64" preserveAspectRatio="xMidYMid meet">
+      <svg
+        class="divider-svg"
+        viewBox="0 0 800 64"
+        preserveAspectRatio="xMidYMid meet"
+        aria-hidden="true"
+      >
         <defs>
-          <filter id="dividerTexture" x="-40%" y="-40%" width="180%" height="180%">
+          <filter id={`dividerTexture-${uniqueId}`} x="-40%" y="-40%" width="180%" height="180%">
             <feTurbulence baseFrequency="0.03" numOctaves="2" result="noise" seed="3" />
             <feDisplacementMap in="SourceGraphic" in2="noise" scale="1" />
           </filter>
 
-          <filter id="dividerShadow" x="-40%" y="-40%" width="180%" height="180%">
+          <filter id={`dividerShadow-${uniqueId}`} x="-40%" y="-40%" width="180%" height="180%">
             <feGaussianBlur in="SourceAlpha" stdDeviation="1" />
             <feOffset dx="1" dy="1" result="offset" />
             <feFlood flood-color="rgba(139, 90, 60, 0.2)" />
@@ -35,14 +42,14 @@ const strokeWeight = 3;
             </feMerge>
           </filter>
 
-          <filter id="fillTexture" x="-100%" y="-100%" width="400%" height="400%">
+          <filter id={`fillTexture-${uniqueId}`} x="-100%" y="-100%" width="400%" height="400%">
             <feTurbulence baseFrequency="0.002" numOctaves="3" result="noise" seed="5" />
             <feGaussianBlur in="noise" stdDeviation="5" result="smoothed" />
             <feDisplacementMap in="SourceGraphic" in2="smoothed" scale="25" result="displaced" />
             <feGaussianBlur in="displaced" stdDeviation="5" result="finalSmooth" />
           </filter>
 
-          <filter id="dividerBlur" x="-40%" y="-40%" width="180%" height="180%">
+          <filter id={`dividerBlur-${uniqueId}`} x="-40%" y="-40%" width="180%" height="180%">
             <feGaussianBlur stdDeviation="0.005" />
           </filter>
         </defs>
@@ -53,11 +60,14 @@ const strokeWeight = 3;
           stroke={`color-mix(in srgb, ${vineColor} 60%, transparent)`}
           stroke-width={strokeWeight}
           fill="none"
-          filter="url(#dividerTexture)"
+          filter={`url(#dividerTexture-${uniqueId})`}
         />
 
         {/* Decorative leaves */}
-        <g fill={`color-mix(in srgb, ${leafColor} 40%, transparent)`} filter="url(#dividerShadow)">
+        <g
+          fill={`color-mix(in srgb, ${leafColor} 40%, transparent)`}
+          filter={`url(#dividerShadow-${uniqueId})`}
+        >
           <ellipse cx="260" cy="32" rx="8" ry="4" transform="rotate(30 260 32)" />
           <ellipse
             cx="258"
@@ -90,9 +100,14 @@ const strokeWeight = 3;
 
   {
     variant === 'simple' && (
-      <svg class="divider-svg" viewBox="0 0 400 24" preserveAspectRatio="xMidYMid meet">
+      <svg
+        class="divider-svg"
+        viewBox="0 0 400 24"
+        preserveAspectRatio="xMidYMid meet"
+        aria-hidden="true"
+      >
         <defs>
-          <filter id="simpleTexture" x="0%" y="0%" width="100%" height="100%">
+          <filter id={`simpleTexture-${uniqueId}`} x="0%" y="0%" width="100%" height="100%">
             <feTurbulence baseFrequency="0.05" numOctaves="1" result="noise" seed="5" />
             <feDisplacementMap in="SourceGraphic" in2="noise" scale="0.8" />
           </filter>
@@ -103,7 +118,7 @@ const strokeWeight = 3;
           stroke={`color-mix(in srgb, ${vineColor} 50%, transparent)`}
           stroke-width="2"
           fill="none"
-          filter="url(#simpleTexture)"
+          filter={`url(#simpleTexture-${uniqueId})`}
         />
 
         {/* Central botanical element */}
@@ -118,14 +133,19 @@ const strokeWeight = 3;
 
   {
     variant === 'botanical' && (
-      <svg class="divider-svg" viewBox="0 0 500 60" preserveAspectRatio="xMidYMid meet">
+      <svg
+        class="divider-svg"
+        viewBox="0 0 500 60"
+        preserveAspectRatio="xMidYMid meet"
+        aria-hidden="true"
+      >
         <defs>
-          <filter id="botanicalTexture" x="-40%" y="-40%" width="180%" height="180%">
+          <filter id={`botanicalTexture-${uniqueId}`} x="-40%" y="-40%" width="180%" height="180%">
             <feTurbulence baseFrequency="0.02" numOctaves="2" result="noise" seed="7" />
             <feDisplacementMap in="SourceGraphic" in2="noise" scale="1" />
           </filter>
 
-          <filter id="botanicalBlur" x="-40%" y="-40%" width="180%" height="180%">
+          <filter id={`botanicalBlur-${uniqueId}`} x="-40%" y="-40%" width="180%" height="180%">
             <feGaussianBlur stdDeviation="0.5" />
           </filter>
         </defs>
@@ -137,7 +157,7 @@ const strokeWeight = 3;
           stroke={`color-mix(in srgb, ${vineColor} 50%, transparent)`}
           stroke-width="3"
           fill="none"
-          filter="url(#botanicalBlur)"
+          filter={`url(#botanicalBlur-${uniqueId})`}
           stroke-linecap="round"
         />
 
@@ -185,13 +205,18 @@ const strokeWeight = 3;
 
   {
     variant === 'ornate' && (
-      <svg class="divider-svg" viewBox="0 0 700 80" preserveAspectRatio="xMidYMid meet">
+      <svg
+        class="divider-svg"
+        viewBox="0 0 700 80"
+        preserveAspectRatio="xMidYMid meet"
+        aria-hidden="true"
+      >
         <defs>
-          <filter id="ornateTexture" x="0%" y="0%" width="100%" height="100%">
+          <filter id={`ornateTexture-${uniqueId}`} x="0%" y="0%" width="100%" height="100%">
             <feTurbulence baseFrequency="0.025" numOctaves="2" result="noise" seed="9" />
             <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.2" />
           </filter>
-          <filter id="ornateShadow" x="0%" y="0%" width="120%" height="120%">
+          <filter id={`ornateShadow-${uniqueId}`} x="0%" y="0%" width="120%" height="120%">
             <feGaussianBlur in="SourceAlpha" stdDeviation="2" />
             <feOffset dx="2" dy="2" result="offset" />
             <feFlood flood-color="rgba(139, 90, 60, 0.15)" />
@@ -204,7 +229,7 @@ const strokeWeight = 3;
         </defs>
 
         {/* Central decorative element */}
-        <g transform="translate(350, 40)" filter="url(#ornateShadow)">
+        <g transform="translate(350, 40)" filter={`url(#ornateShadow-${uniqueId})`}>
           {/* Ornate center */}
           <circle r="12" fill="rgba(90, 107, 71, 0.3)" />
           <circle r="8" fill="rgba(168, 181, 160, 0.4)" />
@@ -225,11 +250,11 @@ const strokeWeight = 3;
           stroke={`color-mix(in srgb, ${vineColor} 40%, transparent)`}
           stroke-width="2.5"
           fill="none"
-          filter="url(#ornateTexture)"
+          filter={`url(#ornateTexture-${uniqueId})`}
         />
 
         {/* Side decorations */}
-        <g fill="rgba(90, 107, 71, 0.3)" filter="url(#ornateTexture)">
+        <g fill="rgba(90, 107, 71, 0.3)" filter={`url(#ornateTexture-${uniqueId})`}>
           <ellipse cx="150" cy="40" rx="8" ry="4" transform="rotate(20 150 40)" />
           <ellipse cx="550" cy="40" rx="8" ry="4" transform="rotate(-20 550 40)" />
         </g>
@@ -239,9 +264,14 @@ const strokeWeight = 3;
 
   {
     variant === 'sketch' && (
-      <svg class="divider-svg" viewBox="0 0 400 30" preserveAspectRatio="xMidYMid meet">
+      <svg
+        class="divider-svg"
+        viewBox="0 0 400 30"
+        preserveAspectRatio="xMidYMid meet"
+        aria-hidden="true"
+      >
         <defs>
-          <filter id="sketchTexture" x="0%" y="0%" width="100%" height="100%">
+          <filter id={`sketchTexture-${uniqueId}`} x="0%" y="0%" width="100%" height="100%">
             <feTurbulence baseFrequency="0.08" numOctaves="2" result="noise" seed="11" />
             <feDisplacementMap in="SourceGraphic" in2="noise" scale="0.5" />
           </filter>
@@ -253,7 +283,7 @@ const strokeWeight = 3;
           stroke={`color-mix(in srgb, ${vineColor} 45%, transparent)`}
           stroke-width="1.5"
           fill="none"
-          filter="url(#sketchTexture)"
+          filter={`url(#sketchTexture-${uniqueId})`}
           stroke-linecap="round"
         />
 

@@ -5,14 +5,14 @@ export interface Props {
   className?: string;
 }
 
-const { color = 'moss', height = 3, className = '' } = Astro.props;
+const { color = 'moss', height = 3, className = '' } = Astro.props as Props;
 
-const colorMap: Record<string, string> = {
+const colorMap: Record<'moss' | 'walnut' | 'tansy', string> = {
   moss: 'var(--color-moss)',
   walnut: 'var(--color-walnut)',
   tansy: 'var(--color-tansy)',
 };
-const progressColor = colorMap[color] ?? colorMap.moss;
+const progressColor = colorMap[color || 'moss'];
 const progressHeight = height;
 ---
 
@@ -93,19 +93,6 @@ const progressHeight = height;
 
     .progress-leaf {
       transition: none;
-    }
-  }
-
-  /* Mobile: make bar slightly more visible */
-  @media (max-width: 768px) {
-    .reading-progress {
-      height: calc({height}px + 1px);
-    }
-
-    .progress-leaf {
-      width: 14px;
-      height: 14px;
-      right: -7px;
     }
   }
 </style>

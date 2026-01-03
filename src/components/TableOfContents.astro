@@ -120,6 +120,7 @@ const { maxDepth = 3, className = '' } = Astro.props;
     list-style: none;
     padding: 0;
     margin: 0;
+    position: relative;
   }
 
   .toc-item {
@@ -253,36 +254,31 @@ const { maxDepth = 3, className = '' } = Astro.props;
     // Filter headings by max depth
     const filteredHeadings = headings.filter((h) => parseInt(h.tagName[1]) <= maxDepth);
 
+    // Ensure headings have IDs before building TOC
+    filteredHeadings.forEach((h, i) => {
+      if (!h.id) {
+        h.id = `heading-${i}`;
+      }
+    });
+
     // Generate TOC structure
     const headingData: Heading[] = filteredHeadings.map((h) => ({
       level: parseInt(h.tagName[1]),
       text: h.textContent || '',
-      id: h.id || '',
+      id: h.id,
     }));
 
-    // Create TOC HTML
-    tocList.innerHTML = headingData
-      .map(
-        (h) => `
-        <li class="toc-item">
-          <a href="#${h.id}" class="toc-link toc-h${h.level}" data-target="${h.id}">
-            ${h.text}
-          </a>
-        </li>
-      `
-      )
-      .join('');
-
-    // Ensure headings have IDs for navigation
-    headings.forEach((h, i) => {
-      if (!h.id) {
-        h.id = `heading-${i}`;
-        // Update TOC link
-        const link = tocList.querySelector(`[data-target="heading-${i}"]`);
-        if (link) {
-          link.setAttribute('href', `#heading-${i}`);
-        }
-      }
+    // Create TOC using DOM methods to prevent XSS
+    headingData.forEach((h) => {
+      const li = document.createElement('li');
+      li.className = 'toc-item';
+      const a = document.createElement('a');
+      a.href = `#${h.id}`;
+      a.className = `toc-link toc-h${h.level}`;
+      a.dataset.target = h.id;
+      a.textContent = h.text;
+      li.appendChild(a);
+      tocList.appendChild(li);
     });
 
     // Toggle functionality

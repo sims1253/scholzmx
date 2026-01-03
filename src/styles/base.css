@@ -5,6 +5,7 @@
   --organic-md: 60% 40% 30% 70% / 60% 30% 70% 40%;
   --organic-lg: 30% 70% 70% 30% / 30% 30% 70% 70%;
   --organic-paper: 2px 4px 8px 2px / 4px 2px 8px 4px;
+  --external-excluded-domains: 'scholzmx.com|localhost';
 }
 
 @layer base {
@@ -59,6 +60,7 @@
 
   /* Touch feedback system - visual feedback on tap */
   @media (hover: none) and (pointer: coarse) {
+    /* Touch targets positioning */
     .nav-link,
     .torch-toggle,
     .copy-button,
@@ -104,6 +106,60 @@
     button {
       min-height: 44px;
       min-width: 44px;
+    }
+
+    /* Remove hover effects on touch devices to prevent stuck states */
+    .nav-link:hover,
+    .torch-toggle:hover,
+    .copy-button:hover,
+    .site-logo:hover,
+    a:not(.nav-link):not(.site-logo):hover,
+    button:not(.torch-toggle):not(.copy-button):hover,
+    details.code-collapse summary:hover {
+      background-color: transparent;
+      color: inherit;
+    }
+
+    /* Only apply active state for touch feedback */
+    .nav-link:active,
+    .torch-toggle:active,
+    .copy-button:active,
+    .site-logo:active,
+    a:not(.nav-link):not(.site-logo):active,
+    button:not(.torch-toggle):not(.copy-button):active,
+    details.code-collapse summary:active {
+      background-color: var(--color-walnut);
+      color: var(--color-parchment-light);
+    }
+
+    /* Larger tap targets for all interactive elements */
+    .nav-link,
+    button,
+    a,
+    input[type='button'],
+    input[type='submit'] {
+      min-height: 44px;
+      min-width: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Cards have touch feedback */
+    .sc-item,
+    .note-card,
+    .project-item,
+    .manuscript-page,
+    .handcrafted-card {
+      transition: transform 0.1s ease-out;
+    }
+
+    .sc-item:active,
+    .note-card:active,
+    .project-item:active,
+    .manuscript-page:active,
+    .handcrafted-card:active {
+      transform: scale(0.98);
     }
   }
 
@@ -200,63 +256,6 @@
     }
   }
 
-  /* Touch device optimizations */
-  @media (hover: none) and (pointer: coarse) {
-    /* Remove hover effects on touch devices to prevent stuck states */
-    .nav-link:hover,
-    .torch-toggle:hover,
-    .copy-button:hover,
-    .site-logo:hover,
-    a:not(.nav-link):not(.site-logo):hover,
-    button:not(.torch-toggle):not(.copy-button):hover,
-    details.code-collapse summary:hover {
-      background-color: transparent;
-      color: inherit;
-    }
-
-    /* Only apply active state for touch feedback */
-    .nav-link:active,
-    .torch-toggle:active,
-    .copy-button:active,
-    .site-logo:active,
-    a:not(.nav-link):not(.site-logo):active,
-    button:not(.torch-toggle):not(.copy-button):active,
-    details.code-collapse summary:active {
-      background-color: var(--color-walnut);
-      color: var(--color-parchment-light);
-    }
-
-    /* Larger tap targets for all interactive elements */
-    .nav-link,
-    button,
-    a,
-    input[type='button'],
-    input[type='submit'] {
-      min-height: 44px;
-      min-width: 44px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* Cards have touch feedback */
-    .sc-item,
-    .note-card,
-    .project-item,
-    .manuscript-page,
-    .handcrafted-card {
-      transition: transform 0.1s ease-out;
-    }
-
-    .sc-item:active,
-    .note-card:active,
-    .project-item:active,
-    .manuscript-page:active,
-    .handcrafted-card:active {
-      transform: scale(0.98);
-    }
-  }
-
   /* Global base styles */
   *,
   *::before,
@@ -265,14 +264,8 @@
   }
 
   html {
-    font-size: clamp(18px, 2.5vw, 21px); /* Fluid base font size */
-    line-height: var(--spacing-line-height);
-    scroll-behavior: smooth;
-  }
-
-  /* Font size scaling from FontSizeControl component */
-  html {
-    font-size: clamp(18px, 2.5vw, 21px);
+    /* Fluid base font size with scaling support via --font-scale variable */
+    font-size: calc(clamp(18px, 2.5vw, 21px) * var(--font-scale, 1));
     line-height: var(--spacing-line-height);
     scroll-behavior: smooth;
   }
@@ -352,7 +345,6 @@
     line-height: 1.25;
     font-family: var(--font-heading);
     font-weight: var(--heading-weight-strong);
-    font-optical-sizing: auto;
     font-feature-settings:
       'liga' 1,
       'kern' 1;
@@ -414,6 +406,7 @@
   }
 
   /* External link indicator - adds ↗ arrow after off-site links */
+  /* Domains listed in --external-excluded-domains are excluded from the indicator */
   a[href^='http']:not([href*='scholzmx.com']):not([href*='localhost']):not(
       .no-external-indicator
     )::after {
