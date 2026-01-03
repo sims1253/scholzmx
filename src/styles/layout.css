@@ -91,7 +91,9 @@
   gap: var(--space-xs);
   text-decoration: none;
   font-family: var(--font-heading);
-  font-size: clamp(0.9rem, 3vw, var(--text-xl)); /* Extra compact on mobile */
+  font-size: calc(
+    clamp(0.9rem, 3vw, var(--text-xl)) * var(--font-scale, 1)
+  ); /* Extra compact on mobile */
   font-weight: 600;
   color: var(--color-ink-dark);
   margin-left: 0;
@@ -114,8 +116,10 @@
 .nav-links {
   display: flex;
   align-items: center;
-  gap: clamp(0.15rem, 1vw, 1rem); /* Ultra tight gap on mobile */
-  font-size: clamp(0.8rem, 2.2vw, var(--text-lg)); /* Even more aggressive mobile scaling */
+  gap: clamp(0.15rem, 1vw, 1rem);
+  font-size: calc(
+    clamp(0.8rem, 2.2vw, var(--text-lg)) * var(--font-scale, 1)
+  ); /* Even more aggressive mobile scaling */
   font-family: var(--font-heading);
   margin-inline-start: auto;
   min-width: 0;
@@ -204,7 +208,7 @@
   opacity: 0.4;
   margin-inline: clamp(2px, 0.5vw, 6px);
   font-weight: 300;
-  font-size: clamp(0.7rem, 2vw, 1rem);
+  font-size: calc(clamp(0.7rem, 2vw, 1rem) * var(--font-scale, 1));
   display: inline-flex;
   align-items: center;
   padding: 0 2px;

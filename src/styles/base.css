@@ -345,20 +345,22 @@
   }
 
   h1 {
-    font-size: clamp(var(--text-2xl), 5vw, var(--text-3xl)); /* Fluid heading size */
+    font-size: calc(
+      clamp(var(--text-2xl), 5vw, var(--text-3xl)) * var(--font-scale, 1)
+    ); /* Fluid heading size */
     font-weight: var(--heading-weight-strong);
     margin-block-end: var(--space-lg);
     letter-spacing: 0.005em;
   }
 
   h2 {
-    font-size: clamp(var(--text-xl), 4vw, var(--text-2xl));
+    font-size: calc(clamp(var(--text-xl), 4vw, var(--text-2xl)) * var(--font-scale, 1));
     margin-block-start: var(--space-xl);
     letter-spacing: 0.002em;
   }
 
   h3 {
-    font-size: clamp(var(--text-lg), 3.5vw, var(--text-xl));
+    font-size: calc(clamp(var(--text-lg), 3.5vw, var(--text-xl)) * var(--font-scale, 1));
     margin-block-start: var(--space-lg);
   }
 
@@ -472,7 +474,7 @@
     position: absolute;
     inset-inline-start: var(--space-sm);
     inset-block-start: 0;
-    font-size: clamp(3rem, 6vw, 4rem); /* Fluid quote mark */
+    font-size: calc(clamp(3rem, 6vw, 4rem) * var(--font-scale, 1)); /* Fluid quote mark */
     line-height: 1;
     font-family: var(--font-heading);
   }
