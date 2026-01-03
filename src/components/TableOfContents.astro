@@ -231,7 +231,10 @@ const { maxDepth = 3, className = '' } = Astro.props;
 
   function initTableOfContents() {
     const tocContainer = document.querySelector('.toc-container') as HTMLElement;
-    const proseContent = document.querySelector('.prose') as HTMLElement;
+    const proseContent = (document.querySelector('#post-body') ||
+                        document.querySelector('#note-body') ||
+                        document.querySelector('#recipe-body') ||
+                        tocContainer?.nextElementSibling?.querySelector('.prose')) as HTMLElement;
     const tocToggle = document.querySelector('.toc-toggle') as HTMLButtonElement;
     const tocContent = document.querySelector('.toc-content') as HTMLElement;
     const tocList = document.querySelector('.toc-list') as HTMLOListElement;

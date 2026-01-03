@@ -150,13 +150,20 @@ class MarginNotes {
     this.onResize = undefined;
     this.onLoad = undefined;
     this.timeout = undefined;
+
+    // Clean up DOM elements
+    this.notes.forEach((note) => note.remove());
+    this.notes = [];
+
+    // Reset global state if re-initialization is needed
+    window.__mnotes_inited = false;
+    marginNotesInstance = null;
   }
 }
 
 declare global {
   interface Window {
     __mnotes_inited?: boolean;
-    __mnotes_instance?: MarginNotes;
   }
 }
 
@@ -187,8 +194,7 @@ export function initMarginNotes(): void {
     const anchors = document.querySelectorAll('.note-anchor');
     const container = document.getElementById('notesContainer');
     if (!anchors.length || !container) return;
-    window.__mnotes_instance = new MarginNotes();
-    marginNotesInstance = window.__mnotes_instance;
+    marginNotesInstance = new MarginNotes();
     window.__mnotes_inited = true;
     cleanupInitListeners();
   };

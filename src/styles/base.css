@@ -128,7 +128,9 @@
     .torch-toggle,
     .copy-button,
     button,
-    a,
+    a.nav-link,
+    a.torch-toggle,
+    a[role='button'],
     input[type='button'],
     input[type='submit'] {
       min-height: 44px;

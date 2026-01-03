@@ -302,11 +302,11 @@
   }
 
   .nav-brand .site-logo {
-    font-size: 0.9rem; /* Slightly larger title */
+    font-size: calc(0.9rem * var(--font-scale, 1)); /* Slightly larger title */
   }
 
   .nav-links {
-    font-size: 0.8rem; /* Slightly larger nav links */
+    font-size: calc(0.8rem * var(--font-scale, 1)); /* Slightly larger nav links */
     gap: 0.12rem; /* Minimal gap between nav items */
   }
 

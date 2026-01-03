@@ -2,7 +2,7 @@
   /* Scoped rich text styling. Replace .longform usage. */
   .prose {
     font-family: var(--font-body);
-    font-size: var(--text-md);
+    font-size: calc(var(--text-md) * var(--font-scale, 1));
     line-height: 1.55;
     color: var(--color-text-primary);
     font-feature-settings:
@@ -23,7 +23,7 @@
   }
 
   .prose h2 {
-    font-size: var(--text-xl);
+    font-size: calc(var(--text-xl) * var(--font-scale, 1));
     margin-top: 1.6em;
     margin-bottom: 0.6em;
     color: var(--color-walnut);
@@ -32,7 +32,7 @@
   }
 
   .prose h3 {
-    font-size: var(--text-lg);
+    font-size: calc(var(--text-lg) * var(--font-scale, 1));
     margin-top: 1.4em;
     margin-bottom: 0.5em;
     color: var(--color-text-primary);

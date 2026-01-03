@@ -96,13 +96,13 @@ html {
   /* Container query tweaks for tighter spaces */
   @container nav (inline-size <= 52rem) {
     .nav-links {
-      font-size: var(--text-md);
+      font-size: calc(var(--text-md) * var(--font-scale, 1));
       gap: var(--space-xs);
     }
   }
   @container nav (inline-size <= 38rem) {
     .nav-links {
-      font-size: var(--text-sm);
+      font-size: calc(var(--text-sm) * var(--font-scale, 1));
     }
   }
 

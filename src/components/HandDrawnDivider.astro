@@ -41,10 +41,6 @@ const strokeWeight = 3;
               <feMergeNode in="SourceGraphic" />
             </feMerge>
           </filter>
-
-          <filter id={`dividerBlur-${uniqueId}`} x="-40%" y="-40%" width="180%" height="180%">
-            <feGaussianBlur stdDeviation="0.005" />
-          </filter>
         </defs>
 
         {/* Main vine line */}
@@ -133,11 +129,6 @@ const strokeWeight = 3;
         aria-hidden="true"
       >
         <defs>
-          <filter id={`botanicalTexture-${uniqueId}`} x="-40%" y="-40%" width="180%" height="180%">
-            <feTurbulence baseFrequency="0.02" numOctaves="2" result="noise" seed="7" />
-            <feDisplacementMap in="SourceGraphic" in2="noise" scale="1" />
-          </filter>
-
           <filter id={`botanicalBlur-${uniqueId}`} x="-40%" y="-40%" width="180%" height="180%">
             <feGaussianBlur stdDeviation="0.5" />
           </filter>

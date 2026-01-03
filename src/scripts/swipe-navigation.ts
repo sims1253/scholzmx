@@ -8,7 +8,10 @@ function initSwipeNavigation() {
   const prevLink = document.querySelector('.prev-link') as HTMLAnchorElement;
   const nextLink = document.querySelector('.next-link') as HTMLAnchorElement;
 
-  if (!prevLink && !nextLink) return;
+  if (!prevLink && !nextLink) {
+    initialized = true;
+    return;
+  }
 
   let touchStartX = 0;
   let touchEndX = 0;
@@ -48,12 +51,8 @@ function initSwipeNavigation() {
     return;
   }
 
-  if (handleTouchStart) {
-    document.addEventListener('touchstart', handleTouchStart, { passive: true });
-  }
-  if (handleTouchEnd) {
-    document.addEventListener('touchend', handleTouchEnd, { passive: true });
-  }
+  document.addEventListener('touchstart', handleTouchStart, { passive: true });
+  document.addEventListener('touchend', handleTouchEnd, { passive: true });
 
   initialized = true;
 }
