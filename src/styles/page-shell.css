@@ -1,0 +1,21 @@
+.page-shell-header {
+  text-align: center;
+  max-width: var(--measure-listing);
+  margin: 0 auto var(--space-xs);
+}
+
+.page-shell-title {
+  font-size: clamp(var(--text-2xl), 5vw, var(--text-3xl));
+  margin-bottom: var(--space-xs);
+  color: var(--color-ink-dark);
+}
+
+.page-shell-description {
+  font-size: var(--text-lg);
+  line-height: 1.6;
+  color: var(--color-ink-medium);
+  font-style: italic;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}

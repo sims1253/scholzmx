@@ -1,0 +1,291 @@
+---
+// Sunlit Effect - shadows in light mode, fireshine in dark mode
+// Light mode: Shadow of window blinds cast onto the page
+// Dark mode: Warm flickering torchlight/fireshine
+---
+
+<div id="sunlit-effect" class="sunlit-effect" aria-hidden="true">
+  <!-- Light mode: Window blind shadows -->
+  <div class="blind-shadows">
+    <div class="shadow-layer shadow-base"></div>
+    <div class="shadow-layer shadow-soft"></div>
+    <div class="shadow-texture"></div>
+  </div>
+
+  <!-- Progressive blur layers for depth -->
+  <div class="blur-layer-1"></div>
+  <div class="blur-layer-2"></div>
+
+  <!-- Subtle leaf texture mask -->
+  <svg class="leaf-texture" aria-hidden="true" viewBox="0 0 100 100" preserveAspectRatio="none">
+    <defs>
+      <pattern id="noise-pattern" patternUnits="userSpaceOnUse" width="4" height="4">
+        <rect width="4" height="4" fill="currentColor"></rect>
+      </pattern>
+      <filter id="noise-filter">
+        <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="1" seed="1" result="noise"
+        ></feTurbulence>
+        <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.2 0"
+        ></feColorMatrix>
+      </filter>
+    </defs>
+    <rect width="100" height="100" fill="url(#noise-pattern)" filter="url(#noise-filter)"></rect>
+  </svg>
+
+  <!-- Dark mode: Torch/fire glow -->
+  <div class="fireshine">
+    <div class="fire-glow fire-glow-1"></div>
+    <div class="fire-glow fire-glow-2"></div>
+    <div class="fire-glow fire-glow-3"></div>
+  </div>
+</div>
+
+<style>
+  .sunlit-effect {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: var(--sunlit-opacity, 0);
+    transition: opacity 1s ease;
+    overflow: hidden;
+  }
+
+  /* ========================================
+     LIGHT MODE: Window blind shadows
+     ======================================== */
+  .blind-shadows {
+    position: absolute;
+    inset: -35% -25% -20% -25%;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.14) 0,
+      rgba(0, 0, 0, 0.1) 22px,
+      rgba(0, 0, 0, 0.03) 22px,
+      rgba(0, 0, 0, 0.03) 60px
+    );
+    filter: blur(0.7px);
+    mix-blend-mode: multiply;
+    opacity: 0.95;
+    transform: skewY(-8deg) skewX(-6deg);
+    transform-origin: top right;
+    animation: shadows-sway 15s ease-in-out infinite;
+    mask-image: linear-gradient(
+      250deg,
+      transparent 5%,
+      rgba(0, 0, 0, 0.95) 25%,
+      rgba(0, 0, 0, 0.95) 75%,
+      transparent 95%
+    );
+    -webkit-mask-image: linear-gradient(
+      250deg,
+      transparent 5%,
+      rgba(0, 0, 0, 0.95) 25%,
+      rgba(0, 0, 0, 0.95) 75%,
+      transparent 95%
+    );
+  }
+
+  /* Progressive blur layers */
+  .blur-layer-1,
+  .blur-layer-2 {
+    position: absolute;
+    inset: 0;
+    backdrop-filter: blur(6px);
+    mix-blend-mode: multiply;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .blur-layer-2 {
+    backdrop-filter: blur(12px);
+    z-index: -2;
+  }
+
+  /* Leaf texture mask */
+  .leaf-texture {
+    position: absolute;
+    inset: 0;
+    opacity: 0.04;
+    mix-blend-mode: multiply;
+    z-index: -3;
+    pointer-events: none;
+  }
+
+  /* Subtle sway like light through a window */
+  @keyframes shadows-sway {
+    0%,
+    100% {
+      transform: skewY(-8deg) skewX(-6deg) translateX(0);
+      opacity: 0.95;
+    }
+    40% {
+      transform: skewY(-7deg) skewX(-5deg) translateX(6px);
+      opacity: 1;
+    }
+    70% {
+      transform: skewY(-9deg) skewX(-7deg) translateX(-4px);
+      opacity: 0.9;
+    }
+  }
+
+  /* Hide fireshine in light mode */
+  .fireshine {
+    display: none;
+  }
+
+  /* ========================================
+     DARK MODE: Torch/fireshine effect
+     ======================================== */
+  [data-theme='dark'] .blind-shadows {
+    display: none;
+  }
+
+  [data-theme='dark'] .fireshine {
+    display: block;
+    position: absolute;
+    inset: 0;
+  }
+
+  .fire-glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    mix-blend-mode: screen;
+  }
+
+  /* Main warm glow - bottom left (like a torch on the wall) */
+  .fire-glow-1 {
+    bottom: 10%;
+    left: 5%;
+    width: 400px;
+    height: 500px;
+    background: radial-gradient(
+      ellipse at center,
+      rgba(255, 150, 50, 0.15) 0%,
+      rgba(255, 100, 30, 0.08) 40%,
+      transparent 70%
+    );
+    animation: flicker-1 4s ease-in-out infinite;
+  }
+
+  /* Secondary glow - top right corner */
+  .fire-glow-2 {
+    top: 5%;
+    right: 10%;
+    width: 300px;
+    height: 350px;
+    background: radial-gradient(
+      ellipse at center,
+      rgba(255, 180, 80, 0.1) 0%,
+      rgba(255, 120, 40, 0.05) 50%,
+      transparent 70%
+    );
+    animation: flicker-2 5s ease-in-out infinite;
+  }
+
+  /* Subtle ambient glow - center */
+  .fire-glow-3 {
+    top: 40%;
+    left: 30%;
+    width: 500px;
+    height: 400px;
+    background: radial-gradient(
+      ellipse at center,
+      rgba(255, 200, 100, 0.05) 0%,
+      rgba(255, 150, 50, 0.02) 50%,
+      transparent 70%
+    );
+    animation: flicker-3 7s ease-in-out infinite;
+  }
+
+  /* Flickering animations - slightly different timings for organic feel */
+  @keyframes flicker-1 {
+    0%,
+    100% {
+      opacity: 0.9;
+      transform: scale(1) translateY(0);
+    }
+    25% {
+      opacity: 1;
+      transform: scale(1.03) translateY(-5px);
+    }
+    50% {
+      opacity: 0.85;
+      transform: scale(0.98) translateY(2px);
+    }
+    75% {
+      opacity: 0.95;
+      transform: scale(1.01) translateY(-3px);
+    }
+  }
+
+  @keyframes flicker-2 {
+    0%,
+    100% {
+      opacity: 0.85;
+      transform: scale(1);
+    }
+    33% {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+    66% {
+      opacity: 0.8;
+      transform: scale(0.97);
+    }
+  }
+
+  @keyframes flicker-3 {
+    0%,
+    100% {
+      opacity: 0.7;
+      transform: scale(1) translate(0, 0);
+    }
+    20% {
+      opacity: 0.8;
+      transform: scale(1.02) translate(5px, -3px);
+    }
+    40% {
+      opacity: 0.65;
+      transform: scale(0.98) translate(-3px, 2px);
+    }
+    60% {
+      opacity: 0.75;
+      transform: scale(1.01) translate(2px, -1px);
+    }
+    80% {
+      opacity: 0.7;
+      transform: scale(0.99) translate(-2px, 3px);
+    }
+  }
+
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .blind-shadows {
+      animation: none;
+      opacity: 0.8;
+    }
+    .fire-glow-1,
+    .fire-glow-2,
+    .fire-glow-3 {
+      animation: none;
+    }
+    .fire-glow-1 {
+      opacity: 0.9;
+    }
+    .fire-glow-2 {
+      opacity: 0.85;
+    }
+    .fire-glow-3 {
+      opacity: 0.7;
+    }
+  }
+
+  /* Hide on mobile for performance */
+  @media (max-width: 768px) {
+    .sunlit-effect {
+      display: none;
+    }
+  }
+</style>

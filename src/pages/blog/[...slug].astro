@@ -1,11 +1,14 @@
 ---
 import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import FaintLineDivider from '../../components/FaintLineDivider.astro';
 import ImageFrame from '../../components/ImageFrame.astro';
-import NoteCardStack from '../../components/NoteCardStack.astro';
-import TableOfContents from '../../components/TableOfContents.astro';
-import Breadcrumb from '../../components/Breadcrumb.astro';
+import ListingCardStack from '../../components/ListingCardStack.astro';
+import ContentSidebar from '../../components/ContentSidebar.astro';
+import ReadingLayout from '../../components/ReadingLayout.astro';
+import BlogPostScripts from '../../components/BlogPostScripts.astro';
+import { fromBlogEntry } from '../../lib/cards/adapters';
 
 export async function getStaticPaths() {
   const posts = (await getCollection('blog')).filter((post) => !post.data.draft);
@@ -60,41 +63,51 @@ const formatDate = (date: Date) => {
   return date.toISOString().split('T')[0];
 };
 
-// Calculate reading time from content
 const getReadingTime = (content: string): string => {
-  const wordsPerMinute = 200;
-  const words = content.split(/\s+/).filter((word) => word.length > 0).length;
-  const minutes = Math.ceil(words / wordsPerMinute);
-  return `${minutes} min read`;
+  const WORDS_PER_MINUTE = 200;
+  const LINES_PER_MINUTE_CODE = 30;
+
+  const codeBlockRegex = /```[\s\S]*?```/g;
+  const codeBlocks = content.match(codeBlockRegex) || [];
+  const codeLines = codeBlocks.reduce((acc, block) => acc + block.split('\n').length - 2, 0);
+  const contentWithoutCode = content.replace(codeBlockRegex, '');
+  const proseWords = contentWithoutCode.split(/\s+/).filter((word) => word.length > 0).length;
+  const proseMinutes = proseWords / WORDS_PER_MINUTE;
+  const codeMinutes = codeLines / LINES_PER_MINUTE_CODE;
+  const totalMinutes = Math.ceil(proseMinutes + codeMinutes);
+  return `${totalMinutes} min read`;
 };
 
 const readingTime = getReadingTime(post.body || '');
 
-type HeroImageInput = string | { src: string; [key: string]: unknown } | null | undefined;
+const sidebarMetadataItems = [
+  {
+    label: 'Written',
+    value: formatDate(post.data.date),
+    datetime: post.data.date.toISOString(),
+    itemprop: 'datePublished',
+  },
+  ...(post.data.lastUpdated
+    ? [
+        {
+          label: 'Updated',
+          value: formatDate(post.data.lastUpdated),
+          datetime: post.data.lastUpdated.toISOString(),
+          itemprop: 'dateModified',
+        },
+      ]
+    : []),
+  {
+    label: 'Length',
+    value: readingTime,
+  },
+];
 
-const mapHeroImage = (heroImage: HeroImageInput, scale?: number, posX?: number, posY?: number) => {
-  if (typeof heroImage === 'string') {
-    return {
-      kind: 'url' as const,
-      src: heroImage,
-      scale: scale ?? 1,
-      posX: posX ?? 0,
-      posY: posY ?? 0,
-    };
-  }
-
-  if (heroImage) {
-    return {
-      kind: 'asset' as const,
-      src: heroImage,
-      scale: scale ?? 1,
-      posX: posX ?? 0,
-      posY: posY ?? 0,
-    };
-  }
-
-  return undefined;
-};
+const sidebarTags = (post.data.tags ?? []).map((tag) => ({
+  label: tag,
+  itemprop: 'keywords',
+  href: `/blog?tag=${encodeURIComponent(tag)}`,
+}));
 ---
 
 <BaseLayout
@@ -103,93 +116,101 @@ const mapHeroImage = (heroImage: HeroImageInput, scale?: number, posX?: number, 
   image={typeof post.data.heroImage === 'string' ? post.data.heroImage : post.data.heroImage?.src}
   footerVariant="writing"
   tone="serious"
-  layout="prose"
-  prose={true}
+  layout="wide"
 >
   <div class="blog-post">
-    <Breadcrumb items={[{ label: 'Blog', href: '/blog' }, { label: post.data.title }]} />
-
     <article class="post-content" itemscope itemtype="https://schema.org/Article">
-      {
-        post.data.heroImage && (
-          <ImageFrame
-            src={post.data.heroImage}
-            alt={post.data.title}
-            style="hero"
-            aspectRatio="8/3"
-            scale={post.data.heroImageScale}
-            positionX={post.data.heroImagePositionX ? post.data.heroImagePositionX * 100 : 0}
-            positionY={post.data.heroImagePositionY ? post.data.heroImagePositionY * 100 : 0}
-            loading="eager"
-            width={800}
-            height={400}
-          />
-        )
-      }
+      <ReadingLayout className="post-layout">
+        <ContentSidebar
+          slot="leftRail"
+          breadcrumbs={[
+            { label: 'Home', href: '/' },
+            { label: 'Blog', href: '/blog' },
+            { label: post.data.title },
+          ]}
+          metadataItems={sidebarMetadataItems}
+          tags={sidebarTags}
+          tocMaxDepth={3}
+        />
 
-      <header class="post-header">
-        <h1 class="post-title" itemprop="headline">
-          {post.data.title}
-        </h1>
+        <div class="post-main">
+          <h1 class="post-title" itemprop="headline">
+            {post.data.title}
+          </h1>
 
-        <div class="post-meta">
-          <div class="post-dates">
-            <div class="date-item">
-              <span class="date-label">Written:</span>
-              <time
-                class="post-date"
-                datetime={post.data.date.toISOString()}
-                itemprop="datePublished"
-              >
-                {formatDate(post.data.date)}
-              </time>
-            </div>
-            {
-              post.data.lastUpdated && (
-                <div class="date-item">
-                  <span class="date-label">Updated:</span>
-                  <time
-                    class="post-date"
-                    datetime={post.data.lastUpdated.toISOString()}
-                    itemprop="dateModified"
-                  >
-                    {formatDate(post.data.lastUpdated)}
-                  </time>
-                </div>
-              )
-            }
-            <div class="date-item">
-              <span class="date-label">Length:</span>
-              <span class="reading-time">{readingTime}</span>
-            </div>
-          </div>
           {
-            post.data.tags && (
-              <ul class="post-tags" aria-label="Tags">
-                {post.data.tags.map((tag) => (
-                  <li class="tag" itemprop="keywords">
-                    #{tag}
-                  </li>
-                ))}
-              </ul>
+            post.data.description && (
+              <p class="post-description" itemprop="description">
+                {post.data.description}
+              </p>
             )
           }
+
+          {
+            post.data.heroImage && (
+              <ImageFrame
+                src={post.data.heroImage}
+                alt={post.data.title}
+                style="hero"
+                aspectRatio="3/1"
+                fillMode="contain"
+                scale={
+                  post.data.heroImageScale !== undefined && post.data.heroImageScale !== 1
+                    ? post.data.heroImageScale
+                    : undefined
+                }
+                positionX={
+                  post.data.heroImagePositionX !== undefined && post.data.heroImagePositionX !== 0
+                    ? post.data.heroImagePositionX * 100
+                    : undefined
+                }
+                positionY={
+                  post.data.heroImagePositionY !== undefined && post.data.heroImagePositionY !== 0
+                    ? post.data.heroImagePositionY * 100
+                    : undefined
+                }
+                loading="eager"
+                width={800}
+                height={267}
+              />
+            )
+          }
+
+          {
+            /* Inline sidebar: visible on mobile/tablet (<1200px), hidden on desktop.
+               Desktop uses the ContentSidebar in slot="leftRail" above.
+               Both use display:none at the inactive breakpoint, so only one
+               is ever in the a11y tree at a time. */
+          }
+          <div class="inline-sidebar-wrap">
+            <ContentSidebar
+              breadcrumbs={[
+                { label: 'Home', href: '/' },
+                { label: 'Blog', href: '/blog' },
+                { label: post.data.title },
+              ]}
+              metadataItems={sidebarMetadataItems}
+              tags={sidebarTags}
+              tocMaxDepth={3}
+            />
+          </div>
+
+          <FaintLineDivider width="wide" />
+
+          <section
+            id="post-body"
+            class="post-body prose"
+            itemprop="articleBody"
+            data-pagefind-body
+            data-pagefind-filter="type:blog"
+          >
+            <Content components={{ Image }} />
+          </section>
         </div>
-      </header>
 
-      <TableOfContents maxDepth={3} />
-
-      <FaintLineDivider width="wide" />
-
-      <section
-        id="post-body"
-        class="post-body prose"
-        itemprop="articleBody"
-        data-pagefind-body
-        data-pagefind-filter="type:blog"
-      >
-        <Content />
-      </section>
+        <div slot="rightRail" class="margin-notes-layer post-notes-layer" data-margin-notes-layer>
+        </div>
+      </ReadingLayout>
 
       <aside class="footnotes-area" aria-label="Footnotes"></aside>
 
@@ -222,28 +243,17 @@ const mapHeroImage = (heroImage: HeroImageInput, scale?: number, posX?: number, 
           relatedPosts.length > 0 && (
             <section class="related-posts" aria-label="Related posts">
               <h2 class="related-title">Related Posts</h2>
-              <NoteCardStack
+              <ListingCardStack
+                profile="related"
                 columns="auto"
                 itemMinWidth="280px"
-                aspectRatio="8/3"
-                items={relatedPosts.map((relatedPost) => ({
-                  id: relatedPost.id,
-                  title: relatedPost.data.title,
-                  subtitle: relatedPost.data.description,
-                  href: `/blog/${relatedPost.id}`,
-                  writtenDate: formatDate(relatedPost.data.date),
-                  updatedDate: relatedPost.data.lastUpdated
-                    ? formatDate(relatedPost.data.lastUpdated)
-                    : undefined,
-                  tags: relatedPost.data.tags ?? [],
-                  year: new Date(relatedPost.data.date).getFullYear(),
-                  hero: mapHeroImage(
-                    relatedPost.data.heroImage,
-                    relatedPost.data.heroImageScale,
-                    relatedPost.data.heroImagePositionX,
-                    relatedPost.data.heroImagePositionY
-                  ),
-                }))}
+                aspectRatio="3/1"
+                items={relatedPosts.map((relatedPost) =>
+                  fromBlogEntry(relatedPost, {
+                    idPrefix: 'stack',
+                    tagHref: (tag) => `/blog?tag=${encodeURIComponent(tag)}`,
+                  })
+                )}
               />
             </section>
           )
@@ -251,32 +261,13 @@ const mapHeroImage = (heroImage: HeroImageInput, scale?: number, posX?: number, 
       </footer>
     </article>
   </div>
+  <BlogPostScripts slot="scripts" />
 </BaseLayout>
-
-<script>
-  // Convert Quarto-style "> margin:" blockquotes into inline anchors with data-note
-  document.addEventListener('DOMContentLoaded', function () {
-    const blockquotes = document.querySelectorAll('.post-body blockquote');
-    blockquotes.forEach((blockquote) => {
-      const firstP = blockquote.querySelector('p:first-child');
-      if (!firstP || !firstP.textContent) return;
-      const raw = firstP.textContent.trim();
-      if (!/^margin:/i.test(raw)) return;
-      const noteText = raw.replace(/^margin:\s*/i, '').trim();
-      // Replace the blockquote with a span anchor placed before it, then remove the blockquote
-      const anchor = document.createElement('span');
-      anchor.className = 'note-anchor';
-      anchor.textContent = '';
-      anchor.setAttribute('data-note', noteText);
-      blockquote.parentElement?.insertBefore(anchor, blockquote);
-      blockquote.remove();
-    });
-  });
-</script>
 
 <style>
   .blog-post {
     max-width: 100%;
+    margin-top: calc(-1 * var(--space-xs));
   }
 
   .post-content {
@@ -284,8 +275,33 @@ const mapHeroImage = (heroImage: HeroImageInput, scale?: number, posX?: number, 
     position: relative;
   }
 
-  .post-header {
+  /* Main Content Styling */
+  .post-main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    min-width: 0;
+  }
+
+  .post-notes-layer {
     position: relative;
+    width: 100%;
+  }
+
+  .post-description {
+    font-style: italic;
+    font-size: var(--text-lg);
+    color: var(--color-ink-medium);
+    line-height: 1.55;
+    text-align: center;
+    margin: 0;
+  }
+
+  /* Hero follows title/description — give it breathing room above.
+     Blog heroes are atmospheric/vibes; keep them compact. */
+  .post-main :global(.image-frame-hero) {
+    margin-top: var(--space-xs);
+    max-height: 280px;
   }
 
   .post-title {
@@ -293,96 +309,7 @@ const mapHeroImage = (heroImage: HeroImageInput, scale?: number, posX?: number, 
     align-items: baseline;
     gap: 0.15em;
     flex-wrap: wrap;
-    text-align: center;
-    justify-content: center;
-    margin-bottom: var(--space-xs);
-  }
-  .post-title .title-initial {
-    display: inline-flex;
-    line-height: 1;
-  }
-  .post-title .title-rest {
-    display: inline;
-  }
-
-  .post-meta {
-    position: absolute;
-    right: -220px;
-    top: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: var(--space-sm);
-    width: 200px;
-  }
-
-  .post-dates {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-xxs);
-  }
-
-  .date-item {
-    display: flex;
-    align-items: baseline;
-    gap: 0.35em;
-    text-align: right;
-  }
-
-  .date-label {
-    font-size: var(--text-xs);
-    color: var(--color-text-muted);
-    font-weight: 500;
-    letter-spacing: 0.05em;
-    white-space: nowrap;
-  }
-
-  .post-date {
-    font-size: var(--text-xs);
-    color: var(--color-ink-light);
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    white-space: nowrap;
-  }
-
-  .reading-time {
-    font-size: var(--text-xs);
-    color: var(--color-ink-light);
-    font-weight: 500;
-    white-space: nowrap;
-  }
-
-  .post-tags {
-    display: flex;
-    gap: 0.25rem;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    list-style: none;
     margin: 0;
-    padding: 0;
-  }
-
-  .tag {
-    position: relative;
-    font-size: var(--text-2xs, 0.7rem);
-    color: var(--color-accent-secondary);
-    background: var(--wash-sage);
-    padding: 0.15em 0.5em;
-    border-radius: 999px;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-    border: 1px solid var(--color-lichen);
-    text-decoration: none;
-  }
-
-  .tag:hover {
-    color: var(--color-link-hover);
-    background: color-mix(in srgb, var(--wash-sage) 60%, transparent);
-    border-color: var(--color-sage);
-  }
-
-  .post-title {
     font-size: clamp(var(--text-2xl), 5vw, var(--text-3xl));
     line-height: 1.2;
     color: var(--color-ink-dark);
@@ -390,9 +317,19 @@ const mapHeroImage = (heroImage: HeroImageInput, scale?: number, posX?: number, 
     font-weight: var(--font-weight-semibold);
   }
 
+  .post-title .title-initial {
+    display: inline-flex;
+    line-height: 1;
+  }
+
+  .post-title .title-rest {
+    display: inline;
+  }
+
   .post-body :global(figure) {
     margin: var(--space-xl) auto;
   }
+
   .post-body :global(figcaption) {
     font-size: var(--text-xs);
     color: var(--color-ink-light);
@@ -403,26 +340,30 @@ const mapHeroImage = (heroImage: HeroImageInput, scale?: number, posX?: number, 
 
   .post-body :global(section.footnotes),
   .footnotes-area :global(section.footnotes) {
-    border-top: 1px solid rgba(139, 90, 60, 0.15);
+    border-top: 1px solid color-mix(in oklab, var(--color-walnut) 15%, transparent);
     margin-top: var(--space-xl);
     padding-top: var(--space-md);
   }
+
   .post-body :global(section.footnotes ol) {
     padding-left: var(--space-lg);
   }
+
   .post-body :global(section.footnotes li) {
     margin-bottom: var(--space-sm);
   }
+
   .post-body :global(a.footnote-backref) {
     text-decoration: none;
     color: var(--color-walnut);
     border-bottom: 1px dotted var(--color-walnut);
   }
 
+  /* Footer Styling */
   .post-footer {
     margin-top: var(--space-xxl);
     padding-top: var(--space-lg);
-    border-top: 1px solid rgba(139, 90, 60, 0.1);
+    border-top: 1px solid color-mix(in oklab, var(--color-walnut) 10%, transparent);
   }
 
   .post-navigation {
@@ -447,21 +388,25 @@ const mapHeroImage = (heroImage: HeroImageInput, scale?: number, posX?: number, 
 
   /* Navigation Links */
   .nav-links {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-lg);
-    margin-bottom: var(--space-lg);
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
   }
 
   .nav-link {
-    display: flex;
+    display: inline-flex;
     flex-direction: column;
-    padding: var(--space-md);
+    padding: var(--space-sm) var(--space-sm);
     border: 1px solid var(--color-lichen);
     border-radius: var(--border-radius);
     text-decoration: none;
     transition: all var(--transition-fast);
     background: var(--color-surface);
+    min-width: min(16rem, 100%);
+    max-width: 19rem;
   }
 
   .prev-link {
@@ -470,7 +415,6 @@ const mapHeroImage = (heroImage: HeroImageInput, scale?: number, posX?: number, 
 
   .next-link {
     text-align: right;
-    grid-column: 2;
   }
 
   .nav-direction {
@@ -491,14 +435,14 @@ const mapHeroImage = (heroImage: HeroImageInput, scale?: number, posX?: number, 
 
   .nav-link:hover {
     border-color: var(--color-sage);
-    background: rgba(168, 181, 160, 0.05);
+    background: color-mix(in oklab, var(--color-sage) 5%, transparent);
   }
 
   /* Related Posts */
   .related-posts {
     margin-top: var(--space-xl);
     padding-top: var(--space-lg);
-    border-top: 1px solid rgba(139, 90, 60, 0.1);
+    border-top: 1px solid color-mix(in oklab, var(--color-walnut) 10%, transparent);
   }
 
   .related-title {
@@ -509,58 +453,24 @@ const mapHeroImage = (heroImage: HeroImageInput, scale?: number, posX?: number, 
     text-align: center;
   }
 
-  /* Margin Notes Styling - Applied via JavaScript */
-  .post-body.prose :global(.margin-note) {
-    position: absolute !important;
-    left: 82%;
-    width: 200px;
-    font-size: var(--text-sm);
-    color: var(--color-text-muted);
-    line-height: 1.4;
-    padding: var(--space-xs);
-    background: color-mix(in srgb, var(--color-surface) 90%, transparent) !important;
-    border-left: 2px solid var(--color-sage) !important;
-    border-radius: 0 var(--border-radius) var(--border-radius) 0;
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--color-sage) 10%, transparent);
-    font-style: normal !important;
-    margin: 0 !important;
-  }
+  @media (min-width: 1200px) {
+    .post-title {
+      text-align: center;
+    }
 
-  /* Remove the decorative quote from margin notes */
-  .post-body.prose :global(.margin-note::before) {
-    display: none !important;
-  }
+    .inline-sidebar-wrap {
+      display: none;
+    }
 
-  @media (max-width: 1400px) {
-    .post-body.prose :global(.margin-note) {
-      display: none !important;
+    .post-main {
+      gap: var(--space-xs);
     }
   }
 
-  @media (max-width: 1400px) {
-    .post-meta {
-      position: static;
-      width: auto;
-      align-items: flex-start;
-      flex-direction: row;
-      justify-content: flex-start;
-      margin-top: var(--space-sm);
-      gap: var(--space-lg);
-    }
-
-    .post-tags {
-      justify-content: flex-start;
-    }
-  }
-
-  @media (max-width: 768px) {
+  /* Mobile and Tablet Styling (< 768px) */
+  @media (max-width: 767px) {
     .post-content {
-      padding: var(--space-lg) var(--space-md);
-    }
-
-    .post-meta {
-      flex-direction: column;
-      gap: var(--space-sm);
+      padding: var(--space-md);
     }
 
     .post-title {
@@ -568,12 +478,40 @@ const mapHeroImage = (heroImage: HeroImageInput, scale?: number, posX?: number, 
     }
 
     .nav-links {
-      grid-template-columns: 1fr;
+      flex-direction: column;
+      align-items: stretch;
       gap: var(--space-md);
     }
 
-    .next-link {
-      grid-column: 1;
+    .nav-link {
+      min-width: 0;
+      max-width: none;
+      width: 100%;
+    }
+  }
+
+  /* Tablet Styling (768px - 1199px) - Compact stacked layout */
+  @media (min-width: 768px) and (max-width: 1199px) {
+    .post-content {
+      padding: var(--space-md);
+    }
+  }
+
+  @media (max-width: 1199px) {
+    .post-title {
+      text-align: center;
+    }
+
+    .post-main {
+      gap: var(--space-xxs);
+    }
+
+    .inline-sidebar-wrap {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--color-background);
+      padding-block: var(--space-xxs);
     }
   }
 </style>

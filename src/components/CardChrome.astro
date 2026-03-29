@@ -1,0 +1,118 @@
+---
+import type { CardStyleResult } from '../lib/cards/styleEngine';
+
+interface Props {
+  styleResult: CardStyleResult;
+  class?: string;
+}
+
+const { styleResult, class: className } = Astro.props as Props;
+
+const hasBookmark = !!styleResult.doodads.bookmarkRibbon.active;
+const hasTape = !!styleResult.doodads.tapeCorners.active;
+const bookmarkSide = styleResult.doodads.bookmarkRibbon.side || 'right';
+const showTab = !!styleResult.doodads.tab.active;
+const showOrnament = !!styleResult.doodads.spriteOrnament.active;
+const ornamentVariant = styleResult.doodads.spriteOrnament.variant || 0;
+const showLeafDoodle = !!styleResult.doodads.leafDoodle.active;
+const showCircleBookmark = !!styleResult.doodads.circleBookmark.active;
+const showStickerTR = !!styleResult.doodads.stickerTR.active;
+const showStickerBL = !!styleResult.doodads.stickerBL.active;
+
+const dataBookmark = hasBookmark ? (bookmarkSide === 'right' ? 'right' : 'left') : 'none';
+const dataTape = hasTape ? 'corners' : 'none';
+const dataWash = styleResult.doodads.wash.active ? 'active' : 'none';
+const dataRing = styleResult.doodads.ring.active ? 'active' : 'none';
+
+const styleInline = Object.entries(styleResult.cssVars)
+  .map(([key, value]) => `${key}: ${value}`)
+  .join('; ');
+---
+
+<article
+  class={`sc-card ${className || ''}`}
+  style={styleInline}
+  data-bookmark={dataBookmark}
+  data-tape={dataTape}
+  data-wash={dataWash}
+  data-ring={dataRing}
+  data-layers={String(styleResult.layers)}
+  data-ornament-variant={String(ornamentVariant)}
+>
+  {styleResult.layers >= 3 && <i class="sc-layer-c" aria-hidden="true" />}
+  {styleResult.layers >= 4 && <i class="sc-layer-d" aria-hidden="true" />}
+  {
+    hasBookmark && (
+      <i class={`sc-bookmark ${bookmarkSide === 'left' ? 'left' : 'right'}`} aria-hidden="true" />
+    )
+  }
+  {
+    hasTape && (
+      <>
+        <i class="sc-tape left" aria-hidden="true" />
+        <i class="sc-tape right" aria-hidden="true" />
+      </>
+    )
+  }
+  {showStickerTR && <i class="sc-sticker tr" aria-hidden="true" />}
+  {showStickerBL && <i class="sc-sticker bl" aria-hidden="true" />}
+  {showCircleBookmark && <i class="sc-circle-bookmark" aria-hidden="true" />}
+  {showTab && <i class="sc-tab" aria-hidden="true" />}
+
+  <div class="sc-face">
+    <div class="sc-content">
+      <slot />
+
+      {showOrnament && <i class="sc-ornament" aria-hidden="true" />}
+      {
+        showLeafDoodle && (
+          <div class="sc-leaf-doodle" aria-hidden="true">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" />
+              <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" />
+            </svg>
+          </div>
+        )
+      }
+
+      {
+        styleResult.doodads.svgDoodles.map((doodle) => {
+          const position = doodle.position || 'center';
+          const transforms = [];
+
+          if (position === 'center') {
+            transforms.push('translate(-50%, -50%)');
+          }
+
+          if (doodle.rotation) transforms.push(`rotate(${doodle.rotation}deg)`);
+          if (doodle.scale) transforms.push(`scale(${doodle.scale})`);
+
+          const transformStyle = transforms.length > 0 ? `transform: ${transforms.join(' ')};` : '';
+          const sizeStyle = doodle.defaultSize
+            ? `width: ${doodle.defaultSize}; height: ${doodle.defaultSize};`
+            : '';
+          const maskVar = `--doodle-src: url(${doodle.src});`;
+          const combinedStyle = [transformStyle, sizeStyle, maskVar].filter(Boolean).join(' ');
+
+          return (
+            <div
+              class={`sc-svg-doodle sc-${doodle.id} ${position}`}
+              style={combinedStyle || undefined}
+              aria-hidden="true"
+            />
+          );
+        })
+      }
+    </div>
+  </div>
+</article>

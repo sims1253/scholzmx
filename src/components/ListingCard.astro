@@ -1,0 +1,257 @@
+---
+import ImageFrame from './ImageFrame.astro';
+import CardChrome from './CardChrome.astro';
+import type { CardLayout, CardMetaItem, ListCardItem } from '../lib/cards/types';
+import type { CardStyleResult } from '../lib/cards/styleEngine';
+
+interface Props {
+  item: ListCardItem;
+  styleResult: CardStyleResult;
+  headingLevel?: 2 | 3 | 4;
+  layout?: CardLayout;
+  defaultAspectRatio?: string;
+  imageLoading?: 'lazy' | 'eager';
+  class?: string;
+}
+
+const {
+  item,
+  styleResult,
+  headingLevel = 2,
+  layout = 'stacked',
+  defaultAspectRatio = '8/3',
+  imageLoading = 'lazy',
+  class: className,
+} = Astro.props as Props;
+
+const HeadingTag = `h${headingLevel}` as 'h2' | 'h3' | 'h4';
+const dateItems = (item.meta ?? []).filter(
+  (meta): meta is Extract<CardMetaItem, { kind: 'date' }> => {
+    return meta.kind === 'date';
+  }
+);
+const textItems = (item.meta ?? []).filter(
+  (meta): meta is Extract<CardMetaItem, { kind: 'text' }> => {
+    return meta.kind === 'text';
+  }
+);
+const tagItems = (item.meta ?? []).filter(
+  (meta): meta is Extract<CardMetaItem, { kind: 'tag' }> => {
+    return meta.kind === 'tag';
+  }
+);
+
+const showMeta = dateItems.length > 0 || textItems.length > 0 || tagItems.length > 0;
+const hero = item.hero;
+const heroAspectRatio = hero?.aspectRatio ?? defaultAspectRatio;
+const useMediaShell = hero?.shell !== 'plain';
+---
+
+<CardChrome styleResult={styleResult} class={className}>
+  {
+    layout === 'side' ? (
+      <div class="sc-row">
+        <div class="sc-col content">
+          {item.href ? (
+            <HeadingTag class="sc-title">
+              <a href={item.href} class="sc-title-link" aria-label={item.title}>
+                {item.title}
+              </a>
+            </HeadingTag>
+          ) : (
+            <HeadingTag class="sc-title">{item.title}</HeadingTag>
+          )}
+          {item.description && <p class="sc-subtitle">{item.description}</p>}
+
+          {showMeta && (
+            <div class="sc-meta">
+              {(dateItems.length > 0 || textItems.length > 0) && (
+                <div class="sc-dates">
+                  {dateItems.map((meta) => (
+                    <div class="sc-date-item">
+                      {meta.label && <span class="sc-date-label">{meta.label}:</span>}
+                      {meta.datetime ? (
+                        <time class="sc-date" datetime={meta.datetime}>
+                          {meta.value}
+                        </time>
+                      ) : (
+                        <span class="sc-date">{meta.value}</span>
+                      )}
+                    </div>
+                  ))}
+                  {textItems.map((meta) => (
+                    <div class="sc-date-item">
+                      {meta.label && <span class="sc-date-label">{meta.label}:</span>}
+                      <span class="sc-date">{meta.value}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {tagItems.length > 0 && (
+                <div class="sc-tags">
+                  {tagItems.map((meta) =>
+                    meta.href ? (
+                      <a
+                        class="sc-chip"
+                        href={meta.href}
+                        target={meta.external ? '_blank' : undefined}
+                        rel={meta.external ? 'noopener noreferrer' : undefined}
+                      >
+                        {meta.label}
+                      </a>
+                    ) : (
+                      <span class="sc-chip">{meta.label}</span>
+                    )
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {hero && (
+          <div class={`sc-col media ${hero.containerClass || ''}`.trim()}>
+            {useMediaShell ? (
+              <div
+                class={`sc-media ${hero.containerClass || ''}`.trim()}
+                style={`--sc-media-aspect: ${heroAspectRatio};`}
+              >
+                <ImageFrame
+                  src={hero.src}
+                  alt={hero.alt}
+                  aspectRatio={heroAspectRatio}
+                  style="simple"
+                  fillMode={hero.fillMode ?? 'contain'}
+                  loading={imageLoading}
+                  positionX={
+                    hero.posX !== undefined && hero.posX !== 0 ? hero.posX * 100 : undefined
+                  }
+                  positionY={
+                    hero.posY !== undefined && hero.posY !== 0 ? hero.posY * 100 : undefined
+                  }
+                  scale={hero.scale !== undefined && hero.scale !== 1 ? hero.scale : undefined}
+                  width={hero.width}
+                  height={hero.height}
+                  containerClass="tw-w-full"
+                />
+              </div>
+            ) : (
+              <ImageFrame
+                src={hero.src}
+                alt={hero.alt}
+                style="simple"
+                fillMode={hero.fillMode ?? 'contain'}
+                loading={imageLoading}
+                positionX={hero.posX !== undefined && hero.posX !== 0 ? hero.posX * 100 : undefined}
+                positionY={hero.posY !== undefined && hero.posY !== 0 ? hero.posY * 100 : undefined}
+                scale={hero.scale !== undefined && hero.scale !== 1 ? hero.scale : undefined}
+                width={hero.width}
+                height={hero.height}
+                containerClass="tw-w-full"
+              />
+            )}
+          </div>
+        )}
+      </div>
+    ) : (
+      <>
+        {hero &&
+          (useMediaShell ? (
+            <div
+              class={`sc-media ${hero.containerClass || ''}`.trim()}
+              style={`--sc-media-aspect: ${heroAspectRatio};`}
+            >
+              <ImageFrame
+                src={hero.src}
+                alt={hero.alt}
+                aspectRatio={heroAspectRatio}
+                style="simple"
+                fillMode={hero.fillMode ?? 'contain'}
+                loading={imageLoading}
+                positionX={hero.posX !== undefined && hero.posX !== 0 ? hero.posX * 100 : undefined}
+                positionY={hero.posY !== undefined && hero.posY !== 0 ? hero.posY * 100 : undefined}
+                scale={hero.scale !== undefined && hero.scale !== 1 ? hero.scale : undefined}
+                width={hero.width}
+                height={hero.height}
+                containerClass="tw-w-full"
+              />
+            </div>
+          ) : (
+            <div class={hero.containerClass}>
+              <ImageFrame
+                src={hero.src}
+                alt={hero.alt}
+                style="simple"
+                fillMode={hero.fillMode ?? 'contain'}
+                loading={imageLoading}
+                positionX={hero.posX !== undefined && hero.posX !== 0 ? hero.posX * 100 : undefined}
+                positionY={hero.posY !== undefined && hero.posY !== 0 ? hero.posY * 100 : undefined}
+                scale={hero.scale !== undefined && hero.scale !== 1 ? hero.scale : undefined}
+                width={hero.width}
+                height={hero.height}
+                containerClass="tw-w-full"
+              />
+            </div>
+          ))}
+
+        {item.href ? (
+          <HeadingTag class="sc-title">
+            <a href={item.href} class="sc-title-link" aria-label={item.title}>
+              {item.title}
+            </a>
+          </HeadingTag>
+        ) : (
+          <HeadingTag class="sc-title">{item.title}</HeadingTag>
+        )}
+        {item.description && <p class="sc-subtitle">{item.description}</p>}
+
+        {showMeta && (
+          <div class="sc-meta">
+            {(dateItems.length > 0 || textItems.length > 0) && (
+              <div class="sc-dates">
+                {dateItems.map((meta) => (
+                  <div class="sc-date-item">
+                    {meta.label && <span class="sc-date-label">{meta.label}:</span>}
+                    {meta.datetime ? (
+                      <time class="sc-date" datetime={meta.datetime}>
+                        {meta.value}
+                      </time>
+                    ) : (
+                      <span class="sc-date">{meta.value}</span>
+                    )}
+                  </div>
+                ))}
+                {textItems.map((meta) => (
+                  <div class="sc-date-item">
+                    {meta.label && <span class="sc-date-label">{meta.label}:</span>}
+                    <span class="sc-date">{meta.value}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {tagItems.length > 0 && (
+              <div class="sc-tags">
+                {tagItems.map((meta) =>
+                  meta.href ? (
+                    <a
+                      class="sc-chip"
+                      href={meta.href}
+                      target={meta.external ? '_blank' : undefined}
+                      rel={meta.external ? 'noopener noreferrer' : undefined}
+                    >
+                      {meta.label}
+                    </a>
+                  ) : (
+                    <span class="sc-chip">{meta.label}</span>
+                  )
+                )}
+              </div>
+            )}
+          </div>
+        )}
+      </>
+    )
+  }
+</CardChrome>

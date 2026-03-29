@@ -14,31 +14,53 @@
 
 /* Personal variant - warm and playful for welcome/recipes */
 .dropcap--personal {
-  font-size: calc(
-    4.3rem * var(--font-scale, 1)
-  ); /* ~2.7 lines at 1.6 line-height, sized for optical alignment */
+  font-size: calc(4.35rem * var(--font-scale, 1));
   line-height: 1;
-  margin-right: 0.06em;
-  margin-top: 0.11em; /* Mobile default */
+  margin-right: 0.055em;
+  margin-top: 0.09em;
   font-weight: 500;
+}
+
+/* MOBILE FIX: Scale down drop cap on mobile to prevent awkward wrapping */
+@media (max-width: 640px) {
+  .dropcap--personal {
+    font-size: calc(3.1rem * var(--font-scale, 1));
+    margin-right: 0.045em;
+    margin-top: 0.07em;
+  }
 }
 
 /* Container query for larger prose containers */
 @container (min-width: 768px) {
   .dropcap--personal {
-    margin-top: 0.05em; /* Desktop: move dropcap up */
+    margin-top: 0.08em;
   }
 }
 
 /* Serious variant - formal and elegant for blog/notes */
 .dropcap--serious {
-  font-size: calc(
-    4.15rem * var(--font-scale, 1)
-  ); /* ~2.7 lines at 1.55 line-height, sized for optical alignment */
+  font-size: calc(4.25rem * var(--font-scale, 1));
   line-height: 1;
-  margin-right: 0.06em;
-  margin-top: 0.03em;
+  margin-right: 0.055em;
+  margin-top: 0.08em;
   font-weight: 500;
+}
+
+/* MOBILE FIX: Scale down drop cap on mobile to prevent awkward wrapping */
+@media (max-width: 640px) {
+  .dropcap--serious {
+    font-size: calc(3rem * var(--font-scale, 1));
+    margin-right: 0.045em;
+    margin-top: 0.06em;
+  }
+}
+
+@media (max-width: 480px) {
+  .dropcap--personal,
+  .dropcap--serious {
+    font-size: calc(2.6rem * var(--font-scale, 1));
+    margin-right: 0.04em;
+  }
 }
 
 /* Simple */

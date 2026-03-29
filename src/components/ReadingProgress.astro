@@ -1,4 +1,6 @@
 ---
+import '../styles/reading-progress.css';
+
 export interface Props {
   color?: 'moss' | 'walnut' | 'tansy';
   height?: number;
@@ -21,6 +23,9 @@ const progressHeight = height;
   style={`--reading-progress-height: ${progressHeight}px;`}
   role="progressbar"
   aria-label="Reading progress"
+  aria-valuemin="0"
+  aria-valuemax="100"
+  aria-valuenow="0"
 >
   <div class="progress-bar" style={`background-color: ${progressColor};`}></div>
   <svg class="progress-leaf" viewBox="0 0 20 20" width="12" height="12" aria-hidden="true">
@@ -30,123 +35,6 @@ const progressHeight = height;
   </svg>
 </div>
 
-<style is:global>
-  .reading-progress {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: var(--reading-progress-height, 3px);
-    background: color-mix(in srgb, var(--color-lichen) 30%, transparent);
-    z-index: 9999;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-  }
-
-  .progress-bar {
-    height: 100%;
-    width: 0%;
-    transition: width 0.1s linear;
-    position: relative;
-  }
-
-  .progress-leaf {
-    position: absolute;
-    right: -6px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: currentColor;
-    opacity: 0;
-    transition:
-      opacity 0.2s ease,
-      transform 0.2s ease;
-  }
-
-  .reading-progress.has-progress .progress-leaf {
-    opacity: 0.8;
-    transform: translateY(-50%) rotate(90deg);
-  }
-
-  /* Hide on pages without prose content */
-  .reading-progress.hidden {
-    opacity: 0;
-  }
-
-  /* Mobile: make bar slightly more visible */
-  @media (max-width: 768px) {
-    .reading-progress {
-      height: calc(var(--reading-progress-height) + 1px);
-    }
-
-    .progress-leaf {
-      width: 14px;
-      height: 14px;
-      right: -7px;
-    }
-  }
-
-  /* Reduced motion */
-  @media (prefers-reduced-motion: reduce) {
-    .progress-bar {
-      transition: none;
-    }
-
-    .progress-leaf {
-      transition: none;
-    }
-  }
-</style>
-
 <script>
-  let initialized = false;
-
-  function initReadingProgress() {
-    if (initialized) return;
-    initialized = true;
-
-    const progressBar = document.querySelector('.reading-progress') as HTMLElement;
-    if (!progressBar) return;
-
-    const proseContent = document.querySelector('.prose') as HTMLElement;
-    if (!proseContent) {
-      progressBar.classList.add('hidden');
-      return;
-    }
-
-    const bar = progressBar.querySelector('.progress-bar') as HTMLElement;
-    if (!bar) return;
-
-    let ticking = false;
-
-    function updateProgress() {
-      if (ticking) return;
-      ticking = true;
-
-      requestAnimationFrame(() => {
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-        const progress = Math.min((scrollTop / docHeight) * 100, 100);
-
-        bar.style.width = `${progress}%`;
-
-        if (progress > 5) {
-          progressBar.classList.add('has-progress');
-        } else {
-          progressBar.classList.remove('has-progress');
-        }
-
-        ticking = false;
-      });
-    }
-
-    window.addEventListener('scroll', updateProgress, { passive: true });
-    window.addEventListener('resize', updateProgress, { passive: true });
-    updateProgress();
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initReadingProgress);
-  } else {
-    initReadingProgress();
-  }
+  import '../scripts/reading-progress';
 </script>

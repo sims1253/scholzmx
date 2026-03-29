@@ -2,6 +2,16 @@
   /* ===== Motion Tokens ===== */
 
   /* Transition timing (consistent interaction feedback) */
-  --transition-fast: 0.15s ease; /* Quick state changes */
-  --transition-medium: 0.3s ease; /* Standard UI transitions */
+  --transition-fast: 0.15s ease-out; /* Quick state changes — fast-start feel */
+  --transition-medium: 0.3s ease-in-out; /* Standard UI transitions — smooth state changes */
+  --transition-slow: 0.45s ease-in-out; /* Slower, mood-setting transitions */
+
+  /* Common animation durations */
+  --duration-xs: 0.1s;
+  --duration-sm: 0.2s;
+  --duration-md: 0.3s;
+  --duration-lg: 0.6s;
+  --duration-loop-short: 3s;
+  --duration-loop-medium: 6s;
+  --duration-loop-long: 8s;
 }

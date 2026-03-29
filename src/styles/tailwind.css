@@ -1,2 +1,55 @@
-/* Utilities-only to preserve your base/typography (no Preflight) */
+/* Utilities-only to preserve base typography choices (no Preflight) */
 @import url('tailwindcss/utilities');
+
+/* Tailwind v4 CSS-first token bridge to the site design tokens */
+@theme inline {
+  --color-ink-dark: var(--color-ink-dark);
+  --color-ink-medium: var(--color-ink-medium);
+  --color-ink-light: var(--color-ink-light);
+  --color-ink-plate: var(--color-ink-plate);
+  --color-parchment: var(--color-parchment);
+  --color-parchment-light: var(--color-parchment-light);
+  --color-walnut: var(--color-walnut);
+  --color-ochre: var(--color-ochre);
+  --color-clay: var(--color-clay);
+  --color-moss: var(--color-moss);
+  --color-sage: var(--color-sage);
+  --color-lichen: var(--color-lichen);
+  --color-iron: var(--color-iron);
+  --color-surface: var(--color-surface);
+  --color-background: var(--color-background);
+
+  --font-serif: var(--font-body-serious);
+  --font-human: var(--font-body-personal);
+  --font-heading: var(--font-heading);
+  --font-mono: var(--font-mono);
+
+  --spacing-xs: var(--space-xs);
+  --spacing-sm: var(--space-sm);
+  --spacing-md: var(--space-md);
+  --spacing-lg: var(--space-lg);
+  --spacing-xl: var(--space-xl);
+
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 56rem;
+  --breakpoint-lg: 72rem;
+  --breakpoint-xl: 90rem;
+
+  --max-width-prose: var(--measure-prose, 60ch);
+  --max-width-prose-wide: var(--measure-wide, 80rem);
+  --max-width-prose-personal: var(--measure-prose, 58ch);
+}
+
+@custom-variant dark (&:where(.dark, .dark *, [data-theme='dark'], [data-theme='dark'] *));
+
+/* Project utility aliases not provided by core Tailwind tokens */
+@layer utilities {
+  .tw-w-fluid {
+    width: clamp(20rem, 50vw, 60rem);
+  }
+
+  .tw-min-touch {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}

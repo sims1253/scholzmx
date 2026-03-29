@@ -25,14 +25,14 @@ Built with [Astro](https://astro.build) because it lets me write content in Quar
 ### Key Components
 - `DropCap.astro` - Those decorative first letters you see in posts
 - `PaperTexture.astro` - Subtle background textures for that manuscript feel
-- `StackedCard.astro` - Cards with the doodad system (more on that below)
-- `MarginNote.astro` - Sidenotes that appear in the right margin
+- `ListingCard.astro` + `ListingCardStack.astro` - Card/listing system powered by doodads
+- `MarginNotesScripts.astro` - Client-side margin note behavior for `> margin:` blocks
 
 ### The Doodad System
 Random decorative elements that make cards feel more organic. SVG doodles, background effects, and visual variety that makes the site feel alive. See `DOODAD_GUIDE.md` for the technical details.
 
 ### Blog Pipeline
-I write posts in Quarto (`.qmd` files) with R code, math, and citations. A build script converts them to markdown with properly optimized images. The whole process is automated in CI. See `QUARTO-TO-ASTRO-PIPELINE.md` for details.
+I write posts in Quarto (`.qmd` files) with R code, math, and citations. The build pipeline uses a manifest planner (`.cache/blog-build/manifest.json`) to decide what to render, skip, or prune, then writes collocated markdown/images for Astro. The process is automated in CI. See `QUARTO-TO-ASTRO-PIPELINE.md` for details.
 
 ## Development
 
@@ -50,11 +50,15 @@ bun run build        # Production build
 bun run preview      # Preview production build locally
 
 # Content workflow
-bun run build-blog   # Convert Quarto files to markdown (runs ./build-blog.sh)
+bun run build-blog   # Convert Quarto files to markdown (alias of scripts/build-blog-cli.ts)
+bun run build-blog --plan   # Show render/skip/prune decisions only
+bun run build-blog --force  # Force full rebuild
+bun run scripts/build-blog-cli.ts --plan   # Direct CLI invocation (same behavior)
+bun run scripts/build-blog-cli.ts --force  # Direct CLI invocation (same behavior)
 
 # Quality assurance (what CI runs)
 bun run typecheck    # TypeScript checking
-bun run lint:js      # ESLint for JS/TS/Astro files
+bun run lint:js      # Oxlint for JS/TS/Astro files
 bun run lint:css     # Stylelint for CSS
 bun run format:check # Prettier formatting check
 bun run quality:check # All of the above
@@ -65,16 +69,21 @@ bun run a11y         # Accessibility testing with pa11y
 bun run test:a11y    # Full build + a11y test
 ```
 
+`bun run build-blog` is the package script alias for `bun run scripts/build-blog-cli.ts`; both forms accept `--plan` and `--force`.
+
 ### CI/CD Pipeline
 The site has a sophisticated build process:
 
-1. **Content Render** (`content-render.yml`) - Runs when Quarto files change:
+1. **Content Render** (`content-render.yml`) - Runs on content and build-pipeline changes:
    - Sets up R environment with all necessary packages (brms, ggdag, tidyverse, etc.)
-   - Runs `./build-blog.sh` to convert `.qmd` → `.md` + optimized images
+   - Restores previous rendered-content artifact and render caches (`.cache/blog-build`, `.blog-cache`, `_freeze`)
+   - Runs `bun run scripts/build-blog-cli.ts --plan` for deterministic build decisions
+   - Runs `bun run scripts/build-blog-cli.ts` to render and prune `.qmd` outputs
+   - Uses manifest-based incremental cache in `.cache/blog-build/manifest.json`
    - Caches expensive R computations
    - Uploads rendered content as artifact
 
-2. **Quality Gates** (`ci.yml`) - Runs on every commit:
+2. **Quality Gates** (`ci.yml`) - Runs on push and pull requests:
    - TypeScript checking, linting, formatting
    - Full build test
    - Accessibility validation
@@ -89,12 +98,12 @@ The site has a sophisticated build process:
    - Builds Astro site with optimized assets
    - Deploys to GitHub Pages
 
-This means I can push Quarto files and they automatically get rendered with R, optimized, and deployed. The performance monitoring ensures the site stays fast and accessible.
+This means content and pipeline changes can trigger rendering, while the planner keeps no-op runs fast and deterministic. The performance monitoring ensures the site stays fast and accessible.
 
 ## Architecture Notes
 
 ### Image Optimization
-Images in `src/assets/` get automatic Astro optimization (WebP conversion, responsive sizing, lazy loading). The Quarto build script handles moving generated images to the right location.
+Images in `src/assets/` get automatic Astro optimization (WebP conversion, responsive sizing, lazy loading). Blog post images generated from Quarto are collocated in each post directory and still optimized by Astro.
 
 ### CSS Strategy
 - Vanilla CSS with modern features (custom properties, container queries, etc.)

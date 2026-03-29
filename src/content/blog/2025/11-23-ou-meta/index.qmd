@@ -16,13 +16,8 @@ execute:
   warning: false
   message: false
 format:
-  md:
-    variant: gfm
+  gfm:
     preserve-yaml: true
-    code-fold: false
-    code-block-bg: false
-    code-tools: false
-    title-block-style: none
 cache: true
 freeze: false
 ---

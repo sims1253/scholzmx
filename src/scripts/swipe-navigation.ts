@@ -1,15 +1,18 @@
-let initialized = false;
-let handleTouchStart: ((e: TouchEvent) => void) | null = null;
-let handleTouchEnd: ((e: TouchEvent) => void) | null = null;
+// State encapsulated in an object for clarity and easier management
+const state = {
+  initialized: false,
+  handleTouchStart: null as ((e: TouchEvent) => void) | null,
+  handleTouchEnd: null as ((e: TouchEvent) => void) | null,
+};
 
 function initSwipeNavigation() {
-  if (initialized) return;
+  if (state.initialized) return;
 
   const prevLink = document.querySelector('.prev-link') as HTMLAnchorElement;
   const nextLink = document.querySelector('.next-link') as HTMLAnchorElement;
 
   if (!prevLink && !nextLink) {
-    initialized = true;
+    state.initialized = true;
     return;
   }
 
@@ -20,12 +23,12 @@ function initSwipeNavigation() {
   const swipeThreshold = 75;
   const verticalThreshold = 30;
 
-  handleTouchStart = function (e: TouchEvent) {
+  state.handleTouchStart = function (e: TouchEvent) {
     touchStartX = e.changedTouches[0].screenX;
     touchStartY = e.changedTouches[0].screenY;
   };
 
-  handleTouchEnd = function (e: TouchEvent) {
+  state.handleTouchEnd = function (e: TouchEvent) {
     touchEndX = e.changedTouches[0].screenX;
     touchEndY = e.changedTouches[0].screenY;
     handleSwipe();
@@ -47,26 +50,26 @@ function initSwipeNavigation() {
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   if (prefersReducedMotion) {
-    initialized = true;
+    state.initialized = true;
     return;
   }
 
-  document.addEventListener('touchstart', handleTouchStart, { passive: true });
-  document.addEventListener('touchend', handleTouchEnd, { passive: true });
+  document.addEventListener('touchstart', state.handleTouchStart, { passive: true });
+  document.addEventListener('touchend', state.handleTouchEnd, { passive: true });
 
-  initialized = true;
+  state.initialized = true;
 }
 
 export function cleanupSwipeNavigation() {
-  if (handleTouchStart) {
-    document.removeEventListener('touchstart', handleTouchStart);
-    handleTouchStart = null;
+  if (state.handleTouchStart) {
+    document.removeEventListener('touchstart', state.handleTouchStart);
+    state.handleTouchStart = null;
   }
-  if (handleTouchEnd) {
-    document.removeEventListener('touchend', handleTouchEnd);
-    handleTouchEnd = null;
+  if (state.handleTouchEnd) {
+    document.removeEventListener('touchend', state.handleTouchEnd);
+    state.handleTouchEnd = null;
   }
-  initialized = false;
+  state.initialized = false;
 }
 
 if (document.readyState === 'loading') {

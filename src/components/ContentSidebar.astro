@@ -1,0 +1,334 @@
+---
+import TableOfContents from './TableOfContents.astro';
+
+export interface SidebarBreadcrumbItem {
+  label: string;
+  href?: string;
+}
+
+export interface SidebarMetadataItem {
+  label: string;
+  value: string | number;
+  datetime?: string;
+  itemprop?: string;
+}
+
+export interface SidebarTag {
+  label: string;
+  itemprop?: string;
+  href?: string;
+}
+
+export interface Props {
+  className?: string;
+  breadcrumbs: SidebarBreadcrumbItem[];
+  detailsTitle?: string;
+  metadataItems: SidebarMetadataItem[];
+  tags?: SidebarTag[];
+  tagsAriaLabel?: string;
+  tocMaxDepth?: number;
+}
+
+const {
+  className = '',
+  breadcrumbs,
+  detailsTitle,
+  metadataItems,
+  tags = [],
+  tagsAriaLabel = 'Tags',
+  tocMaxDepth = 3,
+} = Astro.props;
+---
+
+<aside class={`content-sidebar ${className}`}>
+  <nav class="sidebar-breadcrumbs" aria-label="Breadcrumbs">
+    <ol class="breadcrumb-list">
+      {
+        breadcrumbs.map((item, index) => (
+          <li class="breadcrumb-item">
+            {index > 0 && (
+              <span class="breadcrumb-separator" aria-hidden="true">
+                ›
+              </span>
+            )}
+            {item.href ? (
+              <a class="breadcrumb-link" href={item.href}>
+                {item.label}
+              </a>
+            ) : (
+              <span class="breadcrumb-current" aria-current="page">
+                {item.label}
+              </span>
+            )}
+          </li>
+        ))
+      }
+    </ol>
+  </nav>
+
+  <div class="sidebar-metadata">
+    {detailsTitle && <h3 class="sidebar-meta-title">{detailsTitle}</h3>}
+    <div class="meta-dates">
+      {
+        metadataItems.map((item) => (
+          <div class="meta-item">
+            <span class="meta-label">{item.label}:</span>
+            {item.datetime ? (
+              <time class="meta-date" datetime={item.datetime} itemprop={item.itemprop}>
+                {item.value}
+              </time>
+            ) : (
+              <span class="meta-value" itemprop={item.itemprop}>
+                {item.value}
+              </span>
+            )}
+          </div>
+        ))
+      }
+    </div>
+    {
+      tags.length > 0 && (
+        <ul class="meta-tags" aria-label={tagsAriaLabel}>
+          {tags.map((tag) => (
+            <li>
+              {tag.href ? (
+                <a class="meta-tag" href={tag.href} itemprop={tag.itemprop}>
+                  #{tag.label}
+                </a>
+              ) : (
+                <span class="meta-tag" itemprop={tag.itemprop}>
+                  #{tag.label}
+                </span>
+              )}
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+
+  <TableOfContents maxDepth={tocMaxDepth} />
+</aside>
+
+<style>
+  .content-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    min-width: 0;
+    position: static;
+  }
+
+  .sidebar-breadcrumbs {
+    font-size: var(--text-2xs);
+    color: var(--color-text-muted);
+  }
+
+  .breadcrumb-list {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .breadcrumb-item {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .breadcrumb-separator {
+    margin: 0 0.4em;
+    color: var(--color-lichen);
+    font-weight: 400;
+  }
+
+  .breadcrumb-link {
+    color: var(--color-text-muted);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  .breadcrumb-link:hover {
+    color: var(--color-walnut);
+  }
+
+  .breadcrumb-current {
+    color: var(--color-ink-light);
+    font-weight: 500;
+  }
+
+  .sidebar-metadata {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    padding-bottom: var(--space-xs);
+  }
+
+  .sidebar-meta-title {
+    font-family: var(--font-heading);
+    font-size: var(--text-2xs);
+    font-weight: 600;
+    color: var(--color-walnut);
+    text-transform: none;
+    letter-spacing: 0.02em;
+    margin: 0;
+    opacity: 0.6;
+  }
+
+  .sidebar-metadata .meta-dates {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .sidebar-metadata .meta-item {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 0.35em;
+    font-size: var(--text-2xs);
+  }
+
+  .sidebar-metadata .meta-label {
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    text-transform: none;
+    color: var(--color-text-muted);
+    opacity: 0.7;
+  }
+
+  .sidebar-metadata .meta-date,
+  .sidebar-metadata .meta-value {
+    font-weight: 400;
+    color: var(--color-ink-light);
+    letter-spacing: 0.01em;
+  }
+
+  .sidebar-metadata .meta-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .sidebar-metadata .meta-tag {
+    font-size: var(--text-2xs);
+    color: var(--color-accent-secondary);
+    padding: 0.15em 0.5em;
+    border-radius: 999px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    border: 1px solid var(--color-lichen);
+    text-decoration: none;
+    background: var(--wash-sage);
+  }
+
+  .sidebar-metadata .meta-tag:hover {
+    color: var(--color-link-hover);
+    background: color-mix(in oklab, var(--wash-sage) 60%, transparent);
+    border-color: var(--color-sage);
+  }
+
+  .content-sidebar :global(.toc-container) {
+    position: static;
+    top: auto;
+    width: 100%;
+  }
+
+  @media (min-width: 1200px) {
+    .content-sidebar {
+      position: sticky;
+      top: clamp(6.5rem, 38.2vh, 14rem);
+      align-self: start;
+      align-items: flex-end;
+      max-height: calc(100dvh - clamp(6.5rem, 38.2vh, 14rem) - var(--space-md));
+      overflow-y: auto;
+      padding-right: var(--space-xxs);
+      gap: var(--space-sm);
+    }
+
+    .content-sidebar > * {
+      width: min(100%, var(--sidebar-width));
+    }
+
+    .sidebar-breadcrumbs {
+      text-align: right;
+    }
+
+    .breadcrumb-list {
+      justify-content: flex-end;
+    }
+
+    .sidebar-metadata {
+      text-align: right;
+    }
+
+    .sidebar-metadata .meta-item {
+      justify-content: flex-end;
+    }
+
+    .sidebar-metadata .meta-tags {
+      justify-content: flex-end;
+    }
+
+    .content-sidebar :global(.toc-container) {
+      width: fit-content;
+      max-width: var(--sidebar-width);
+      align-self: flex-end;
+    }
+  }
+
+  @media (max-width: 1199px) {
+    .content-sidebar {
+      gap: 0;
+    }
+
+    .sidebar-breadcrumbs {
+      margin-bottom: 0;
+    }
+
+    .sidebar-meta-title {
+      display: none;
+    }
+
+    .sidebar-metadata {
+      flex-direction: row;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: var(--space-sm);
+      padding-bottom: 0;
+    }
+
+    .sidebar-metadata .meta-dates {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 0.25em;
+      font-size: var(--text-xs);
+    }
+
+    .sidebar-metadata .meta-item {
+      white-space: nowrap;
+    }
+
+    .sidebar-metadata .meta-item + .meta-item::before {
+      content: '·';
+      color: var(--color-lichen);
+      margin-right: 0.35em;
+    }
+
+    .sidebar-metadata .meta-tags {
+      gap: 0.35rem;
+    }
+
+    .sidebar-metadata .meta-tag {
+      font-size: var(--text-2xs);
+    }
+  }
+</style>

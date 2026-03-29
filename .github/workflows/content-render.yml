@@ -1,4 +1,4 @@
-name: Content Render (Quarto → Markdown)
+name: Content Render (Quarto -> Markdown)
 
 on:
   push:
@@ -6,7 +6,9 @@ on:
     paths:
       - 'src/content/**/*.qmd'
       - 'src/content/**/*.md'
-      - 'build-blog.sh'
+      - 'scripts/build-blog-cli.ts'
+      - 'scripts/blog-build/**/*.ts'
+      - 'scripts/markdown-transforms.ts'
       - '_quarto.yml'
       - '.github/workflows/content-render.yml'
       - 'astro.config.mjs'
@@ -26,114 +28,21 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  # Artifact retention for rendered content (days)
   ARTIFACT_RETENTION_DAYS: 90
 
 jobs:
-  check-cache:
-    name: Check if rendering is needed
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    outputs:
-      needs-render: ${{ steps.cache-check.outputs.needs-render }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Check for force rebuild
-        id: force-check
-        run: |
-          if git log -1 --pretty=%B | grep -q "\[force-rebuild\]"; then
-            echo "Force rebuild requested in commit message"
-            echo "force-rebuild=true" >> $GITHUB_OUTPUT
-          else
-            echo "force-rebuild=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Check if rendering is needed
-        id: cache-check
-        run: |
-          needs_render=false
-          force_rebuild="${{ steps.force-check.outputs.force-rebuild }}"
-
-          echo "::group::Debug Info"
-          echo "Event: ${{ github.event_name }}"
-          echo "Repository: ${{ github.repository }}"
-          echo "SHA: ${{ github.sha }}"
-          echo "Before: '${{ github.event.before }}' After: '${{ github.event.after }}'"
-          echo "::endgroup::"
-
-          # Force rebuild if requested
-          if [ "$force_rebuild" = "true" ]; then
-            echo "Force rebuild requested - will render all content"
-            needs_render=true
-            echo "needs-render=$needs_render" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-
-          # Check for QMD files
-          qmd_files=$(find src/content/blog -name "index.qmd" -path "*/[0-9][0-9][0-9][0-9]/*/*" -type f | wc -l)
-          if [ "$qmd_files" -eq 0 ]; then
-            echo "No QMD files found to process"
-            echo "needs-render=false" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-
-          # Compute changed files for push events
-          if [ "${{ github.event_name }}" = "push" ]; then
-            before="${{ github.event.before }}"
-            after="${{ github.event.after }}"
-            zeros="0000000000000000000000000000000000000000"
-
-            if [ -n "$before" ] && [ "$before" != "$zeros" ] && git cat-file -e "$before^{commit}" 2>/dev/null && git cat-file -e "$after^{commit}" 2>/dev/null; then
-              changed_files=$(git diff --name-only "$before..$after")
-            else
-              changed_files=$(git diff --name-only HEAD~1..HEAD || true)
-            fi
-
-            echo "::group::Changed Files"
-            echo "$changed_files" | sed 's/^/  /'
-            echo "::endgroup::"
-          fi
-
-          # Check each QMD file for changes
-          while IFS= read -r -d '' qmd_file; do
-            echo "Checking $qmd_file..."
-
-            if [ "${{ github.event_name }}" = "push" ]; then
-              if echo "$changed_files" | grep -E -q "$(basename $(dirname "$qmd_file"))|$(basename "$qmd_file")|build-blog.sh|_quarto.yml"; then
-                echo "  → File or related content was modified"
-                needs_render=true
-                break
-              fi
-            else
-              md_file="${qmd_file%.qmd}.md"
-              if [ ! -f "$md_file" ]; then
-                echo "  → No MD file found"
-                needs_render=true
-                break
-              fi
-            fi
-          done < <(find src/content/blog -name "index.qmd" -path "*/[0-9][0-9][0-9][0-9]/*/*" -type f -print0)
-
-          echo "needs-render=$needs_render" >> $GITHUB_OUTPUT
-          if [ "$needs_render" = "true" ]; then
-            echo "✓ Rendering needed - content changes detected"
-          else
-            echo "✓ No rendering needed - no relevant changes"
-          fi
-
   render:
     name: Render Quarto content
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    needs: check-cache
-    if: needs.check-cache.outputs.needs-render == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
 
       - name: Setup Quarto
         uses: quarto-dev/quarto-actions/setup@v2
@@ -169,21 +78,38 @@ jobs:
             any::ragg
             github::sims1253/bayesim
 
-      - name: Cache render hashes
+      - name: Cache render state
         uses: actions/cache@v4
         with:
-          path: .blog-cache
-          key: render-cache-${{ runner.os }}-r${{ steps.setup-r.outputs.installed-r-version }}-${{ hashFiles('src/content/**/*.qmd', 'build-blog.sh', '_quarto.yml') }}
+          path: |
+            .cache/blog-build
+            .blog-cache
+            _freeze
+            src/content/blog/**/*_cache
+          key: render-cache-${{ runner.os }}-r${{ steps.setup-r.outputs.installed-r-version }}-${{ hashFiles('src/content/**/*.qmd', 'scripts/build-blog-cli.ts', 'scripts/blog-build/**/*.ts', 'scripts/markdown-transforms.ts', '_quarto.yml') }}
           restore-keys: |
             render-cache-${{ runner.os }}-r${{ steps.setup-r.outputs.installed-r-version }}-
             render-cache-${{ runner.os }}-
 
+      - name: Determine build flags
+        id: build-flags
+        env:
+          HEAD_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          flags=""
+          if [ "${{ github.event_name }}" = "push" ]; then
+            if printf '%s\n' "$HEAD_COMMIT_MESSAGE" | grep -Fq '[force-rebuild]'; then
+              flags="--force"
+            fi
+          fi
+          echo "flags=$flags" >> "$GITHUB_OUTPUT"
+
       - name: Get latest content render run
         id: latest-render
-        if: ${{ !contains(github.event.head_commit.message, '[force-rebuild]') }}
+        if: steps.build-flags.outputs.flags != '--force'
         run: |
           latest_run=$(gh run list \
-            --workflow="Content Render (Quarto → Markdown)" \
+            --workflow="Content Render (Quarto -> Markdown)" \
             --status=success \
             --limit=5 \
             --json=databaseId \
@@ -200,7 +126,7 @@ jobs:
 
       - name: Download previous rendered content
         id: download-previous
-        if: ${{ !contains(github.event.head_commit.message, '[force-rebuild]') && steps.latest-render.outputs.run-id != '' }}
+        if: steps.build-flags.outputs.flags != '--force' && steps.latest-render.outputs.run-id != ''
         uses: actions/download-artifact@v4
         with:
           name: rendered-content
@@ -213,14 +139,20 @@ jobs:
       - name: Log previous content status
         run: |
           if [ "${{ steps.download-previous.outcome }}" = "success" ]; then
-            echo "✓ Downloaded previous rendered content for caching"
-            find src/content/blog -type f -name "*.md" | wc -l | xargs -I {} echo "  Found {} markdown files"
+            echo "Downloaded previous rendered content"
           else
-            echo "⚠ No previous content available - will render everything"
+            echo "No previous artifact downloaded"
           fi
+          count=$(find src/content/blog -name "index.md" -type f | wc -l || echo 0)
+          echo "Available markdown files before render: $count"
+
+      - name: Show build plan
+        run: |
+          bun run scripts/build-blog-cli.ts --plan ${{ steps.build-flags.outputs.flags }}
 
       - name: Render Quarto posts
-        run: bash build-blog.sh
+        run: |
+          bun run scripts/build-blog-cli.ts ${{ steps.build-flags.outputs.flags }}
 
       - name: Verify rendered output
         run: |
@@ -244,61 +176,7 @@ jobs:
           retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
           path: |
             src/content/blog/*/*/
+            .cache/blog-build/
             .blog-cache/
-
-  reuse-artifact:
-    name: Reuse last rendered content
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    needs: check-cache
-    if: needs.check-cache.outputs.needs-render != 'true'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Find last successful render run
-        id: latest-render
-        run: |
-          latest_run=$(gh run list \
-            --workflow="Content Render (Quarto → Markdown)" \
-            --status=success \
-            --limit=5 \
-            --json=databaseId \
-            --jq='.[0].databaseId // empty' || echo "")
-          echo "run-id=$latest_run" >> $GITHUB_OUTPUT
-          if [ -z "$latest_run" ]; then
-            echo "::error::No previous successful render run found"
-            exit 1
-          fi
-          echo "Using previous run: $latest_run"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Download rendered content from previous run
-        uses: actions/download-artifact@v4
-        with:
-          name: rendered-content
-          path: .
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ github.repository }}
-          run-id: ${{ steps.latest-render.outputs.run-id }}
-
-      - name: Verify reused content
-        run: |
-          count=$(find src/content/blog -path '*/index.md' -type f | wc -l || echo 0)
-          if [ "$count" -eq 0 ]; then
-            echo "::error::No rendered Markdown found to reuse"
-            exit 1
-          fi
-          echo "✓ Reusing $count rendered markdown files"
-
-      - name: Re-upload rendered content artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: rendered-content
-          if-no-files-found: error
-          compression-level: 6
-          retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
-          path: |
-            src/content/blog/*/*/
-            .blog-cache/
+            _freeze/
+            src/content/blog/**/*_cache/

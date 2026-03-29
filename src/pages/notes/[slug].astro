@@ -56,7 +56,6 @@ const getTypeColor = (type: string) => {
   footerVariant="garden"
   tone="serious"
   layout="prose"
-  prose={true}
 >
   <div class="note-page">
     <div class="note-container">
@@ -181,7 +180,7 @@ const getTypeColor = (type: string) => {
   }
 
   .note-container {
-    max-width: 90ch;
+    max-width: min(78ch, 100%);
     margin: 0 auto;
     padding: 0 var(--space-lg);
   }
@@ -264,50 +263,6 @@ const getTypeColor = (type: string) => {
     font-weight: 500;
   }
 
-  .note-body {
-    font-size: var(--text-md);
-    line-height: 1.6;
-    color: var(--color-ink-dark);
-    font-feature-settings:
-      'liga' 1,
-      'kern' 1,
-      'calt' 1;
-    text-rendering: optimizelegibility;
-  }
-
-  .note-body :global(h2) {
-    font-size: var(--text-xl);
-    margin-top: 1.8em;
-    margin-bottom: 0.8em;
-    color: var(--color-walnut);
-    font-weight: 600;
-    line-height: 1.3;
-  }
-
-  .note-body :global(h3) {
-    font-size: var(--text-lg);
-    margin-top: 1.6em;
-    margin-bottom: 0.6em;
-    color: var(--color-ink-dark);
-    font-weight: 600;
-    line-height: 1.4;
-  }
-
-  .note-body :global(p) {
-    margin-bottom: 1.4em;
-  }
-
-  .note-body :global(blockquote) {
-    border-left: 3px solid var(--color-sage);
-    padding-left: var(--space-md);
-    margin: var(--space-lg) 0;
-    font-style: italic;
-    color: var(--color-ink-medium);
-    background: rgba(168, 181, 160, 0.05);
-    padding: var(--space-md);
-    border-radius: 0 var(--border-radius) var(--border-radius) 0;
-  }
-
   .note-body :global(em) {
     font-style: italic;
     color: var(--color-ink-medium);
@@ -340,18 +295,16 @@ const getTypeColor = (type: string) => {
     padding: 0;
   }
 
-  /* Wiki-style links */
+  /* Notes-specific link accent on top of shared prose link rhythm */
   .note-body :global(a) {
     color: var(--color-sage);
-    text-decoration: none;
-    border-bottom: 1px dotted var(--color-sage);
+    text-decoration-color: color-mix(in oklab, var(--color-sage) 70%, transparent);
     transition: all var(--transition-fast);
   }
 
   .note-body :global(a:hover) {
     color: var(--color-walnut);
-    border-bottom-color: var(--color-walnut);
-    border-bottom-style: solid;
+    text-decoration-color: var(--color-walnut);
   }
 
   .connections-section {

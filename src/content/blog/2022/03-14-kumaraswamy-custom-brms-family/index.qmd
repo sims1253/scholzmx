@@ -104,6 +104,8 @@ a bathtub shape.
 
 ```{r}
 #| label: median-test
+#| fig: true
+#| fig-cap: "Density plots for symmetric, asymmetric, and bathtub Kumaraswamy distributions"
 
 x = seq(from = 0, to = 1, length.out = 10000)[2:9999] # exclude 0 and 1
 
@@ -137,6 +139,7 @@ In the case of the kumaraswamy distribution, I was lucky.
 
 ```{r}
 #| label: median-test-validation
+#| eval: false
 
 layout(matrix(1:3, ncol = 3))
 plot(
@@ -223,6 +226,7 @@ and further optimizing the code.
 
 ```{r}
 #| label: log-density-test
+#| fig: true
 #| warning: false
 
 layout(matrix(1:3, ncol = 3))
@@ -289,6 +293,7 @@ recovers the median and passes a visual check to match the form I would expect.
 
 ```{r}
 #| label: rng-test
+#| fig: true
 
 layout(matrix(1:3, ncol = 3))
 y = rkumaraswamy(10000, mu = 0.5, p = 4)
@@ -410,6 +415,7 @@ to it and run some of the post processing I prepared for:
 
 ```{r}
 #| label: model-fitting
+#| fig: true
 
 a = rnorm(1000)
 data = list(a = a, y = rkumaraswamy(1000, inv_logit_scaled(0.2 + 0.5 * a), 4))
@@ -419,6 +425,7 @@ hist(data$y)
 ```{r}
 #| label: brms-model
 #| results: hide
+#| eval: false
 
 fit1 <- brm(
   y ~ 1 + a,
@@ -434,6 +441,7 @@ fit1 <- brm(
 ```{r}
 #| label: brms-results
 #| echo: false
+#| eval: false
 
 summary(fit1)
 plot(fit1)
@@ -450,6 +458,7 @@ So how about a posterior predictive check anyone? Wouldn't that be something?
 #| label: pp-check
 #| warning: false
 #| message: false
+#| eval: false
 
 pp_check(fit1)
 ```
@@ -459,6 +468,7 @@ I would say that looks quite fine. But how about those conditional effects?
 ```{r}
 #| label: conditional-effects
 #| warning: false
+#| eval: false
 
 conditional_effects(fit1)
 ```
@@ -470,6 +480,7 @@ beta likelihood:
 ```{r}
 #| label: loo-kumaraswamy
 #| warning: false
+#| eval: false
 
 loo_kumaraswamy <- loo::loo(fit1)
 loo_kumaraswamy
@@ -480,6 +491,7 @@ loo_kumaraswamy
 #| results: hide
 #| warning: false
 #| message: false
+#| eval: false
 
 fit2 <- brm(
   y ~ 1 + a,
@@ -495,6 +507,7 @@ fit2 <- brm(
 #| label: loo-compare
 #| warning: false
 #| echo: false
+#| eval: false
 
 loo::loo_compare(loo_kumaraswamy, loo(fit2))
 ```

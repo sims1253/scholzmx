@@ -1,4 +1,5 @@
-import { defineCollection, z } from 'astro:content';
+import { defineCollection } from 'astro:content';
+import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
 
 const blog = defineCollection({
@@ -33,7 +34,7 @@ const recipes = defineCollection({
       tags: z.array(z.string()).optional(),
       ingredients: z.array(z.string()).optional(),
       equipment: z.array(z.string()).optional(),
-      heroImage: image().optional(),
+      heroImage: z.union([image(), z.string()]).optional(),
       heroImagePositionX: z.number().optional(),
       heroImagePositionY: z.number().optional(),
       heroImageScale: z.number().optional(),

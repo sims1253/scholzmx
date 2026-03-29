@@ -5,7 +5,6 @@
   --organic-md: 60% 40% 30% 70% / 60% 30% 70% 40%;
   --organic-lg: 30% 70% 70% 30% / 30% 30% 70% 70%;
   --organic-paper: 2px 4px 8px 2px / 4px 2px 8px 4px;
-  --external-excluded-domains: 'scholzmx.com|localhost';
 }
 
 @layer base {
@@ -32,7 +31,7 @@
   .skip-link:focus {
     transform: translateY(100%);
     top: 0;
-    outline: 2px solid color-mix(in srgb, var(--color-ochre) 80%, white);
+    outline: 2px solid color-mix(in oklab, var(--color-ochre) 80%, white);
     outline-offset: 2px;
   }
 
@@ -170,36 +169,32 @@
   }
 
   /* Enhanced Focus Management */
-  *:focus {
-    outline: none;
-  }
-
   *:focus-visible {
-    outline: 2px solid color-mix(in srgb, var(--color-walnut) 90%, var(--color-ochre));
+    outline: 2px solid color-mix(in oklab, var(--color-walnut) 90%, var(--color-ochre));
     outline-offset: 2px;
     border-radius: 2px;
   }
 
   /* Specific focus styles for interactive elements */
   a:focus-visible {
-    outline-color: color-mix(in srgb, var(--color-walnut) 85%, var(--color-ochre));
-    background-color: color-mix(in srgb, var(--color-walnut) 8%, transparent);
+    outline-color: color-mix(in oklab, var(--color-walnut) 85%, var(--color-ochre));
+    background-color: color-mix(in oklab, var(--color-walnut) 8%, transparent);
     text-decoration-color: var(--color-ochre);
   }
 
   button:focus-visible {
-    outline-color: color-mix(in srgb, var(--color-walnut) 90%, var(--color-ochre));
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-walnut) 20%, transparent);
+    outline-color: color-mix(in oklab, var(--color-walnut) 90%, var(--color-ochre));
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--color-walnut) 20%, transparent);
   }
 
   /* Form elements focus styles for consistency */
   input:focus-visible,
   textarea:focus-visible,
   select:focus-visible {
-    outline: 2px solid color-mix(in srgb, var(--color-walnut) 90%, var(--color-ochre));
+    outline: 2px solid color-mix(in oklab, var(--color-walnut) 90%, var(--color-ochre));
     outline-offset: 2px;
-    border-color: color-mix(in srgb, var(--color-walnut) 80%, var(--color-ochre));
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-walnut) 15%, transparent);
+    border-color: color-mix(in oklab, var(--color-walnut) 80%, var(--color-ochre));
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-walnut) 15%, transparent);
   }
 
   /* Specific styling for different form element types */
@@ -210,17 +205,17 @@
   input[type='url']:focus-visible,
   input[type='tel']:focus-visible,
   textarea:focus-visible {
-    background-color: color-mix(in srgb, var(--color-parchment-light) 95%, var(--color-walnut));
+    background-color: color-mix(in oklab, var(--color-parchment-light) 95%, var(--color-walnut));
   }
 
   input[type='checkbox']:focus-visible,
   input[type='radio']:focus-visible {
     outline-offset: 3px;
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-walnut) 25%, transparent);
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--color-walnut) 25%, transparent);
   }
 
   select:focus-visible {
-    background-color: color-mix(in srgb, var(--color-parchment-light) 95%, var(--color-walnut));
+    background-color: color-mix(in oklab, var(--color-parchment-light) 95%, var(--color-walnut));
   }
 
   /* High contrast mode support */
@@ -295,11 +290,15 @@
   .serious-content {
     --font-body: var(--font-body-serious);
     --measure-prose: var(--measure-prose-serious);
+    --reading-measure: var(--measure-prose-serious);
+    --leading-prose: var(--leading-serious);
   }
 
   .personal-content {
     --font-body: var(--font-body-personal);
     --measure-prose: var(--measure-prose-personal);
+    --reading-measure: var(--measure-prose-personal);
+    --leading-prose: var(--leading-personal);
   }
 
   /* ModernCSS: improve scroll positions for anchor and focus */
@@ -337,13 +336,25 @@
     margin-block: 0 var(--space-md);
     margin-inline: 0;
     color: var(--color-text-primary);
-    line-height: 1.25;
+    line-height: var(--heading-leading);
     font-family: var(--font-heading);
     font-weight: var(--heading-weight-strong);
     font-feature-settings:
       'liga' 1,
       'kern' 1;
     text-rendering: optimizelegibility;
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
   }
 
   h1 {
@@ -367,7 +378,7 @@
   }
 
   p {
-    margin-block: 0 1.25em;
+    margin-block: 0 var(--paragraph-gap);
     margin-inline: 0;
   }
 
@@ -375,38 +386,37 @@
     color: var(--color-link);
     text-decoration: underline;
     text-decoration-color: var(--color-underline);
-    text-underline-offset: 2px;
-    text-decoration-thickness: 1.6px;
+    text-underline-offset: var(--link-underline-offset);
+    text-decoration-thickness: var(--link-underline-thickness);
   }
 
   a:hover {
     color: var(--color-link-hover);
     text-decoration-color: var(--color-underline-hover);
     text-decoration-thickness: 2px;
-    background-color: color-mix(in srgb, var(--color-walnut) 6%, transparent);
+    background-color: color-mix(in oklab, var(--color-walnut) 6%, transparent);
     border-radius: 2px;
   }
 
   /* Baseline for default links (classless) for clearer affordance */
   a:not([class]) {
-    text-decoration-thickness: max(0.08em, 1px);
-    text-underline-offset: 0.15em;
+    text-decoration-thickness: max(var(--link-underline-thickness), 1px);
+    text-underline-offset: var(--link-underline-offset);
   }
 
-  a:focus {
+  a:focus-visible {
     box-shadow:
-      0 0 0 1px color-mix(in srgb, var(--color-moss) 40%, transparent),
-      0 0 8px color-mix(in srgb, var(--color-sage) 20%, transparent);
-    background: color-mix(in srgb, var(--color-parchment-light) 60%, transparent);
+      0 0 0 1px color-mix(in oklab, var(--color-moss) 40%, transparent),
+      0 0 8px color-mix(in oklab, var(--color-sage) 20%, transparent);
+    background: color-mix(in oklab, var(--color-parchment-light) 60%, transparent);
     border-radius: 3px;
-    outline: none;
   }
 
   /* External link indicator - adds ↗ arrow after off-site links */
-  /* Domains listed in --external-excluded-domains are excluded from the indicator */
-  a[href^='http']:not([href*='scholzmx.com']):not([href*='localhost']):not(
-      .no-external-indicator
-    )::after {
+  /* Excludes: scholzmx.com, localhost, 127.0.0.1, and .local/.localhost TLDs */
+  a[href^='http']:not([href*='scholzmx.com']):not([href*='localhost']):not([href*='127.0.0.1']):not(
+      [href*='.local']
+    ):not([href*='.localhost']):not(.no-external-indicator)::after {
     content: ' ↗';
     font-size: 0.75em;
     vertical-align: super;
@@ -417,9 +427,9 @@
   }
 
   /* Ensure external indicator doesn't get underline styling */
-  a[href^='http']:not([href*='scholzmx.com']):not([href*='localhost']):not(
-      .no-external-indicator
-    ):hover::after {
+  a[href^='http']:not([href*='scholzmx.com']):not([href*='localhost']):not([href*='127.0.0.1']):not(
+      [href*='.local']
+    ):not([href*='.localhost']):not(.no-external-indicator):hover::after {
     text-decoration: none;
   }
 
@@ -448,8 +458,8 @@
     max-width: 100%;
     height: auto;
     box-shadow:
-      0 8px 24px color-mix(in srgb, var(--color-walnut) 6%, transparent),
-      0 2px 6px color-mix(in srgb, var(--color-sage) 10%, transparent);
+      0 8px 24px color-mix(in oklab, var(--color-walnut) 6%, transparent),
+      0 2px 6px color-mix(in oklab, var(--color-sage) 10%, transparent);
   }
 
   /* Blockquotes with logical properties */
@@ -498,7 +508,7 @@
     padding-block: var(--space-sm);
     padding-inline: var(--space-sm);
     text-align: start; /* Logical property */
-    border-block-end: 1px solid rgba(139, 90, 60, 0.2);
+    border-block-end: 1px solid color-mix(in oklab, var(--color-walnut) 20%, transparent);
   }
 
   th {
@@ -569,13 +579,13 @@
     position: relative;
 
     /* Manuscript-inspired frame - override Shiki inline styles */
-    border: 1px solid color-mix(in srgb, var(--color-lichen) 30%, transparent) !important;
+    border: 1px solid color-mix(in oklab, var(--color-lichen) 30%, transparent) !important;
     box-shadow:
-      0 8px 22px color-mix(in srgb, var(--color-walnut) 5%, transparent),
-      0 2px 6px color-mix(in srgb, var(--color-sage) 12%, transparent),
-      inset 0 1px 0 color-mix(in srgb, var(--color-parchment-light) 70%, white) !important;
+      0 8px 22px color-mix(in oklab, var(--color-walnut) 5%, transparent),
+      0 2px 6px color-mix(in oklab, var(--color-sage) 12%, transparent),
+      inset 0 1px 0 color-mix(in oklab, var(--color-parchment-light) 70%, white) !important;
 
-    font-size: 18px !important;
+    font-size: calc(1.125rem * var(--font-scale, 1)) !important;
     line-height: 1.25 !important;
     overflow-x: auto;
 
@@ -592,6 +602,14 @@
   @media (max-width: 640px) {
     .astro-code {
       padding: var(--space-md);
+      /* Reduce font size on mobile for better fit */
+      font-size: calc(0.875rem * var(--font-scale, 1)) !important;
+      /* Ensure code blocks don't overflow their container */
+      max-width: calc(100vw - var(--space-lg) * 2);
+      /* Force horizontal scroll within code block only */
+      overflow-x: auto;
+      /* Add visual indicator for scrollable content */
+      -webkit-overflow-scrolling: touch;
     }
   }
 
@@ -600,8 +618,8 @@
     position: absolute;
     top: var(--space-sm);
     right: var(--space-sm);
-    background: rgba(60, 56, 54, 0.8); /* gruvbox bg1 with transparency */
-    border: 1px solid rgba(168, 153, 132, 0.3) !important; /* gruvbox light gray */
+    background: color-mix(in oklab, var(--color-surface) 88%, transparent);
+    border: 1px solid color-mix(in oklab, var(--color-lichen) 40%, transparent) !important;
     border-radius: 999px;
     padding: 0; /* ensure icon is centered within fixed size */
     width: 32px;
@@ -609,14 +627,14 @@
     font-size: 0; /* Hide text content */
     line-height: 0; /* avoid baseline affecting centering */
     box-sizing: border-box;
-    color: #a89984; /* gruvbox light gray/fg4 */
+    color: var(--color-ink-medium);
     cursor: pointer;
     opacity: 0.08;
     transition:
-      opacity 0.15s ease,
-      transform 0.15s ease,
-      background 0.2s ease,
-      color 0.2s ease;
+      opacity 0.15s ease-out,
+      transform 0.15s ease-out,
+      background 0.2s ease-out,
+      color 0.2s ease-out;
     user-select: none;
     pointer-events: auto;
     z-index: 1;
@@ -624,7 +642,7 @@
     align-items: center;
     justify-content: center;
 
-    box-shadow: 0 2px 6px rgba(40, 40, 40, 0.4); /* gruvbox bg shadow */
+    box-shadow: 0 2px 6px color-mix(in oklab, var(--color-ink-dark) 25%, transparent);
   }
 
   .astro-code .copy-button svg {
@@ -645,27 +663,27 @@
   }
 
   .astro-code .copy-button:hover {
-    background: rgba(80, 73, 69, 0.9); /* gruvbox bg2 */
-    color: #83a598; /* gruvbox bright blue */
-    border-color: rgba(131, 165, 152, 0.5); /* gruvbox bright blue with transparency */
+    background: var(--color-surface);
+    color: var(--color-walnut);
+    border-color: color-mix(in oklab, var(--color-walnut) 45%, transparent) !important;
     transform: translateY(-1px);
-    box-shadow: 0 3px 8px rgba(40, 40, 40, 0.6); /* stronger gruvbox shadow */
+    box-shadow: 0 3px 8px color-mix(in oklab, var(--color-ink-dark) 35%, transparent);
     opacity: 1;
   }
 
   .astro-code .copy-button:focus-visible {
-    outline-color: #83a598; /* gruvbox bright blue for accessibility */
+    outline-color: var(--color-moss);
   }
 
   .astro-code .copy-button:active {
     transform: translateY(0);
-    box-shadow: 0 1px 3px rgba(40, 40, 40, 0.3); /* gruvbox bg shadow on press */
+    box-shadow: 0 1px 3px color-mix(in oklab, var(--color-ink-dark) 20%, transparent);
   }
 
   .astro-code .copy-button.copied {
-    background: rgba(80, 73, 69, 0.9); /* gruvbox bg2 */
-    color: #b8bb26; /* gruvbox bright green */
-    border-color: rgba(184, 187, 38, 0.5); /* gruvbox bright green with transparency */
+    background: var(--color-surface);
+    color: var(--color-moss);
+    border-color: color-mix(in oklab, var(--color-moss) 50%, transparent) !important;
   }
 
   /* Collapsible code sections with botanical styling */
@@ -677,8 +695,8 @@
 
     /* Subtle manuscript frame */
     box-shadow:
-      0 6px 14px color-mix(in srgb, var(--color-sage) 10%, transparent),
-      0 2px 4px color-mix(in srgb, var(--color-walnut) 6%, transparent);
+      0 6px 14px color-mix(in oklab, var(--color-sage) 10%, transparent),
+      0 2px 4px color-mix(in oklab, var(--color-walnut) 6%, transparent);
     background: var(--color-surface);
   }
 
@@ -698,8 +716,8 @@
     align-items: center;
     min-height: auto;
     transition: all 0.2s ease;
-    border-bottom: 1px solid color-mix(in srgb, var(--color-lichen) 40%, transparent);
-    box-shadow: 0 1px 2px color-mix(in srgb, var(--color-walnut) 6%, transparent);
+    border-bottom: 1px solid color-mix(in oklab, var(--color-lichen) 40%, transparent);
+    box-shadow: 0 1px 2px color-mix(in oklab, var(--color-walnut) 6%, transparent);
   }
 
   details.code-collapse summary p {
@@ -728,7 +746,7 @@
   }
 
   details.code-collapse summary:hover {
-    background: color-mix(in srgb, var(--color-surface) 98%, var(--color-walnut));
+    background: color-mix(in oklab, var(--color-surface) 98%, var(--color-walnut));
     color: var(--color-ochre);
   }
 
@@ -797,8 +815,8 @@
   /* Inline code with subtle handcrafted styling */
   code:not([class]):not(.katex) {
     font-family: var(--font-mono);
-    background: color-mix(in srgb, var(--color-surface) 95%, var(--color-sage));
-    border: 1px solid color-mix(in srgb, var(--color-lichen) 30%, transparent);
+    background: color-mix(in oklab, var(--color-surface) 95%, var(--color-sage));
+    border: 1px solid color-mix(in oklab, var(--color-lichen) 30%, transparent);
     padding: 1px 4px;
     border-radius: 3px;
     font-size: 0.875em;
@@ -812,8 +830,8 @@
   h4 code:not([class]):not(.katex),
   h5 code:not([class]):not(.katex),
   h6 code:not([class]):not(.katex) {
-    background: color-mix(in srgb, var(--color-surface) 98%, var(--color-sage));
-    border-color: color-mix(in srgb, var(--color-lichen) 20%, transparent);
+    background: color-mix(in oklab, var(--color-surface) 98%, var(--color-sage));
+    border-color: color-mix(in oklab, var(--color-lichen) 20%, transparent);
     padding: 1px 3px;
   }
 

@@ -138,15 +138,15 @@
   height: clamp(44px, 10vw, 48px);
   min-width: 44px;
   min-height: 44px;
-  border: 1px solid color-mix(in srgb, var(--color-lichen) 50%, transparent);
-  background: color-mix(in srgb, var(--color-surface) 40%, transparent);
+  border: 1px solid color-mix(in oklab, var(--color-lichen) 50%, transparent);
+  background: color-mix(in oklab, var(--color-surface) 40%, transparent);
   padding: clamp(4px, 1vw, 8px);
   border-radius: 50%;
   color: var(--color-walnut);
 }
 
 .torch-toggle:hover {
-  background: color-mix(in srgb, var(--color-surface) 70%, var(--color-walnut));
+  background: color-mix(in oklab, var(--color-surface) 70%, var(--color-walnut));
 }
 
 .torch-toggle .torch-icon {
@@ -154,7 +154,7 @@
   height: clamp(16px, 4vw, 22px);
 }
 
-.torch-toggle:focus {
+.torch-toggle:focus-visible {
   outline: 2px solid var(--color-tansy);
   outline-offset: 2px;
 }
@@ -177,7 +177,7 @@
   justify-content: center;
 }
 
-.nav-link:focus {
+.nav-link:focus-visible {
   outline: 2px solid var(--color-tansy);
   outline-offset: 2px;
 }
@@ -204,8 +204,8 @@
 }
 
 .nav-separator {
-  color: var(--color-lichen);
-  opacity: 0.4;
+  color: var(--color-text-muted);
+  opacity: 0.9;
   margin-inline: clamp(2px, 0.5vw, 6px);
   font-weight: 300;
   font-size: calc(clamp(0.7rem, 2vw, 1rem) * var(--font-scale, 1));
@@ -239,6 +239,7 @@
   display: block; /* Prevent flex from shrinking inner layout wrappers */
   position: relative; /* required for margin-notes absolute container */
   overflow: visible; /* Allow margin cards to extend into margins */
+  padding-block: clamp(0.25rem, 1vw, var(--space-sm)) 0; /* Minimal top padding on mobile */
 }
 
 .main-content .container {
@@ -272,14 +273,6 @@
   contain-intrinsic-size: 400px 600px;
 }
 
-/* Modern responsive layout using logical properties */
-.main-content {
-  padding-block: clamp(0.25rem, 1vw, var(--space-sm)) 0; /* Minimal top padding on mobile */
-  flex: 1 1 auto;
-  display: block;
-  position: relative;
-}
-
 /* Smart separator visibility using modern CSS */
 @container (max-width: 30rem) {
   .nav-separator {
@@ -294,43 +287,104 @@
   }
 }
 
-/* Extra optimizations for very narrow screens like Pixel 5 */
-@media (max-width: 400px) {
+/* Unified mobile/tablet nav behavior */
+@media (max-width: 480px) {
   .nav-content {
-    gap: 0.3rem; /* Fixed small gap */
-    padding-inline: var(--space-sm) 0.5rem; /* Reduce right padding significantly */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-xs);
   }
 
-  .nav-brand .site-logo {
-    font-size: calc(0.9rem * var(--font-scale, 1)); /* Slightly larger title */
+  .nav-brand,
+  .site-logo {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .logo-text {
+    min-width: fit-content;
   }
 
   .nav-links {
-    font-size: calc(0.8rem * var(--font-scale, 1)); /* Slightly larger nav links */
-    gap: 0.12rem; /* Minimal gap between nav items */
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: clamp(0.2rem, 3vw, 0.35rem);
+    font-size: calc(0.75rem * var(--font-scale, 1));
   }
 
-  .torch-toggle {
-    margin-right: 0; /* Remove any right margin from toggle */
+  .nav-link {
+    padding-inline: clamp(6px, 2.5vw, 12px);
+  }
+
+  .nav-separator {
+    opacity: 0.9;
+    margin-inline: clamp(2px, 1vw, 4px);
+    display: inline-flex;
+  }
+
+  .torch-toggle,
+  .font-size-control {
+    padding: 4px;
+  }
+
+  .torch-icon {
+    width: 18px;
+    height: 18px;
   }
 }
 
-/* Ultra-narrow screens - allow nav to wrap if needed */
-@media (max-width: 360px) {
+@media (min-width: 481px) and (max-width: 640px) {
   .nav-content {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.25rem 0.5rem;
+    justify-content: space-between;
+    gap: var(--space-sm);
   }
 
   .nav-brand {
-    flex-basis: 100%;
-    text-align: center;
+    min-width: 70px;
+    flex-shrink: 0;
   }
 
   .nav-links {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.2rem 0.4rem;
+    gap: clamp(0.25rem, 2vw, 0.5rem);
+    justify-content: flex-end;
+    font-size: calc(0.85rem * var(--font-scale, 1));
   }
+
+  .nav-link {
+    padding-inline: clamp(8px, 2.5vw, 14px);
+  }
+
+  .nav-separator {
+    opacity: 0.9;
+    margin-inline: clamp(3px, 1.5vw, 5px);
+    display: inline-flex;
+  }
+}
+
+@media (max-width: 360px) {
+  .nav-links {
+    gap: 0.15rem;
+  }
+
+  .nav-link {
+    padding-inline: 4px;
+    font-size: calc(0.7rem * var(--font-scale, 1));
+  }
+
+  .nav-separator {
+    margin-inline: 1px;
+  }
+}
+
+/* Misc. utility cleanup moved from nav-responsive file */
+.prose p .copy-button,
+.prose .bio-body .copy-button,
+.prose .copy-button,
+.prose .site-description .copy-button {
+  display: none;
 }

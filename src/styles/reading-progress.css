@@ -1,0 +1,64 @@
+.reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--reading-progress-height, 3px);
+  background: color-mix(in oklab, var(--color-lichen) 30%, transparent);
+  z-index: 9999;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  transition: width 0.1s linear;
+  position: relative;
+}
+
+.progress-leaf {
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: currentcolor;
+  opacity: 0;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.reading-progress.has-progress .progress-leaf {
+  opacity: 0.8;
+  transform: translateY(-50%) rotate(90deg);
+}
+
+/* Hide on pages without prose content */
+.reading-progress.hidden {
+  opacity: 0;
+}
+
+/* Mobile: make bar slightly more visible */
+@media (max-width: 768px) {
+  .reading-progress {
+    height: calc(var(--reading-progress-height) + 1px);
+  }
+
+  .progress-leaf {
+    width: 14px;
+    height: 14px;
+    right: -7px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .progress-bar {
+    transition: none;
+  }
+
+  .progress-leaf {
+    transition: none;
+  }
+}

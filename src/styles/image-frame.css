@@ -1,0 +1,220 @@
+.image-frame {
+  position: relative;
+  margin: 0 auto;
+  overflow: hidden;
+  display: block;
+}
+
+.image-wrapper {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  transform-origin: center center;
+  position: relative;
+}
+
+/* Custom positioning mode - for precise control */
+.frame-image.custom-positioning {
+  width: 100%;
+  height: 100%;
+  display: block;
+  transform: translate(-50%, -50%);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  overflow: hidden;
+}
+
+.frame-image.custom-positioning img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Simple fill modes - for easy default usage */
+.frame-image.simple-fill {
+  width: 100%;
+  line-height: 0;
+  height: 100%;
+  display: block;
+  overflow: hidden;
+}
+
+.frame-image.simple-fill img {
+  width: 100%;
+  height: 100%;
+}
+
+/* Ensure object-fit helpers work even if Tailwind doesn't generate dynamic classes */
+.tw-object-cover {
+  object-fit: cover;
+}
+
+.tw-object-contain {
+  object-fit: contain;
+}
+
+.tw-object-fill {
+  object-fit: fill;
+}
+
+/* Hero image style - for blog post headers */
+.image-frame-hero {
+  background: var(--color-background);
+}
+
+/* Simple image style - for basic usage */
+.image-frame-simple {
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 12px color-mix(in oklab, var(--color-walnut) 15%, transparent);
+}
+
+/* Portrait frame styles */
+.image-frame-botanical,
+.image-frame-polaroid,
+.image-frame-gentle-oval {
+  border: 3px solid var(--color-parchment-light);
+  background-color: var(--color-parchment-light);
+  box-shadow: 0 6px 16px color-mix(in oklab, var(--color-walnut) 20%, transparent);
+}
+
+/* Clickable frame styles */
+.image-frame.clickable {
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.image-frame.clickable:hover {
+  box-shadow: 0 8px 20px color-mix(in oklab, var(--color-walnut) 25%, transparent);
+}
+
+.image-frame.clickable:focus {
+  outline: none;
+}
+
+.image-frame.clickable:focus-visible {
+  outline: 2px solid var(--color-moss);
+  outline-offset: 2px;
+}
+
+/* Dual image toggle */
+.primary-image {
+  transition: opacity 0.3s ease;
+}
+
+.alternate-image {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primary-image,
+  .alternate-image {
+    transition: none;
+  }
+}
+
+.image-frame.show-alternate .primary-image {
+  opacity: 0 !important;
+}
+
+.image-frame.show-alternate .alternate-image {
+  opacity: 1 !important;
+}
+
+/* Enhanced shadows for clickable frames */
+.image-frame-botanical.clickable:hover {
+  box-shadow: 0 10px 22px color-mix(in oklab, var(--color-walnut) 28%, transparent);
+}
+
+.image-frame-polaroid.clickable:hover {
+  box-shadow: 0 10px 24px color-mix(in oklab, var(--color-walnut) 30%, transparent);
+}
+
+.image-frame-gentle-oval.clickable:hover {
+  box-shadow: 0 8px 20px color-mix(in oklab, var(--color-walnut) 25%, transparent);
+}
+
+/* Botanical Scallops Style */
+.image-frame-botanical {
+  clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%);
+  border-radius: 0;
+  box-shadow: 0 8px 18px color-mix(in oklab, var(--color-walnut) 22%, transparent);
+}
+
+/* Vintage Polaroid Style */
+.image-frame-polaroid {
+  border-radius: 8px;
+  border: 12px solid color-mix(in oklab, var(--color-parchment-light) 92%, var(--color-surface));
+  border-bottom: 24px solid color-mix(in oklab, var(--color-parchment-light) 92%, var(--color-surface));
+  box-shadow: 0 8px 20px color-mix(in oklab, var(--color-walnut) 25%, transparent);
+  background: color-mix(in oklab, var(--color-parchment-light) 92%, var(--color-surface));
+}
+
+/* Gentle Oval Style */
+.image-frame-gentle-oval {
+  border-radius: 50%;
+  box-shadow: 0 6px 16px color-mix(in oklab, var(--color-walnut) 20%, transparent);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .image-frame-botanical,
+  .image-frame-polaroid {
+    max-width: 140px;
+    max-height: 140px;
+  }
+
+  .image-frame-gentle-oval,
+  .image-frame-watercolor {
+    max-width: 120px;
+    max-height: 140px;
+  }
+}
+
+/* Watercolor Frame - Organic, hand-painted feel */
+.image-frame-watercolor {
+  border-radius: var(--organic-md);
+  padding: 8px;
+  background: linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--color-parchment-light) 90%, var(--color-surface)) 0%,
+    color-mix(in oklab, var(--color-parchment-light) 70%, var(--color-surface)) 50%,
+    color-mix(in oklab, var(--color-parchment-light) 84%, var(--color-surface)) 100%
+  );
+  box-shadow:
+    0 2px 8px color-mix(in oklab, var(--color-walnut) 10%, transparent),
+    0 8px 24px color-mix(in oklab, var(--color-walnut) 12%, transparent),
+    inset 0 0 20px color-mix(in oklab, var(--color-parchment-light) 50%, transparent);
+}
+
+.image-frame-watercolor img {
+  border-radius: var(--organic-sm);
+}
+
+.image-frame-watercolor.clickable:hover {
+  box-shadow:
+    0 4px 12px color-mix(in oklab, var(--color-walnut) 15%, transparent),
+    0 12px 30px color-mix(in oklab, var(--color-walnut) 15%, transparent),
+    inset 0 0 25px color-mix(in oklab, var(--color-parchment-light) 60%, transparent);
+}
+
+/* Figure and caption styles */
+.image-figure {
+  margin: 0 auto;
+}
+
+.image-caption {
+  font-size: var(--text-xs);
+  color: var(--color-ink-light);
+  text-align: center;
+  margin-top: var(--space-xs);
+  font-style: italic;
+}

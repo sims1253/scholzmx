@@ -12,14 +12,17 @@ export async function GET(context) {
     description:
       'Ideas, recipes, projects, and musings from a digital garden. Built with slow web principles and a warm, botanical aesthetic.',
     site: context.site,
-    items: sortedBlog.map((post) => ({
-      title: post.data.title,
-      pubDate: post.data.date || post.data.pubDate,
-      description: post.data.description || post.data.excerpt || `Read ${post.data.title}`,
-      link: `/blog/${post.slug}/`,
-      // Include categories/tags if they exist
-      categories: post.data.tags || post.data.categories || [],
-    })),
+    items: sortedBlog.map((post) => {
+      const slug = post.slug ?? post.id.replace(/\/index$/, '');
+      return {
+        title: post.data.title,
+        pubDate: post.data.date || post.data.pubDate,
+        description: post.data.description || post.data.excerpt || `Read ${post.data.title}`,
+        link: `/blog/${slug}/`,
+        // Include categories/tags if they exist
+        categories: post.data.tags || post.data.categories || [],
+      };
+    }),
     // Optional: RSS feed customization
     customData: `<language>en-us</language>
     <managingEditor>noreply@scholzmx.com (Maximilian Scholz)</managingEditor>

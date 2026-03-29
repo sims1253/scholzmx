@@ -7,13 +7,6 @@ html {
   scrollbar-gutter: stable both-edges;
 }
 
-/* Fluid root type with safe bounds (keeps existing design scale intact) */
-@supports (font-size: clamp(1rem, 1vw, 2rem)) {
-  html {
-    font-size: clamp(18px, 1.1vw + 14px, 21px);
-  }
-}
-
 @layer enhancements {
   /* Smarter text wrapping for headings and body copy */
   @supports (text-wrap: balance) {
@@ -65,7 +58,7 @@ html {
   /* Subtle, accessible scrollbars (Firefox + WebKit) */
   * {
     scrollbar-width: thin;
-    scrollbar-color: color-mix(in srgb, var(--color-walnut) 40%, transparent) transparent;
+    scrollbar-color: color-mix(in oklab, var(--color-walnut) 40%, transparent) transparent;
   }
   @supports selector(::-webkit-scrollbar) {
     *::-webkit-scrollbar {
@@ -73,7 +66,7 @@ html {
       height: 10px;
     }
     *::-webkit-scrollbar-thumb {
-      background-color: color-mix(in srgb, var(--color-walnut) 45%, transparent);
+      background-color: color-mix(in oklab, var(--color-walnut) 45%, transparent);
       border-radius: 999px;
       border: 2px solid transparent;
       background-clip: content-box;
@@ -176,8 +169,8 @@ html {
   /* :has() progressive enhancement — highlight code block on copy */
   @supports selector(.astro-code:has(.copy-button)) {
     .astro-code:has(.copy-button.copied) {
-      border-color: color-mix(in srgb, var(--color-tansy) 60%, transparent) !important;
-      box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-tansy) 35%, transparent) inset !important;
+      border-color: color-mix(in oklab, var(--color-tansy) 60%, transparent) !important;
+      box-shadow: 0 0 0 2px color-mix(in oklab, var(--color-tansy) 35%, transparent) inset !important;
     }
   }
 

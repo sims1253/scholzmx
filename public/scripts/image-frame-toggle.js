@@ -1,37 +1,40 @@
-// Image frame toggle functionality
-document.addEventListener('DOMContentLoaded', function () {
-  const clickableFrames = document.querySelectorAll('.image-frame.clickable');
+// Image frame toggle functionality with graceful error handling
+(() => {
+  'use strict';
 
-  clickableFrames.forEach(function (frame) {
-    const toggleImage = function () {
-      const isNowAlt = frame.classList.toggle('show-alternate');
-      const pressed = frame.getAttribute('aria-pressed');
-      if (pressed !== null) {
+  const initImageFrameToggle = () => {
+    const clickableFrames = document.querySelectorAll('.image-frame.clickable');
+
+    clickableFrames.forEach((frame) => {
+      if (frame.dataset.toggleInitialized) return;
+      frame.dataset.toggleInitialized = 'true';
+
+      const toggleImage = () => {
+        const isNowAlt = frame.classList.toggle('show-alternate');
         frame.setAttribute('aria-pressed', isNowAlt ? 'true' : 'false');
-      }
-      // Toggle aria-hidden on layers for screen readers
-      const primary = frame.querySelector('.primary-image');
-      const alternate = frame.querySelector('.alternate-image');
-      if (primary && alternate) {
-        if (isNowAlt) {
-          primary.setAttribute('aria-hidden', 'true');
-          alternate.setAttribute('aria-hidden', 'false');
-        } else {
-          primary.setAttribute('aria-hidden', 'false');
-          alternate.setAttribute('aria-hidden', 'true');
+
+        const primary = frame.querySelector('.primary-image');
+        const alternate = frame.querySelector('.alternate-image');
+        if (primary && alternate) {
+          primary.setAttribute('aria-hidden', String(isNowAlt));
+          alternate.setAttribute('aria-hidden', String(!isNowAlt));
         }
-      }
-    };
+      };
 
-    // Click handler
-    frame.addEventListener('click', toggleImage);
+      frame.addEventListener('click', toggleImage);
 
-    // Keyboard handler for accessibility
-    frame.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        toggleImage();
-      }
+      frame.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggleImage();
+        }
+      });
     });
-  });
-});
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initImageFrameToggle);
+  } else {
+    initImageFrameToggle();
+  }
+})();
