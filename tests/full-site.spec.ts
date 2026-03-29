@@ -154,7 +154,6 @@ test.describe('Full Site Visual and Functionality Check', () => {
     const pages = [
       { path: '/blog', name: 'blog', selector: '.blog-content' },
       { path: '/recipes', name: 'recipes', selector: '.recipes-content' },
-      { path: '/notes', name: 'notes', selector: '.notes-grid' },
     ];
 
     for (const pageData of pages) {
@@ -168,15 +167,8 @@ test.describe('Full Site Visual and Functionality Check', () => {
           fullPage: true,
         });
 
-        if (pageData.name === 'notes') {
-          const gridElement = page.locator('.notes-grid');
-          await expect(gridElement).toBeAttached();
-          const notesCount = await gridElement.locator('.note-card').count();
-          expect(notesCount).toBeGreaterThan(0);
-        } else {
-          const listingElement = page.locator(pageData.selector);
-          await expect(listingElement).toBeVisible();
-        }
+        const listingElement = page.locator(pageData.selector);
+        await expect(listingElement).toBeVisible();
       });
     }
   });
@@ -288,21 +280,6 @@ test.describe('Full Site Visual and Functionality Check', () => {
         expect(text.trim().length).toBe(4);
       }
     }
-  });
-
-  test('notes page - content renders correctly', async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto('/notes');
-    await page.waitForLoadState('networkidle');
-
-    // Check that the page has rendered
-    const title = page.locator('h1');
-    await expect(title).toContainText('Notes');
-
-    // Check that note cards are rendered (use more specific selector)
-    const noteCards = page.locator('.note-card');
-    const count = await noteCards.count();
-    expect(count).toBeGreaterThan(0);
   });
 
   test('blog post - content is centered on desktop', async ({ page }) => {

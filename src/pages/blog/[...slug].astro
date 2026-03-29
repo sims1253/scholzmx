@@ -262,6 +262,20 @@ const sidebarTags = (post.data.tags ?? []).map((tag) => ({
     </article>
   </div>
   <BlogPostScripts slot="scripts" />
+  <script>
+    function alignSidebarToDescription() {
+      const desc = document.querySelector('.post-description');
+      const rail = document.querySelector('[data-left-rail]');
+      const sidebar = rail?.querySelector('.content-sidebar');
+      if (!desc || !rail || !sidebar) return;
+      const offset = desc.getBoundingClientRect().top - rail.getBoundingClientRect().top;
+      if (offset > 0) {
+        (sidebar as HTMLElement).style.marginTop = `${offset}px`;
+      }
+    }
+    alignSidebarToDescription();
+    document.addEventListener('astro:page-load', alignSidebarToDescription);
+  </script>
 </BaseLayout>
 
 <style>

@@ -114,7 +114,7 @@ const absoluteImageUrl = image.startsWith('http') ? image : `https://www.scholzm
 
     <!-- Code and math fonts: prefetch for likely code content (not preload to reduce contention) -->
     {
-      (currentPath.includes('/blog/') || currentPath.includes('/notes/')) && (
+      currentPath.includes('/blog/') && (
         <>
           <link rel="prefetch" href="/fonts/FiraCode-Regular.woff2" as="font" />
           <link rel="prefetch" href="/katex/fonts/KaTeX_Main-Regular.woff2" as="font" />
@@ -125,7 +125,6 @@ const absoluteImageUrl = image.startsWith('http') ? image : `https://www.scholzm
     <!-- KaTeX CSS: non-blocking load -->
     {
       (currentPath.includes('/blog/') ||
-        currentPath.includes('/notes/') ||
         currentPath.includes('/research')) && (
         <link
           rel="preload"

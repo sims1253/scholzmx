@@ -99,22 +99,22 @@ const recentPicks = [...blogPicks, ...recipePicks].sort(
     <aside class="homepage-sidebar">
       {
         newestPostData && (
-          <aside class="latest-scribble">
+          <a
+            href={
+              newestPostData.type === 'blog'
+                ? `/blog/${newestPostData.id}`
+                : `/recipes/${newestPostData.id}`
+            }
+            class="latest-scribble"
+          >
             <span class="scribble-label">Newest post</span>
-            <a
-              href={
-                newestPostData.type === 'blog'
-                  ? `/blog/${newestPostData.id}`
-                  : `/recipes/${newestPostData.id}`
-              }
-              class="scribble-title"
-            >
+            <span class="scribble-title">
               {newestPostData.title}
-            </a>
+            </span>
             <time class="scribble-date" datetime={newestPostData.date.toISOString()}>
               {formatDate(newestPostData.date)}
             </time>
-          </aside>
+          </a>
         )
       }
     </aside>
@@ -137,7 +137,9 @@ const recentPicks = [...blogPicks, ...recipePicks].sort(
             alternateSrc={selfImage}
             alternateAlt="More cool portrait of me"
             style="watercolor"
-            size="large"
+            size="custom"
+            width="180px"
+            height="210px"
             loading="eager"
             positionX={0}
             positionY={2}
@@ -158,19 +160,41 @@ const recentPicks = [...blogPicks, ...recipePicks].sort(
             to find a better description. The best feedback I've ever gotten described me as a <em
               >herder of cat herders</em
             > and my music taste has been characterized as being <em
-              >an atmospheric futurist with a nostalgic heart</em>. <br />
-
+              >an atmospheric futurist with a nostalgic heart</em>.
+          </p>
+          <p>
             I tend to make things. Software infrastructure that hopefully helps others, harsh vocals
             and guitar covers, a concept Call of Cthulhu campaign for a deathcore album (much to my
             players' confusion), and kitchen experiments where I try something new each month. I'm
             easy to nerdsnipe, if you couldn't tell. When I'm not building something, you'll find me
-            on the mats failing triangle escapes, or somewhere between a barbell and a book.<br />
+            on the mats failing triangle escapes, or somewhere between a barbell and a book.
+          </p>
+          <p>
             Somewhere along the way I collected a B.Sc. in <em>Computer Science in Engineering</em>,
             a M.Sc. in <em>Software Engineering and Technology</em>, and, if the gods of bureaucracy
             ever look kindly upon me, a PhD in <em>Bayesian statistics</em> will follow.
           </p>
         </div>
       </div>
+
+      {newestPostData && (
+        <div class="mobile-latest">
+          <a
+            href={
+              newestPostData.type === 'blog'
+                ? `/blog/${newestPostData.id}`
+                : `/recipes/${newestPostData.id}`
+            }
+            class="latest-scribble"
+          >
+            <span class="scribble-label">Newest post</span>
+            <span class="scribble-title">{newestPostData.title}</span>
+            <time class="scribble-date" datetime={newestPostData.date.toISOString()}>
+              {formatDate(newestPostData.date)}
+            </time>
+          </a>
+        </div>
+      )}
     </main>
   </div>
 </BaseLayout>

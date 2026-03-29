@@ -10,7 +10,7 @@
 .homepage-grid {
   display: block;
   position: relative;
-  max-width: 680px;
+  max-width: var(--measure-prose);
   margin: 0 auto;
   width: 100%;
   padding-inline: var(--space-md);
@@ -39,14 +39,14 @@
   z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: var(--space-md);
 }
 
 /* Illuminated Header */
 .welcome-header {
   display: flex;
   align-items: center;
-  gap: var(--space-xl);
+  gap: var(--space-lg);
 }
 
 /* Ensure header children are above texture */
@@ -263,6 +263,8 @@
     background var(--duration-sm) ease;
   position: relative;
   z-index: 0;
+  text-decoration: none;
+  color: inherit;
 }
 
 .latest-scribble:hover {
@@ -302,6 +304,18 @@
   font-style: italic;
 }
 
+/* Mobile newest post - shown below bio on small screens */
+.mobile-latest {
+  position: relative;
+  z-index: 1;
+}
+
+@media (min-width: 1200px) {
+  .mobile-latest {
+    display: none;
+  }
+}
+
 /* Tablet and medium screens - stack layout */
 @media (min-width: 1200px) {
   .homepage-sidebar {
@@ -310,7 +324,7 @@
     gap: var(--space-lg);
     position: absolute;
     right: calc(100% + 2rem);
-    top: 0;
+    top: 1rem;
     width: 260px;
     z-index: 1;
   }

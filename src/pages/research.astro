@@ -84,27 +84,23 @@ const years = Object.keys(publicationsByYear).sort((a, b) => Number(b) - Number(
         I come from more of a software engineering background, but have taken a detour through the
         world of bayesian statistics recently. Let's hope I won't continue adding new fields...
       </p>
+      <nav class="research-profiles" aria-label="Academic profiles">
+        <a
+          class="chip-link"
+          href="https://scholar.google.com/citations?user=JhwHgX4AAAAJ"
+          target="_blank"
+          rel="noopener">Google Scholar</a
+        >
+        <a
+          class="chip-link"
+          href="https://orcid.org/0000-0002-4486-1393"
+          target="_blank"
+          rel="noopener">ORCID</a
+        >
+      </nav>
     </header>
 
     <div class="research-container">
-      <aside class="research-sidebar listing-sidebar">
-        <section class="sidebar-section">
-          <h2>Profiles</h2>
-          <a
-            class="chip-link"
-            href="https://scholar.google.com/citations?user=JhwHgX4AAAAJ"
-            target="_blank"
-            rel="noopener">Google Scholar</a
-          >
-          <a
-            class="chip-link"
-            href="https://orcid.org/0000-0002-4486-1393"
-            target="_blank"
-            rel="noopener">ORCID</a
-          >
-        </section>
-      </aside>
-
       <main class="research-content">
         <section class="cards-grid" aria-label="Publications">
           {
@@ -159,19 +155,10 @@ const years = Object.keys(publicationsByYear).sort((a, b) => Number(b) - Number(
     /* content is the main flow */
   }
 
-  .research-sidebar {
-    display: none; /* hidden on mobile */
-  }
-
-  .research-sidebar .sidebar-section {
+  .research-profiles {
     display: flex;
-    flex-direction: column;
-    gap: var(--space-xxs);
-    align-items: flex-start;
-  }
-
-  .research-sidebar .chip-link {
-    display: inline-flex;
+    gap: var(--space-xs);
+    margin-top: var(--space-xs);
   }
 
   .cards-grid {
@@ -184,6 +171,7 @@ const years = Object.keys(publicationsByYear).sort((a, b) => Number(b) - Number(
     align-items: center;
     gap: var(--space-sm);
     margin: var(--space-xs) 0 var(--space-sm);
+    padding-inline: var(--space-sm);
     color: var(--color-walnut);
     font-family: var(--font-heading);
     font-weight: 600;
@@ -216,15 +204,4 @@ const years = Object.keys(publicationsByYear).sort((a, b) => Number(b) - Number(
     margin-right: auto;
   }
 
-  @media (min-width: 1200px) {
-    .research-sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-md);
-      position: absolute;
-      right: calc(100% + var(--space-lg));
-      top: 0;
-      width: var(--sidebar-width);
-    }
-  }
 </style>

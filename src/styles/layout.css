@@ -5,7 +5,7 @@
   .nav-content {
     display: flex;
     align-items: center;
-    padding-block: clamp(0.5rem, 2vw, var(--space-lg)); /* Dramatically less on mobile */
+    padding-block: clamp(0.5rem, 1.5vw, 1rem); /* Tighter nav padding */
     padding-inline: var(--space-md);
     position: relative;
     max-width: min(var(--site-width, 1280px), calc(100vw - 2 * var(--space-md)));
@@ -92,8 +92,8 @@
   text-decoration: none;
   font-family: var(--font-heading);
   font-size: calc(
-    clamp(0.9rem, 3vw, var(--text-xl)) * var(--font-scale, 1)
-  ); /* Extra compact on mobile */
+    clamp(1.15rem, 3vw, var(--text-xl)) * var(--font-scale, 1)
+  ); /* Sized for clear hierarchy on mobile */
   font-weight: 600;
   color: var(--color-ink-dark);
   margin-left: 0;
@@ -223,7 +223,7 @@
 }
 
 .page-nav {
-  margin-bottom: var(--space-sm);
+  margin-bottom: var(--space-xs);
 }
 
 .nav-and-content-area {

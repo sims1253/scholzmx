@@ -50,84 +50,97 @@ const tagAllHref = `${tagAllUrl.pathname}${tagAllUrl.search}`;
 
     <div class="blog-container">
       <aside class="blog-sidebar blog-filters">
-        <div class="listing-sidebar blog-sidebar-inner">
-          <section class="sidebar-section" role="search" aria-labelledby="search-heading">
-            <h3 id="search-heading">Search posts</h3>
-            <Search
-              id="blog-search"
-              className="pagefind-ui"
-              uiOptions={{
-                showImages: false,
-                debounceTimeoutMs: 100,
-                pageSize: 5,
-                excerptLength: 80,
-                showResultsCount: true,
-                showEmptyFilters: false,
-                filters: { type: 'blog' },
-                translations: {
-                  placeholder: 'Search posts...',
-                  clear_search: 'Clear search',
-                  load_more: 'Load more results',
-                  search_label: 'Search posts',
-                  filters_label: 'Filters',
-                  zero_results: 'No posts found matching your search.',
-                  many_results: '# posts found',
-                  one_result: '1 post found',
-                  alt_search: 'Search for [SEARCH_TERM]',
-                  search_suggestion: 'Try searching for a topic, tag, or keyword',
-                },
-              }}
-            />
-          </section>
-          <section class="sidebar-section" aria-labelledby="year-filter-heading">
-            <h3 id="year-filter-heading">Filter by year</h3>
-            <ul class="filter-list">
-              <li>
-                <a href={yearAllHref} class={`filter-btn${!filterYear ? ' active' : ''}`}> All </a>
-              </li>
-              {
-                years.map((y) => {
-                  const url = new URL('/blog', Astro.url);
-                  if (filterTag) url.searchParams.set('tag', filterTag);
-                  url.searchParams.set('year', y.toString());
-                  const href = `${url.pathname}${url.search}`;
-                  const isActive = filterYear === y.toString();
-                  return (
-                    <li>
-                      <a href={href} class={`filter-btn${isActive ? ' active' : ''}`}>
-                        {y}
-                      </a>
-                    </li>
-                  );
-                })
-              }
-            </ul>
-          </section>
-          <section class="sidebar-section" aria-labelledby="tag-filter-heading">
-            <h3 id="tag-filter-heading">Filter by tag</h3>
-            <ul class="filter-list">
-              <li>
-                <a href={tagAllHref} class={`filter-btn${!filterTag ? ' active' : ''}`}> All </a>
-              </li>
-              {
-                tags.map((t) => {
-                  const url = new URL('/blog', Astro.url);
-                  if (filterYear) url.searchParams.set('year', filterYear);
-                  url.searchParams.set('tag', t);
-                  const href = `${url.pathname}${url.search}`;
-                  const isActive = filterTag === t;
-                  return (
-                    <li>
-                      <a href={href} class={`filter-btn${isActive ? ' active' : ''}`}>
-                        #{t}
-                      </a>
-                    </li>
-                  );
-                })
-              }
-            </ul>
-          </section>
-        </div>
+        <button class="mobile-filters-toggle" type="button" aria-expanded="false" aria-controls="blog-filters-panel">
+          <span>Filter &amp; Search</span>
+          <svg class="mobile-filters-icon" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <div id="blog-filters-panel" class="listing-sidebar blog-sidebar-inner" hidden>
+            <section class="sidebar-section" role="search" aria-labelledby="search-heading">
+              <h3 id="search-heading">Search posts</h3>
+              <Search
+                id="blog-search"
+                className="pagefind-ui"
+                uiOptions={{
+                  showImages: false,
+                  debounceTimeoutMs: 100,
+                  pageSize: 5,
+                  excerptLength: 80,
+                  showResultsCount: true,
+                  showEmptyFilters: false,
+                  filters: { type: 'blog' },
+                  translations: {
+                    placeholder: 'Search posts...',
+                    clear_search: 'Clear search',
+                    load_more: 'Load more results',
+                    search_label: 'Search posts',
+                    filters_label: 'Filters',
+                    zero_results: 'No posts found matching your search.',
+                    many_results: '# posts found',
+                    one_result: '1 post found',
+                    alt_search: 'Search for [SEARCH_TERM]',
+                    search_suggestion: 'Try searching for a topic, tag, or keyword',
+                  },
+                }}
+              />
+            </section>
+            <section class="sidebar-section" aria-labelledby="year-filter-heading">
+              <h3 id="year-filter-heading">Filter by year</h3>
+              <ul class="filter-list">
+                <li>
+                  <a href={yearAllHref} class={`filter-btn${!filterYear ? ' active' : ''}`}> All </a>
+                </li>
+                {
+                  years.map((y) => {
+                    const url = new URL('/blog', Astro.url);
+                    if (filterTag) url.searchParams.set('tag', filterTag);
+                    url.searchParams.set('year', y.toString());
+                    const href = `${url.pathname}${url.search}`;
+                    const isActive = filterYear === y.toString();
+                    return (
+                      <li>
+                        <a href={href} class={`filter-btn${isActive ? ' active' : ''}`}>
+                          {y}
+                        </a>
+                      </li>
+                    );
+                  })
+                }
+              </ul>
+            </section>
+            <section class="sidebar-section" aria-labelledby="tag-filter-heading">
+              <h3 id="tag-filter-heading">Filter by tag</h3>
+              <ul class="filter-list tag-list-collapsible">
+                <li>
+                  <a href={tagAllHref} class={`filter-btn${!filterTag ? ' active' : ''}`}> All </a>
+                </li>
+                {
+                  tags.map((t, i) => {
+                    const url = new URL('/blog', Astro.url);
+                    if (filterYear) url.searchParams.set('year', filterYear);
+                    url.searchParams.set('tag', t);
+                    const href = `${url.pathname}${url.search}`;
+                    const isActive = filterTag === t;
+                    return (
+                      <li class={i >= 5 ? 'tag-overflow' : ''}>
+                        <a href={href} class={`filter-btn${isActive ? ' active' : ''}`}>
+                          #{t}
+                        </a>
+                      </li>
+                    );
+                  })
+                }
+                {tags.length > 6 && (
+                  <li>
+                    <button class="filter-btn tag-show-all" type="button" aria-expanded="false">
+                      +{tags.length - 5} more
+                    </button>
+                  </li>
+                )}
+              </ul>
+            </section>
+          </div>
       </aside>
 
       <main class="blog-content">
@@ -159,9 +172,12 @@ const tagAllHref = `${tagAllUrl.pathname}${tagAllUrl.search}`;
       --listing-card-max-width: calc(var(--article-column-width) + (2 * var(--space-md)));
     }
 
-    @media (min-width: 1200px) and (max-width: 1499px) {
+    @media (min-width: 1200px) {
       .blog-page {
-        --article-column-width: calc(1200px - 280px - var(--space-lg));
+        --article-column-width: min(
+          var(--measure-prose),
+          calc(100vw - 2 * (var(--sidebar-width) + var(--space-lg)) - 2 * var(--space-md))
+        );
       }
     }
 
@@ -187,11 +203,68 @@ const tagAllHref = `${tagAllUrl.pathname}${tagAllUrl.search}`;
       color: var(--color-walnut);
     }
 
-    .blog-sidebar {
-      display: none; /* hidden on mobile */
+    /* Mobile filter toggle */
+    .mobile-filters-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-xxs);
+      width: 100%;
+      padding: var(--space-xs) var(--space-sm);
+      margin-bottom: var(--space-sm);
+      font-size: var(--text-sm);
+      font-family: var(--font-heading);
+      font-weight: 500;
+      color: var(--color-walnut);
+      background: color-mix(in oklab, var(--color-surface) 88%, transparent);
+      border: 1px solid var(--color-lichen);
+      border-radius: var(--organic-sm);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .mobile-filters-toggle:hover {
+      background: color-mix(in oklab, var(--color-sage) 15%, transparent);
+      border-color: var(--color-sage);
+    }
+
+    .mobile-filters-icon {
+      transition: transform var(--transition-fast);
+    }
+
+    .mobile-filters-toggle[aria-expanded='true'] .mobile-filters-icon {
+      transform: rotate(180deg);
+    }
+
+    /* Tag overflow collapse */
+    .tag-overflow {
+      display: none;
+    }
+
+    .tag-list-collapsible.tags-expanded .tag-overflow {
+      display: list-item;
+    }
+
+    .tag-list-collapsible.tags-expanded .tag-show-all {
+      display: none;
+    }
+
+    .tag-show-all {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      cursor: pointer;
     }
 
     @media (min-width: 1200px) {
+      .mobile-filters-toggle {
+        display: none;
+      }
+
+      .blog-sidebar-inner {
+        /* Always visible on desktop, override hidden attribute */
+        display: flex !important;
+      }
+
       .blog-sidebar {
         display: block;
         position: absolute;
@@ -203,8 +276,8 @@ const tagAllHref = `${tagAllUrl.pathname}${tagAllUrl.search}`;
 
       .blog-sidebar-inner {
         position: sticky;
-        top: clamp(6.5rem, 38.2vh, 14rem);
-        max-height: calc(100dvh - clamp(6.5rem, 38.2vh, 14rem) - var(--space-md));
+        top: clamp(4rem, 15vh, 8rem);
+        max-height: calc(100dvh - clamp(4rem, 15vh, 8rem) - var(--space-md));
         overflow-y: auto;
       }
     }
@@ -303,6 +376,45 @@ const tagAllHref = `${tagAllUrl.pathname}${tagAllUrl.search}`;
       }
 
       document.addEventListener('astro:page-load', initBlogFilters);
+
+      // Mobile filter toggle
+      const initMobileToggle = () => {
+        document.querySelectorAll('.mobile-filters-toggle').forEach((btn) => {
+          if (btn.dataset.bound) return;
+          btn.dataset.bound = 'true';
+          btn.addEventListener('click', () => {
+            const panel = document.getElementById(btn.getAttribute('aria-controls'));
+            if (!panel) return;
+            const expanded = btn.getAttribute('aria-expanded') === 'true';
+            btn.setAttribute('aria-expanded', String(!expanded));
+            panel.hidden = expanded;
+          });
+        });
+      };
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initMobileToggle, { once: true });
+      } else {
+        initMobileToggle();
+      }
+      document.addEventListener('astro:page-load', initMobileToggle);
+
+      // Tag show-all toggle
+      const initTagToggle = () => {
+        document.querySelectorAll('.tag-show-all').forEach((btn) => {
+          if (btn.dataset.bound) return;
+          btn.dataset.bound = 'true';
+          btn.addEventListener('click', () => {
+            const list = btn.closest('.tag-list-collapsible');
+            if (list) list.classList.add('tags-expanded');
+          });
+        });
+      };
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initTagToggle, { once: true });
+      } else {
+        initTagToggle();
+      }
+      document.addEventListener('astro:page-load', initTagToggle);
     })();
   </script>
 </BaseLayout>

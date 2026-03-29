@@ -42,22 +42,7 @@ const recipes = defineCollection({
     }),
 });
 
-const notes = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/notes' }),
-  schema: z.object({
-    title: z.string(),
-    description: z.string().optional(),
-    type: z.enum(['thought', 'observation', 'draft', 'idea', 'reference']).default('thought'),
-    tags: z.array(z.string()).optional(),
-    created: z.coerce.date(),
-    updated: z.coerce.date().optional(),
-    connections: z.array(z.string()).optional(), // Array of note slugs that this note connects to
-    draft: z.boolean().optional().default(false),
-  }),
-});
-
 export const collections = {
   blog,
   recipes,
-  notes,
 };
