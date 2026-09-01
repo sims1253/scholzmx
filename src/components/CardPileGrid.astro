@@ -1,0 +1,21 @@
+---
+import GridLayout from './GridLayout.astro';
+
+interface Props {
+  columns?: 1 | 2 | 3 | 'auto';
+  itemMinWidth?: string;
+  gap?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  class?: string;
+}
+
+const {
+  columns = 'auto',
+  itemMinWidth = '22rem',
+  gap = 'xl',
+  class: className,
+} = Astro.props as Props;
+---
+
+<GridLayout columns={columns} itemMinWidth={itemMinWidth} gap={gap} class={className}>
+  <slot />
+</GridLayout>

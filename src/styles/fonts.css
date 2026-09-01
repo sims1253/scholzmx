@@ -45,6 +45,14 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'ET Book Roman';
+  src: url('/fonts/et-book-display-italic-old-style-figures.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
 /* Fira Code - Code blocks (already preloaded in BaseLayout) */
 @font-face {
   font-family: 'Fira Code';

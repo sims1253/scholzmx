@@ -4,7 +4,16 @@
     "at-rule-no-unknown": [
       true,
       {
-        "ignoreAtRules": ["layer", "container", "supports"]
+        "ignoreAtRules": [
+          "layer",
+          "container",
+          "supports",
+          "theme",
+          "custom-variant",
+          "utility",
+          "source",
+          "starting-style"
+        ]
       }
     ],
     "selector-pseudo-class-no-unknown": [

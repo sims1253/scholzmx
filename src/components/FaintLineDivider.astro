@@ -15,10 +15,10 @@ const { width = 'medium', class: className = '' } = Astro.props;
     background: linear-gradient(
       to right,
       transparent,
-      color-mix(in srgb, var(--color-lichen) 60%, transparent),
+      color-mix(in oklab, var(--color-lichen) 60%, transparent),
       transparent
     );
-    margin: calc(var(--space-xs) * 2) auto var(--space-sm);
+    margin: var(--space-xxs) auto var(--space-xs);
   }
 
   .faint-line-divider.narrow {

@@ -2,9 +2,11 @@
   /* ===== Layout Tokens ===== */
 
   /* Prose reading measures (ch units ensure optimal character count per line) */
-  --measure-prose-personal: 55ch; /* Warmer, more intimate reading width */
-  --measure-prose-serious: 63ch; /* Wider for academic/technical content */
+  --measure-prose-personal: 66ch; /* Warmer, more intimate reading width */
+  --measure-prose-serious: 72ch; /* Wider for academic/technical content */
   --measure-prose: var(--measure-prose-personal); /* Default, set dynamically by tone */
+  --reading-measure: var(--measure-prose);
+  --content-width: var(--measure-prose); /* Legacy alias used across prose/base styles */
 
   /* Page layout measures */
   --measure-listing: 960px; /* px for consistent grid layouts */
@@ -14,11 +16,19 @@
   /* Site-level chrome (px for consistent structural elements) */
   --site-width: 1280px; /* Controls nav inner wrapper max-width */
   --nav-brand-left-offset: 24px; /* Subtle brand shift left of center content */
-  --card-max-width: 640px; /* Consistent card width regardless of rem scaling */
+  --card-max-width: 768px; /* Consistent card width regardless of rem scaling */
 
   /* Sidebar layout */
   --sidebar-width: 15rem; /* rem for scalable sidebar */
   --sidebar-gap: clamp(1rem, 2vw, 2rem); /* Fluid responsive gap */
+  --rail-width: var(--sidebar-width);
+  --rail-gap: clamp(1rem, 2vw, 1.75rem);
+  --page-pad: var(--space-md);
+
+  /* Controlled overflow utilities */
+  --bleed-sm: clamp(0.5rem, 1vw, 1rem);
+  --bleed-md: clamp(1rem, 2vw, 2rem);
+  --bleed-lg: clamp(1.5rem, 3vw, 3rem);
 
   /* Legacy layout tokens (maintained for compatibility) */
   --main-content-width: 800px;

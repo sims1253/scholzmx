@@ -11,6 +11,18 @@
   --font-ui: 'Alegreya', georgia, sans-serif;
   --font-mono: 'Fira Code', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
 
+  /* Reading rhythm */
+  --leading-personal: 1.72;
+  --leading-serious: 1.66;
+  --leading-prose: var(--leading-personal);
+  --paragraph-gap: 0.95em;
+  --heading-leading: 1.2;
+  --heading-measure: 26ch;
+
+  /* Link legibility */
+  --link-underline-offset: 0.15em;
+  --link-underline-thickness: 0.085em;
+
   /* Font weights */
   --font-weight-normal: 400;
   --font-weight-medium: 500;
@@ -20,8 +32,9 @@
   --heading-weight-medium: var(--font-weight-medium);
 
   /* Typography scale (rem units scale with user font preferences) */
-  --text-xxs: 0.75rem; /* Was 0.65rem - increased to 12px minimum for accessibility */
-  --text-xs: 0.75rem;
+  --text-xs: 0.75rem; /* 12px minimum — accessibility baseline */
+  --text-xxs: var(--text-xs); /* Alias: was 0.65rem, raised to match --text-xs for a11y */
+  --text-2xs: var(--text-xs); /* Legacy alias used widely across components */
   --text-sm: 0.875rem;
   --text-md: 1rem;
   --text-lg: 1.2rem;
@@ -35,6 +48,20 @@
   --dropcap-color-background: var(--color-sage);
   --dropcap-color-foreground: var(--color-ink-dark);
 
-  /* Typography spacing */
-  --spacing-line-height: 1.6; /* Was 1.45 - increased for better readability */
+  /* UI and non-prose defaults */
+  --spacing-line-height: 1.5;
+}
+
+/* Dark mode adjustments for dropcaps */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --dropcap-color-background: var(--color-moss);
+    --dropcap-color-foreground: var(--color-ink-dark);
+  }
+}
+
+/* Explicit dark theme override */
+:root[data-theme='dark'] {
+  --dropcap-color-background: var(--color-moss);
+  --dropcap-color-foreground: var(--color-ink-dark);
 }

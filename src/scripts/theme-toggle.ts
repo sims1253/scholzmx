@@ -1,26 +1,27 @@
-// Theme toggle functionality
-const KEY = 'theme-preference';
+const THEME_PREFERENCE_KEY = 'theme-preference';
 
 function getThemePreference(): string | null {
   try {
-    return localStorage.getItem(KEY);
-  } catch {
+    return localStorage.getItem(THEME_PREFERENCE_KEY);
+  } catch (error) {
+    if (import.meta.env.DEV) {
+      console.warn('Unable to read theme preference from localStorage.', error);
+    }
     return null;
   }
 }
 
-function setThemePreference(value: string | null): void {
+function setThemePreference(value: 'dark' | 'light' | null): void {
   try {
-    if (value) {
-      if (value !== 'dark' && value !== 'light') {
-        return;
-      }
-      localStorage.setItem(KEY, value);
+    if (value === 'dark' || value === 'light') {
+      localStorage.setItem(THEME_PREFERENCE_KEY, value);
     } else {
-      localStorage.removeItem(KEY);
+      localStorage.removeItem(THEME_PREFERENCE_KEY);
     }
-  } catch {
-    // Ignore storage errors (e.g., private browsing mode)
+  } catch (error) {
+    if (import.meta.env.DEV) {
+      console.warn('Unable to persist theme preference to localStorage.', error);
+    }
   }
 }
 
@@ -30,10 +31,7 @@ function getSystemPreference(): 'dark' | 'light' {
 
 function getEffectiveTheme(): 'dark' | 'light' {
   const pref = getThemePreference();
-  if (pref === 'dark' || pref === 'light') {
-    return pref;
-  }
-  return getSystemPreference();
+  return pref === 'dark' || pref === 'light' ? pref : getSystemPreference();
 }
 
 function applyTheme(theme: string): void {
@@ -42,13 +40,11 @@ function applyTheme(theme: string): void {
 
   root.setAttribute('data-theme', theme);
 
-  // Update theme-color meta tag
   const meta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;
   if (meta) {
     meta.content = theme === 'dark' ? '#0f100e' : '#f9f6f2';
   }
 
-  // Update aria-pressed state
   if (btn) {
     btn.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
   }
@@ -72,18 +68,15 @@ function toggleTheme(): void {
   }
 }
 
-// Initialize
-export function initThemeToggle(): void {
+function initThemeToggle(): void {
   const btn = document.getElementById('nav-theme-toggle');
-
   applyTheme(getEffectiveTheme());
-
   if (btn) {
     btn.addEventListener('click', toggleTheme);
   }
 }
 
-// Auto-initialize
+// Initialize immediately if DOM ready, otherwise wait
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initThemeToggle);
 } else {

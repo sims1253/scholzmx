@@ -1,0 +1,31 @@
+---
+import '../styles/reading-layout.css';
+
+export interface Props {
+  className?: string;
+  leftRailClassName?: string;
+  mainClassName?: string;
+  rightRailClassName?: string;
+}
+
+const {
+  className = '',
+  leftRailClassName = '',
+  mainClassName = '',
+  rightRailClassName = '',
+} = Astro.props;
+---
+
+<div class={`reading-layout ${className}`} data-reading-layout>
+  <aside class={`reading-layout__left ${leftRailClassName}`.trim()} data-left-rail>
+    <slot name="leftRail" />
+  </aside>
+
+  <div class={`reading-layout__main ${mainClassName}`.trim()} data-main-column>
+    <slot />
+  </div>
+
+  <aside class={`reading-layout__right ${rightRailClassName}`.trim()} data-right-rail>
+    <slot name="rightRail" />
+  </aside>
+</div>

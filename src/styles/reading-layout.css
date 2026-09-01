@@ -1,0 +1,71 @@
+.reading-layout {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-md);
+  align-items: start;
+}
+
+.reading-layout [data-main-column],
+.reading-layout [data-left-rail],
+.reading-layout [data-right-rail] {
+  min-width: 0;
+}
+
+.reading-layout [data-main-column] {
+  order: 1;
+}
+
+.reading-layout [data-left-rail] {
+  order: 2;
+  display: none;
+}
+
+.reading-layout [data-right-rail] {
+  order: 3;
+  display: none;
+}
+
+@media (min-width: 1200px) {
+  .reading-layout {
+    grid-template-columns:
+      minmax(var(--page-pad), 1fr)
+      minmax(0, var(--rail-width))
+      var(--rail-gap)
+      minmax(0, var(--reading-measure))
+      var(--rail-gap)
+      minmax(0, var(--rail-width))
+      minmax(var(--page-pad), 1fr);
+    gap: 0;
+  }
+
+  .reading-layout [data-left-rail] {
+    display: block;
+    grid-column: 2;
+    order: initial;
+    align-self: stretch;
+  }
+
+  .reading-layout [data-main-column] {
+    grid-column: 4;
+    order: initial;
+  }
+
+  .reading-layout [data-right-rail] {
+    display: block;
+    grid-column: 6;
+    order: initial;
+  }
+}
+
+.bleed-sm {
+  margin-inline: calc(var(--bleed-sm) * -1);
+}
+
+.bleed-md {
+  margin-inline: calc(var(--bleed-md) * -1);
+}
+
+.bleed-lg {
+  margin-inline: calc(var(--bleed-lg) * -1);
+}

@@ -1,0 +1,40 @@
+---
+import '../styles/reading-progress.css';
+
+export interface Props {
+  color?: 'moss' | 'walnut' | 'tansy';
+  height?: number;
+  className?: string;
+}
+
+const { color = 'moss', height = 3, className = '' } = Astro.props as Props;
+
+const colorMap: Record<'moss' | 'walnut' | 'tansy', string> = {
+  moss: 'var(--color-moss)',
+  walnut: 'var(--color-walnut)',
+  tansy: 'var(--color-tansy)',
+};
+const progressColor = colorMap[color];
+const progressHeight = height;
+---
+
+<div
+  class={`reading-progress ${className}`}
+  style={`--reading-progress-height: ${progressHeight}px;`}
+  role="progressbar"
+  aria-label="Reading progress"
+  aria-valuemin="0"
+  aria-valuemax="100"
+  aria-valuenow="0"
+>
+  <div class="progress-bar" style={`background-color: ${progressColor};`}></div>
+  <svg class="progress-leaf" viewBox="0 0 20 20" width="12" height="12" aria-hidden="true">
+    <path
+      d="M10 2 C10 2 6 6 6 10 C6 14 10 18 10 18 C10 18 14 14 14 10 C14 6 10 2 10 2 Z"
+      fill="currentColor"></path>
+  </svg>
+</div>
+
+<script>
+  import '../scripts/reading-progress';
+</script>

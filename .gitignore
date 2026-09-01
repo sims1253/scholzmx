@@ -30,6 +30,7 @@ _site/
 
 # Blog build system
 .blog-cache/
+.cache/blog-build/
 
 # Generated markdown files from Quarto (.qmd -> .md)
 # Pattern: Quarto posts use year/post-name/index.md, manual posts use year/post-name.md
@@ -89,5 +90,19 @@ plans.db
 **/*.quarto_ipynb
 .Rproj.user/
 
-src/content/blog/**/*.svg
-src/content/blog/**/*.png
+# Playwright test artifacts
+test-results/
+screenshots/
+playwright-report/
+
+# Letta AI agent
+.letta/
+
+# Generated images in blog content (kept with sources)
+# src/content/blog/**/*.svg
+# src/content/blog/**/*.png
+
+.lighthouseci/
+layout-migration.md
+screenshots-migration-current/
+screenshots-review/

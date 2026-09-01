@@ -4,7 +4,7 @@ description: 'Fluffy dinner rolls with Hokkaido squash, spiced with cinnamon, ca
 servings: '15 rolls'
 time: '3 hours (2h rising)'
 tags: ['Snack', 'Bread', 'Vegan']
-heroImage: '../../assets/images/recipes/hokkaido-dinner-rolls/stack.jpg'
+heroImage: './stack.jpg'
 draft: false
 ---
 
@@ -42,20 +42,20 @@ For our group of murder mystery grandmas, below 50g sugar didn't give us the swe
 
 ## Shaping and Baking
 
-![Fifteen dough balls in a baking dish, before the second rise](../../assets/images/recipes/hokkaido-dinner-rolls/small_balls.jpg)
+![Fifteen dough balls in a baking dish, before the second rise](./small_balls.jpg)
 
 > margin: With higher hydration the dough gets clingy. Instead of fighting it with your hands you can use a bench scraper.
 
 After the 1h rise, divide the dough into any number of equal pieces for the baking dish of your choice. I use a 34cm x 24cm ikea form that neatly fits 15 rolls in a 3x5 pattern. Line the dish with parchment paper and shape the pieces into balls.
 Place the balls in the dish with a little space between them, cover and let rise for another hour. I use the larger 40cm x 32cm ikea form for that as it perfectly fits and has enough headroom.
 
-![The dough balls after the second rise – puffed up and touching](../../assets/images/recipes/hokkaido-dinner-rolls/large_balls.jpg)
+![The dough balls after the second rise – puffed up and touching](./large_balls.jpg)
 
 > margin: The initial high heat helps the oven spring and prevents the rolls from turning out mushy.
 
 Preheat the oven to **220 °C (425 °F)** conventional (200 °C / 400 °F convection). Put the softies in the oven, and after 8 minutes reduce the temperature to **200 °C (400 °F)** conventional (180 °C / 350 °F convection). Bake for around 23 minutes total or until golden brown on top.
 
-![The golden, cottony crumb of the finished softies](../../assets/images/recipes/hokkaido-dinner-rolls/total.jpg)
+![The golden, cottony crumb of the finished softies](./total.jpg)
 
 Let them cool in the form and enjoy with friends. Works well with cottage cheese and jam or just butter, as many things tend to.
 I find that the rolls store well in the (cooled) oven over night and make for a great weekend breakfast treat.

@@ -1,0 +1,80 @@
+---
+/**
+ * ImageRenderer - Helper component for rendering images in ImageFrame
+ * Handles both string URLs and Astro image assets with consistent styling
+ */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+export interface Props {
+  src: string | ImageMetadata;
+  alt: string;
+  widths: number[];
+  sizes: string;
+  width?: number;
+  height?: number;
+  loading?: 'lazy' | 'eager';
+  fetchpriority?: 'high' | 'low' | 'auto';
+  decoding?: 'sync' | 'async' | 'auto';
+  class?: string;
+  style?: string;
+  objectFitClass?: string;
+}
+
+const {
+  src,
+  alt,
+  widths,
+  sizes,
+  width,
+  height,
+  loading = 'lazy',
+  fetchpriority,
+  decoding = 'async',
+  class: className = '',
+  style = '',
+  objectFitClass = '',
+} = Astro.props;
+
+const assetSrc = typeof src === 'string' ? null : src;
+const stringSrc = typeof src === 'string' ? src : src.src;
+const safeWidth = width ?? 800;
+const safeHeight = height ?? 400;
+const objectFitStyle = objectFitClass.includes('cover')
+  ? 'object-fit: cover;'
+  : objectFitClass.includes('contain')
+    ? 'object-fit: contain;'
+    : objectFitClass.includes('fill')
+      ? 'object-fit: fill;'
+      : '';
+const mergedStyle = `${style}${objectFitStyle ? ` ${objectFitStyle}` : ''}`;
+---
+
+{
+  assetSrc ? (
+    <Image
+      src={assetSrc}
+      alt={alt}
+      width={safeWidth}
+      widths={widths}
+      sizes={sizes}
+      format="avif"
+      loading={loading}
+      class={`${className} ${objectFitClass}`}
+      style={mergedStyle}
+      fetchpriority={fetchpriority}
+    />
+  ) : (
+    <img
+      class={`${className} ${objectFitClass}`}
+      style={mergedStyle}
+      src={stringSrc}
+      alt={alt}
+      loading={loading}
+      fetchpriority={fetchpriority}
+      decoding={decoding}
+      width={safeWidth}
+      height={safeHeight}
+    />
+  )
+}

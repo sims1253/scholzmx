@@ -3,13 +3,13 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
-import lightningcss from 'vite-plugin-lightningcss';
 import purgecss from 'astro-purgecss';
 import pagefind from 'astro-pagefind';
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://www.scholzmx.com',
+  devToolbar: { enabled: false },
   redirects: {
     // Preserve legacy blog post URLs from live site
     '/post/building-bayesim-intro/': '/blog/2023/04-26-building-bayesim/',
@@ -39,70 +39,60 @@ export default defineConfig({
       safelist: [
         // Keep all CSS custom properties (variables)
         /^--/,
-        // Keep classes that might be added dynamically by JavaScript
+        // Keep classes added dynamically by JavaScript
         'active',
         'focus',
         'hover',
         'disabled',
-        // Keep torch toggle states
         'torch-toggle',
         'copied',
-        // Keep manuscript and page elements
-        /^manuscript/,
-        /^page/,
-        /^longform/, // legacy during migration
+        'visible',
+        // Layout and content classes
         /^prose/,
         /^layout-/,
         /^personal-content/,
         /^serious-content/,
-        // Keep navigation states
+        // Navigation
         /^nav-/,
         /^site-/,
-        // Keep botanical and artistic elements
+        // Decorative elements
         /^botanical/,
         /^border/,
         /^vine/,
-        /^portrait/,
-        // Keep math/code elements
+        /^sc-/,
+        // Code and math
         'astro-code',
         'copy-button',
-        // Dropcap variants generated dynamically in DropCap.astro - CRITICAL
-        /^dropcap$/,
-        /^dropcap--/,
-        // ImageFrame dynamic/toggled classes
+        // Dropcap variants (dynamically generated)
+        /^dropcap/,
+        // ImageFrame dynamic classes
         /^image-frame/,
         'primary-image',
         'alternate-image',
         'clickable',
         'show-alternate',
         /^fill-/,
-        // Margin notes injected via JS on blog posts
+        // Margin notes (injected via JS)
         'margin-note',
         'notes-container',
         'note-anchor',
-        'visible',
-        // Keep specific Tailwind utilities (NOT broad regex)
+        // Tailwind utilities used dynamically
         'tw-grid',
-        'tw-grid-cols-1',
-        'tw-grid-cols-2',
-        'tw-grid-cols-3',
-        'tw-gap-4',
-        'tw-gap-6',
+        /^tw-grid-cols/,
+        /^tw-gap/,
         'tw-w-full',
-        'tw-max-w-5xl',
-        'tw-max-w-6xl',
+        /^tw-max-w/,
         'tw-mx-auto',
-        'tw-px-md',
-        // Responsive variants for grid
-        'md:tw-grid-cols-2',
-        'lg:tw-grid-cols-3',
-        // StackedCard dynamic doodle classes
-        /^sc-/,
-        /^topLeft$/,
-        /^topRight$/,
-        /^bottomLeft$/,
-        /^bottomRight$/,
-        /^center$/,
+        /^tw-px-/,
+        // Responsive Tailwind
+        /^md:tw-/,
+        /^lg:tw-/,
+        // StackedCard positions
+        'topLeft',
+        'topRight',
+        'bottomLeft',
+        'bottomRight',
+        'center',
       ],
       keyframes: true,
       // Keep all @font-face declarations so production keeps heading/body/dropcap fonts
@@ -118,8 +108,13 @@ export default defineConfig({
         limitInputPixels: 268402689,
       },
     },
-    domains: [],
-    remotePatterns: [],
+    domains: ['sims1253.github.io'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'sims1253.github.io',
+      },
+    ],
   },
 
   // Use Astro's native markdown processing with math support and Gruvbox themes
@@ -143,18 +138,6 @@ export default defineConfig({
 
   // Reduce bundle size and improve loading
   vite: {
-    plugins: [
-      lightningcss({
-        minify: true,
-        targets: {
-          // Support modern browsers for better performance
-          chrome: 100,
-          firefox: 100,
-          safari: 15,
-          edge: 100,
-        },
-      }),
-    ],
     server: {
       host: true,
       watch: {

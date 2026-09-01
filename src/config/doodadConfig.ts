@@ -2,21 +2,24 @@
  * Doodad System Configuration
  *
  * This file contains all the configuration for the StackedCard doodad system.
- * The system uses probability-based selection with category-level gating,
+ * The system uses explicit selection semantics with category-level gating,
  * exclusivity rules, layer compatibility, and item-level conflicts.
  *
  * Architecture:
  * - Categories: Group related doodads (primaryAccents, svgDoodles, etc.)
- * - Items: Individual doodads within categories with their own probabilities
+ * - Items: Individual doodads within categories with explicit selection semantics
  * - Exclusivity: Some categories only allow one item to be selected
  * - Conflicts: Items can prevent other items from being selected
  * - Layer compatibility: Items can be restricted to single/multi layer cards
  *
- * Probability Semantics:
+ * Selection Semantics (Explicit):
  * - Category probability: Bernoulli roll to enable the entire category (0.0-1.0)
- * - Exclusive categories: Item "probability" values are WEIGHTS for weighted selection
+ * - Exclusive categories with Weighted: Items are selected by weighted random choice
  *   Example: primaryAccents has 80% gate, then weighted pick among items (0.5:0.3:0.4 ratio)
- * - Non-exclusive categories: Item probabilities are independent Bernoulli rolls (0.0-1.0)
+ *   Selection probability of item i = weight_i / sum(all_weights)
+ * - Exclusive categories with Probabilistic: Items are tested in order, first to succeed wins
+ *   Example: First test item A (50% chance), if passes, skip others; else test B (30% chance)
+ * - Non-exclusive categories with Probabilistic: Each item rolls independently (0.0-1.0)
  *   Example: stickers can have both TR and BL active if both roll succeed
  *
  * Conflict Resolution:
@@ -29,10 +32,19 @@
 // Base types for improved type safety
 export type Position = 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight' | 'center';
 
+/**
+ * Doodad item selection semantics.
+ * - weighted: Items compete with weights, normalized for probability (exclusive only)
+ * - probabilistic: Items are independently tested with probability 0-1
+ */
+export type DoodadSelection =
+  | { kind: 'weighted'; weight: number }
+  | { kind: 'probabilistic'; probability: number };
+
 // Discriminated union for different doodad kinds
 export type DoodadItem = {
   id: string;
-  probability: number;
+  selection: DoodadSelection; // Explicit selection semantics
   layerTypes: ('single' | 'multi' | 'all')[];
   conflicts?: string[];
   generate?: (rng: {
@@ -65,21 +77,65 @@ export type DoodadItem = {
 export interface DoodadCategory {
   id: string;
   enabled: boolean;
-  probability: number;
+  probability: number; // Category-level Bernoulli gate
   exclusive?: boolean; // Only one item from this category can be active
   items: DoodadItem[];
 }
 
 export interface DoodadProps {
   active?: boolean;
-  [key: string]: any;
+  side?: 'left' | 'right';
+  variant?: number;
+  position?: Position;
+  rotation?: number;
+  scale?: number;
+  washX?: number;
+  washY?: number;
+  washAlpha?: number;
+  washTx?: number;
+  washTy?: number;
+  washR1?: number;
+  washR2?: number;
+  washX2?: number;
+  washY2?: number;
+  washBleed?: number;
+  ringScale?: number;
+  ringAlpha?: number;
 }
 
 export interface DoodadResults {
   [itemId: string]: DoodadProps;
 }
 
-// Configuration
+// ============================================
+// StackedCard Layout Configuration
+// ============================================
+
+/**
+ * Layer count distribution thresholds (cumulative)
+ *
+ * These thresholds control the probability distribution for how many
+ * visual "paper layers" appear stacked behind the card:
+ * - 15% chance: single sheet (no depth)
+ * - 45% chance: 2 layers (subtle depth)
+ * - 30% chance: 3 layers (moderate depth)
+ * - 10% chance: 4 layers (maximum depth)
+ *
+ * The distribution favors 2-3 layers as the most visually balanced.
+ */
+export const LAYER_THRESHOLDS = {
+  /** 15% chance of single layer */
+  SINGLE: 0.15,
+  /** 60% cumulative (45% chance of 2 layers) */
+  DOUBLE: 0.6,
+  /** 90% cumulative (30% chance of 3 layers) */
+  TRIPLE: 0.9,
+} as const;
+
+// ============================================
+// Doodad Categories Configuration
+// ============================================
+
 export const doodadCategories: DoodadCategory[] = [
   {
     id: 'primaryAccents',
@@ -89,20 +145,20 @@ export const doodadCategories: DoodadCategory[] = [
     items: [
       {
         id: 'bookmarkRibbon',
-        probability: 0.4,
+        selection: { kind: 'weighted', weight: 0.4 },
         layerTypes: ['all'],
         kind: 'element',
         generate: ({ pick }) => ({ side: pick(0.5) ? 'right' : 'left' }),
       },
       {
         id: 'tapeCorners',
-        probability: 0.3,
+        selection: { kind: 'weighted', weight: 0.3 },
         layerTypes: ['all'],
         kind: 'element',
       },
       {
         id: 'tab',
-        probability: 0.4,
+        selection: { kind: 'weighted', weight: 0.4 },
         layerTypes: ['single'],
         kind: 'element',
       },
@@ -115,13 +171,13 @@ export const doodadCategories: DoodadCategory[] = [
     items: [
       {
         id: 'leafDoodle',
-        probability: 1.0,
+        selection: { kind: 'probabilistic', probability: 1.0 },
         layerTypes: ['single'],
         kind: 'element',
       },
       {
         id: 'spriteOrnament',
-        probability: 1.0,
+        selection: { kind: 'probabilistic', probability: 1.0 },
         layerTypes: ['multi'],
         kind: 'element',
         generate: ({ betweenInt }) => ({ variant: betweenInt(0, 3) }),
@@ -136,7 +192,7 @@ export const doodadCategories: DoodadCategory[] = [
     items: [
       {
         id: 'berries',
-        probability: 0.2,
+        selection: { kind: 'weighted', weight: 0.2 },
         layerTypes: ['all'],
         kind: 'svg',
         src: '/doodles/doodle-berries.svg',
@@ -149,7 +205,7 @@ export const doodadCategories: DoodadCategory[] = [
       },
       {
         id: 'fern',
-        probability: 0.2,
+        selection: { kind: 'weighted', weight: 0.2 },
         layerTypes: ['all'],
         kind: 'svg',
         src: '/doodles/doodle-fern.svg',
@@ -162,7 +218,7 @@ export const doodadCategories: DoodadCategory[] = [
       },
       {
         id: 'lavender',
-        probability: 0.2,
+        selection: { kind: 'weighted', weight: 0.2 },
         layerTypes: ['all'],
         kind: 'svg',
         src: '/doodles/doodle-flower-lavender.svg',
@@ -175,7 +231,7 @@ export const doodadCategories: DoodadCategory[] = [
       },
       {
         id: 'old-key',
-        probability: 0.2,
+        selection: { kind: 'weighted', weight: 0.2 },
         layerTypes: ['all'],
         kind: 'svg',
         src: '/doodles/doodle-old-key.svg',
@@ -189,7 +245,7 @@ export const doodadCategories: DoodadCategory[] = [
       },
       {
         id: 'seed-pod',
-        probability: 0.2,
+        selection: { kind: 'weighted', weight: 0.2 },
         layerTypes: ['all'],
         kind: 'svg',
         src: '/doodles/doodle-seed-pod.svg',
@@ -209,7 +265,7 @@ export const doodadCategories: DoodadCategory[] = [
     items: [
       {
         id: 'circleBookmark',
-        probability: 1.0,
+        selection: { kind: 'probabilistic', probability: 1.0 },
         layerTypes: ['single'],
         kind: 'element',
       },
@@ -222,14 +278,14 @@ export const doodadCategories: DoodadCategory[] = [
     items: [
       {
         id: 'stickerTR',
-        probability: 0.6,
+        selection: { kind: 'probabilistic', probability: 0.6 },
         layerTypes: ['all'],
         kind: 'element',
         conflicts: ['stickerBL'], // Prevent both stickers on same card
       },
       {
         id: 'stickerBL',
-        probability: 0.6,
+        selection: { kind: 'probabilistic', probability: 0.6 },
         layerTypes: ['all'],
         kind: 'element',
         conflicts: ['stickerTR'],
@@ -244,7 +300,7 @@ export const doodadCategories: DoodadCategory[] = [
     items: [
       {
         id: 'washSubtle',
-        probability: 0.4,
+        selection: { kind: 'weighted', weight: 0.4 },
         layerTypes: ['all'],
         kind: 'background',
         generate: ({ map }) => ({
@@ -262,7 +318,7 @@ export const doodadCategories: DoodadCategory[] = [
       },
       {
         id: 'washBold',
-        probability: 0.3,
+        selection: { kind: 'weighted', weight: 0.3 },
         layerTypes: ['all'],
         kind: 'background',
         generate: ({ map }) => ({
@@ -280,7 +336,7 @@ export const doodadCategories: DoodadCategory[] = [
       },
       {
         id: 'ringEffect',
-        probability: 0.1,
+        selection: { kind: 'weighted', weight: 0.1 },
         layerTypes: ['all'],
         kind: 'background',
         generate: ({ map }) => ({

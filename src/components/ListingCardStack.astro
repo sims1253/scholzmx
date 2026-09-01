@@ -1,0 +1,74 @@
+---
+import CardPileGrid from './CardPileGrid.astro';
+import ListingCard from './ListingCard.astro';
+import { PROFILE_LAYOUTS } from '../lib/cards/doodadRegistry';
+import { createCardStyle } from '../lib/cards/styleEngine';
+import type { CardLayout, CardStyleProfile, ListCardItem } from '../lib/cards/types';
+
+interface Props {
+  items: ListCardItem[];
+  profile?: CardStyleProfile;
+  columns?: 1 | 2 | 3 | 'auto';
+  itemMinWidth?: string;
+  maxWidth?: string;
+  aspectRatio?: string;
+  headingLevel?: 2 | 3 | 4;
+  layout?: CardLayout;
+  class?: string;
+  itemClass?: string;
+}
+
+const {
+  items,
+  profile = 'blog',
+  columns = 'auto',
+  itemMinWidth = '22rem',
+  maxWidth,
+  aspectRatio = '8/3',
+  headingLevel = 2,
+  layout,
+  class: className,
+  itemClass,
+} = Astro.props as Props;
+
+const cardLayout = layout ?? PROFILE_LAYOUTS[profile];
+const cardMaxWidth = maxWidth ?? 'var(--card-max-width)';
+
+const itemsWithStyle = items.map((item) => ({
+  item,
+  styleResult: createCardStyle(item.id, profile),
+}));
+---
+
+<CardPileGrid columns={columns} itemMinWidth={itemMinWidth} gap="xl" class={className}>
+  {
+    itemsWithStyle.map(({ item, styleResult }, index) => (
+      <div
+        class={`nc-item ${itemClass ?? ''}`.trim()}
+        data-year={item.filter?.year}
+        data-tags={item.filter?.tags?.join(',') || ''}
+        style={`width: 100%; max-width: ${cardMaxWidth}; margin-left: auto; margin-right: auto;`}
+      >
+        <ListingCard
+          item={item}
+          styleResult={styleResult}
+          headingLevel={headingLevel}
+          layout={cardLayout}
+          defaultAspectRatio={aspectRatio}
+          imageLoading={index === 0 ? 'eager' : 'lazy'}
+        />
+      </div>
+    ))
+  }
+</CardPileGrid>
+
+<style>
+  .nc-item {
+    margin-bottom: var(--space-lg);
+    padding-inline: var(--space-xs);
+  }
+
+  :global(.tw-grid) {
+    row-gap: var(--space-xl);
+  }
+</style>

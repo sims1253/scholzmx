@@ -4,7 +4,7 @@ description: "While I don't like coffee, many people in my life tend to think so
 servings: '1 cup'
 time: '4 minutes'
 tags: ['Drinks']
-#heroImage: '../../assets/images/recipes/coffee-setup.jpg'
+#heroImage: 'coffee-setup.jpg'
 #heroImagePositionX: 0
 #heroImagePositionY: 0.235
 #heroImageScale: 3.5

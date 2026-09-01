@@ -1,6 +1,11 @@
 ---
+/**
+ * IllustratedFooter - Decorative footer with botanical illustrations
+ * Uses external CSS for better caching and global color tokens
+ */
 import QuoteOfTheDay from './QuoteOfTheDay.astro';
 import SmoothVineFrame from './SmoothVineFrame.astro';
+import '../styles/illustrated-footer.css';
 
 export interface Props {
   variant?: 'garden' | 'kitchen' | 'craft' | 'writing' | 'projects' | 'research' | 'default';
@@ -9,12 +14,9 @@ export interface Props {
 }
 
 const { variant = 'default', className = '', includeQuoteSection = false } = Astro.props;
-
-// Simplified - we only use the QuoteOfTheDay component now
 ---
 
 <footer class={`illustrated-footer ${variant} ${className}`}>
-  {/* Quote section above footer */}
   {
     includeQuoteSection && (
       <div class="footer-quote-section">
@@ -25,15 +27,18 @@ const { variant = 'default', className = '', includeQuoteSection = false } = Ast
     )
   }
 
-  {/* Botanical illustration divider */}
   <div class="footer-illustration">
     <svg class="footer-artwork" viewBox="0 0 800 120" preserveAspectRatio="xMidYMid meet">
       <defs>
         <linearGradient id="earthGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" style="stop-color:rgba(139, 90, 60, 0.12);stop-opacity:1"></stop>
-          <stop offset="30%" style="stop-color:rgba(90, 107, 71, 0.09);stop-opacity:1"></stop>
-          <stop offset="70%" style="stop-color:rgba(168, 181, 160, 0.07);stop-opacity:1"></stop>
-          <stop offset="100%" style="stop-color:rgba(139, 90, 60, 0.12);stop-opacity:1"></stop>
+          <stop offset="0%" style="stop-color:rgba(var(--color-walnut-rgb), 0.1);stop-opacity:1"
+          ></stop>
+          <stop offset="30%" style="stop-color:rgba(var(--color-moss-rgb), 0.09);stop-opacity:1"
+          ></stop>
+          <stop offset="70%" style="stop-color:rgba(var(--color-lichen-rgb), 0.07);stop-opacity:1"
+          ></stop>
+          <stop offset="100%" style="stop-color:rgba(var(--color-walnut-rgb), 0.1);stop-opacity:1"
+          ></stop>
         </linearGradient>
 
         <filter id="footerBlur" x="-25%" y="-25%" width="150%" height="150%">
@@ -58,20 +63,9 @@ const { variant = 'default', className = '', includeQuoteSection = false } = Ast
         </filter>
       </defs>
 
-      {/* Ground line with organic texture */}
-      {
-        /* <path
-        d="M0,60 Q200,45 400,55 T800,50"
-        stroke="url(#earthGradient)"
-        stroke-width="5"
-        stroke-linecap="round"
-        fill="none"
-      /> */
-      }
-
       <path
         d="M50,60 Q200,35 400,65 T750,55"
-        stroke="rgba(99, 123, 103, 0.12)"
+        stroke="rgba(var(--color-sage-rgb), 0.12)"
         stroke-width="8"
         fill="none"
         filter="url(#footerBlur)"
@@ -79,21 +73,11 @@ const { variant = 'default', className = '', includeQuoteSection = false } = Ast
 
       <path
         d="M50,60 Q200,35 400,65 T750,55"
-        stroke="rgba(99, 123, 103, 0.08)"
+        stroke="rgba(var(--color-sage-rgb), 0.08)"
         stroke-width="8"
         fill="none"
         filter="url(#pathVar)"
         stroke-linecap="round"></path>
-
-      {
-        /* <path
-        d="M50,60 Q200,35 400,65 T750,55"
-        stroke="rgba(99, 123, 103, 0.12)"
-        stroke-width="26"
-        fill="none"
-        filter="url(#fillTexture)"
-      /> */
-      }
 
       <path
         d="M60,62 Q220,37 420,67 T754,50"
@@ -103,31 +87,27 @@ const { variant = 'default', className = '', includeQuoteSection = false } = Ast
         filter="url(#footerBlur)"
         stroke-linecap="round"></path>
 
-      {/* Botanical elements based on variant */}
       {
         variant === 'garden' && (
-          <g fill="rgba(90, 107, 71, 0.4)">
-            {/* Growing plants */}
+          <g fill="rgba(var(--color-moss-rgb), 0.4)">
             <path
               d="M150,60 Q155,40 160,45 Q165,35 170,50 L175,60"
-              stroke="rgba(90, 107, 71, 0.5)"
+              stroke="rgba(var(--color-moss-rgb), 0.5)"
               stroke-width="2"
               fill="none"
             />
             <path
               d="M350,55 Q355,35 360,40 Q365,25 370,45 L375,55"
-              stroke="rgba(90, 107, 71, 0.5)"
+              stroke="rgba(var(--color-moss-rgb), 0.5)"
               stroke-width="2"
               fill="none"
             />
             <path
               d="M550,50 Q555,30 560,35 Q565,20 570,40 L575,50"
-              stroke="rgba(90, 107, 71, 0.5)"
+              stroke="rgba(var(--color-moss-rgb), 0.5)"
               stroke-width="2"
               fill="none"
             />
-
-            {/* Leaves */}
             <ellipse cx="165" cy="42" rx="5" ry="3" transform="rotate(45 165 42)" />
             <ellipse cx="365" cy="37" rx="4" ry="2.5" transform="rotate(-30 365 37)" />
             <ellipse cx="565" cy="32" rx="6" ry="3.5" transform="rotate(60 565 32)" />
@@ -137,24 +117,21 @@ const { variant = 'default', className = '', includeQuoteSection = false } = Ast
 
       {
         variant === 'kitchen' && (
-          <g fill="rgba(139, 90, 60, 0.4)">
-            {/* Herb sprigs */}
+          <g fill="rgba(var(--color-walnut-rgb), 0.4)">
             <path
               d="M200,55 L205,35 M210,55 L215,30 M220,55 L225,35"
-              stroke="rgba(90, 107, 71, 0.6)"
+              stroke="rgba(var(--color-moss-rgb), 0.6)"
               stroke-width="1.5"
             />
             <path
               d="M400,50 L405,30 M410,50 L415,25 M420,50 L425,30"
-              stroke="rgba(90, 107, 71, 0.6)"
+              stroke="rgba(var(--color-moss-rgb), 0.6)"
               stroke-width="1.5"
             />
-
-            {/* Small herb leaves */}
-            <circle cx="203" cy="38" r="2" fill="rgba(168, 181, 160, 0.5)" />
-            <circle cx="213" cy="33" r="1.5" fill="rgba(168, 181, 160, 0.5)" />
-            <circle cx="403" cy="33" r="2" fill="rgba(168, 181, 160, 0.5)" />
-            <circle cx="413" cy="28" r="1.5" fill="rgba(168, 181, 160, 0.5)" />
+            <circle cx="203" cy="38" r="2" fill="rgba(var(--color-lichen-rgb), 0.5)" />
+            <circle cx="213" cy="33" r="1.5" fill="rgba(var(--color-lichen-rgb), 0.5)" />
+            <circle cx="403" cy="33" r="2" fill="rgba(var(--color-lichen-rgb), 0.5)" />
+            <circle cx="413" cy="28" r="1.5" fill="rgba(var(--color-lichen-rgb), 0.5)" />
           </g>
         )
       }
@@ -162,15 +139,12 @@ const { variant = 'default', className = '', includeQuoteSection = false } = Ast
       {
         variant === 'writing' && (
           <g>
-            {/* Ink well and quill suggestion */}
-            <circle cx="300" cy="55" r="8" fill="rgba(139, 90, 60, 0.3)" />
+            <circle cx="300" cy="55" r="8" fill="rgba(var(--color-walnut-rgb), 0.3)" />
             <circle cx="300" cy="55" r="5" fill="rgba(68, 45, 30, 0.4)" />
-
-            {/* Quill feather */}
             <path
               d="M320,55 Q340,35 350,45 Q345,50 340,48 Q335,52 330,50 Q325,54 320,52"
-              fill="rgba(90, 107, 71, 0.3)"
-              stroke="rgba(139, 90, 60, 0.4)"
+              fill="rgba(var(--color-moss-rgb), 0.4)"
+              stroke="rgba(var(--color-walnut-rgb), 0.4)"
               stroke-width="1"
             />
           </g>
@@ -179,30 +153,26 @@ const { variant = 'default', className = '', includeQuoteSection = false } = Ast
 
       {
         (variant === 'craft' || variant === 'default') && (
-          <g fill="rgba(139, 90, 60, 0.4)">
-            {/* Simple botanical elements */}
+          <g fill="rgba(var(--color-walnut-rgb), 0.4)">
             <path
               d="M250,55 Q255,40 260,50 Q265,35 270,45"
-              stroke="rgba(90, 107, 71, 0.5)"
+              stroke="rgba(var(--color-moss-rgb), 0.5)"
               stroke-width="2"
               fill="none"
             />
             <path
               d="M520,77 Q525,65 530,75 Q535,60 540,80"
-              stroke="rgba(90, 107, 71, 0.5)"
+              stroke="rgba(var(--color-moss-rgb), 0.5)"
               stroke-width="2"
               fill="none"
             />
-
-            {/* Small flowers */}
-            <circle cx="260" cy="45" r="3" fill="rgba(168, 181, 160, 0.4)" />
-            <circle cx="530" cy="70" r="2.5" fill="rgba(168, 181, 160, 0.4)" />
+            <circle cx="260" cy="45" r="3" fill="rgba(var(--color-lichen-rgb), 0.4)" />
+            <circle cx="530" cy="70" r="2.5" fill="rgba(var(--color-lichen-rgb), 0.4)" />
           </g>
         )
       }
 
-      {/* Scattered small elements for texture */}
-      <g fill="rgba(139, 90, 60, 0.2)">
+      <g fill="rgba(var(--color-walnut-rgb), 0.2)">
         <circle cx="58" cy="55" r="0.53"></circle>
         <circle cx="100" cy="52" r="1.6"></circle>
         <circle cx="207" cy="53" r="2.5"></circle>
@@ -213,7 +183,7 @@ const { variant = 'default', className = '', includeQuoteSection = false } = Ast
         <circle cx="680" cy="65" r="1.4"></circle>
       </g>
 
-      <g fill="rgba(139, 90, 60, 0.1)">
+      <g fill="rgba(var(--color-walnut-rgb), 0.1)">
         <circle cx="58" cy="55" r="2"></circle>
         <circle cx="100" cy="52" r="2"></circle>
         <circle cx="207" cy="53" r="2"></circle>
@@ -224,14 +194,13 @@ const { variant = 'default', className = '', includeQuoteSection = false } = Ast
         <circle cx="680" cy="65" r="2"></circle>
       </g>
 
-      <g filter="url(#fusionSepA)">
-        {/* Leaf 1 */}
+      <g filter="url(#fillTexture)">
         <ellipse
           cx="180"
           cy="39"
           rx="12"
           ry="7"
-          fill="rgba(99, 123, 103, 0.18)"
+          fill="rgba(var(--color-sage-rgb), 0.18)"
           transform="rotate(25 180 45)"></ellipse>
         <ellipse
           cx="182"
@@ -245,10 +214,9 @@ const { variant = 'default', className = '', includeQuoteSection = false } = Ast
           cy="37"
           rx="8"
           ry="5"
-          fill="rgba(189, 191, 165, 0.12)"
+          fill="rgba(var(--color-lichen-rgb), 0.12)"
           transform="rotate(23 178 43)"></ellipse>
 
-        {/* Leaf 2 */}
         <ellipse
           cx="420"
           cy="55"
@@ -268,51 +236,56 @@ const { variant = 'default', className = '', includeQuoteSection = false } = Ast
           cy="53"
           rx="10"
           ry="6"
-          fill="rgba(253, 238, 203, 0.10)"
+          fill="rgba(253, 238, 203, 0.1)"
           transform="rotate(-37 418 53)"></ellipse>
 
-        {/* Leaf 3 */}
         <ellipse
           cx="620"
           cy="63"
           rx="13"
           ry="7.5"
-          fill="rgba(189, 191, 165, 0.17)"
+          fill="rgba(var(--color-lichen-rgb), 0.17)"
           transform="rotate(45 620 63)"></ellipse>
         <ellipse
           cx="622"
           cy="65"
           rx="11"
           ry="6.5"
-          fill="rgba(99, 123, 103, 0.14)"
+          fill="rgba(var(--color-sage-rgb), 0.14)"
           transform="rotate(47 622 65)"></ellipse>
         <ellipse
           cx="618"
           cy="61"
           rx="9"
           ry="5.5"
-          fill="rgba(253, 238, 203, 0.11)"
+          fill="rgba(253, 238, 203, 0.1)"
           transform="rotate(43 618 61)"></ellipse>
       </g>
 
-      {/* Professional variation elements */}
-      <circle cx="120" cy="58" r="2.5" fill="rgba(153, 138, 103, 0.12)" filter="url(#fusionSepA)"
-      ></circle>
-      <circle cx="310" cy="58" r="2.2" fill="rgba(99, 123, 103, 0.12)" filter="url(#fusionSepA)"
-      ></circle>
+      <circle
+        cx="120"
+        cy="58"
+        r="2.5"
+        fill="rgba(var(--color-tansy-rgb), 0.12)"
+        filter="url(#fillTexture)"></circle>
+      <circle
+        cx="310"
+        cy="58"
+        r="2.2"
+        fill="rgba(var(--color-sage-rgb), 0.12)"
+        filter="url(#fillTexture)"></circle>
       <ellipse
         cx="470"
         cy="68"
         rx="3.5"
         ry="2"
-        fill="rgba(189, 191, 165, 0.20)"
-        filter="url(#fusionSepA)"></ellipse>
-      <circle cx="720" cy="68" r="2.4" fill="rgba(162, 185, 200, 0.14)" filter="url(#fusionSepA)"
+        fill="rgba(var(--color-lichen-rgb), 0.2)"
+        filter="url(#fillTexture)"></ellipse>
+      <circle cx="720" cy="68" r="2.4" fill="rgba(162, 185, 200, 0.14)" filter="url(#fillTexture)"
       ></circle>
     </svg>
   </div>
 
-  {/* Footer content */}
   <div class="footer-content">
     <div class="footer-text">
       <div class="footer-meta">
@@ -320,7 +293,7 @@ const { variant = 'default', className = '', includeQuoteSection = false } = Ast
           <a
             href="https://github.com/sims1253"
             target="_blank"
-            rel="noopener"
+            rel="noopener noreferrer"
             class="social-link"
             aria-label="GitHub profile"
           >
@@ -329,13 +302,13 @@ const { variant = 'default', className = '', includeQuoteSection = false } = Ast
           <a
             href="https://bsky.app/profile/scholzmx.bsky.social"
             target="_blank"
-            rel="noopener"
+            rel="noopener noreferrer"
             class="social-link"
             aria-label="Bluesky profile"
           >
             Bluesky
           </a>
-          <a href="/rss.xml" class="social-link" aria-label="RSS feed"> RSS </a>
+          <a href="/rss.xml" class="social-link" aria-label="RSS feed">RSS</a>
         </div>
         <p class="license-info">
           <a
@@ -350,124 +323,3 @@ const { variant = 'default', className = '', includeQuoteSection = false } = Ast
     </div>
   </div>
 </footer>
-
-<style>
-  .illustrated-footer {
-    background: var(--color-background);
-    position: relative;
-    overflow: hidden;
-    margin: 0; /* Remove all margins */
-    width: 100%;
-  }
-
-  .footer-quote-section {
-    max-width: var(--measure-prose);
-    margin: 0 auto clamp(0px, 3vh, var(--space-xs));
-    padding: 0 var(--space-lg) 0;
-  }
-
-  .footer-illustration {
-    width: 100%;
-    height: 120px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .footer-artwork {
-    width: 100%;
-    height: 100%;
-    filter: drop-shadow(0 2px 4px rgba(139, 90, 60, 0.05));
-  }
-
-  .footer-content {
-    max-width: 800px;
-    margin: calc(-1 * var(--space-lg)) auto 0;
-    padding: 0 var(--space-md) var(--space-sm);
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .footer-meta {
-    font-size: var(--text-xs);
-    color: var(--color-ink-light);
-    line-height: 1.5;
-    margin-top: var(--space-md);
-    max-width: 300px;
-  }
-
-  .footer-meta p {
-    margin-bottom: var(--space-xs);
-  }
-
-  .footer-meta p:last-child {
-    margin-bottom: 0;
-  }
-
-  .astro-link,
-  .cc-license {
-    color: var(--color-moss);
-    text-decoration: none;
-    font-weight: 500;
-    transition: color var(--transition-fast);
-  }
-
-  .astro-link:hover,
-  .cc-license:hover {
-    color: var(--color-walnut);
-    text-decoration: underline;
-  }
-
-  .social-links {
-    display: flex;
-    justify-content: center;
-    gap: var(--space-sm);
-    margin-bottom: var(--space-md);
-    padding-bottom: var(--space-sm);
-    border-bottom: 1px solid color-mix(in srgb, var(--color-lichen) 30%, transparent);
-  }
-
-  .social-link {
-    display: inline-block;
-    font-size: var(--text-xs);
-    color: var(--color-text-primary);
-    text-decoration: none;
-    padding: 0.2rem 0.5rem;
-    border-radius: 999px;
-    border: 1px solid var(--color-lichen);
-    background: var(--color-surface);
-    transition: all var(--transition-fast);
-    font-weight: 500;
-  }
-
-  .social-link:hover {
-    color: var(--color-link-hover);
-    background: var(--wash-sage);
-    border-color: var(--color-sage);
-    text-decoration: none;
-  }
-
-  /* Mobile responsiveness */
-  @media (max-width: 768px) {
-    .footer-content {
-      padding: var(--space-md) var(--space-md) var(--space-sm);
-    }
-
-    .footer-quote p {
-      font-size: var(--text-xs);
-    }
-
-    .footer-meta {
-      font-size: var(--text-xs);
-    }
-  }
-
-  /* Reduce animation for accessibility */
-  @media (prefers-reduced-motion: reduce) {
-    .footer-artwork {
-      filter: none;
-    }
-  }
-</style>

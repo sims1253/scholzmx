@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   workflow_run:
-    workflows: ['Content Render (Quarto → Markdown)']
+    workflows: ['Content Render (Quarto -> Markdown)']
     types: [completed]
     branches: [main, master]
   workflow_dispatch:
@@ -57,7 +57,7 @@ jobs:
             echo "Using triggering workflow run: $run_id"
           else
             run_id=$(gh run list \
-              --workflow="Content Render (Quarto → Markdown)" \
+              --workflow="Content Render (Quarto -> Markdown)" \
               --status=success \
               --limit=1 \
               --json=databaseId \
@@ -101,7 +101,7 @@ jobs:
         run: |
           echo "::warning::Primary artifact empty, searching for fallback..."
           fallback_run=$(gh run list \
-            --workflow="Content Render (Quarto → Markdown)" \
+            --workflow="Content Render (Quarto -> Markdown)" \
             --status=success \
             --limit=5 \
             --json=databaseId \

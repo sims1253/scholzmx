@@ -1,17 +1,36 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import NoteCardStack from '../components/NoteCardStack.astro';
+import ListingCardStack from '../components/ListingCardStack.astro';
 import Search from 'astro-pagefind/components/Search';
+import { fromBlogEntry } from '../lib/cards/adapters';
 
-const allPosts = await getCollection('blog', ({ data }) => !data.draft);
-const posts = allPosts.sort(
+// Get URL parameters for filtering
+const params = Astro.url.searchParams;
+const filterYear = params.get('year');
+const filterTag = params.get('tag');
+
+let allPosts = await getCollection('blog', ({ data }) => !data.draft).catch((err) => {
+  console.error('Failed to load blog collection:', err);
+  return [];
+});
+
+const posts = [...allPosts].sort(
   (a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
 );
-const years = Array.from(new Set(posts.map((p) => new Date(p.data.date).getFullYear()))).sort(
+
+const years = Array.from(new Set(allPosts.map((p) => new Date(p.data.date).getFullYear()))).sort(
   (a, b) => b - a
 );
-const tags = Array.from(new Set(posts.flatMap((p) => p.data.tags ?? []))).sort();
+const tags = Array.from(new Set(allPosts.flatMap((p) => p.data.tags ?? []))).sort();
+
+const yearAllUrl = new URL('/blog', Astro.url);
+if (filterTag) yearAllUrl.searchParams.set('tag', filterTag);
+const yearAllHref = `${yearAllUrl.pathname}${yearAllUrl.search}`;
+
+const tagAllUrl = new URL('/blog', Astro.url);
+if (filterYear) tagAllUrl.searchParams.set('year', filterYear);
+const tagAllHref = `${tagAllUrl.pathname}${tagAllUrl.search}`;
 ---
 
 <BaseLayout
@@ -22,259 +41,380 @@ const tags = Array.from(new Set(posts.flatMap((p) => p.data.tags ?? []))).sort()
   layout="listing"
 >
   <div class="blog-page">
-    <header class="blog-header">
-      <h1 class="page-title" id="blog-title">Blog</h1>
-      <p class="page-description">
+    <header class="blog-header page-shell-header">
+      <h1 class="page-title page-shell-title" id="blog-title">Blog</h1>
+      <p class="page-description page-shell-description">
         I like writing both to teach myself and others, as well as just as a way to have fun.
       </p>
     </header>
 
     <div class="blog-container">
+      <aside class="blog-sidebar blog-filters">
+        <button class="mobile-filters-toggle" type="button" aria-expanded="false" aria-controls="blog-filters-panel">
+          <span>Filter &amp; Search</span>
+          <svg class="mobile-filters-icon" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <div id="blog-filters-panel" class="listing-sidebar blog-sidebar-inner" hidden>
+            <section class="sidebar-section" role="search" aria-labelledby="search-heading">
+              <h3 id="search-heading">Search posts</h3>
+              <Search
+                id="blog-search"
+                className="pagefind-ui"
+                uiOptions={{
+                  showImages: false,
+                  debounceTimeoutMs: 100,
+                  pageSize: 5,
+                  excerptLength: 80,
+                  showResultsCount: true,
+                  showEmptyFilters: false,
+                  filters: { type: 'blog' },
+                  translations: {
+                    placeholder: 'Search posts...',
+                    clear_search: 'Clear search',
+                    load_more: 'Load more results',
+                    search_label: 'Search posts',
+                    filters_label: 'Filters',
+                    zero_results: 'No posts found matching your search.',
+                    many_results: '# posts found',
+                    one_result: '1 post found',
+                    alt_search: 'Search for [SEARCH_TERM]',
+                    search_suggestion: 'Try searching for a topic, tag, or keyword',
+                  },
+                }}
+              />
+            </section>
+            <section class="sidebar-section" aria-labelledby="year-filter-heading">
+              <h3 id="year-filter-heading">Filter by year</h3>
+              <ul class="filter-list">
+                <li>
+                  <a href={yearAllHref} class={`filter-btn${!filterYear ? ' active' : ''}`}> All </a>
+                </li>
+                {
+                  years.map((y) => {
+                    const url = new URL('/blog', Astro.url);
+                    if (filterTag) url.searchParams.set('tag', filterTag);
+                    url.searchParams.set('year', y.toString());
+                    const href = `${url.pathname}${url.search}`;
+                    const isActive = filterYear === y.toString();
+                    return (
+                      <li>
+                        <a href={href} class={`filter-btn${isActive ? ' active' : ''}`}>
+                          {y}
+                        </a>
+                      </li>
+                    );
+                  })
+                }
+              </ul>
+            </section>
+            <section class="sidebar-section" aria-labelledby="tag-filter-heading">
+              <h3 id="tag-filter-heading">Filter by tag</h3>
+              <ul class="filter-list tag-list-collapsible">
+                <li>
+                  <a href={tagAllHref} class={`filter-btn${!filterTag ? ' active' : ''}`}> All </a>
+                </li>
+                {
+                  tags.map((t, i) => {
+                    const url = new URL('/blog', Astro.url);
+                    if (filterYear) url.searchParams.set('year', filterYear);
+                    url.searchParams.set('tag', t);
+                    const href = `${url.pathname}${url.search}`;
+                    const isActive = filterTag === t;
+                    return (
+                      <li class={i >= 5 ? 'tag-overflow' : ''}>
+                        <a href={href} class={`filter-btn${isActive ? ' active' : ''}`}>
+                          #{t}
+                        </a>
+                      </li>
+                    );
+                  })
+                }
+                {tags.length > 6 && (
+                  <li>
+                    <button class="filter-btn tag-show-all" type="button" aria-expanded="false">
+                      +{tags.length - 5} more
+                    </button>
+                  </li>
+                )}
+              </ul>
+            </section>
+          </div>
+      </aside>
+
       <main class="blog-content">
-        <section aria-label="Posts">
-          <NoteCardStack
+        <section aria-labelledby="posts-heading">
+          <h2 id="posts-heading" class="visually-hidden">All Posts</h2>
+          <ListingCardStack
+            profile="blog"
             columns={1}
-            items={posts.map((p) => ({
-              id: p.id,
-              title: p.data.title,
-              subtitle: p.data.description,
-              href: `/blog/${p.id}`,
-              writtenDate: p.data.date.toISOString().slice(0, 10),
-              updatedDate: p.data.lastUpdated
-                ? p.data.lastUpdated.toISOString().slice(0, 10)
-                : undefined,
-              tags: p.data.tags ?? [],
-              year: new Date(p.data.date).getFullYear(),
-              hero:
-                typeof p.data.heroImage === 'string'
-                  ? {
-                      kind: 'url',
-                      src: p.data.heroImage,
-                      scale: p.data.heroImageScale || 1,
-                      posX: p.data.heroImagePositionX || 0,
-                      posY: p.data.heroImagePositionY || 0,
-                    }
-                  : p.data.heroImage
-                    ? {
-                        kind: 'asset',
-                        src: p.data.heroImage,
-                        width: 800,
-                        height: 600,
-                        scale: p.data.heroImageScale || 1,
-                        posX: p.data.heroImagePositionX || 0,
-                        posY: p.data.heroImagePositionY || 0,
-                      }
-                    : undefined,
-            }))}
+            maxWidth="var(--listing-card-max-width)"
+            items={posts.map((post) =>
+              fromBlogEntry(post, {
+                idPrefix: 'stack',
+                tagHref: (tag) => `/blog?tag=${encodeURIComponent(tag)}`,
+              })
+            )}
           />
+          <p class="blog-empty-state" aria-live="polite" hidden>
+            No posts match these filters. <a href="/blog">Clear filters</a>
+          </p>
         </section>
       </main>
-      <aside class="blog-filters">
-        <section class="sidebar-section" role="search" aria-labelledby="search-heading">
-          <h3 id="search-heading">Search posts</h3>
-          <Search
-            id="blog-search"
-            className="pagefind-ui"
-            uiOptions={{
-              showImages: false,
-              debounceTimeoutMs: 100,
-              pageSize: 5,
-              excerptLength: 80,
-              showResultsCount: true,
-              showEmptyFilters: false,
-              filters: { type: 'blog' },
-              translations: {
-                placeholder: 'Search posts...',
-                clear_search: 'Clear search',
-                load_more: 'Load more results',
-                search_label: 'Search posts',
-                filters_label: 'Filters',
-                zero_results: 'No posts found matching your search.',
-                many_results: '# posts found',
-                one_result: '1 post found',
-                alt_search: 'Search for [SEARCH_TERM]',
-                search_suggestion: 'Try searching for a topic, tag, or keyword',
-              },
-            }}
-          />
-        </section>
-        <section class="sidebar-section">
-          <h3>Filter by year</h3>
-          <ul class="filter-list">
-            <li><button class="filter-btn active" data-filter-year="">All</button></li>
-            {
-              years.map((y) => (
-                <li>
-                  <button class="filter-btn" data-filter-year={y}>
-                    {y}
-                  </button>
-                </li>
-              ))
-            }
-          </ul>
-        </section>
-        <section class="sidebar-section">
-          <h3>Filter by tag</h3>
-          <ul class="filter-list">
-            <li><button class="filter-btn active" data-filter-tag="">All</button></li>
-            {
-              tags.map((t) => (
-                <li>
-                  <button class="filter-btn" data-filter-tag={t}>
-                    #{t}
-                  </button>
-                </li>
-              ))
-            }
-          </ul>
-        </section>
-      </aside>
     </div>
   </div>
 
   <style>
     .blog-page {
       max-width: 100%;
+      --article-column-width: var(--measure-prose);
+      --listing-card-max-width: calc(var(--article-column-width) + (2 * var(--space-md)));
     }
 
-    .blog-header {
-      text-align: center;
-      max-width: var(--measure-listing);
-      margin: 0 auto var(--space-xs);
-    }
-
-    .page-title {
-      font-size: clamp(var(--text-2xl), 5vw, var(--text-3xl));
-      margin-bottom: var(--space-xs);
-      color: var(--color-ink-dark);
-    }
-
-    .page-description {
-      font-size: var(--text-lg);
-      line-height: 1.6;
-      color: var(--color-ink-medium);
-      font-style: italic;
-      text-align: center;
-      margin-left: auto;
-      margin-right: auto;
+    @media (min-width: 1200px) {
+      .blog-page {
+        --article-column-width: min(
+          var(--measure-prose),
+          calc(100vw - 2 * (var(--sidebar-width) + var(--space-lg)) - 2 * var(--space-md))
+        );
+      }
     }
 
     .blog-container {
       position: relative;
-      max-width: var(--measure-listing);
+      max-width: var(--listing-card-max-width);
       margin: 0 auto;
     }
+
     .blog-content {
-      position: relative;
+      /* content is the main flow */
     }
-    .blog-filters {
-      position: absolute;
-      /* Anchor to the centered card column: center (50%) + half card width + small gap */
-      left: calc(50% + (var(--card-max-width) / 2) + var(--sidebar-gap));
-      top: 0;
-      width: var(--sidebar-width);
-    }
-    .sidebar-section {
-      background-color: var(--color-surface);
-      border: 1px solid var(--color-lichen);
-      border-radius: var(--border-radius);
-      padding: 0 var(--space-sm) var(--space-xs);
-    }
-    .sidebar-section h3 {
+
+    .blog-empty-state {
+      font-style: italic;
+      color: var(--color-text-muted);
+      text-align: center;
+      padding: var(--space-xl) var(--space-md);
       font-size: var(--text-md);
-      margin: var(--space-xs) 0;
-      color: var(--color-text-primary);
-      font-weight: var(--font-weight-semibold);
     }
-    .filter-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
+
+    .blog-empty-state a {
+      color: var(--color-walnut);
+    }
+
+    /* Mobile filter toggle */
+    .mobile-filters-toggle {
       display: flex;
-      flex-wrap: wrap;
-      gap: 0.25rem;
-    }
-    .filter-btn {
-      color: var(--color-text-secondary);
-      background: var(--color-surface);
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-xxs);
+      width: 100%;
+      padding: var(--space-xs) var(--space-sm);
+      margin-bottom: var(--space-sm);
+      font-size: var(--text-sm);
+      font-family: var(--font-heading);
+      font-weight: 500;
+      color: var(--color-walnut);
+      background: color-mix(in oklab, var(--color-surface) 88%, transparent);
       border: 1px solid var(--color-lichen);
-      font-size: var(--text-xs);
-      font-family: inherit;
-      padding: 0.1rem 0.35rem;
-      border-radius: 999px;
+      border-radius: var(--organic-sm);
       cursor: pointer;
       transition: all var(--transition-fast);
     }
-    .filter-btn:hover {
-      color: var(--color-link-hover);
-      background: var(--wash-sage);
+
+    .mobile-filters-toggle:hover {
+      background: color-mix(in oklab, var(--color-sage) 15%, transparent);
       border-color: var(--color-sage);
     }
-    .filter-btn.active {
-      color: var(--color-text-primary);
-      font-weight: var(--font-weight-semibold);
-      border-color: var(--color-link);
+
+    .mobile-filters-icon {
+      transition: transform var(--transition-fast);
     }
 
-    @media (max-width: 1024px) {
-      .blog-content {
-        position: static;
+    .mobile-filters-toggle[aria-expanded='true'] .mobile-filters-icon {
+      transform: rotate(180deg);
+    }
+
+    /* Tag overflow collapse */
+    .tag-overflow {
+      display: none;
+    }
+
+    .tag-list-collapsible.tags-expanded .tag-overflow {
+      display: list-item;
+    }
+
+    .tag-list-collapsible.tags-expanded .tag-show-all {
+      display: none;
+    }
+
+    .tag-show-all {
+      font-size: var(--text-xs);
+      color: var(--color-text-muted);
+      cursor: pointer;
+    }
+
+    @media (min-width: 1200px) {
+      .mobile-filters-toggle {
+        display: none;
       }
-      .blog-filters {
-        position: static;
-        width: auto;
-        margin-top: var(--space-lg);
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-        gap: var(--space-md);
+
+      .blog-sidebar-inner {
+        /* Always visible on desktop, override hidden attribute */
+        display: flex !important;
+      }
+
+      .blog-sidebar {
+        display: block;
+        position: absolute;
+        right: calc(100% + var(--space-lg));
+        top: 0;
+        bottom: 0;
+        width: var(--sidebar-width);
+      }
+
+      .blog-sidebar-inner {
+        position: sticky;
+        top: clamp(4rem, 15vh, 8rem);
+        max-height: calc(100dvh - clamp(4rem, 15vh, 8rem) - var(--space-md));
+        overflow-y: auto;
       }
     }
   </style>
 
-  <script>
-    let activeYear = '';
-    let activeTag = '';
-    function applyFilters() {
-      const cards = document.querySelectorAll('.nc-item');
-      cards.forEach((el) => {
-        const year = el.getAttribute('data-year');
-        const tagsAttr = el.getAttribute('data-tags') || '';
-        const tags = tagsAttr ? tagsAttr.split(',') : [];
-        const yearMatch = !activeYear || year === activeYear;
-        const tagMatch = !activeTag || tags.includes(activeTag);
-        (el as HTMLElement).style.display = yearMatch && tagMatch ? '' : 'none';
-      });
-    }
-    function updateActive() {
-      document.querySelectorAll('[data-filter-year]').forEach((btn) => {
-        const year = btn.getAttribute('data-filter-year') || '';
-        btn.classList.toggle('active', year === activeYear);
-      });
-      document.querySelectorAll('[data-filter-tag]').forEach((btn) => {
-        const tag = btn.getAttribute('data-filter-tag') || '';
-        btn.classList.toggle('active', tag === activeTag);
-      });
-    }
-    document.querySelectorAll('[data-filter-year]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        activeYear = btn.getAttribute('data-filter-year') || '';
-        applyFilters();
-        updateActive();
-      });
-    });
-    document.querySelectorAll('[data-filter-tag]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        activeTag = btn.getAttribute('data-filter-tag') || '';
-        applyFilters();
-        updateActive();
-      });
-    });
-    const params = new URLSearchParams(location.search);
-    const qYear = params.get('year') || '';
-    const qTag = params.get('tag') || '';
-    if (qYear) activeYear = qYear;
-    if (qTag) activeTag = qTag;
-    applyFilters();
-    updateActive();
+  <script is:inline>
+    (() => {
+      const applyBlogFilters = () => {
+        const params = new URLSearchParams(window.location.search);
+        const activeYear = params.get('year');
+        const activeTag = params.get('tag');
+
+        let visibleCount = 0;
+        document.querySelectorAll('.blog-content .nc-item').forEach((card) => {
+          const year = card.getAttribute('data-year');
+          const tags = (card.getAttribute('data-tags') || '').split(',').filter(Boolean);
+          const yearMatch = !activeYear || year === activeYear;
+          const tagMatch = !activeTag || tags.includes(activeTag);
+          const visible = yearMatch && tagMatch;
+
+          card.style.display = visible ? '' : 'none';
+          card.setAttribute('aria-hidden', visible ? 'false' : 'true');
+          if (visible) visibleCount++;
+        });
+
+        const emptyState = document.querySelector('.blog-empty-state');
+        if (emptyState) {
+          emptyState.hidden = visibleCount > 0;
+        }
+
+        const markActive = (sectionSelector, key) => {
+          const value = params.get(key);
+          document.querySelectorAll(`${sectionSelector} .filter-btn`).forEach((btn) => {
+            const btnParams = new URL(btn.href, window.location.origin).searchParams;
+            const btnValue = btnParams.get(key);
+            const isActive = value ? btnValue === value : !btnValue;
+            btn.classList.toggle('active', isActive);
+            if (isActive) {
+              btn.setAttribute('aria-current', 'page');
+            } else {
+              btn.removeAttribute('aria-current');
+            }
+          });
+        };
+
+        markActive('[aria-labelledby="year-filter-heading"]', 'year');
+        markActive('[aria-labelledby="tag-filter-heading"]', 'tag');
+      };
+
+      const onFilterClick = (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) return;
+        const link = target.closest('.blog-sidebar .filter-btn');
+        if (!(link instanceof HTMLAnchorElement)) return;
+
+        event.preventDefault();
+
+        const current = new URL(window.location.href);
+        const next = new URL(link.href, window.location.origin);
+
+        if (link.closest('[aria-labelledby="year-filter-heading"]')) {
+          const year = next.searchParams.get('year');
+          if (year) current.searchParams.set('year', year);
+          else current.searchParams.delete('year');
+        }
+
+        if (link.closest('[aria-labelledby="tag-filter-heading"]')) {
+          const tag = next.searchParams.get('tag');
+          if (tag) current.searchParams.set('tag', tag);
+          else current.searchParams.delete('tag');
+        }
+
+        window.history.pushState({}, '', current);
+        applyBlogFilters();
+      };
+
+      const initBlogFilters = () => {
+        applyBlogFilters();
+
+        const sidebar = document.querySelector('.blog-sidebar');
+        if (sidebar && !sidebar.dataset.filtersBound) {
+          sidebar.addEventListener('click', onFilterClick);
+          sidebar.dataset.filtersBound = 'true';
+        }
+
+        if (!window.__blogFilterPopstateBound) {
+          window.addEventListener('popstate', applyBlogFilters);
+          window.__blogFilterPopstateBound = true;
+        }
+      };
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initBlogFilters, { once: true });
+      } else {
+        initBlogFilters();
+      }
+
+      document.addEventListener('astro:page-load', initBlogFilters);
+
+      // Mobile filter toggle
+      const initMobileToggle = () => {
+        document.querySelectorAll('.mobile-filters-toggle').forEach((btn) => {
+          if (btn.dataset.bound) return;
+          btn.dataset.bound = 'true';
+          btn.addEventListener('click', () => {
+            const panel = document.getElementById(btn.getAttribute('aria-controls'));
+            if (!panel) return;
+            const expanded = btn.getAttribute('aria-expanded') === 'true';
+            btn.setAttribute('aria-expanded', String(!expanded));
+            panel.hidden = expanded;
+          });
+        });
+      };
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initMobileToggle, { once: true });
+      } else {
+        initMobileToggle();
+      }
+      document.addEventListener('astro:page-load', initMobileToggle);
+
+      // Tag show-all toggle
+      const initTagToggle = () => {
+        document.querySelectorAll('.tag-show-all').forEach((btn) => {
+          if (btn.dataset.bound) return;
+          btn.dataset.bound = 'true';
+          btn.addEventListener('click', () => {
+            const list = btn.closest('.tag-list-collapsible');
+            if (list) list.classList.add('tags-expanded');
+          });
+        });
+      };
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initTagToggle, { once: true });
+      } else {
+        initTagToggle();
+      }
+      document.addEventListener('astro:page-load', initTagToggle);
+    })();
   </script>
 </BaseLayout>

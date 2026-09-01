@@ -1,12 +1,17 @@
 # Quarto to Astro Blog Pipeline
 
-The workflow for converting Quarto files with R code into optimized blog posts.
+Workflow for converting Quarto posts with R code into markdown consumed by Astro.
 
-## How it works
+## Build contract
 
-Write posts in `.qmd` files with R code, math, and citations. The build script converts them to markdown with properly optimized images, and CI handles the rest.
+- Input: `src/content/blog/YYYY/MM-DD-post-name/index.qmd`
+- Output markdown: `src/content/blog/YYYY/MM-DD-post-name/index.md`
+- Output images: collocated in the same post directory
 
-### Quarto Config (`_quarto.yml`)
+This keeps Astro content collection behavior unchanged while enabling deterministic incremental rebuilds.
+
+## Quarto config (`_quarto.yml`)
+
 ```yaml
 format:
   gfm:
@@ -14,84 +19,92 @@ format:
     wrap: preserve
 ```
 
-Don't add `project: type: website` - that makes Quarto render to `_site` instead of in-place.
+Do not add a `project` key with `type: website`, e.g.:
 
-### Image Pipeline
-1. **Quarto generates**: Images in `{filename}_files/figure-*/` next to the `.qmd`
-2. **Build script moves them**: To `src/assets/images/blog/YEAR/{post-name}/`
-3. **Build script rewrites paths**: Markdown gets `../../../../assets/images/blog/YEAR/{post-name}/image.png`
-4. **Astro optimizes**: Everything in `src/assets/` gets WebP conversion, responsive sizing, lazy loading
-
-### Astro Config
-The key parts in `astro.config.mjs`:
-```js
-image: {
-  service: {
-    entrypoint: 'astro/assets/services/sharp',
-    config: { limitInputPixels: 268402689 }  // ~268MP limit for safety
-  }
-}
+```yaml
+project:
+  type: website
 ```
 
-## Daily Usage
+That `project`/`type` configuration routes Quarto output to `_site` instead of in-place post output.
 
-### Writing a new post:
-1. Create `.qmd` file in `src/content/blog/YEAR/MM-DD-post-name/index.qmd`
-2. Run `bun run build-blog` to convert to markdown
-3. Restart dev server if the post doesn't show up (Astro caches content collections)
+## Commands
 
-### Build script commands:
 ```bash
-./build-blog.sh                                    # Build all changed files
-./build-blog.sh src/content/blog/2022/my-post/index.qmd  # Build specific file
-./build-blog.sh --force                            # Force rebuild everything
-./build-blog.sh --force src/content/blog/2022/my-post/index.qmd  # Force specific file
+bun run build-blog
+bun run build-blog --plan
+bun run build-blog --force
+bun run build-blog path/to/post/index.qmd
+bun run build-blog --plan path/to/post/index.qmd
+bun run build-blog --force path/to/post/index.qmd
+
+bun run scripts/build-blog-cli.ts path/to/post/index.qmd
+bun run scripts/build-blog-cli.ts --force
+bun run scripts/build-blog-cli.ts --force path/to/post/index.qmd
+bun run scripts/build-blog-cli.ts --plan
+bun run scripts/build-blog-cli.ts --plan path/to/post/index.qmd
 ```
 
-### Caching behavior:
-- Only rebuilds files that have changed
-- Saves timestamps in `.blog-cache/` to track what's been built
-- Delete the `.md` file to force a rebuild of that post
-- Use `--force` to ignore cache completely
+`bun run build-blog` is a package script alias for `bun run scripts/build-blog-cli.ts`; both forms accept `--plan` and `--force`.
 
-## CI/CD Process
+## Build state and caching
 
-The build happens in two stages in GitHub Actions:
+- Primary cache root: `.cache/blog-build/`
+- Manifest: `.cache/blog-build/manifest.json`
+- Legacy hash cache read compatibility: `.blog-cache/`
+- Render artifacts/temp: `.cache/blog-build/artifacts/`
+- Per-post errors: `.cache/blog-build/errors/<post>.log`
 
-### Content Render Workflow (`content-render.yml`)
-Runs when `.qmd` files change:
-1. Sets up R environment with packages (brms, ggdag, tidyverse, etc.)
-2. Runs `./build-blog.sh` to convert Quarto → markdown
-3. Uploads rendered content as artifact
-4. Caches R packages and build timestamps
+Planner fingerprints include:
 
-### Deploy Workflow (`deploy.yml`)
-Runs on every push to main:
-1. Downloads the rendered content artifact
-2. Builds Astro site with optimized images
-3. Deploys to GitHub Pages
+- `index.qmd`
+- `_quarto.yml`
+- pipeline scripts (`build-blog-cli.ts`, `blog-build/*`, `markdown-transforms.ts`)
+- detected local dependencies (bibliography, csl/includes, local links/images)
+- toolchain versions (Quarto/Pandoc)
 
-This separation means expensive R computations only run when content changes, but the site gets rebuilt and deployed on every push.
+## Post-processing
+
+After Quarto render, pipeline:
+
+1. Moves generated `index_files` images into the post directory
+2. Handles nested Quarto image output paths
+3. Rewrites image references to local relative paths (for Astro optimization)
+4. Applies markdown transforms (code-collapse output extraction, duplicate title/date cleanup)
+5. Publishes with atomic file replacement to avoid partial writes
+
+Margin note source syntax is preserved (`> margin: ...`).
+
+## Prune behavior
+
+Manifest tracks generated outputs per post.
+
+- Deleting a post source prunes tracked generated outputs on next run
+- Removing image references prunes stale tracked generated image outputs
+- Deletions are restricted to tracked files under `src/content/blog`
+
+## CI/CD process
+
+### Content Render workflow (`content-render.yml`)
+
+Triggered on content and build-pipeline changes (Quarto content, build scripts, workflow file, selected Astro/style files).
+
+1. Restores previous rendered artifact and build cache
+2. Runs planner (`--plan`) for visibility
+3. Runs builder (`bun run scripts/build-blog-cli.ts`)
+4. Uploads rendered content + build cache artifacts
+
+### Deploy workflow (`deploy.yml`)
+
+1. Downloads `rendered-content` artifact
+2. Merges rendered blog content into the checkout
+3. Builds Astro site
+4. Deploys to GitHub Pages
 
 ## Troubleshooting
 
-**Post doesn't appear**: Restart dev server (Astro caches content collections aggressively)
-
-**Images broken**: Check `src/assets/images/blog/YEAR/post-name/` exists and has the right files
-
-**"File not changed" but you want to rebuild**: Delete the `.md` file or use `--force`
-
-**R packages missing in CI**: Add them to the `extra-packages` list in `content-render.yml`
-
-**Build fails on large images**: The Sharp service has a 268MP limit for safety
-
-## Image Path Magic
-
-The script does some regex magic to fix paths:
-
-1. Quarto generates images in `post-folder_files/figure-*/`
-2. Script moves them to `src/assets/images/blog/YEAR/post-folder/`
-3. Script rewrites markdown: `![](image.png)` → `![](../../../../assets/images/blog/YEAR/post-folder/image.png)`
-4. Astro sees images in `src/assets/` and optimizes them automatically
-
-The `../../../../` path looks ugly but it's correct for the nested blog structure.
+- Post missing locally: run `bun run build-blog`, then restart dev server
+- Want rebuild regardless of cache: add `--force`
+- Need debug of rebuild decisions: use `--plan`
+- Building a single post does not run global deleted-post prune
+- CI force rebuild: include `[force-rebuild]` in commit message

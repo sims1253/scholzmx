@@ -1,0 +1,139 @@
+---
+export interface Props {
+  items?: Array<{ label: string; href?: string }>;
+  className?: string;
+}
+
+const { items, className = '' } = Astro.props;
+const hasItems = Boolean(items && items.length > 0);
+---
+
+<nav class={`breadcrumb ${className}`} aria-label="Breadcrumb navigation">
+  <ol class="breadcrumb-list">
+    <li class="breadcrumb-item">
+      <a href="/" class="breadcrumb-link" aria-current={hasItems ? undefined : 'page'}>
+        <span class="breadcrumb-text">Home</span>
+      </a>
+    </li>
+    {
+      items && items.length > 0 ? (
+        items.map((item, index) => {
+          const isLast = index === items.length - 1;
+          return (
+            <li class="breadcrumb-item">
+              {item.href && !isLast ? (
+                <a href={item.href} class="breadcrumb-link">
+                  <span class="breadcrumb-text">{item.label}</span>
+                </a>
+              ) : (
+                <span class="breadcrumb-text" aria-current={isLast ? 'page' : undefined}>
+                  {item.label}
+                </span>
+              )}
+            </li>
+          );
+        })
+      ) : (
+        <slot />
+      )
+    }
+  </ol>
+</nav>
+
+<style>
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    padding: 0;
+    margin-bottom: var(--space-xs);
+  }
+
+  .breadcrumb-list {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 0;
+    flex-wrap: wrap;
+  }
+
+  .breadcrumb-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xxs);
+  }
+
+  .breadcrumb-item:not(:last-child)::after {
+    content: '❧';
+    font-family: var(--font-heading);
+    color: var(--color-moss);
+    font-size: 0.75rem;
+    line-height: 1;
+    opacity: 0.6;
+  }
+
+  .breadcrumb-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25em;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    font-size: var(--text-2xs);
+    font-weight: 400;
+    transition: all var(--transition-fast);
+    padding: 0;
+    border-radius: 0;
+  }
+
+  .breadcrumb-link:hover {
+    color: var(--color-walnut);
+    background: transparent;
+  }
+
+  .breadcrumb-link:focus {
+    outline: 2px solid var(--color-tansy);
+    outline-offset: 2px;
+  }
+
+  .breadcrumb-text {
+    letter-spacing: 0.02em;
+  }
+
+  .breadcrumb-link .breadcrumb-text {
+    text-transform: lowercase;
+  }
+
+  .breadcrumb-item:last-child .breadcrumb-text {
+    text-transform: none;
+  }
+
+  /* Mobile: Wrap long breadcrumbs to avoid page overflow */
+  @media (max-width: 640px) {
+    .breadcrumb {
+      overflow-x: visible;
+      padding-inline: 0;
+      margin-inline: 0;
+    }
+
+    .breadcrumb-list {
+      flex-wrap: wrap;
+    }
+
+    .breadcrumb-item {
+      min-width: 0;
+    }
+
+    .breadcrumb-text {
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .breadcrumb-link {
+      transition: none;
+    }
+  }
+</style>

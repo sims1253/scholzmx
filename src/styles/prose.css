@@ -1,10 +1,11 @@
 @layer components {
-  /* Scoped rich text styling. Replace .longform usage. */
   .prose {
     font-family: var(--font-body);
-    font-size: var(--text-md);
-    line-height: 1.55;
+    font-size: calc(var(--text-md) * var(--font-scale, 1));
+    line-height: var(--leading-prose);
     color: var(--color-text-primary);
+    max-inline-size: var(--measure-prose);
+    margin-inline: auto;
     font-feature-settings:
       'liga' 1,
       'kern' 1,
@@ -12,54 +13,103 @@
     text-rendering: optimizelegibility;
   }
 
-  /* Slightly looser line-height for personal tone by default */
-  .personal-content .prose {
-    line-height: 1.6;
-  }
-
   .prose p {
-    margin: 0 0 1.45em;
+    margin: 0 0 var(--paragraph-gap);
     line-height: inherit;
   }
 
-  .prose h2 {
-    font-size: var(--text-xl);
-    margin-top: 1.6em;
-    margin-bottom: 0.6em;
-    color: var(--color-walnut);
+  .prose :is(h1, h2, h3, h4) {
+    font-family: var(--font-heading);
     font-weight: var(--heading-weight-strong);
-    line-height: 1.3;
+    line-height: var(--heading-leading);
+    max-inline-size: min(100%, var(--heading-measure));
+    text-wrap: balance;
+  }
+
+  .prose h1 {
+    font-size: calc(var(--text-2xl) * var(--font-scale, 1));
+    margin: 0 0 calc(var(--paragraph-gap) * 1.15);
+  }
+
+  .prose h2 {
+    font-size: calc(var(--text-xl) * var(--font-scale, 1));
+    margin-top: calc(var(--paragraph-gap) * 2.2);
+    margin-bottom: calc(var(--paragraph-gap) * 0.65);
+    color: var(--color-walnut);
   }
 
   .prose h3 {
-    font-size: var(--text-lg);
-    margin-top: 1.4em;
-    margin-bottom: 0.5em;
+    font-size: calc(var(--text-lg) * var(--font-scale, 1));
+    margin-top: calc(var(--paragraph-gap) * 1.8);
+    margin-bottom: calc(var(--paragraph-gap) * 0.55);
     color: var(--color-text-primary);
-    font-weight: var(--heading-weight-strong);
-    line-height: 1.4;
   }
 
-  .prose blockquote {
-    border-left: 3px solid var(--color-sage);
-    padding-left: var(--space-md);
-    margin: var(--space-lg) 0;
-    font-style: italic;
-    color: var(--color-text-secondary);
-    background: rgba(168, 181, 160, 0.08);
-    border-radius: 0 var(--border-radius) var(--border-radius) 0;
-    max-width: 100%;
+  .prose h4 {
+    font-size: calc(var(--text-md) * var(--font-scale, 1));
+    margin-top: calc(var(--paragraph-gap) * 1.5);
+    margin-bottom: calc(var(--paragraph-gap) * 0.45);
+    color: var(--color-text-primary);
+  }
+
+  .prose a {
+    text-underline-offset: var(--link-underline-offset);
+    text-decoration-thickness: var(--link-underline-thickness);
   }
 
   .prose ul,
   .prose ol {
-    margin: 0 0 1.25em;
-    padding-left: var(--space-lg);
+    margin: 0 0 var(--paragraph-gap);
+    padding-left: clamp(1.15rem, 2vw, 1.45rem);
   }
 
   .prose li {
-    margin-bottom: 0.1rem;
+    margin-bottom: calc(var(--paragraph-gap) * 0.3);
     line-height: inherit;
+  }
+
+  .prose li:last-child {
+    margin-bottom: 0;
+  }
+
+  .prose blockquote {
+    border-left: 3px solid var(--color-sage);
+    padding: var(--space-sm) var(--space-md);
+    margin: calc(var(--paragraph-gap) * 1.6) 0;
+    font-style: italic;
+    color: var(--color-text-secondary);
+    background: color-mix(in oklab, var(--color-sage) 8%, transparent);
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+    max-width: 100%;
+  }
+
+  .prose blockquote p:last-child {
+    margin-bottom: 0;
+  }
+
+  .prose figure,
+  .prose pre,
+  .prose table,
+  .prose .astro-code,
+  .prose :where(section.footnotes, .footnotes) {
+    margin: calc(var(--paragraph-gap) * 1.5) 0;
+  }
+
+  .prose figcaption,
+  .prose caption {
+    font-size: var(--text-xs);
+    line-height: 1.45;
+    color: var(--color-text-muted);
+    margin-top: calc(var(--paragraph-gap) * 0.35);
+  }
+
+  .prose :where(section.footnotes, .footnotes) {
+    font-size: var(--text-sm);
+    line-height: 1.55;
+  }
+
+  .prose :where(section.footnotes p, .footnotes p) {
+    margin-bottom: calc(var(--paragraph-gap) * 0.75);
   }
 
   /* Recipe specs styling */
@@ -111,19 +161,45 @@
   }
 
   .prose .equipment-list li::before {
-    content: '•';
+    content: '*';
     color: var(--color-sage-dark);
     font-weight: bold;
     position: absolute;
     left: 0;
   }
 
-  /* Optional: tighter excerpt variant for cards */
   .prose--excerpt {
     font-size: 0.95em;
-    line-height: 1.35;
+    line-height: 1.4;
   }
+
   .prose--excerpt p {
-    margin: 0 0 0.75em;
+    margin: 0 0 calc(var(--paragraph-gap) * 0.65);
+  }
+
+  .prose pre {
+    overflow-x: auto;
+    max-width: 100%;
+  }
+
+  .prose .table-wrapper {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .prose table {
+    max-width: 100%;
+  }
+
+  .prose .table-wrapper table {
+    min-width: 100%;
+    width: max-content;
+  }
+
+  .prose figure {
+    max-width: 100%;
+    overflow-x: auto;
   }
 }

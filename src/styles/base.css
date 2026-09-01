@@ -31,7 +31,7 @@
   .skip-link:focus {
     transform: translateY(100%);
     top: 0;
-    outline: 2px solid color-mix(in srgb, var(--color-ochre) 80%, white);
+    outline: 2px solid color-mix(in oklab, var(--color-ochre) 80%, white);
     outline-offset: 2px;
   }
 
@@ -57,6 +57,106 @@
       text-decoration-color 150ms ease-out;
   }
 
+  /* Touch feedback system - visual feedback on tap */
+  @media (hover: none) and (pointer: coarse) {
+    /* Touch targets positioning */
+    .nav-link,
+    .torch-toggle,
+    .copy-button,
+    .site-logo,
+    button,
+    .sc-item,
+    .note-card,
+    .project-item,
+    a[href],
+    input[type='button'],
+    input[type='submit'] {
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Ripple effect on touch */
+    .nav-link:active,
+    .torch-toggle:active,
+    .copy-button:active,
+    .site-logo:active,
+    button:active,
+    .sc-item:active,
+    .note-card:active,
+    .project-item:active {
+      transform: scale(0.97);
+    }
+
+    /* Subtle scale on touch for better feedback */
+    .nav-link,
+    .torch-toggle,
+    .copy-button,
+    button,
+    .sc-item,
+    .note-card,
+    .project-item {
+      transition: transform 0.1s ease-out;
+    }
+
+    /* Remove hover effects on touch devices to prevent stuck states */
+    .nav-link:hover,
+    .torch-toggle:hover,
+    .copy-button:hover,
+    .site-logo:hover,
+    a:not(.nav-link):not(.site-logo):hover,
+    button:not(.torch-toggle):not(.copy-button):hover,
+    details.code-collapse summary:hover {
+      background-color: transparent;
+      color: inherit;
+    }
+
+    /* Only apply active state for touch feedback */
+    .nav-link:active,
+    .torch-toggle:active,
+    .copy-button:active,
+    .site-logo:active,
+    a:not(.nav-link):not(.site-logo):active,
+    button:not(.torch-toggle):not(.copy-button):active,
+    details.code-collapse summary:active {
+      background-color: var(--color-walnut);
+      color: var(--color-parchment-light);
+    }
+
+    /* Larger tap targets for all interactive elements */
+    .nav-link,
+    .torch-toggle,
+    .copy-button,
+    button,
+    a.nav-link,
+    a.torch-toggle,
+    a[role='button'],
+    input[type='button'],
+    input[type='submit'] {
+      min-height: 44px;
+      min-width: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Cards have touch feedback */
+    .sc-item,
+    .note-card,
+    .project-item,
+    .manuscript-page,
+    .handcrafted-card {
+      transition: transform 0.1s ease-out;
+    }
+
+    .sc-item:active,
+    .note-card:active,
+    .project-item:active,
+    .manuscript-page:active,
+    .handcrafted-card:active {
+      transform: scale(0.98);
+    }
+  }
+
   .nav-link:hover,
   .torch-toggle:hover,
   .copy-button:hover,
@@ -69,36 +169,32 @@
   }
 
   /* Enhanced Focus Management */
-  *:focus {
-    outline: none;
-  }
-
   *:focus-visible {
-    outline: 2px solid color-mix(in srgb, var(--color-walnut) 90%, var(--color-ochre));
+    outline: 2px solid color-mix(in oklab, var(--color-walnut) 90%, var(--color-ochre));
     outline-offset: 2px;
     border-radius: 2px;
   }
 
   /* Specific focus styles for interactive elements */
   a:focus-visible {
-    outline-color: color-mix(in srgb, var(--color-walnut) 85%, var(--color-ochre));
-    background-color: color-mix(in srgb, var(--color-walnut) 8%, transparent);
+    outline-color: color-mix(in oklab, var(--color-walnut) 85%, var(--color-ochre));
+    background-color: color-mix(in oklab, var(--color-walnut) 8%, transparent);
     text-decoration-color: var(--color-ochre);
   }
 
   button:focus-visible {
-    outline-color: color-mix(in srgb, var(--color-walnut) 90%, var(--color-ochre));
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-walnut) 20%, transparent);
+    outline-color: color-mix(in oklab, var(--color-walnut) 90%, var(--color-ochre));
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--color-walnut) 20%, transparent);
   }
 
   /* Form elements focus styles for consistency */
   input:focus-visible,
   textarea:focus-visible,
   select:focus-visible {
-    outline: 2px solid color-mix(in srgb, var(--color-walnut) 90%, var(--color-ochre));
+    outline: 2px solid color-mix(in oklab, var(--color-walnut) 90%, var(--color-ochre));
     outline-offset: 2px;
-    border-color: color-mix(in srgb, var(--color-walnut) 80%, var(--color-ochre));
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-walnut) 15%, transparent);
+    border-color: color-mix(in oklab, var(--color-walnut) 80%, var(--color-ochre));
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-walnut) 15%, transparent);
   }
 
   /* Specific styling for different form element types */
@@ -109,17 +205,17 @@
   input[type='url']:focus-visible,
   input[type='tel']:focus-visible,
   textarea:focus-visible {
-    background-color: color-mix(in srgb, var(--color-parchment-light) 95%, var(--color-walnut));
+    background-color: color-mix(in oklab, var(--color-parchment-light) 95%, var(--color-walnut));
   }
 
   input[type='checkbox']:focus-visible,
   input[type='radio']:focus-visible {
     outline-offset: 3px;
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-walnut) 25%, transparent);
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--color-walnut) 25%, transparent);
   }
 
   select:focus-visible {
-    background-color: color-mix(in srgb, var(--color-parchment-light) 95%, var(--color-walnut));
+    background-color: color-mix(in oklab, var(--color-parchment-light) 95%, var(--color-walnut));
   }
 
   /* High contrast mode support */
@@ -158,7 +254,8 @@
   }
 
   html {
-    font-size: clamp(18px, 2.5vw, 21px); /* Fluid base font size */
+    /* Fluid base font size with scaling support via --font-scale variable */
+    font-size: calc(clamp(18px, 2.5vw, 21px) * var(--font-scale, 1));
     line-height: var(--spacing-line-height);
     scroll-behavior: smooth;
   }
@@ -193,11 +290,15 @@
   .serious-content {
     --font-body: var(--font-body-serious);
     --measure-prose: var(--measure-prose-serious);
+    --reading-measure: var(--measure-prose-serious);
+    --leading-prose: var(--leading-serious);
   }
 
   .personal-content {
     --font-body: var(--font-body-personal);
     --measure-prose: var(--measure-prose-personal);
+    --reading-measure: var(--measure-prose-personal);
+    --leading-prose: var(--leading-personal);
   }
 
   /* ModernCSS: improve scroll positions for anchor and focus */
@@ -235,36 +336,49 @@
     margin-block: 0 var(--space-md);
     margin-inline: 0;
     color: var(--color-text-primary);
-    line-height: 1.25;
+    line-height: var(--heading-leading);
     font-family: var(--font-heading);
     font-weight: var(--heading-weight-strong);
-    font-optical-sizing: auto;
     font-feature-settings:
       'liga' 1,
       'kern' 1;
     text-rendering: optimizelegibility;
   }
 
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
   h1 {
-    font-size: clamp(var(--text-2xl), 5vw, var(--text-3xl)); /* Fluid heading size */
+    font-size: calc(
+      clamp(var(--text-2xl), 5vw, var(--text-3xl)) * var(--font-scale, 1)
+    ); /* Fluid heading size */
     font-weight: var(--heading-weight-strong);
     margin-block-end: var(--space-lg);
     letter-spacing: 0.005em;
   }
 
   h2 {
-    font-size: clamp(var(--text-xl), 4vw, var(--text-2xl));
+    font-size: calc(clamp(var(--text-xl), 4vw, var(--text-2xl)) * var(--font-scale, 1));
     margin-block-start: var(--space-xl);
     letter-spacing: 0.002em;
   }
 
   h3 {
-    font-size: clamp(var(--text-lg), 3.5vw, var(--text-xl));
+    font-size: calc(clamp(var(--text-lg), 3.5vw, var(--text-xl)) * var(--font-scale, 1));
     margin-block-start: var(--space-lg);
   }
 
   p {
-    margin-block: 0 1.25em;
+    margin-block: 0 var(--paragraph-gap);
     margin-inline: 0;
   }
 
@@ -272,37 +386,37 @@
     color: var(--color-link);
     text-decoration: underline;
     text-decoration-color: var(--color-underline);
-    text-underline-offset: 2px;
-    text-decoration-thickness: 1.6px;
+    text-underline-offset: var(--link-underline-offset);
+    text-decoration-thickness: var(--link-underline-thickness);
   }
 
   a:hover {
     color: var(--color-link-hover);
     text-decoration-color: var(--color-underline-hover);
     text-decoration-thickness: 2px;
-    background-color: color-mix(in srgb, var(--color-walnut) 6%, transparent);
+    background-color: color-mix(in oklab, var(--color-walnut) 6%, transparent);
     border-radius: 2px;
   }
 
   /* Baseline for default links (classless) for clearer affordance */
   a:not([class]) {
-    text-decoration-thickness: max(0.08em, 1px);
-    text-underline-offset: 0.15em;
+    text-decoration-thickness: max(var(--link-underline-thickness), 1px);
+    text-underline-offset: var(--link-underline-offset);
   }
 
-  a:focus {
+  a:focus-visible {
     box-shadow:
-      0 0 0 1px color-mix(in srgb, var(--color-moss) 40%, transparent),
-      0 0 8px color-mix(in srgb, var(--color-sage) 20%, transparent);
-    background: color-mix(in srgb, var(--color-parchment-light) 60%, transparent);
+      0 0 0 1px color-mix(in oklab, var(--color-moss) 40%, transparent),
+      0 0 8px color-mix(in oklab, var(--color-sage) 20%, transparent);
+    background: color-mix(in oklab, var(--color-parchment-light) 60%, transparent);
     border-radius: 3px;
-    outline: none;
   }
 
   /* External link indicator - adds ↗ arrow after off-site links */
-  a[href^='http']:not([href*='scholzmx.com']):not([href*='localhost']):not(
-      .no-external-indicator
-    )::after {
+  /* Excludes: scholzmx.com, localhost, 127.0.0.1, and .local/.localhost TLDs */
+  a[href^='http']:not([href*='scholzmx.com']):not([href*='localhost']):not([href*='127.0.0.1']):not(
+      [href*='.local']
+    ):not([href*='.localhost']):not(.no-external-indicator)::after {
     content: ' ↗';
     font-size: 0.75em;
     vertical-align: super;
@@ -313,9 +427,9 @@
   }
 
   /* Ensure external indicator doesn't get underline styling */
-  a[href^='http']:not([href*='scholzmx.com']):not([href*='localhost']):not(
-      .no-external-indicator
-    ):hover::after {
+  a[href^='http']:not([href*='scholzmx.com']):not([href*='localhost']):not([href*='127.0.0.1']):not(
+      [href*='.local']
+    ):not([href*='.localhost']):not(.no-external-indicator):hover::after {
     text-decoration: none;
   }
 
@@ -344,8 +458,8 @@
     max-width: 100%;
     height: auto;
     box-shadow:
-      0 8px 24px color-mix(in srgb, var(--color-walnut) 6%, transparent),
-      0 2px 6px color-mix(in srgb, var(--color-sage) 10%, transparent);
+      0 8px 24px color-mix(in oklab, var(--color-walnut) 6%, transparent),
+      0 2px 6px color-mix(in oklab, var(--color-sage) 10%, transparent);
   }
 
   /* Blockquotes with logical properties */
@@ -372,7 +486,7 @@
     position: absolute;
     inset-inline-start: var(--space-sm);
     inset-block-start: 0;
-    font-size: clamp(3rem, 6vw, 4rem); /* Fluid quote mark */
+    font-size: calc(clamp(3rem, 6vw, 4rem) * var(--font-scale, 1)); /* Fluid quote mark */
     line-height: 1;
     font-family: var(--font-heading);
   }
@@ -394,7 +508,7 @@
     padding-block: var(--space-sm);
     padding-inline: var(--space-sm);
     text-align: start; /* Logical property */
-    border-block-end: 1px solid rgba(139, 90, 60, 0.2);
+    border-block-end: 1px solid color-mix(in oklab, var(--color-walnut) 20%, transparent);
   }
 
   th {
@@ -465,13 +579,13 @@
     position: relative;
 
     /* Manuscript-inspired frame - override Shiki inline styles */
-    border: 1px solid color-mix(in srgb, var(--color-lichen) 30%, transparent) !important;
+    border: 1px solid color-mix(in oklab, var(--color-lichen) 30%, transparent) !important;
     box-shadow:
-      0 8px 22px color-mix(in srgb, var(--color-walnut) 5%, transparent),
-      0 2px 6px color-mix(in srgb, var(--color-sage) 12%, transparent),
-      inset 0 1px 0 color-mix(in srgb, var(--color-parchment-light) 70%, white) !important;
+      0 8px 22px color-mix(in oklab, var(--color-walnut) 5%, transparent),
+      0 2px 6px color-mix(in oklab, var(--color-sage) 12%, transparent),
+      inset 0 1px 0 color-mix(in oklab, var(--color-parchment-light) 70%, white) !important;
 
-    font-size: 18px !important;
+    font-size: calc(1.125rem * var(--font-scale, 1)) !important;
     line-height: 1.25 !important;
     overflow-x: auto;
 
@@ -488,6 +602,14 @@
   @media (max-width: 640px) {
     .astro-code {
       padding: var(--space-md);
+      /* Reduce font size on mobile for better fit */
+      font-size: calc(0.875rem * var(--font-scale, 1)) !important;
+      /* Ensure code blocks don't overflow their container */
+      max-width: calc(100vw - var(--space-lg) * 2);
+      /* Force horizontal scroll within code block only */
+      overflow-x: auto;
+      /* Add visual indicator for scrollable content */
+      -webkit-overflow-scrolling: touch;
     }
   }
 
@@ -496,8 +618,8 @@
     position: absolute;
     top: var(--space-sm);
     right: var(--space-sm);
-    background: rgba(60, 56, 54, 0.8); /* gruvbox bg1 with transparency */
-    border: 1px solid rgba(168, 153, 132, 0.3) !important; /* gruvbox light gray */
+    background: color-mix(in oklab, var(--color-surface) 88%, transparent);
+    border: 1px solid color-mix(in oklab, var(--color-lichen) 40%, transparent) !important;
     border-radius: 999px;
     padding: 0; /* ensure icon is centered within fixed size */
     width: 32px;
@@ -505,14 +627,14 @@
     font-size: 0; /* Hide text content */
     line-height: 0; /* avoid baseline affecting centering */
     box-sizing: border-box;
-    color: #a89984; /* gruvbox light gray/fg4 */
+    color: var(--color-ink-medium);
     cursor: pointer;
-    opacity: 0.08;
+    opacity: 0.3;
     transition:
-      opacity 0.15s ease,
-      transform 0.15s ease,
-      background 0.2s ease,
-      color 0.2s ease;
+      opacity 0.15s ease-out,
+      transform 0.15s ease-out,
+      background 0.2s ease-out,
+      color 0.2s ease-out;
     user-select: none;
     pointer-events: auto;
     z-index: 1;
@@ -520,7 +642,7 @@
     align-items: center;
     justify-content: center;
 
-    box-shadow: 0 2px 6px rgba(40, 40, 40, 0.4); /* gruvbox bg shadow */
+    box-shadow: 0 2px 6px color-mix(in oklab, var(--color-ink-dark) 25%, transparent);
   }
 
   .astro-code .copy-button svg {
@@ -541,27 +663,27 @@
   }
 
   .astro-code .copy-button:hover {
-    background: rgba(80, 73, 69, 0.9); /* gruvbox bg2 */
-    color: #83a598; /* gruvbox bright blue */
-    border-color: rgba(131, 165, 152, 0.5); /* gruvbox bright blue with transparency */
+    background: var(--color-surface);
+    color: var(--color-walnut);
+    border-color: color-mix(in oklab, var(--color-walnut) 45%, transparent) !important;
     transform: translateY(-1px);
-    box-shadow: 0 3px 8px rgba(40, 40, 40, 0.6); /* stronger gruvbox shadow */
+    box-shadow: 0 3px 8px color-mix(in oklab, var(--color-ink-dark) 35%, transparent);
     opacity: 1;
   }
 
   .astro-code .copy-button:focus-visible {
-    outline-color: #83a598; /* gruvbox bright blue for accessibility */
+    outline-color: var(--color-moss);
   }
 
   .astro-code .copy-button:active {
     transform: translateY(0);
-    box-shadow: 0 1px 3px rgba(40, 40, 40, 0.3); /* gruvbox bg shadow on press */
+    box-shadow: 0 1px 3px color-mix(in oklab, var(--color-ink-dark) 20%, transparent);
   }
 
   .astro-code .copy-button.copied {
-    background: rgba(80, 73, 69, 0.9); /* gruvbox bg2 */
-    color: #b8bb26; /* gruvbox bright green */
-    border-color: rgba(184, 187, 38, 0.5); /* gruvbox bright green with transparency */
+    background: var(--color-surface);
+    color: var(--color-moss);
+    border-color: color-mix(in oklab, var(--color-moss) 50%, transparent) !important;
   }
 
   /* Collapsible code sections with botanical styling */
@@ -573,8 +695,8 @@
 
     /* Subtle manuscript frame */
     box-shadow:
-      0 6px 14px color-mix(in srgb, var(--color-sage) 10%, transparent),
-      0 2px 4px color-mix(in srgb, var(--color-walnut) 6%, transparent);
+      0 6px 14px color-mix(in oklab, var(--color-sage) 10%, transparent),
+      0 2px 4px color-mix(in oklab, var(--color-walnut) 6%, transparent);
     background: var(--color-surface);
   }
 
@@ -594,8 +716,8 @@
     align-items: center;
     min-height: auto;
     transition: all 0.2s ease;
-    border-bottom: 1px solid color-mix(in srgb, var(--color-lichen) 40%, transparent);
-    box-shadow: 0 1px 2px color-mix(in srgb, var(--color-walnut) 6%, transparent);
+    border-bottom: 1px solid color-mix(in oklab, var(--color-lichen) 40%, transparent);
+    box-shadow: 0 1px 2px color-mix(in oklab, var(--color-walnut) 6%, transparent);
   }
 
   details.code-collapse summary p {
@@ -624,7 +746,7 @@
   }
 
   details.code-collapse summary:hover {
-    background: color-mix(in srgb, var(--color-surface) 98%, var(--color-walnut));
+    background: color-mix(in oklab, var(--color-surface) 98%, var(--color-walnut));
     color: var(--color-ochre);
   }
 
@@ -676,25 +798,25 @@
     padding-left: 0 !important;
   }
 
-  /* Smooth opening animation */
-  details.code-collapse[open] {
-    animation: expand 0.3s ease-out;
+  /* Smooth open: fade-in only (avoids max-height layout thrash) */
+  details.code-collapse[open] .astro-code {
+    animation: code-fade-in 0.2s ease-out;
   }
 
-  @keyframes expand {
+  @keyframes code-fade-in {
     from {
-      max-height: 3rem;
+      opacity: 0;
     }
     to {
-      max-height: 100vh;
+      opacity: 1;
     }
   }
 
   /* Inline code with subtle handcrafted styling */
   code:not([class]):not(.katex) {
     font-family: var(--font-mono);
-    background: color-mix(in srgb, var(--color-surface) 95%, var(--color-sage));
-    border: 1px solid color-mix(in srgb, var(--color-lichen) 30%, transparent);
+    background: color-mix(in oklab, var(--color-surface) 95%, var(--color-sage));
+    border: 1px solid color-mix(in oklab, var(--color-lichen) 30%, transparent);
     padding: 1px 4px;
     border-radius: 3px;
     font-size: 0.875em;
@@ -708,8 +830,8 @@
   h4 code:not([class]):not(.katex),
   h5 code:not([class]):not(.katex),
   h6 code:not([class]):not(.katex) {
-    background: color-mix(in srgb, var(--color-surface) 98%, var(--color-sage));
-    border-color: color-mix(in srgb, var(--color-lichen) 20%, transparent);
+    background: color-mix(in oklab, var(--color-surface) 98%, var(--color-sage));
+    border-color: color-mix(in oklab, var(--color-lichen) 20%, transparent);
     padding: 1px 3px;
   }
 

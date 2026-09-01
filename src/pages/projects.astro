@@ -1,8 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import GridLayout from '../components/GridLayout.astro';
-import StackedCard from '../components/StackedCard.astro';
-import ImageFrame from '../components/ImageFrame.astro';
+import ListingCardStack from '../components/ListingCardStack.astro';
+import { fromProjectRecord } from '../lib/cards/adapters';
 
 const projects = [
   {
@@ -10,8 +9,11 @@ const projects = [
     description: 'Perceptually distinct color palettes optimized for accessibility in OKLAB (R).',
     year: 2024,
     status: 'Active',
-    banner: 'https://sims1253.github.io/huerd/reference/figures/logo.png',
-    isLocal: false, // Mark external images
+    banner: {
+      src: 'https://sims1253.github.io/huerd/reference/figures/logo.png',
+      width: 560,
+      height: 160,
+    },
     tech: ['R', 'OKLAB', 'nloptr'],
     links: [
       { type: 'GitHub', url: 'https://github.com/sims1253/huerd' },
@@ -23,7 +25,11 @@ const projects = [
     description: 'Analyze HRV data with robust preprocessing and recovery scoring.',
     year: 2024,
     status: 'Active',
-    banner: 'https://sims1253.github.io/hrvester/reference/figures/logo.png',
+    banner: {
+      src: 'https://sims1253.github.io/hrvester/reference/figures/logo.png',
+      width: 560,
+      height: 160,
+    },
     tech: ['R', 'Signal Processing'],
     links: [
       { type: 'GitHub', url: 'https://github.com/sims1253/hrvester' },
@@ -34,13 +40,6 @@ const projects = [
 
 // Sort projects by year (most recent first)
 const sortedProjects = projects.sort((a, b) => b.year - a.year);
-
-// Helper function for external image optimization
-const optimizeExternalImage = (url: string) => {
-  // Simple URL-based image optimization service (you could replace with ImageKit, Cloudinary, etc.)
-  // For now, we'll use original URL but with proper loading attributes
-  return url;
-};
 ---
 
 <BaseLayout
@@ -51,9 +50,9 @@ const optimizeExternalImage = (url: string) => {
   layout="wide"
 >
   <div class="projects-page">
-    <header class="projects-header">
-      <h1 class="page-title">Projects & Software</h1>
-      <p class="page-description">
+    <header class="projects-header page-shell-header">
+      <h1 class="page-title page-shell-title">Projects & Software</h1>
+      <p class="page-description page-shell-description">
         I tend to build stuff to procrastinate. This is where I feel good about it.
       </p>
     </header>
@@ -62,47 +61,23 @@ const optimizeExternalImage = (url: string) => {
       <main class="projects-content">
         <div class="projects-inner container-wide">
           <section aria-label="Projects">
-            <GridLayout columns={1} gap="xl" class="projects-grid">
-              {
-                sortedProjects.map((project, index) => {
-                  const primaryLink = project.links?.[0]?.url;
-                  const isFirst = index === 0;
-                  return (
-                    <div class="nc-item project-item">
-                      <StackedCard
-                        seed={`project/${project.title}`}
-                        title={project.title}
-                        subtitle={project.description}
-                        href={primaryLink}
-                        layers={3}
-                        layout="side"
-                      >
-                        {project.banner && (
-                          <div slot="media" class="project-logo">
-                            <ImageFrame
-                              src={optimizeExternalImage(project.banner)}
-                              alt={project.title}
-                              style="simple"
-                              fillMode="contain"
-                              loading={isFirst ? 'eager' : 'lazy'}
-                            />
-                          </div>
-                        )}
-                        {project.links?.length && (
-                          <div class="project-links sc-tags">
-                            {project.links.map((l) => (
-                              <a class="sc-chip" href={l.url} target="_blank" rel="noopener">
-                                {l.type}
-                              </a>
-                            ))}
-                          </div>
-                        )}
-                      </StackedCard>
-                    </div>
-                  );
+            <ListingCardStack
+              profile="projects"
+              columns={1}
+              maxWidth="40rem"
+              itemClass="project-item"
+              items={sortedProjects.map((project) =>
+                fromProjectRecord({
+                  id: `project/${project.title}`,
+                  title: project.title,
+                  description: project.description,
+                  year: project.year,
+                  status: project.status,
+                  banner: project.banner,
+                  links: project.links,
                 })
-              }
-            </GridLayout>
+              )}
+            />
           </section>
         </div>
       </main>
@@ -115,35 +90,9 @@ const optimizeExternalImage = (url: string) => {
     max-width: 100%;
   }
 
-  .projects-header {
-    text-align: center;
-    max-width: var(--measure-listing);
-    margin: 0 auto var(--space-xs);
-  }
-
-  .page-title {
-    font-size: clamp(var(--text-2xl), 5vw, var(--text-3xl));
-    margin-bottom: var(--space-xs);
-    color: var(--color-ink-dark);
-  }
-
-  .page-description {
-    font-size: var(--text-lg);
-    line-height: 1.6;
-    color: var(--color-ink-medium);
-    font-style: italic;
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
   /* Centering handled by BaseLayout container (contentWidth) */
 
-  /* Legacy card styles removed in favor of StackedCard */
   /* Width/centering handled via .container-wide */
-  .projects-grid {
-    margin-bottom: var(--space-xl);
-  }
   .project-item {
     width: 40rem;
     max-width: 100%;
@@ -151,7 +100,7 @@ const optimizeExternalImage = (url: string) => {
     margin-right: auto;
   }
   .project-logo .image-frame {
-    width: 240px;
+    width: 180px;
     max-width: 100%;
   }
   .project-item {
@@ -181,27 +130,8 @@ const optimizeExternalImage = (url: string) => {
     display: flex;
     flex-direction: column;
   }
-  .projects-page .project-links {
+  .projects-page .sc-col.content .sc-meta {
     margin-top: auto;
     padding-top: var(--space-xs);
-  }
-
-  @media (max-width: 768px) {
-    .project-card {
-      grid-template-columns: 1fr;
-      gap: var(--space-md);
-    }
-    .thumb {
-      min-height: 120px;
-      order: -1; /* Move image above content on mobile */
-    }
-  }
-  @media (max-width: 480px) {
-    .card-title {
-      font-size: var(--text-lg);
-    }
-    .project-card {
-      padding: var(--space-md);
-    }
   }
 </style>

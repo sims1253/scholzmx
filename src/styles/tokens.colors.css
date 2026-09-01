@@ -24,7 +24,18 @@
   /* Cool/meta */
   --color-iron: #424a56; /* Sparse cool anchor */
   --color-tansy: #b0922c; /* Antique metallic accent */
+  --color-gold: #b0922c; /* Alias for legacy manuscript accents */
   --color-verdigris: #6b8c7a; /* Patina for SVG/borders */
+  --color-sage-dark: #6f7b69; /* Stronger sage for text/labels */
+
+  /* RGB variants for rgba() usage in SVG and overlays */
+  --color-walnut-rgb: 91, 70, 57;
+  --color-moss-rgb: 88, 106, 81;
+  --color-sage-rgb: 174, 183, 168;
+  --color-lichen-rgb: 207, 215, 203;
+  --color-tansy-rgb: 176, 146, 44;
+  --color-ochre-rgb: 176, 110, 73;
+  --color-iron-rgb: 66, 74, 86;
 
   /* Semantic mappings */
   --color-text-primary: var(--color-ink-dark);
@@ -44,14 +55,14 @@
   --color-surface: var(--color-parchment-light);
 
   /* Derived utility mixes */
-  --rule-ink: color-mix(in srgb, var(--color-ink-dark) 18%, var(--color-parchment));
-  --wash-sage: color-mix(in srgb, var(--color-sage) 6%, var(--color-parchment-light));
-  --btn-walnut-hover: color-mix(in srgb, var(--color-walnut) 88%, black);
+  --rule-ink: color-mix(in oklab, var(--color-ink-dark) 18%, var(--color-parchment));
+  --wash-sage: color-mix(in oklab, var(--color-sage) 6%, var(--color-parchment-light));
+  --btn-walnut-hover: color-mix(in oklab, var(--color-walnut) 88%, black);
 }
 
 /* Torchlight Night Theme — same vibe, dusk parchment, ember inks, moss shadows */
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
+  :root:not([data-theme]) {
     --color-parchment: #120f0d;
     --color-parchment-light: #171310;
 
@@ -70,7 +81,18 @@
 
     --color-iron: #8da0b6;
     --color-tansy: #cfad54; /* brass by torchlight */
+    --color-gold: #cfad54;
     --color-verdigris: #7aa695;
+    --color-sage-dark: #95a48a;
+
+    /* RGB variants for dark mode */
+    --color-walnut-rgb: 202, 162, 127;
+    --color-moss-rgb: 124, 145, 111;
+    --color-sage-rgb: 116, 120, 102;
+    --color-lichen-rgb: 88, 96, 85;
+    --color-tansy-rgb: 207, 173, 84;
+    --color-ochre-rgb: 217, 151, 70;
+    --color-iron-rgb: 141, 160, 182;
 
     --color-text-primary: var(--color-ink-dark);
     --color-text-secondary: var(--color-ink-medium);
@@ -78,7 +100,7 @@
 
     --color-link: var(--color-walnut);
     --color-link-hover: var(--color-ochre);
-    --color-underline: color-mix(in srgb, var(--color-lichen) 65%, var(--color-ink-dark));
+    --color-underline: color-mix(in oklab, var(--color-lichen) 65%, var(--color-ink-dark));
     --color-underline-hover: var(--color-ochre);
 
     --color-accent-primary: var(--color-walnut);
@@ -88,8 +110,8 @@
     --color-background: var(--color-parchment);
     --color-surface: var(--color-parchment-light);
 
-    --rule-ink: color-mix(in srgb, var(--color-ink-light) 20%, var(--color-parchment));
-    --wash-sage: color-mix(in srgb, var(--color-sage) 10%, var(--color-parchment-light));
+    --rule-ink: color-mix(in oklab, var(--color-ink-light) 20%, var(--color-parchment));
+    --wash-sage: color-mix(in oklab, var(--color-sage) 10%, var(--color-parchment-light));
   }
 }
 
@@ -113,7 +135,18 @@
 
   --color-iron: #8da0b6;
   --color-tansy: #cfad54;
+  --color-gold: #cfad54;
   --color-verdigris: #7aa695;
+  --color-sage-dark: #95a48a;
+
+  /* RGB variants for dark mode */
+  --color-walnut-rgb: 202, 162, 127;
+  --color-moss-rgb: 124, 145, 111;
+  --color-sage-rgb: 116, 120, 102;
+  --color-lichen-rgb: 88, 96, 85;
+  --color-tansy-rgb: 207, 173, 84;
+  --color-ochre-rgb: 217, 151, 70;
+  --color-iron-rgb: 141, 160, 182;
 
   --color-text-primary: var(--color-ink-dark);
   --color-text-secondary: var(--color-ink-medium);
@@ -121,7 +154,7 @@
 
   --color-link: var(--color-walnut);
   --color-link-hover: var(--color-ochre);
-  --color-underline: color-mix(in srgb, var(--color-lichen) 65%, var(--color-ink-dark));
+  --color-underline: color-mix(in oklab, var(--color-lichen) 65%, var(--color-ink-dark));
   --color-underline-hover: var(--color-ochre);
 
   --color-accent-primary: var(--color-walnut);
@@ -131,6 +164,34 @@
   --color-background: var(--color-parchment);
   --color-surface: var(--color-parchment-light);
 
-  --rule-ink: color-mix(in srgb, var(--color-ink-light) 20%, var(--color-parchment));
-  --wash-sage: color-mix(in srgb, var(--color-sage) 10%, var(--color-parchment-light));
+  --rule-ink: color-mix(in oklab, var(--color-ink-light) 20%, var(--color-parchment));
+  --wash-sage: color-mix(in oklab, var(--color-sage) 10%, var(--color-parchment-light));
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  }
+}
+
+:root[data-theme='dark'] body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }

@@ -2,6 +2,9 @@
 import BotanicalBorder from '../components/BotanicalBorder.astro';
 import IllustratedFooter from '../components/IllustratedFooter.astro';
 import BackToTop from '../components/BackToTop.astro';
+import ReadingProgress from '../components/ReadingProgress.astro';
+import FontSizeControl from '../components/FontSizeControl.astro';
+import SVGFilters from '../components/SVGFilters.astro';
 
 // Import CSS files
 import '../styles/layers.css';
@@ -10,18 +13,19 @@ import '../styles/tokens.typography.css';
 import '../styles/tokens.spacing.css';
 import '../styles/tokens.layout.css';
 import '../styles/tokens.motion.css';
-import '../styles/fonts-critical.css';
 import '../styles/fonts.css';
 import '../styles/layout.css';
 import '../styles/base.css';
 import '../styles/modern.css';
 import '../styles/prose.css';
+import '../styles/page-shell.css';
 import '../styles/typography-utils.css';
 import '../styles/dropcap.css';
 import '../styles/tailwind.css'; // Utilities only - preserves existing design
-import '../styles/tailwind-utilities.css'; // Force utility generation
 import '../styles/margin-notes.css';
 import '../styles/stacked-card.css';
+import '../styles/shiki-theming.css';
+import '../styles/listing-sidebar.css';
 
 export interface Props {
   title: string;
@@ -30,15 +34,10 @@ export interface Props {
   addBorders?: boolean;
   footerVariant?: 'garden' | 'kitchen' | 'craft' | 'writing' | 'projects' | 'research' | 'default';
   includeQuoteSection?: boolean;
-  /* Legacy props (for backward-compat) */
-  longform?: boolean;
-  personal?: boolean;
-  contentWidth?: 'default' | 'wide' | 'full';
-  /* New props */
   tone?: 'personal' | 'serious';
   layout?: 'prose' | 'listing' | 'wide' | 'full';
-  prose?: boolean;
   leading?: 'default' | 'relaxed' | 'tight';
+  lang?: string;
 }
 
 const {
@@ -48,42 +47,26 @@ const {
   addBorders = true,
   footerVariant = 'default',
   includeQuoteSection = false,
-  /* legacy */
-  longform = false,
-  personal = true,
-  contentWidth = 'default',
-  /* new */
-  tone,
-  layout,
-  prose,
-  leading,
+  tone = 'personal',
+  layout = 'prose',
+  leading = 'default',
+  lang = 'en',
 } = Astro.props;
 
-/* Backward-compatible mapping */
-const resolvedTone = tone ?? (personal ? 'personal' : 'serious');
-const isProseLayoutLegacy = longform || contentWidth === 'default';
-const resolvedLayout =
-  layout ??
-  (isProseLayoutLegacy
-    ? 'prose'
-    : contentWidth === 'wide'
-      ? 'wide'
-      : contentWidth === 'full'
-        ? 'full'
-        : 'prose');
-const resolvedProse = prose ?? longform ?? false;
-const resolvedLeading = leading ?? 'default';
-
 const currentPath = Astro.url.pathname;
+
+const absoluteImageUrl = image.startsWith('http') ? image : `https://www.scholzmx.com${image}`;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={lang}>
   <head>
     <meta charset="UTF-8" />
     <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="mask-icon" href="/favicon.svg" color="#8b5a3c" />
     <meta name="generator" content={Astro.generator} />
 
     <!-- Canonical URL -->
@@ -101,8 +84,7 @@ const currentPath = Astro.url.pathname;
 
     <slot name="head" />
 
-    <!-- Preload fonts based on page type for optimal performance -->
-    <!-- Always preload heading font (used on all pages) -->
+    <!-- Critical font preloading: heading + body font only (max 2) -->
     <link
       rel="preload"
       href="/fonts/cormorant-garamond-600.woff2"
@@ -110,10 +92,8 @@ const currentPath = Astro.url.pathname;
       type="font/woff2"
       crossorigin
     />
-
-    {/* Conditional preloading based on tone */}
     {
-      resolvedTone === 'personal' ? (
+      tone === 'personal' ? (
         <link
           rel="preload"
           href="/fonts/Alegreya/alegreya-v38-latin-regular.woff2"
@@ -132,109 +112,123 @@ const currentPath = Astro.url.pathname;
       )
     }
 
-    {/* Only preload code fonts for content that likely has code blocks */}
+    <!-- Code and math fonts: prefetch for likely code content (not preload to reduce contention) -->
     {
-      (currentPath.includes('/blog/') ||
-        currentPath.includes('/notes/') ||
-        currentPath.includes('/projects')) && (
+      currentPath.includes('/blog/') && (
         <>
-          <link
-            rel="preload"
-            href="/fonts/FiraCode-Regular.woff2"
-            as="font"
-            type="font/woff2"
-            crossorigin
-          />
-          <link
-            rel="preload"
-            href="/fonts/FiraCode-Medium.woff2"
-            as="font"
-            type="font/woff2"
-            crossorigin
-          />
+          <link rel="prefetch" href="/fonts/FiraCode-Regular.woff2" as="font" />
+          <link rel="prefetch" href="/katex/fonts/KaTeX_Main-Regular.woff2" as="font" />
         </>
       )
     }
 
-    {/* Only preload math fonts for content that likely has equations */}
+    <!-- KaTeX CSS: non-blocking load -->
     {
       (currentPath.includes('/blog/') ||
-        currentPath.includes('/notes/') ||
         currentPath.includes('/research')) && (
-        <>
-          <link
-            rel="preload"
-            href="/katex/fonts/KaTeX_Main-Regular.woff2"
-            as="font"
-            type="font/woff2"
-            crossorigin
-          />
-          <link
-            rel="preload"
-            href="/katex/katex.min.css"
-            as="style"
-            onload={"this.onload=null;this.rel='stylesheet'"}
-          />
-          <noscript>
-            <link rel="stylesheet" href="/katex/katex.min.css" />
-          </noscript>
-        </>
+        <link
+          rel="preload"
+          href="/katex/katex.min.css"
+          as="style"
+          onload="this.onload=null;this.rel='stylesheet'"
+        />
       )
     }
-
-    <!-- Specialty fonts loaded on demand -->
-    <link rel="stylesheet" href="/fonts/et-initials.css" />
-
-    <!-- Only preload fonts critical for initial render -->
-    <link
-      rel="preload"
-      href="/fonts/et-book-roman-old-style-figures.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      href="/fonts/cormorant-garamond-400.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
+    <noscript><link rel="stylesheet" href="/katex/katex.min.css" /></noscript>
 
     <!-- Performance hints - will be updated by theme toggle -->
     <meta name="theme-color" content="#f9f6f2" />
     <meta name="color-scheme" content="light dark" />
+    <script is:inline>
+      (() => {
+        const key = 'theme-preference';
+        let theme = null;
+        try {
+          theme = localStorage.getItem(key);
+        } catch {}
+
+        const resolved =
+          theme === 'dark' || theme === 'light'
+            ? theme
+            : window.matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'light';
+
+        document.documentElement.setAttribute('data-theme', resolved);
+        const meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) {
+          meta.setAttribute('content', resolved === 'dark' ? '#0f100e' : '#f9f6f2');
+        }
+      })();
+    </script>
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content={Astro.url.href} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={image} />
+    <meta property="og:image" content={absoluteImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content={Astro.url.href} />
     <meta property="twitter:title" content={title} />
     <meta property="twitter:description" content={description} />
-    <meta property="twitter:image" content={image} />
+    <meta property="twitter:image" content={absoluteImageUrl} />
 
     <!-- Creative Commons License -->
     <link rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/" />
 
+    <!-- JSON-LD Structured Data -->
+    <script
+      type="application/ld+json"
+      is:inline
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@graph': [
+          {
+            '@type': 'WebSite',
+            '@id': 'https://www.scholzmx.com/#website',
+            url: 'https://www.scholzmx.com/',
+            name: 'Grotto',
+            description: 'Personal website of Maximilian Scholz',
+            potentialAction: {
+              '@type': 'SearchAction',
+              target: 'https://www.scholzmx.com/blog?q={search_term_string}',
+              'query-input': 'required name=search_term_string',
+            },
+          },
+          {
+            '@type': 'Person',
+            '@id': 'https://www.scholzmx.com/#person',
+            name: 'Maximilian Scholz',
+            url: 'https://www.scholzmx.com/',
+            image: absoluteImageUrl,
+            sameAs: [
+              'https://github.com/sims1253',
+              'https://bsky.app/profile/scholzmx.bsky.social',
+            ],
+            jobTitle: 'PhD Candidate in Bayesian Statistics',
+            alumniOf: [{ '@type': 'EducationalOrganization', name: 'RWTH Aachen University' }],
+          },
+        ],
+      })}
+    />
+
     <title>{title}</title>
   </head>
 
-  <body class={resolvedTone === 'personal' ? 'personal-content' : 'serious-content'}>
-    <!-- Skip Links for Keyboard Navigation -->
-    <a href="#main-content" class="skip-link"
-      >Skip to main content (blog posts, articles, and page content)</a
-    >
-    <a href="#main-navigation" class="skip-link"
-      >Skip to site navigation (Blog, Projects, Research links)</a
-    >
+  <body class={tone === 'personal' ? 'personal-content' : 'serious-content'}>
+    <SVGFilters />
+    <a href="#main-content" class="skip-link">Skip to content</a>
+    <a href="#main-navigation" class="skip-link">Skip to navigation</a>
 
     <div class="page-wrapper">
+      <!-- Reading Progress Indicator -->
+      <ReadingProgress color="moss" height={3} />
+
       <!-- Organic botanical borders -->
       {
         addBorders && (
@@ -267,19 +261,19 @@ const currentPath = Astro.url.pathname;
                 class={currentPath.startsWith('/blog') ? 'nav-link active' : 'nav-link'}
                 aria-current={currentPath.startsWith('/blog') ? 'page' : undefined}>Blog</a
               >
-              <span class="nav-separator">·</span>
+              <span class="nav-separator" aria-hidden="true">·</span>
               <a
                 href="/projects"
                 class={currentPath.startsWith('/projects') ? 'nav-link active' : 'nav-link'}
                 aria-current={currentPath.startsWith('/projects') ? 'page' : undefined}>Projects</a
               >
-              <span class="nav-separator">·</span>
+              <span class="nav-separator" aria-hidden="true">·</span>
               <a
                 href="/recipes"
                 class={currentPath.startsWith('/recipes') ? 'nav-link active' : 'nav-link'}
                 aria-current={currentPath.startsWith('/recipes') ? 'page' : undefined}>Recipes</a
               >
-              <span class="nav-separator">·</span>
+              <span class="nav-separator" aria-hidden="true">·</span>
               <a
                 href="/research"
                 class={currentPath.startsWith('/research') ? 'nav-link active' : 'nav-link'}
@@ -316,15 +310,15 @@ const currentPath = Astro.url.pathname;
                   ></rect>
                 </svg>
               </button>
+
+              <FontSizeControl />
             </div>
           </div>
         </nav>
 
         <!-- Main content area -->
         <main class="main-content" id="main-content">
-          <div
-            class={`layout-${resolvedLayout} ${resolvedProse ? 'prose' : ''} ${resolvedLeading !== 'default' ? `leading-${resolvedLeading}` : ''}`}
-          >
+          <div class={`layout-${layout} ${leading !== 'default' ? `leading-${leading}` : ''}`}>
             <slot />
           </div>
           <div class="notes-container" id="notesContainer"></div>
@@ -339,31 +333,12 @@ const currentPath = Astro.url.pathname;
       <!-- Back to Top Button -->
       <BackToTop />
 
-      <style is:global>
-        /* Shiki dual theme switching - use only dark variables that Astro generates */
-
-        /* Dark theme styles - when explicitly set */
-        [data-theme='dark'] .astro-code,
-        [data-theme='dark'] .astro-code span {
-          color: var(--shiki-dark) !important;
-          background-color: var(--shiki-dark-bg) !important;
-        }
-
-        /* Dark theme styles - when system prefers dark and no explicit theme */
-        @media (prefers-color-scheme: dark) {
-          :not([data-theme]) .astro-code,
-          :not([data-theme]) .astro-code span {
-            color: var(--shiki-dark) !important;
-            background-color: var(--shiki-dark-bg) !important;
-          }
-        }
-      </style>
-
       <script>
         import '../scripts/theme-toggle';
         import '../scripts/copy-button';
-        import '../scripts/margin-notes';
+        import '../scripts/table-overflow';
       </script>
+      <slot name="scripts" />
     </div>
   </body>
 </html>

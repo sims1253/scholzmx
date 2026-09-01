@@ -1,0 +1,214 @@
+---
+export interface Props {
+  className?: string;
+}
+
+const { className = '' } = Astro.props;
+---
+
+<div class={`font-size-control ${className}`} aria-label="Font size controls">
+  <button
+    id="font-size-trigger"
+    class="font-size-trigger"
+    aria-expanded="false"
+    aria-haspopup="true"
+    type="button"
+  >
+    <span class="font-size-icon">Aa</span>
+    <svg class="chevron" viewBox="0 0 24 24" width="12" height="12" aria-hidden="true">
+      <path
+        d="M6 9l6 6 6-6"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"></path>
+    </svg>
+  </button>
+
+  <div id="font-size-dropdown" class="font-size-dropdown" role="menu" aria-hidden="true">
+    <button class="font-size-option" data-size="xsmall" role="menuitem" type="button">
+      <span class="option-label" data-size="xsmall">Aa</span>
+      <span class="option-name">Small</span>
+    </button>
+    <button class="font-size-option" data-size="medium" role="menuitem" type="button">
+      <span class="option-label" data-size="medium">Aa</span>
+      <span class="option-name">Default</span>
+    </button>
+    <button class="font-size-option" data-size="xlarge" role="menuitem" type="button">
+      <span class="option-label" data-size="xlarge">Aa</span>
+      <span class="option-name">Large</span>
+    </button>
+  </div>
+</div>
+
+<style>
+  .font-size-control {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .font-size-trigger {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    background: transparent;
+    border: 1px solid var(--color-lichen);
+    border-radius: 6px;
+    color: var(--color-walnut);
+    cursor: pointer;
+    transition:
+      background-color 0.15s ease-out,
+      border-color 0.15s ease-out;
+    font-family: var(--font-heading);
+    font-size: 13px;
+  }
+
+  .font-size-trigger:hover {
+    background: color-mix(in oklab, var(--color-sage) 10%, transparent);
+    border-color: var(--color-sage);
+  }
+
+  .font-size-trigger:focus {
+    outline: 2px solid var(--color-tansy);
+    outline-offset: 1px;
+    border-color: var(--color-sage);
+  }
+
+  .font-size-icon {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  .chevron {
+    flex-shrink: 0;
+    transition: transform 0.2s ease-out;
+  }
+
+  .font-size-trigger[aria-expanded='true'] .chevron {
+    transform: rotate(180deg);
+  }
+
+  .font-size-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    min-width: 120px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-lichen);
+    border-radius: 8px;
+    box-shadow:
+      0 4px 12px color-mix(in oklab, var(--color-walnut) 8%, transparent),
+      0 2px 4px color-mix(in oklab, var(--color-sage) 10%, transparent);
+    padding: 4px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition:
+      opacity 0.2s ease-out,
+      visibility 0.2s ease-out,
+      transform 0.2s ease-out;
+    z-index: 1000;
+  }
+
+  .font-size-dropdown[aria-hidden='false'] {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .font-size-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    padding: 8px 12px;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: var(--color-walnut);
+    cursor: pointer;
+    transition: background-color 0.15s ease-out;
+    text-align: left;
+  }
+
+  .font-size-option:hover {
+    background: color-mix(in oklab, var(--color-sage) 15%, transparent);
+  }
+
+  .font-size-option:focus {
+    outline: 2px solid var(--color-tansy);
+    outline-offset: 2px;
+    background: color-mix(in oklab, var(--color-sage) 15%, transparent);
+  }
+
+  .font-size-option.active {
+    background: var(--color-moss);
+    color: var(--color-parchment-light);
+  }
+
+  .option-label {
+    font-family: var(--font-heading);
+    font-weight: 600;
+  }
+
+  .option-label[data-size='xsmall'] {
+    font-size: 12px;
+  }
+
+  .option-label[data-size='medium'] {
+    font-size: 14px;
+  }
+
+  .option-label[data-size='xlarge'] {
+    font-size: 16px;
+  }
+
+  .option-name {
+    font-family: var(--font-heading);
+    font-size: 12px;
+    font-weight: 500;
+    opacity: 0.8;
+    margin-left: auto;
+  }
+
+  /* Remove hover effects on touch devices */
+  @media (hover: none) and (pointer: coarse) {
+    .font-size-trigger:hover {
+      background: transparent;
+      border-color: var(--color-lichen);
+    }
+
+    .font-size-option:hover {
+      background: transparent;
+    }
+
+    .font-size-option:active {
+      background: color-mix(in oklab, var(--color-sage) 15%, transparent);
+    }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .font-size-dropdown {
+      transition: none;
+    }
+
+    .chevron {
+      transition: none;
+    }
+
+    .font-size-trigger[aria-expanded='true'] .chevron {
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  import '../scripts/font-size-control';
+</script>

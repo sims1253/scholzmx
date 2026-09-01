@@ -15,4 +15,4 @@ knitr:
     message: false
     dev: ragg_png
     dev.args:
-      bg: transparent
+      bg: white
