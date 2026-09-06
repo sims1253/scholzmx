@@ -1,5 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
+import ReadingTools from '../../components/ReadingTools.astro';
+import CollectionTrail from '../../components/CollectionTrail.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import DropCap from '../../components/DropCap.astro';
 import ImageFrame from '../../components/ImageFrame.astro';
@@ -18,7 +20,7 @@ export async function getStaticPaths() {
 }
 
 const { recipe } = Astro.props;
-const { Content } = await render(recipe);
+const { Content, headings } = await render(recipe);
 ---
 
 <BaseLayout
@@ -32,6 +34,7 @@ const { Content } = await render(recipe);
   leading="relaxed"
 >
   <div class="recipe-post">
+    <CollectionTrail collection="Recipes" />
     <article class="recipe-content" itemscope itemtype="https://schema.org/Recipe">
       {
         recipe.data.heroImage && (
@@ -91,8 +94,11 @@ const { Content } = await render(recipe);
 
       <FaintLineDivider width="wide" />
 
+      <ReadingTools headings={headings} />
+
       <section
         class="recipe-body prose"
+        data-reading-body
         itemprop="recipeInstructions"
         data-pagefind-body
         data-pagefind-filter="type:recipe"

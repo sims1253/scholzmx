@@ -1,0 +1,42 @@
+---
+import '../styles/reading-tools.css';
+
+interface Props {
+  headings: { depth: number; slug: string; text: string }[];
+}
+
+const sections = Astro.props.headings.filter((heading) => heading.depth === 2);
+---
+
+<div class="reading-tools" data-pagefind-ignore>
+  {
+    sections.length > 1 && (
+      <details class="reading-contents">
+        <summary>
+          On this page <span>{sections.length} sections</span>
+        </summary>
+        <nav aria-label="Article sections">
+          <ul>
+            {sections.map((section) => (
+              <li>
+                <a href={`#${section.slug}`}>{section.text}</a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </details>
+    )
+  }
+  <label class="reading-size" hidden>
+    Text size
+    <select aria-label="Reading text size">
+      <option value="1">Original</option>
+      <option value="1.15">Larger</option>
+      <option value="1.3">Largest</option>
+    </select>
+  </label>
+</div>
+
+<script>
+  import '../scripts/reading-tools';
+</script>

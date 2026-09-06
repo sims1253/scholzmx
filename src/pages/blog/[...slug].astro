@@ -1,5 +1,7 @@
 ---
 import { getCollection, render, type CollectionEntry } from 'astro:content';
+import ReadingTools from '../../components/ReadingTools.astro';
+import CollectionTrail from '../../components/CollectionTrail.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import FaintLineDivider from '../../components/FaintLineDivider.astro';
 import ImageFrame from '../../components/ImageFrame.astro';
@@ -48,7 +50,7 @@ const getAdjacentPosts = async (currentPost: CollectionEntry<'blog'>) => {
 };
 
 const { post } = Astro.props;
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
 
 // Get related and adjacent posts
 const relatedPosts = await getRelatedPosts(post);
@@ -107,6 +109,7 @@ const mapHeroImage = (heroImage: HeroImageInput, scale?: number, posX?: number, 
   prose={true}
 >
   <div class="blog-post">
+    <CollectionTrail collection="Blog" />
     <article class="post-content" itemscope itemtype="https://schema.org/Article">
       {
         post.data.heroImage && (
@@ -177,8 +180,11 @@ const mapHeroImage = (heroImage: HeroImageInput, scale?: number, posX?: number, 
 
       <FaintLineDivider width="wide" />
 
+      <ReadingTools headings={headings} />
+
       <section
         class="post-body prose"
+        data-reading-body
         itemprop="articleBody"
         data-pagefind-body
         data-pagefind-filter="type:blog"

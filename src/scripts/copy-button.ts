@@ -1,6 +1,7 @@
 // Copy button functionality for code blocks
 export function initCopyButtons(): void {
   document.querySelectorAll('.astro-code').forEach((codeBlock) => {
+    if (codeBlock.querySelector('.copy-button')) return;
     const button = document.createElement('button');
     button.className = 'copy-button';
     button.type = 'button';

@@ -1,4 +1,6 @@
 ---
+import huerdLogo from '../assets/images/projects/huerd-logo.png';
+import hrvesterLogo from '../assets/images/projects/hrvester-logo.png';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import GridLayout from '../components/GridLayout.astro';
 import StackedCard from '../components/StackedCard.astro';
@@ -10,8 +12,7 @@ const projects = [
     description: 'Perceptually distinct color palettes optimized for accessibility in OKLAB (R).',
     year: 2024,
     status: 'Active',
-    banner: 'https://sims1253.github.io/huerd/reference/figures/logo.png',
-    isLocal: false, // Mark external images
+    banner: huerdLogo,
     tech: ['R', 'OKLAB', 'nloptr'],
     links: [
       { type: 'GitHub', url: 'https://github.com/sims1253/huerd' },
@@ -23,7 +24,7 @@ const projects = [
     description: 'Analyze HRV data with robust preprocessing and recovery scoring.',
     year: 2024,
     status: 'Active',
-    banner: 'https://sims1253.github.io/hrvester/reference/figures/logo.png',
+    banner: hrvesterLogo,
     tech: ['R', 'Signal Processing'],
     links: [
       { type: 'GitHub', url: 'https://github.com/sims1253/hrvester' },
@@ -34,13 +35,6 @@ const projects = [
 
 // Sort projects by year (most recent first)
 const sortedProjects = projects.sort((a, b) => b.year - a.year);
-
-// Helper function for external image optimization
-const optimizeExternalImage = (url: string) => {
-  // Simple URL-based image optimization service (you could replace with ImageKit, Cloudinary, etc.)
-  // For now, we'll use original URL but with proper loading attributes
-  return url;
-};
 ---
 
 <BaseLayout
@@ -80,7 +74,7 @@ const optimizeExternalImage = (url: string) => {
                         {project.banner && (
                           <div slot="media" class="project-logo">
                             <ImageFrame
-                              src={optimizeExternalImage(project.banner)}
+                              src={project.banner}
                               alt={project.title}
                               style="simple"
                               fillMode="contain"
