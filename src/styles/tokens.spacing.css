@@ -2,6 +2,7 @@
   /* ===== Fluid Spacing Tokens ===== */
 
   /* Modern fluid spacing scale - automatically adapts to viewport size */
+  --space-xxs: clamp(0.125rem, 0.5vw, 0.25rem); /* ~2-4px fluid */
   --space-xs: clamp(0.25rem, 1vw, 0.5rem); /* ~4-8px fluid */
   --space-sm: clamp(0.5rem, 2vw, 1rem); /* ~8-16px fluid */
   --space-md: clamp(0.75rem, 3vw, 1.5rem); /* ~12-24px fluid */

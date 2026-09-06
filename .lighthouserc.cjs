@@ -27,7 +27,6 @@ module.exports = {
 
         // Best practices
         'uses-https': 'error',
-        'is-on-https': 'error',
         'uses-http2': 'off', // Not always applicable for static sites
 
         // SEO

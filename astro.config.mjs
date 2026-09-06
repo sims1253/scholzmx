@@ -3,13 +3,17 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
-import lightningcss from 'vite-plugin-lightningcss';
+import { unified } from '@astrojs/markdown-remark';
 import purgecss from 'astro-purgecss';
 import pagefind from 'astro-pagefind';
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://www.scholzmx.com',
+  // Astro 7 defaults to JSX-style whitespace compression, which strips spaces
+  // between inline elements and would reflow the nav separators / inline markup.
+  // Keep the previous HTML-aware compression to preserve the existing layout.
+  compressHTML: true,
   redirects: {
     // Preserve legacy blog post URLs from live site
     '/post/building-bayesim-intro/': '/blog/2023/04-26-building-bayesim/',
@@ -78,24 +82,12 @@ export default defineConfig({
         /^fill-/,
         // Margin notes injected via JS on blog posts
         'margin-note',
-        'notes-container',
+        'margin-notes-rail',
         'note-anchor',
         'visible',
-        // Keep specific Tailwind utilities (NOT broad regex)
-        'tw-grid',
-        'tw-grid-cols-1',
-        'tw-grid-cols-2',
-        'tw-grid-cols-3',
-        'tw-gap-4',
-        'tw-gap-6',
-        'tw-w-full',
-        'tw-max-w-5xl',
-        'tw-max-w-6xl',
-        'tw-mx-auto',
-        'tw-px-md',
-        // Responsive variants for grid
-        'md:tw-grid-cols-2',
-        'lg:tw-grid-cols-3',
+        // Keep hand-written tw-* utilities (including responsive variants) so they survive PurgeCSS
+        /^tw-/,
+        /^(sm|md|lg|xl):tw-/,
         // StackedCard dynamic doodle classes
         /^sc-/,
         /^topLeft$/,
@@ -122,10 +114,14 @@ export default defineConfig({
     remotePatterns: [],
   },
 
-  // Use Astro's native markdown processing with math support and Gruvbox themes
+  // Astro 7 defaults to the Sätteri Markdown pipeline. Math support needs the
+  // remark/rehype plugins, so we opt this project into the unified() processor
+  // from @astrojs/markdown-remark (the supported way to keep remark/rehype).
   markdown: {
-    remarkPlugins: [remarkMath],
-    rehypePlugins: [rehypeKatex],
+    processor: unified({
+      remarkPlugins: [remarkMath],
+      rehypePlugins: [rehypeKatex],
+    }),
     shikiConfig: {
       themes: {
         light: 'kanagawa-lotus',
@@ -143,9 +139,13 @@ export default defineConfig({
 
   // Reduce bundle size and improve loading
   vite: {
-    plugins: [
-      lightningcss({
-        minify: true,
+    // Use Vite's built-in lightningcss support (the third-party
+    // vite-plugin-lightningcss is unmaintained and incompatible with Vite 8's
+    // Rolldown bundler). lightningcss is both CSS transformer and minifier;
+    // `targets` down-levels modern CSS for the supported browser baseline.
+    css: {
+      transformer: 'lightningcss',
+      lightningcss: {
         targets: {
           // Support modern browsers for better performance
           chrome: 100,
@@ -153,12 +153,15 @@ export default defineConfig({
           safari: 15,
           edge: 100,
         },
-      }),
-    ],
+      },
+    },
     server: {
       host: true,
       watch: {
-        usePolling: true,
+        // Polling is only needed on some filesystems (WSL2, network mounts,
+        // Docker bind mounts). On native Linux/macOS it causes high idle CPU, so
+        // opt in via PI_DEV_POLLING=1 when needed instead of forcing it always.
+        usePolling: process.env.PI_DEV_POLLING === '1',
         interval: 1000,
       },
     },
@@ -169,10 +172,6 @@ export default defineConfig({
       minify: 'esbuild',
       rollupOptions: {
         output: {
-          // Optimize chunk size and reduce main thread blocking
-          manualChunks: {
-            // Separate vendor chunks for better caching
-          },
           assetFileNames: (assetInfo) => {
             const name =
               assetInfo && assetInfo.names && assetInfo.names[0] ? assetInfo.names[0] : '';

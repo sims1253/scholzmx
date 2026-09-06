@@ -1,7 +1,8 @@
-/* Force Tailwind to generate the utilities we need */
-@import url('tailwindcss/utilities');
+/* Hand-written tw-* utility classes referenced across the site.
+   Replaces the Tailwind CSS dependency with the design system's own tokens
+   (see tokens.spacing.css / tokens.layout.css for the variable values). */
 
-/* Modern responsive grid utilities that work with our fluid design */
+/* Grid */
 .tw-grid {
   display: grid;
 }
@@ -15,48 +16,145 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-/* Fluid spacing utilities that complement our design system */
-.tw-gap-fluid {
-  gap: clamp(1rem, 3vw, 1.5rem);
+@media (min-width: 56rem) {
+  .md\:tw-grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
-.tw-gap-fluid-lg {
-  gap: clamp(1.5rem, 4vw, 2rem);
-}
-
-/* Modern responsive spacing */
-.tw-p-fluid {
-  padding: clamp(0.75rem, 3vw, 1.5rem);
-}
-.tw-px-fluid {
-  padding-inline: clamp(0.75rem, 3vw, 1.5rem);
-}
-.tw-py-fluid {
-  padding-block: clamp(0.5rem, 2vw, 1rem);
+@media (min-width: 72rem) {
+  .lg\:tw-grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
-/* Container query utilities for modern responsive design */
-.tw-container-responsive {
-  container-type: inline-size;
+/* Layout */
+.tw-block {
+  display: block;
 }
-
-/* Logical property utilities */
-.tw-text-start {
-  text-align: start;
+.tw-relative {
+  position: relative;
 }
-.tw-text-end {
-  text-align: end;
+.tw-absolute {
+  position: absolute;
 }
-
-/* Modern width utilities */
+.tw-inset-0 {
+  inset: 0;
+}
+.tw-top-1\/2 {
+  top: 50%;
+}
+.tw-left-1\/2 {
+  left: 50%;
+}
+.tw-mx-auto {
+  margin-inline: auto;
+}
+.tw-overflow-hidden {
+  overflow: hidden;
+}
+.tw-h-full {
+  height: 100%;
+}
+.tw-h-auto {
+  height: auto;
+}
 .tw-w-full {
   width: 100%;
 }
-.tw-w-fluid {
-  width: clamp(20rem, 50vw, 60rem);
+.tw-max-w-5xl {
+  max-width: 64rem;
 }
 
-/* Touch-friendly utilities */
-.tw-min-touch {
-  min-width: 44px;
-  min-height: 44px;
+/* Object fit */
+.tw-object-cover {
+  object-fit: cover;
 }
+.tw-object-contain {
+  object-fit: contain;
+}
+.tw-object-fill {
+  object-fit: fill;
+}
+
+/* Aspect ratio */
+.tw-aspect-\[3\/2\] {
+  aspect-ratio: 3 / 2;
+}
+@media (min-width: 40rem) {
+  .sm\:tw-aspect-\[4\/3\] {
+    aspect-ratio: 4 / 3;
+  }
+}
+@media (min-width: 56rem) {
+  .md\:tw-aspect-\[3\/2\] {
+    aspect-ratio: 3 / 2;
+  }
+}
+
+/* Spacing (fluid design tokens) */
+.tw-gap-xs {
+  gap: var(--space-xs);
+}
+.tw-gap-sm {
+  gap: var(--space-sm);
+}
+.tw-gap-md {
+  gap: var(--space-md);
+}
+.tw-gap-lg {
+  gap: var(--space-lg);
+}
+.tw-gap-xl {
+  gap: var(--space-xl);
+}
+
+/* Fluid padding */
+.tw-px-8 {
+  padding-inline: var(--space-lg);
+}
+.tw-mb-lg {
+  margin-block-end: var(--space-lg);
+}
+.tw--mt-lg {
+  margin-block-start: calc(-1 * var(--space-lg));
+}
+
+/* Transforms */
+.tw-origin-center {
+  transform-origin: center;
+}
+.tw--translate-x-1\/2 {
+  transform: translateX(-50%);
+}
+.tw--translate-y-1\/2 {
+  transform: translateY(-50%);
+}
+
+/* Transitions */
+.tw-transition-opacity {
+  transition-property: opacity;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+.tw-transition-transform {
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+.tw-duration-200 {
+  transition-duration: 200ms;
+}
+.tw-duration-300 {
+  transition-duration: 300ms;
+}
+.tw-ease-in-out {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+.tw-opacity-0 {
+  opacity: 0;
+}
+
+/* Interaction */
+.tw-cursor-pointer {
+  cursor: pointer;
+}
+
+/* Text alignment */

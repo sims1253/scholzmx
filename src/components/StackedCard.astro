@@ -84,19 +84,16 @@ const rotC = (
  * 4. For background effects: add CSS selector using data attributes
  */
 
-// Generate doodads using the unified processor - uses doodad stream
+// Generate doodads using the unified processor. `doodadRng` (from
+// createSeededRng) already exposes the { random, chance, between, betweenInt }
+// shape RngFunctions expects, so no adapter is needed.
 const doodads: DoodadResults = processDoodadCategories(
   doodadCategories,
   isSheet,
   allowBookmark,
   allowTape,
   ornament,
-  {
-    random: doodadRng.random,
-    pick: doodadRng.chance,
-    map: doodadRng.between,
-    betweenInt: doodadRng.betweenInt,
-  }
+  doodadRng
 );
 
 // Extract doodads by type using the new system

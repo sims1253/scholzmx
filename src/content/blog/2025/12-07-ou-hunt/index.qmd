@@ -1,0 +1,121 @@
+---
+title: "The Hunt: How I Tried to Give Away 150,000 Credits and Failed"
+description: "What happens when you have too much money in a game where nobody needs it, and your academic brain tries to solve a roleplay problem with data analysis."
+date: 2025-12-07
+lastUpdated: 2025-12-07
+categories: [RPG]
+tags: ["over/under", "RPG", "Economy", "Mothership"]
+#heroImage: ../../../../assets/images/blog/2025/12-07-ou-hunt/spreadsheet.png
+#heroImagePositionX: 0
+#heroImagePositionY: 0
+#heroImageScale: 1
+draft: true
+execute:
+  echo: true
+  eval: true
+  warning: false
+  message: false
+format:
+  md:
+    variant: gfm
+    preserve-yaml: true
+    code-fold: false
+    code-block-bg: false
+    code-tools: false
+    title-block-style: none
+cache: true
+freeze: false
+---
+
+<span class="dropcap dropcap--ornate dropcap--serious" data-first-letter="I" aria-hidden="true">I</span> had 150,000 credits and no idea what to do with them. My soup kitchen had accidentally become the richest establishment on the server, and I was about to learn that having agency doesn't mean you know what to do with it.
+
+In my [last post](../12-07-ou-ball/index.qmd), I wrote about becoming accidentally rich at the Bratva Ball. This is the story of what happens when your academic brain tries to solve a roleplay problem with data analysis, and how I learned that you can't give away money that nobody needs.
+
+## The Problem (or: How I Learned to Stop Worrying and Love the Liquidity)
+
+I had 150,000 credits. Oxygen tax was cheap. Everyone made more than they needed.
+
+This is where the existential crisis hit. I was running a charity where nobody needed charity, in a game that had accidentally given me enough liquidity to fund a small war. The Kitchen had become a mechanical absurdity: a poverty simulation in a post-scarcity economy.
+
+Here's where the meta gets interesting: mO2, the character, felt a deep sense of responsibility to use these funds for good. Me, the player, felt an academic compulsion to optimize distribution efficiency. Both of us were trying to solve the same problem from different angles.
+
+**Me, the Player:** This is a resource distribution optimization problem with incomplete information and variable utility functions.
+**mO2, the Character:** I have been given a gift and I must use it to help people.
+
+Both of us were about to be very disappointed.
+
+**TODO: Really explore this tension - how did your academic background influence your approach to what should have been a roleplay problem?**
+
+## The Data Brokers
+
+I literally went to the information brokers—The Gorilla and the Stratmeyer Syndicate—and bought data. Lists of players who were "squalid" (low lifestyle) or inactive. They sent CSV files with 400 names. I spent hours manually cross-referencing these names in Discord to see who was still playing.
+
+**TODO: Give a specific example from the CSV hunt - one person you found who actually needed help vs. one who'd quit. What was the actual process of hunting through 400 names like? Any patterns you noticed?**
+
+**TODO: Describe the actual spreadsheet work - what columns did you create? What metrics did you use to determine who was "worthy" of charity? How did it feel to turn human beings into data points?**
+
+This was me trying to solve with data what was fundamentally a narrative problem. I was treating human beings like a parameter estimation challenge, and I was about to learn why that doesn't work in roleplay spaces.
+
+## The Math Problem
+
+Let's talk numbers. Daily oxygen tax: maybe 50-100 credits depending on lifestyle. Daily faction jobs: 200-500 credits. The leaderboard players were making thousands per day through trading, mining, and speculation.
+
+My 150,000 credits could pay the oxygen tax for every active player on the server for weeks. I could tip every single person who walked into the Kitchen 1,000 credits and barely make a dent.
+
+**TODO: Do the math - how many people would you need to help to burn through 150k credits when daily expenses are trivial? Did you ever calculate how long it would take to go broke giving away money in a post-scarcity economy?**
+
+I started paying players exorbitant salaries just to roleplay washing dishes. Tipped people thousands of credits just for saying hello. Created elaborate economic schemes to inject money into the economy.
+
+Rich. Liquid. Desperate to find a problem that money could actually solve.
+
+Nothing. The game mechanics had created a perfect welfare state where everyone had enough, and my charity was a solution in search of a problem.
+
+## The Manual Labor Scheme
+
+This is where things got really absurd. I started creating jobs. Not just "here's some money" but actual, honest-to-god employment in a soup kitchen that served imaginary food.
+
+**TODO: Describe some of the ridiculous jobs you created - what were people actually doing for their thousands of credits? How did you justify paying someone 5,000 credits to wash imaginary dishes?**
+
+The meta question here: was I creating content for other players, or was I desperately trying to create a problem that would justify my solution? When you have a hammer, everything looks like a nail. When you have 150,000 credits, everyone looks like they need charity.
+
+## The Community Response
+
+Here's where the story gets interesting: people started playing along. Not because they needed the money, but because they understood what I was trying to do. They saw mO2's desperation to be useful and they met her halfway.
+
+**TODO: How did other players react to your sudden wealth? Did anyone try to scam you? Did people treat you differently? Any memorable interactions where someone clearly understood what you were trying to do and played along?**
+
+**TODO: Did anyone else become "charity competition" - other players trying to give away money or create their own poverty alleviation schemes?**
+
+This is the thing about roleplay communities: sometimes people will join you in your absurdity not because it makes mechanical sense, but because it makes narrative sense. They saw a character having an existential crisis and they decided to help her work through it.
+
+## The Academic Analysis
+
+Let's be honest about what was really happening here: I was treating a roleplay problem like a data science problem. I had been given a dataset (400 names), a budget constraint (150k credits), and an objective function (help people). I was trying to optimize my way out of a narrative dead end.
+
+**TODO: Really dig into this - what would your statistics training say about this problem? How did you catch yourself thinking about utility functions and optimization when you should have been thinking about story and character?**
+
+The fundamental mistake: I was trying to find the needy in a system designed to eliminate need. I was looking for statistical outliers in a dataset that had been pre-filtered for success. Everyone who was still playing had already solved the basic survival problem - that's why they were still playing.
+
+## The Breaking Point
+
+I remember the exact moment when I realized it wasn't going to work. I had just transferred 2,000 credits to someone for roleplaying that they liked their coffee with extra grounds. They immediately spent it on upgrading their lifestyle from "modest" to "comfortable."
+
+Not because they needed to. Because they wanted to humor me.
+
+**TODO: What was that moment like? The realization that people were taking your money as a form of roleplay, not because they needed it?**
+
+That's when I understood: I wasn't running a charity. I was running a performance art piece about charity. The Kitchen had become a theater where we all pretended that money mattered, because we cared about the person who was pretending it mattered.
+
+## The Aftermath (or: Rich and Irrelevant)
+
+The hunt ended not with a solution, but with an understanding. I had proven that you could accidentally become the richest person on the server through pure roleplay. I had also proven that being the richest person on the server meant exactly nothing in a post-scarcity economy.
+
+**TODO: What was the final state of the money? Did you give up? Find a different approach? Does mO2 still have a fortune gathering digital dust?**
+
+**The Meta Question:** How do you run a charity when the system is designed so that no one can fail? When your entire approach - from data analysis to manual job creation - exists outside the game's actual mechanics?
+
+I had started with a simple question: "Who needs help?" and I had learned that sometimes the most important questions don't have answers because they're the wrong questions to begin with.
+
+Next time: what happens when you finally find a crisis that matches your budget, and how having purpose doesn't mean you understand the mechanics.
+
+**TODO: Add any final reflections on what this experience taught you about the intersection of academic training and roleplay, or about trying to solve narrative problems with data.**

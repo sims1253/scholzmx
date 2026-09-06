@@ -9,11 +9,19 @@ const { variant = 'vine', width = 'medium', className = '' } = Astro.props;
 
 const uniqueId = Math.random().toString(36).substring(7);
 
-// Use semantic color tokens via CSS variables
+// Semantic color tokens via CSS variables.
+// Applied as inline styles (not presentation attributes) because color-mix()
+// and var() are not reliably parsed inside stroke/fill attributes.
 const vineColor = 'var(--color-walnut)';
 const leafColor = 'var(--color-accent-secondary)';
 const flowerColor = 'var(--color-sage)';
+const tansyColor = 'var(--color-decorative)';
 const strokeWeight = 3;
+
+// color-mix(in srgb, <base> <pct>%, transparent)
+const mix = (base: string, pct: number) => `color-mix(in srgb, ${base} ${pct}%, transparent)`;
+// Build an inline style string for a paint property (e.g. stroke, fill)
+const paint = (prop: 'stroke' | 'fill', base: string, pct: number) => `${prop}: ${mix(base, pct)};`;
 ---
 
 <div class={`hand-drawn-divider hand-drawn-divider--${width} ${className}`}>
@@ -34,7 +42,7 @@ const strokeWeight = 3;
           <filter id={`dividerShadow-${uniqueId}`} x="-40%" y="-40%" width="180%" height="180%">
             <feGaussianBlur in="SourceAlpha" stdDeviation="1" />
             <feOffset dx="1" dy="1" result="offset" />
-            <feFlood flood-color="rgba(139, 90, 60, 0.2)" />
+            <feFlood flood-color={mix(vineColor, 20)} />
             <feComposite in2="offset" operator="in" />
             <feMerge>
               <feMergeNode />
@@ -46,17 +54,14 @@ const strokeWeight = 3;
         {/* Main vine line */}
         <path
           d="M80,32 Q200,20 400,36 T600,24 T720,32"
-          stroke={`color-mix(in srgb, ${vineColor} 60%, transparent)`}
+          style={paint('stroke', vineColor, 60)}
           stroke-width={strokeWeight}
           fill="none"
           filter={`url(#dividerTexture-${uniqueId})`}
         />
 
         {/* Decorative leaves */}
-        <g
-          fill={`color-mix(in srgb, ${leafColor} 40%, transparent)`}
-          filter={`url(#dividerShadow-${uniqueId})`}
-        >
+        <g style={paint('fill', leafColor, 40)} filter={`url(#dividerShadow-${uniqueId})`}>
           <ellipse cx="260" cy="32" rx="8" ry="4" transform="rotate(30 260 32)" />
           <ellipse
             cx="258"
@@ -64,7 +69,7 @@ const strokeWeight = 3;
             rx="5"
             ry="2.5"
             transform="rotate(30 258 34)"
-            fill={`color-mix(in srgb, ${vineColor} 30%, transparent)`}
+            style={paint('fill', vineColor, 30)}
           />
           <ellipse cx="520" cy="32" rx="7" ry="3.5" transform="rotate(-45 520 32)" />
           <ellipse
@@ -73,12 +78,12 @@ const strokeWeight = 3;
             rx="4"
             ry="2"
             transform="rotate(-45 518 34)"
-            fill={`color-mix(in srgb, ${vineColor} 30%, transparent)`}
+            style={paint('fill', vineColor, 30)}
           />
         </g>
 
         {/* Small decorative dots */}
-        <g fill={`color-mix(in srgb, ${flowerColor} 65%, transparent)`}>
+        <g style={paint('fill', flowerColor, 65)}>
           <circle cx="200" cy="32" r="2" />
           <circle cx="400" cy="32" r="1.5" />
           <circle cx="600" cy="32" r="1.8" />
@@ -104,17 +109,17 @@ const strokeWeight = 3;
 
         <path
           d="M50,12 Q100,8 150,12 T250,12 T350,12"
-          stroke={`color-mix(in srgb, ${vineColor} 50%, transparent)`}
+          style={paint('stroke', vineColor, 50)}
           stroke-width="2"
           fill="none"
           filter={`url(#simpleTexture-${uniqueId})`}
         />
 
         {/* Central botanical element */}
-        <g fill="rgba(90, 107, 71, 0.4)" transform="translate(200, 12)">
-          <circle r="3" />
-          <ellipse rx="8" ry="2" transform="rotate(45)" fill="rgba(139,69,19,0.3)" />
-          <ellipse rx="8" ry="2" transform="rotate(-45)" fill="rgba(139,69,19,0.3)" />
+        <g transform="translate(200, 12)">
+          <circle r="3" style={paint('fill', leafColor, 40)} />
+          <ellipse rx="8" ry="2" transform="rotate(45)" style={paint('fill', vineColor, 30)} />
+          <ellipse rx="8" ry="2" transform="rotate(-45)" style={paint('fill', vineColor, 30)} />
         </g>
       </svg>
     )
@@ -137,8 +142,7 @@ const strokeWeight = 3;
         {/* Central stem (reference spine) */}
         <path
           d="M100,30 Q175,25 250,35 T400,30"
-          id="spine"
-          stroke={`color-mix(in srgb, ${vineColor} 50%, transparent)`}
+          style={paint('stroke', vineColor, 50)}
           stroke-width="3"
           fill="none"
           filter={`url(#botanicalBlur-${uniqueId})`}
@@ -147,8 +151,7 @@ const strokeWeight = 3;
 
         {/* Leaves and flowers aligned to spine tangents */}
         <g
-          fill={`color-mix(in srgb, ${leafColor} 42%, transparent)`}
-          stroke={`color-mix(in srgb, ${vineColor} 25%, transparent)`}
+          style={`${paint('fill', leafColor, 42)} ${paint('stroke', vineColor, 25)}`}
           stroke-width="0.6"
         >
           {/* Left leaf pair: tangent ~ -10deg at x≈150 */}
@@ -159,9 +162,9 @@ const strokeWeight = 3;
 
           {/* Central rosette centered on spine apex (x≈250,y≈35) */}
           <g transform="translate(250,35)">
-            <circle r="6" fill="rgba(168, 181, 160, 0.5)" />
-            <circle r="4" fill="rgba(139,69,19,0.28)" />
-            <circle r="2" fill="rgba(234, 179, 8, 0.55)" />
+            <circle r="6" style={paint('fill', flowerColor, 50)} />
+            <circle r="4" style={paint('fill', vineColor, 28)} />
+            <circle r="2" style={paint('fill', tansyColor, 55)} />
           </g>
 
           {/* Right leaf pair: tangent ~ +10deg at x≈350 */}
@@ -173,7 +176,7 @@ const strokeWeight = 3;
 
         {/* Decorative tendrils arcing from spine with mirrored curvature */}
         <g
-          stroke={`color-mix(in srgb, ${leafColor} 30%, transparent)`}
+          style={paint('stroke', leafColor, 30)}
           stroke-width="1.3"
           fill="none"
           stroke-linecap="round"
@@ -203,7 +206,7 @@ const strokeWeight = 3;
           <filter id={`ornateShadow-${uniqueId}`} x="0%" y="0%" width="120%" height="120%">
             <feGaussianBlur in="SourceAlpha" stdDeviation="2" />
             <feOffset dx="2" dy="2" result="offset" />
-            <feFlood flood-color="rgba(139, 90, 60, 0.15)" />
+            <feFlood flood-color={mix(vineColor, 15)} />
             <feComposite in2="offset" operator="in" />
             <feMerge>
               <feMergeNode />
@@ -215,12 +218,12 @@ const strokeWeight = 3;
         {/* Central decorative element */}
         <g transform="translate(350, 40)" filter={`url(#ornateShadow-${uniqueId})`}>
           {/* Ornate center */}
-          <circle r="12" fill="rgba(90, 107, 71, 0.3)" />
-          <circle r="8" fill="rgba(168, 181, 160, 0.4)" />
-          <circle r="4" fill="rgba(234, 179, 8, 0.6)" />
+          <circle r="12" style={paint('fill', leafColor, 30)} />
+          <circle r="8" style={paint('fill', flowerColor, 40)} />
+          <circle r="4" style={paint('fill', tansyColor, 60)} />
 
           {/* Radiating elements */}
-          <g stroke="rgba(139, 90, 60, 0.5)" stroke-width="2" fill="none">
+          <g style={paint('stroke', vineColor, 50)} stroke-width="2" fill="none">
             <path d="M-20,0 Q-15,-5 -10,0 Q-5,5 0,0" />
             <path d="M20,0 Q15,-5 10,0 Q5,5 0,0" />
             <path d="M0,-20 Q-5,-15 0,-10 Q5,-5 0,0" />
@@ -231,14 +234,14 @@ const strokeWeight = 3;
         {/* Extending vine patterns */}
         <path
           d="M100,40 Q200,30 300,45 Q350,40 400,45 Q500,30 600,40"
-          stroke={`color-mix(in srgb, ${vineColor} 40%, transparent)`}
+          style={paint('stroke', vineColor, 40)}
           stroke-width="2.5"
           fill="none"
           filter={`url(#ornateTexture-${uniqueId})`}
         />
 
         {/* Side decorations */}
-        <g fill="rgba(90, 107, 71, 0.3)" filter={`url(#ornateTexture-${uniqueId})`}>
+        <g style={paint('fill', leafColor, 30)} filter={`url(#ornateTexture-${uniqueId})`}>
           <ellipse cx="150" cy="40" rx="8" ry="4" transform="rotate(20 150 40)" />
           <ellipse cx="550" cy="40" rx="8" ry="4" transform="rotate(-20 550 40)" />
         </g>
@@ -264,7 +267,7 @@ const strokeWeight = 3;
         {/* Sketchy hand-drawn line */}
         <path
           d="M20,15 Q60,12 100,15 T180,14 T260,16 T340,14 T380,15"
-          stroke={`color-mix(in srgb, ${vineColor} 45%, transparent)`}
+          style={paint('stroke', vineColor, 45)}
           stroke-width="1.5"
           fill="none"
           filter={`url(#sketchTexture-${uniqueId})`}
@@ -272,7 +275,7 @@ const strokeWeight = 3;
         />
 
         {/* Tiny sketch elements - like pencil marks */}
-        <g fill={`color-mix(in srgb, ${leafColor} 35%, transparent)`}>
+        <g style={paint('fill', leafColor, 35)}>
           <circle cx="60" cy="15" r="1" />
           <circle cx="140" cy="14" r="0.8" />
           <circle cx="220" cy="15" r="1.2" />
@@ -280,7 +283,7 @@ const strokeWeight = 3;
         </g>
 
         {/* Small cross-hatch marks */}
-        <g stroke={`color-mix(in srgb, ${vineColor} 25%, transparent)`} stroke-width="0.5">
+        <g style={paint('stroke', vineColor, 25)} stroke-width="0.5">
           <line x1="80" y1="12" x2="85" y2="17" />
           <line x1="160" y1="11" x2="165" y2="16" />
           <line x1="240" y1="12" x2="245" y2="17" />
@@ -315,7 +318,7 @@ const strokeWeight = 3;
   .divider-svg {
     width: 100%;
     height: auto;
-    filter: drop-shadow(0 1px 2px rgba(139, 90, 60, 0.1));
+    filter: drop-shadow(0 1px 2px color-mix(in srgb, var(--color-walnut) 10%, transparent));
   }
 
   /* Responsive sizing */

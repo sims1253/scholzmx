@@ -109,7 +109,7 @@ const { maxDepth = 3, className = '' } = Astro.props;
     box-shadow: 0 4px 12px color-mix(in srgb, var(--color-walnut) 6%, transparent);
   }
 
-  .toc-content[aria-expanded='true'] {
+  .toc-content.open {
     max-height: 60vh;
     overflow-y: auto;
     opacity: 1;
@@ -160,11 +160,7 @@ const { maxDepth = 3, className = '' } = Astro.props;
     background: color-mix(in srgb, var(--color-tansy) 10%, transparent);
   }
 
-  .toc-h3 {
-    margin-left: var(--space-lg);
-    font-size: var(--text-xs);
-  }
-
+  .toc-h3,
   .toc-h4 {
     margin-left: var(--space-lg);
     margin-top: var(--space-xxs);
@@ -191,7 +187,7 @@ const { maxDepth = 3, className = '' } = Astro.props;
   /* Desktop: Sidebar position on left */
   @media (min-width: 1400px) {
     .toc-container {
-      position: fixed;
+      position: fixed !important;
       left: calc(50% - var(--measure-prose-serious) / 2 - 280px);
       top: calc(var(--space-lg) + var(--space-sm) + 16px);
       width: 240px;
@@ -232,9 +228,9 @@ const { maxDepth = 3, className = '' } = Astro.props;
   function initTableOfContents() {
     const tocContainer = document.querySelector('.toc-container') as HTMLElement;
     const proseContent = (document.querySelector('#post-body') ||
-                        document.querySelector('#note-body') ||
-                        document.querySelector('#recipe-body') ||
-                        tocContainer?.nextElementSibling?.querySelector('.prose')) as HTMLElement;
+      document.querySelector('#note-body') ||
+      document.querySelector('#recipe-body') ||
+      tocContainer?.nextElementSibling?.querySelector('.prose')) as HTMLElement;
     const tocToggle = document.querySelector('.toc-toggle') as HTMLButtonElement;
     const tocContent = document.querySelector('.toc-content') as HTMLElement;
     const tocList = document.querySelector('.toc-list') as HTMLOListElement;
@@ -249,13 +245,13 @@ const { maxDepth = 3, className = '' } = Astro.props;
       proseContent.querySelectorAll('h2, h3, h4')
     ) as HTMLHeadingElement[];
 
-    if (headings.length < 2) {
+    // Filter headings by max depth
+    const filteredHeadings = headings.filter((h) => parseInt(h.tagName[1]) <= maxDepth);
+
+    if (filteredHeadings.length < 2) {
       // Not enough headings to warrant a TOC
       return;
     }
-
-    // Filter headings by max depth
-    const filteredHeadings = headings.filter((h) => parseInt(h.tagName[1]) <= maxDepth);
 
     // Ensure headings have IDs before building TOC
     filteredHeadings.forEach((h, i) => {
@@ -290,7 +286,7 @@ const { maxDepth = 3, className = '' } = Astro.props;
     function toggle() {
       isExpanded = !isExpanded;
       tocToggle.setAttribute('aria-expanded', String(isExpanded));
-      tocContent.setAttribute('aria-expanded', String(isExpanded));
+      tocContent.classList.toggle('open', isExpanded);
     }
 
     tocToggle.addEventListener('click', toggle);
@@ -306,14 +302,15 @@ const { maxDepth = 3, className = '' } = Astro.props;
       if (target) {
         const offset = 80; // Account for nav
         const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - offset;
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         window.scrollTo({
           top: targetPosition,
-          behavior: 'smooth',
+          behavior: prefersReducedMotion ? 'auto' : 'smooth',
         });
       }
 
       // Close TOC on mobile after selection
-      if (window.innerWidth < 768 && isExpanded) {
+      if (window.matchMedia('(max-width: 1399px)').matches && isExpanded) {
         toggle();
       }
     });
@@ -336,18 +333,22 @@ const { maxDepth = 3, className = '' } = Astro.props;
           const headingPosition = heading.getBoundingClientRect().top + window.pageYOffset;
 
           if (headingPosition <= scrollPosition) {
-            activeHeading = tocList.querySelector(`[data-target="${h.id}"]`);
+            activeHeading = tocList.querySelector(
+              `[data-target="${h.id}"]`
+            ) as HTMLAnchorElement | null;
           }
         });
 
         // Remove active class from all links
         tocList.querySelectorAll('.toc-link.active').forEach((link) => {
           link.classList.remove('active');
+          link.removeAttribute('aria-current');
         });
 
         // Add active class to current link
         if (activeHeading) {
           (activeHeading as HTMLElement).classList.add('active');
+          (activeHeading as HTMLElement).setAttribute('aria-current', 'location');
         }
 
         ticking = false;

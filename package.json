@@ -25,28 +25,32 @@
     "perf:budget": "bun run build && bun run preview & wait-on http://localhost:4321 && bun run lighthouse:ci; kill $!",
     "a11y": "pa11y http://localhost:4321",
     "a11y:wait": "wait-on http://localhost:4321 && bun run a11y",
-    "test:a11y": "bun run build && bun run preview & bun run a11y:wait; kill $!"
+    "a11y:ci": "bunx pa11y-ci --config .pa11yci.json http://localhost:4321/ http://localhost:4321/blog/ http://localhost:4321/research/ http://localhost:4321/projects/ http://localhost:4321/notes/ http://localhost:4321/recipes/hokkaido-dinner-rolls/ http://localhost:4321/blog/2025/01-15-blog-post-features-template/",
+    "test:a11y": "bun run build && bun run preview & wait-on http://localhost:4321 && bun run a11y:ci; kill $!"
   },
   "dependencies": {
-    "@astrojs/check": "0.9.5",
-    "@astrojs/rss": "4.0.14",
-    "astro": "5.16.0",
-    "npm-check-updates": "^18.3.1",
+    "@astrojs/markdown-remark": "^7.2.2",
+    "@astrojs/rss": "^4.0.19",
+    "astro": "^7.1.6",
+    "baseline-browser-mapping": "^2.11.12",
+    "caniuse-lite": "^1.0.30001806",
     "rehype-katex": "^7.0.1",
     "remark-math": "^6.0.0",
     "sharp": "^0.34.5",
     "typescript": "^5.9.3"
   },
   "devDependencies": {
-    "@astrojs/sitemap": "3.6.0",
+    "@astrojs/check": "^0.9.10",
+    "@astrojs/sitemap": "^3.7.3",
     "@lhci/cli": "^0.15.1",
     "@types/node": "^24.10.4",
-    "astro-pagefind": "^1.8.5",
-    "astro-purgecss": "^5.3.0",
+    "astro-pagefind": "^2.0.1",
+    "astro-purgecss": "^7.0.0",
     "lighthouse": "^12.8.2",
-    "lightningcss": "^1.30.2",
+    "npm-check-updates": "^18.3.1",
     "oxlint": "^1.35.0",
     "pa11y": "^9.0.1",
+    "pa11y-ci": "^4.1.1",
     "postcss": "^8.5.6",
     "postcss-html": "^1.8.0",
     "postcss-scss": "^4.0.9",
@@ -55,8 +59,6 @@
     "stylelint": "^16.26.1",
     "stylelint-config-html": "^1.1.0",
     "stylelint-config-standard": "^39.0.1",
-    "tailwindcss": "^4.1.18",
-    "vite-plugin-lightningcss": "^0.0.5",
     "wait-on": "^9.0.3"
   }
 }

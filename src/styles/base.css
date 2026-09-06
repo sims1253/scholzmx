@@ -5,7 +5,6 @@
   --organic-md: 60% 40% 30% 70% / 60% 30% 70% 40%;
   --organic-lg: 30% 70% 70% 30% / 30% 30% 70% 70%;
   --organic-paper: 2px 4px 8px 2px / 4px 2px 8px 4px;
-  --external-excluded-domains: 'scholzmx.com|localhost';
 }
 
 @layer base {
@@ -393,7 +392,7 @@
     text-underline-offset: 0.15em;
   }
 
-  a:focus {
+  a:focus:not(:focus-visible) {
     box-shadow:
       0 0 0 1px color-mix(in srgb, var(--color-moss) 40%, transparent),
       0 0 8px color-mix(in srgb, var(--color-sage) 20%, transparent);
@@ -403,7 +402,6 @@
   }
 
   /* External link indicator - adds ↗ arrow after off-site links */
-  /* Domains listed in --external-excluded-domains are excluded from the indicator */
   a[href^='http']:not([href*='scholzmx.com']):not([href*='localhost']):not(
       .no-external-indicator
     )::after {
@@ -505,13 +503,6 @@
     color: var(--color-ink-dark);
     background-color: var(--color-parchment-light);
     font-weight: 600;
-  }
-
-  /* Performance optimizations */
-  img {
-    /* Reduce layout shift */
-    height: auto;
-    max-width: 100%;
   }
 
   /* Optimize code block rendering */

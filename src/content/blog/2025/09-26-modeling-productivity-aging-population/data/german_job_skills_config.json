@@ -1,0 +1,70 @@
+{
+  "data_sources": {
+    "stepstone": {
+      "name": ["StepStone Job Portal"],
+      "website": ["https://www.stepstone.de/"],
+      "approach": ["Web scraping (with proper permissions)"],
+      "variables": [
+        "Job title and description",
+        "Required skills (technical/soft)",
+        "Experience requirements",
+        "Salary ranges",
+        "Location",
+        "Industry sector"
+      ],
+      "time_period": ["Current postings + historical if available"],
+      "ethical_considerations": ["Respect robots.txt, rate limiting, terms of service"]
+    },
+    "xing": {
+      "name": ["XING Job Network"],
+      "website": ["https://www.xing.com/jobs"],
+      "approach": ["API access if available, otherwise ethical scraping"],
+      "variables": ["Similar to StepStone"],
+      "focus": ["Professional networking jobs"]
+    },
+    "federal_employment_agency": {
+      "name": ["German Federal Employment Agency (Bundesagentur für Arbeit)"],
+      "website": ["https://statistik.arbeitsagentur.de/"],
+      "data_type": ["Official statistics"],
+      "variables": [
+        "Historical skill demand by occupation",
+        "Technology skill premiums",
+        "Occupational employment trends",
+        "Wage statistics by skill level"
+      ],
+      "time_period": ["1990-present"],
+      "access": ["Public statistics portal"]
+    }
+  },
+  "skills_framework": {
+    "technical_skills": [
+      "Programming languages",
+      "Software proficiency",
+      "Digital tools",
+      "Data analysis",
+      "Automation tools"
+    ],
+    "cognitive_skills": [
+      "Problem solving",
+      "Critical thinking",
+      "Decision making",
+      "Learning ability",
+      "Creativity"
+    ],
+    "social_skills": ["Communication", "Teamwork", "Leadership", "Customer service", "Negotiation"],
+    "age_adaptation": [
+      "Technology adoption",
+      "Continuous learning",
+      "Flexibility",
+      "Mentoring abilities",
+      "Experience-based insights"
+    ]
+  },
+  "ethical_guidelines": [
+    "Respect website terms of service",
+    "Use rate limiting to avoid server overload",
+    "Anonymize individual job postings",
+    "Focus on aggregate skill trends",
+    "Cite data sources appropriately"
+  ]
+}

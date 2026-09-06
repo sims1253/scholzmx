@@ -46,6 +46,7 @@ dev.log
 *.log
 production-report.*
 index.html
+*.bak
 
 # Keep source images but ignore Astro's optimized variants
 # (Astro generates these in dist/ and various cache locations)

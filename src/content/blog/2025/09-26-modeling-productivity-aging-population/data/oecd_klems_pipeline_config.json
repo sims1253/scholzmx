@@ -1,0 +1,48 @@
+{
+  "oecd_stan": {
+    "name": ["OECD Structural Analysis Database (STAN)"],
+    "api_base": ["https://stats.oecd.org/restsdmx/sdmx.ashx/GetData/"],
+    "dataset_code": ["STANI4_2016"],
+    "country_code": ["DEU"],
+    "variables": {
+      "PROD_H": ["Labour productivity (GDP per hour worked)"],
+      "PROD_E": ["Labour productivity (GDP per person employed)"],
+      "VA": ["Value added"],
+      "HRSW": ["Hours worked"],
+      "EMPN": ["Number of persons employed"]
+    },
+    "sectors": {
+      "C10T12": ["Food products, beverages and tobacco"],
+      "C13T15": ["Textiles, clothing, leather"],
+      "C16": ["Wood and paper products"],
+      "C17": ["Printing and reproduction"],
+      "C19": ["Coke and refined petroleum"],
+      "C20": ["Chemicals and chemical products"],
+      "C21": ["Pharmaceuticals"],
+      "C22": ["Rubber and plastic products"],
+      "C23": ["Other non-metallic mineral products"],
+      "C24": ["Basic metals"],
+      "C25": ["Fabricated metal products"],
+      "C26": ["Computer, electronic and optical products"],
+      "C27": ["Electrical equipment"],
+      "C28": ["Machinery and equipment n.e.c."],
+      "C29": ["Motor vehicles, trailers and semi-trailers"],
+      "C30": ["Other transport equipment"]
+    }
+  },
+  "eu_klems": {
+    "name": ["EU KLEMS Growth and Productivity Accounts"],
+    "website": ["https://www.euklems.net/"],
+    "data_release": ["2019 release"],
+    "variables": [
+      "Capital services growth",
+      "Labour services growth",
+      "TFP growth",
+      "Technology adoption measures",
+      "ICT capital intensity"
+    ],
+    "time_period": ["1970-2017"],
+    "country": ["Germany"]
+  },
+  "download_function": ["download_oecd_stan"]
+}

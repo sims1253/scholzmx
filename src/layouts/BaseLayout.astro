@@ -20,8 +20,7 @@ import '../styles/modern.css';
 import '../styles/prose.css';
 import '../styles/typography-utils.css';
 import '../styles/dropcap.css';
-import '../styles/tailwind.css'; // Utilities only - preserves existing design
-import '../styles/tailwind-utilities.css'; // Force utility generation
+import '../styles/tailwind-utilities.css'; // Hand-written tw-* utility classes
 import '../styles/margin-notes.css';
 import '../styles/stacked-card.css';
 
@@ -32,11 +31,6 @@ export interface Props {
   addBorders?: boolean;
   footerVariant?: 'garden' | 'kitchen' | 'craft' | 'writing' | 'projects' | 'research' | 'default';
   includeQuoteSection?: boolean;
-  /* Legacy props (for backward-compat) */
-  longform?: boolean;
-  personal?: boolean;
-  contentWidth?: 'default' | 'wide' | 'full';
-  /* New props */
   tone?: 'personal' | 'serious';
   layout?: 'prose' | 'listing' | 'wide' | 'full';
   prose?: boolean;
@@ -50,46 +44,56 @@ const {
   addBorders = true,
   footerVariant = 'default',
   includeQuoteSection = false,
-  /* legacy */
-  longform = false,
-  personal = true,
-  contentWidth = 'default',
-  /* new */
   tone,
   layout,
   prose,
   leading,
 } = Astro.props;
 
-/* Backward-compatible mapping */
-const resolvedTone = tone ?? (personal ? 'personal' : 'serious');
-const isProseLayoutLegacy = longform || contentWidth === 'default';
-const resolvedLayout =
-  layout ??
-  (isProseLayoutLegacy
-    ? 'prose'
-    : contentWidth === 'wide'
-      ? 'wide'
-      : contentWidth === 'full'
-        ? 'full'
-        : 'prose');
-const resolvedProse = prose ?? longform ?? false;
+const resolvedTone = tone ?? 'personal';
+const resolvedLayout = layout ?? 'prose';
+const resolvedProse = prose ?? false;
 const resolvedLeading = leading ?? 'default';
 
 const currentPath = Astro.url.pathname;
+
+/* Absolute URLs for canonical / Open Graph / Twitter cards. Social scrapers
+   require absolute URLs; content `image` may be a root-relative path or an
+   optimized asset path like /_astro/<hash>.webp. */
+const canonicalUrl = new URL(currentPath, Astro.site).toString();
+const socialImageUrl = new URL(image, Astro.site).toString();
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <!-- Apply saved theme before first paint to avoid a light/dark flash (FOUC) -->
+    <script is:inline>
+      (function () {
+        try {
+          var root = document.documentElement;
+          if (root.getAttribute('data-theme')) return;
+          var stored = localStorage.getItem('theme-preference');
+          var theme =
+            stored === 'light' || stored === 'dark'
+              ? stored
+              : window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light';
+          root.setAttribute('data-theme', theme);
+        } catch (e) {
+          /* Storage unavailable (private mode, etc.) — fall back to CSS media query */
+        }
+      })();
+    </script>
     <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
 
     <!-- Canonical URL -->
-    <link rel="canonical" href={`https://www.scholzmx.com${Astro.url.pathname}`} />
+    <link rel="canonical" href={canonicalUrl} />
 
     <!-- RSS Feed autodiscovery -->
     <link
@@ -187,14 +191,7 @@ const currentPath = Astro.url.pathname;
     <!-- Specialty fonts loaded on demand -->
     <link rel="stylesheet" href="/fonts/et-initials.css" />
 
-    <!-- Only preload fonts critical for initial render -->
-    <link
-      rel="preload"
-      href="/fonts/et-book-roman-old-style-figures.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
+    <!-- Secondary weight of the heading font (et-book body font already preloaded by tone above) -->
     <link
       rel="preload"
       href="/fonts/cormorant-garamond-400.woff2"
@@ -209,17 +206,17 @@ const currentPath = Astro.url.pathname;
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content={Astro.url.href} />
+    <meta property="og:url" content={canonicalUrl} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={image} />
+    <meta property="og:image" content={socialImageUrl} />
 
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content={Astro.url.href} />
-    <meta property="twitter:title" content={title} />
-    <meta property="twitter:description" content={description} />
-    <meta property="twitter:image" content={image} />
+    <!-- Twitter (name= is the standard attribute; property= is non-standard) -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalUrl} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImageUrl} />
 
     <!-- Creative Commons License -->
     <link rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/" />
@@ -244,9 +241,9 @@ const currentPath = Astro.url.pathname;
       {
         addBorders && (
           <div>
-            <BotanicalBorder position="top" variant="vine" intensity="light" />
-            <BotanicalBorder position="left" variant="vine" intensity="light" />
-            <BotanicalBorder position="right" variant="vine" intensity="light" />
+            <BotanicalBorder position="top" intensity="light" />
+            <BotanicalBorder position="left" intensity="light" />
+            <BotanicalBorder position="right" intensity="light" />
           </div>
         )
       }
@@ -289,6 +286,12 @@ const currentPath = Astro.url.pathname;
                 href="/research"
                 class={currentPath.startsWith('/research') ? 'nav-link active' : 'nav-link'}
                 aria-current={currentPath.startsWith('/research') ? 'page' : undefined}>Research</a
+              >
+              <span class="nav-separator">·</span>
+              <a
+                href="/notes"
+                class={currentPath.startsWith('/notes') ? 'nav-link active' : 'nav-link'}
+                aria-current={currentPath.startsWith('/notes') ? 'page' : undefined}>Notes</a
               >
               <button
                 id="nav-theme-toggle"
@@ -334,7 +337,7 @@ const currentPath = Astro.url.pathname;
           >
             <slot />
           </div>
-          <div class="notes-container" id="notesContainer"></div>
+          <div class="margin-notes-rail" id="notesContainer"></div>
         </main>
 
         <!-- Illustrated Footer -->

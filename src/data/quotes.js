@@ -4,6 +4,17 @@
  * This file centralizes quote data to avoid duplication between server and client code.
  * Any updates to quotes should be made here to ensure consistency across both contexts.
  */
+/**
+ * Deterministic "quote of the day": stable per day for every visitor, regardless
+ * of deploy/build time. Uses a small LCG seeded by the day-based epoch counter.
+ */
+export function getQuoteOfTheDay(now = Date.now()) {
+  const days = Math.floor(now / 86400000);
+  const x = (days * 9301 + 49297) % 233280;
+  const index = Math.floor((x / 233280) * personalQuotes.length);
+  return personalQuotes[index];
+}
+
 export const personalQuotes = [
   {
     text: 'I am scared! I want to live. I am begging you.',

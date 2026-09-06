@@ -23,10 +23,11 @@ Built with [Astro](https://astro.build) because it lets me write content in Quar
 - **Notes** (`/notes`): Shorter thoughts and observations
 
 ### Key Components
-- `DropCap.astro` - Those decorative first letters you see in posts
-- `PaperTexture.astro` - Subtle background textures for that manuscript feel
+- `ImageFrame.astro` - The single image component (asset optimization + styles/frames)
 - `StackedCard.astro` - Cards with the doodad system (more on that below)
-- `MarginNote.astro` - Sidenotes that appear in the right margin
+- `NoteCardStack.astro` - Card listings for blog/recipes pages
+- `TableOfContents.astro` - Auto-generated heading outlines on long posts
+- Margin notes via `> margin:` blockquotes (no dedicated component)
 
 ### The Doodad System
 Random decorative elements that make cards feel more organic. SVG doodles, background effects, and visual variety that makes the site feel alive. See `DOODAD_GUIDE.md` for the technical details.
@@ -54,7 +55,7 @@ bun run build-blog   # Convert Quarto files to markdown (runs ./build-blog.sh)
 
 # Quality assurance (what CI runs)
 bun run typecheck    # TypeScript checking
-bun run lint:js      # ESLint for JS/TS/Astro files
+bun run lint:js      # oxlint for JS/TS/Astro files
 bun run lint:css     # Stylelint for CSS
 bun run format:check # Prettier formatting check
 bun run quality:check # All of the above
@@ -94,13 +95,13 @@ This means I can push Quarto files and they automatically get rendered with R, o
 ## Architecture Notes
 
 ### Image Optimization
-Images in `src/assets/` get automatic Astro optimization (WebP conversion, responsive sizing, lazy loading). The Quarto build script handles moving generated images to the right location.
+Images in `src/assets/` get automatic Astro optimization (AVIF conversion, responsive sizing, lazy loading). The Quarto build script handles moving generated images to the right location.
 
 ### CSS Strategy
 - Vanilla CSS with modern features (custom properties, container queries, etc.)
 - PurgeCSS removes unused styles in production
 - LightningCSS for optimal minification and modern browser targeting
-- No CSS frameworks - just thoughtful, semantic styling
+- Hand-written `tw-*` utility classes (in `src/styles/tailwind-utilities.css`) provide the small set of layout utilities the components need, mapped to the design system's tokens
 
 ### Performance Philosophy
 - Inline styles are disabled (separate CSS files for better caching)

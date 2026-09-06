@@ -1,0 +1,4 @@
+Method,EPI Range,Standard Deviation,Time Correlation,Coeff of Variation
+Original (Population),0.988 to 1.0081,0.006447,-0.981,0.0064
+Enhanced (Workforce),0.7471 to 1.3817,0.190175,-0.976,0.1902
+Enhanced (Hours),0.7624 to 1.3722,0.18372,-0.971,0.1837

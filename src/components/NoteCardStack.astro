@@ -2,6 +2,7 @@
 import StackedCard from './StackedCard.astro';
 import ImageFrame from './ImageFrame.astro';
 import GridLayout from './GridLayout.astro';
+import type { CardHero } from '../lib/heroImage';
 
 interface CardItem {
   id: string;
@@ -11,23 +12,7 @@ interface CardItem {
   writtenDate?: string;
   updatedDate?: string;
   tags?: string[];
-  hero?:
-    | {
-        kind: 'url';
-        src: string;
-        scale?: number;
-        posX?: number; // -1..1
-        posY?: number; // -1..1
-      }
-    | {
-        kind: 'asset';
-        src: any;
-        width?: number;
-        height?: number;
-        scale?: number;
-        posX?: number;
-        posY?: number;
-      };
+  hero?: CardHero;
   year?: number;
 }
 
@@ -38,6 +23,7 @@ interface Props {
   columns?: 1 | 'auto';
   itemMinWidth?: string;
   aspectRatio?: string; // Aspect ratio for card images (e.g., "8/3", "3/2")
+  tagBasePath?: string; // Base path for tag chip links (e.g. "/blog" or "/recipes")
 }
 
 const {
@@ -47,6 +33,7 @@ const {
   columns = 'auto',
   itemMinWidth,
   aspectRatio = '8/3',
+  tagBasePath = '/blog',
 } = Astro.props as Props;
 ---
 
@@ -69,7 +56,7 @@ const {
           {it.hero && (
             <div class="sc-media" slot="media">
               <ImageFrame
-                src={it.hero.kind === 'url' ? it.hero.src : it.hero.src}
+                src={it.hero.src}
                 alt=""
                 aspectRatio={aspectRatio}
                 style="simple"
@@ -104,7 +91,7 @@ const {
             </div>
             <div class="sc-tags">
               {it.tags?.map((tag) => (
-                <a class="sc-chip" href={`/blog?tag=${encodeURIComponent(tag)}`}>
+                <a class="sc-chip" href={`${tagBasePath}?tag=${encodeURIComponent(tag)}`}>
                   #{tag}
                 </a>
               ))}

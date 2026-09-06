@@ -2,6 +2,12 @@
 
 const MARGIN_NOTES_BREAKPOINT = 1088;
 
+// `> margin:` blockquotes are converted to anchors exactly once, regardless of
+// viewport, so the literal "margin:" prefix is never shown to readers. On narrow
+// viewports the CSS renders these anchors inline; on wide ones MarginNotes
+// positions them in the rail.
+let blockquotesConverted = false;
+
 function convertMarginBlockquotesToAnchors(): void {
   const blockquotes = document.querySelectorAll('.post-body blockquote, .recipe-body blockquote');
   blockquotes.forEach((blockquote) => {
@@ -186,11 +192,17 @@ function cleanupInitListeners(): void {
 
 export function initMarginNotes(): void {
   const tryInit = () => {
+    // Always convert margin blockquotes, even on narrow viewports, so the
+    // note text is shown inline via CSS instead of as a raw "margin:" blockquote.
+    if (!blockquotesConverted) {
+      convertMarginBlockquotesToAnchors();
+      blockquotesConverted = true;
+    }
+
     const mainContent = document.querySelector('.main-content') as HTMLElement;
-    if (mainContent && mainContent.offsetWidth < MARGIN_NOTES_BREAKPOINT) return;
+    if (!mainContent || mainContent.offsetWidth < MARGIN_NOTES_BREAKPOINT) return;
     if (window.__mnotes_inited) return;
 
-    convertMarginBlockquotesToAnchors();
     const anchors = document.querySelectorAll('.note-anchor');
     const container = document.getElementById('notesContainer');
     if (!anchors.length || !container) return;

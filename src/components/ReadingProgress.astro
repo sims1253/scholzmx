@@ -21,6 +21,9 @@ const progressHeight = height;
   style={`--reading-progress-height: ${progressHeight}px;`}
   role="progressbar"
   aria-label="Reading progress"
+  aria-valuemin="0"
+  aria-valuemax="100"
+  aria-valuenow="0"
 >
   <div class="progress-bar" style={`background-color: ${progressColor};`}></div>
   <svg class="progress-leaf" viewBox="0 0 20 20" width="12" height="12" aria-hidden="true">
@@ -125,9 +128,10 @@ const progressHeight = height;
       requestAnimationFrame(() => {
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
         const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-        const progress = Math.min((scrollTop / docHeight) * 100, 100);
+        const progress = docHeight > 0 ? Math.min((scrollTop / docHeight) * 100, 100) : 0;
 
         bar.style.width = `${progress}%`;
+        progressBar.setAttribute('aria-valuenow', String(Math.round(progress)));
 
         if (progress > 5) {
           progressBar.classList.add('has-progress');

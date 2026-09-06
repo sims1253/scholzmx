@@ -154,7 +154,7 @@
   height: clamp(16px, 4vw, 22px);
 }
 
-.torch-toggle:focus {
+.torch-toggle:focus-visible {
   outline: 2px solid var(--color-tansy);
   outline-offset: 2px;
 }
@@ -177,7 +177,7 @@
   justify-content: center;
 }
 
-.nav-link:focus {
+.nav-link:focus-visible {
   outline: 2px solid var(--color-tansy);
   outline-offset: 2px;
 }
@@ -234,7 +234,8 @@
 }
 
 .main-content {
-  padding: var(--space-sm) 0;
+  padding-inline: 0;
+  padding-block: clamp(0.25rem, 1vw, var(--space-sm)) 0;
   flex: 1 1 auto;
   display: block; /* Prevent flex from shrinking inner layout wrappers */
   position: relative; /* required for margin-notes absolute container */
@@ -273,12 +274,7 @@
 }
 
 /* Modern responsive layout using logical properties */
-.main-content {
-  padding-block: clamp(0.25rem, 1vw, var(--space-sm)) 0; /* Minimal top padding on mobile */
-  flex: 1 1 auto;
-  display: block;
-  position: relative;
-}
+/* (merged into the .main-content rule above) */
 
 /* Smart separator visibility using modern CSS */
 @container (max-width: 30rem) {

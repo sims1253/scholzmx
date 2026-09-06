@@ -1,0 +1,50 @@
+{
+  "plan": {
+    "individual_level": {
+      "source": ["SHARE data"],
+      "key_variables": [
+        "cognitive_score_fluid",
+        "cognitive_score_crystallized",
+        "employment_status",
+        "hours_worked",
+        "technology_use_index",
+        "age",
+        "education_level",
+        "health_status"
+      ],
+      "time_structure": ["Individual-year panel"],
+      "sample_period": ["2004-2020"]
+    },
+    "firm_level": {
+      "source": ["OECD STAN + EU KLEMS"],
+      "key_variables": [
+        "productivity_per_hour",
+        "capital_intensity",
+        "technology_adoption_rate",
+        "workforce_age_composition",
+        "sector_code"
+      ],
+      "time_structure": ["Sector-year panel"],
+      "sample_period": ["1970-2020"]
+    },
+    "sector_level": {
+      "source": ["EU KLEMS + German job skills data"],
+      "key_variables": [
+        "tfp_growth",
+        "technology_adoption_lag",
+        "skill_requirements_index",
+        "regulatory_intensity",
+        "competition_measure"
+      ],
+      "time_structure": ["Sector-year panel"],
+      "sample_period": ["1990-2020"]
+    }
+  },
+  "mapping": {
+    "cognitive_aging_trajectories": ["Map SHARE cognitive scores to productivity weights"],
+    "technology_exposure": ["Link individual tech use to sector adoption rates"],
+    "productivity_outcomes": ["Connect workforce composition to sector productivity"],
+    "causal_identification": ["Exploit policy reforms as quasi-experiments"]
+  },
+  "created": ["2025-09-29"]
+}

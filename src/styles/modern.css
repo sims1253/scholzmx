@@ -7,10 +7,11 @@ html {
   scrollbar-gutter: stable both-edges;
 }
 
-/* Fluid root type with safe bounds (keeps existing design scale intact) */
+/* Fluid root type with safe bounds (keeps existing design scale intact).
+   Must honor --font-scale so FontSizeControl scales root-relative text. */
 @supports (font-size: clamp(1rem, 1vw, 2rem)) {
   html {
-    font-size: clamp(18px, 1.1vw + 14px, 21px);
+    font-size: calc(clamp(18px, 1.1vw + 14px, 21px) * var(--font-scale, 1));
   }
 }
 
