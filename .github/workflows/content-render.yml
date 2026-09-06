@@ -78,10 +78,10 @@ jobs:
           fi
 
           # Artifacts expire even when content has not changed. Render again if reuse is impossible.
-          latest_run=$(gh run list --workflow=content-render.yml --status=success --limit=1 --json databaseId --jq '.[0].databaseId // empty')
+          latest_run=$(gh run list --workflow=content-render.yml --status=success --limit=1 --json databaseId --jq '.[0].databaseId // empty') || latest_run=''
           reusable=false
           if [ -n "$latest_run" ]; then
-            reusable=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$latest_run/artifacts" --jq 'any(.artifacts[]; .name == "rendered-content" and .expired == false)')
+            reusable=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$latest_run/artifacts" --jq 'any(.artifacts[]; .name == "rendered-content" and .expired == false)') || reusable=false
           fi
           if [ "$reusable" != "true" ]; then
             echo "No unexpired content artifact; a fresh render is required"

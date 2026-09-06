@@ -8,7 +8,13 @@ const initialQuote = getRandomQuote();
 ---
 
 <div class="quote-container" id="quote-container" aria-live="polite" aria-label="Quote of the day">
-  <button class="quote-interactive-wrapper" type="button" id="quote-wrapper-button">
+  <button
+    class="quote-interactive-wrapper"
+    type="button"
+    aria-labelledby="quote-text quote-author"
+    aria-description="Activate to display another quote."
+    id="quote-wrapper-button"
+  >
     <blockquote class="daily-quote">
       <p class="quote-text" id="quote-text">{initialQuote!.text}</p>
       <footer class="quote-attribution">

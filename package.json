@@ -16,7 +16,7 @@
     "lint:css:fix": "stylelint \"src/**/*.css\" --fix",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
-    "quality:check": "bun run typecheck && bun run lint:js && bun run lint:css && bun run format:check",
+    "quality:check": "bun run typecheck && bun run lint:js && bun run test:lint-rules && bun run lint:css && bun run format:check",
     "quality:fix": "bun run lint:js:fix && bun run lint:css:fix && bun run format",
     "quality:full": "bun run quality:check && bun run test:site",
     "lighthouse": "lighthouse http://127.0.0.1:4321 --output html --output-path ./lighthouse-report.html",
@@ -28,7 +28,8 @@
     "preview:test": "node scripts/preview.mjs",
     "test:browser": "node scripts/browser-smoke.mjs",
     "test:site": "bun run build && start-server-and-test preview:test http://127.0.0.1:4321 test:audits",
-    "test:audits": "bun run test:browser && bun run a11y"
+    "test:audits": "bun run test:browser && bun run a11y",
+    "test:lint-rules": "node --test 'tools/oxlint/anti-slop/**/*.test.ts'"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.3.0",

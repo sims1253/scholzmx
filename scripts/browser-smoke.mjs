@@ -21,6 +21,20 @@ try {
       const response = await page.goto(`${baseURL}${path}`, { waitUntil: 'networkidle0' });
       assert.equal(response.status(), 200, path);
       assert.ok(await page.title(), `Missing title: ${path}`);
+      if (path === '/' && width === 1440) {
+        const client = await page.createCDPSession();
+        const { root } = await client.send('DOM.getDocument');
+        const { nodeId } = await client.send('DOM.querySelector', {
+          nodeId: root.nodeId,
+          selector: '#quote-wrapper-button',
+        });
+        const { nodes } = await client.send('Accessibility.getPartialAXTree', { nodeId });
+        const button = nodes.find((node) => node.role?.value === 'button');
+        const quote = await page.$eval('#quote-text', (element) => element.textContent);
+        assert.ok(button?.name?.value.includes(quote.replace(/\s+/g, ' ').trim()));
+        assert.equal(button.description?.value, 'Activate to display another quote.');
+        await client.detach();
+      }
       if (path === '/') {
         const portraits = await page.$eval('.image-frame.clickable', async (frame) => {
           const bounds = frame.getBoundingClientRect();

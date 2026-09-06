@@ -188,7 +188,7 @@ const socialImageURL = new URL(socialImage, Astro.site).href;
 
     {/* Load the decorative initial before it can change the first paragraph's wrapping. */}
     {
-      (currentPath === '/' || /^\/(recipes|notes)\/.+/.test(currentPath)) && (
+      (currentPath === '/' || /^\/(blog|recipes|notes)\/.+/.test(currentPath)) && (
         <>
           <link
             rel="preload"

@@ -64,6 +64,7 @@ bun run typecheck    # TypeScript checking
 bun run lint:js      # Oxlint with type-aware checks and anti-slop for JS/TS/Astro
 bun run lint:css     # Stylelint for CSS
 bun run format:check # Prettier formatting check
+bun run test:lint-rules # Vendored anti-slop rule tests
 bun run quality:check # All of the above
 
 # Performance monitoring

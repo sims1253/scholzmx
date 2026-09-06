@@ -51,6 +51,9 @@ jobs:
       - name: Oxlint and anti-slop Check
         run: bun run lint:js
 
+      - name: Test anti-slop rules
+        run: bun run test:lint-rules
+
       - name: Stylelint Check
         run: bun run lint:css
 
