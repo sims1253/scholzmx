@@ -257,6 +257,7 @@ jobs:
           name: rendered-content
           if-no-files-found: error
           compression-level: 6
+          include-hidden-files: true
           retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
           path: |
             src/content/blog/*/*/
@@ -315,6 +316,7 @@ jobs:
           name: rendered-content
           if-no-files-found: error
           compression-level: 6
+          include-hidden-files: true
           retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
           path: |
             src/content/blog/*/*/
