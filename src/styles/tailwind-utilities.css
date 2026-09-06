@@ -1,62 +1,61 @@
 /* Force Tailwind to generate the utilities we need */
-@import url('tailwindcss/utilities');
 
 /* Modern responsive grid utilities that work with our fluid design */
-.tw-grid {
+.tw\:grid {
   display: grid;
 }
-.tw-grid-cols-1 {
+.tw\:grid-cols-1 {
   grid-template-columns: repeat(1, minmax(0, 1fr));
 }
-.tw-grid-cols-2 {
+.tw\:grid-cols-2 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
-.tw-grid-cols-3 {
+.tw\:grid-cols-3 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 /* Fluid spacing utilities that complement our design system */
-.tw-gap-fluid {
+.tw\:gap-fluid {
   gap: clamp(1rem, 3vw, 1.5rem);
 }
-.tw-gap-fluid-lg {
+.tw\:gap-fluid-lg {
   gap: clamp(1.5rem, 4vw, 2rem);
 }
 
 /* Modern responsive spacing */
-.tw-p-fluid {
+.tw\:p-fluid {
   padding: clamp(0.75rem, 3vw, 1.5rem);
 }
-.tw-px-fluid {
+.tw\:px-fluid {
   padding-inline: clamp(0.75rem, 3vw, 1.5rem);
 }
-.tw-py-fluid {
+.tw\:py-fluid {
   padding-block: clamp(0.5rem, 2vw, 1rem);
 }
 
 /* Container query utilities for modern responsive design */
-.tw-container-responsive {
+.tw\:container-responsive {
   container-type: inline-size;
 }
 
 /* Logical property utilities */
-.tw-text-start {
+.tw\:text-start {
   text-align: start;
 }
-.tw-text-end {
+.tw\:text-end {
   text-align: end;
 }
 
 /* Modern width utilities */
-.tw-w-full {
+.tw\:w-full {
   width: 100%;
 }
-.tw-w-fluid {
+.tw\:w-fluid {
   width: clamp(20rem, 50vw, 60rem);
 }
 
 /* Touch-friendly utilities */
-.tw-min-touch {
+.tw\:min-touch {
   min-width: 44px;
   min-height: 44px;
 }

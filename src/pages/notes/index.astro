@@ -210,13 +210,13 @@ const formatDate = (date: Date) => {
       radial-gradient(ellipse at 45% 30%, rgba(212, 175, 55, 0.06) 0%, transparent 40%),
       radial-gradient(ellipse at 75% 85%, rgba(139, 90, 60, 0.07) 0%, transparent 35%),
       /* More prominent age spots and foxing */
-        radial-gradient(circle at 15% 40%, rgba(139, 90, 60, 0.18) 1px, transparent 3px),
+      radial-gradient(circle at 15% 40%, rgba(139, 90, 60, 0.18) 1px, transparent 3px),
       radial-gradient(circle at 85% 70%, rgba(139, 90, 60, 0.14) 2px, transparent 4px),
       radial-gradient(circle at 30% 90%, rgba(139, 90, 60, 0.1) 1px, transparent 3px),
       radial-gradient(circle at 70% 15%, rgba(212, 175, 55, 0.08) 1px, transparent 2px),
       radial-gradient(circle at 25% 25%, rgba(139, 90, 60, 0.12) 1px, transparent 2px),
       /* Grainy texture overlay */
-        repeating-linear-gradient(
+      repeating-linear-gradient(
           0deg,
           transparent,
           transparent 2px,
@@ -235,7 +235,7 @@ const formatDate = (date: Date) => {
         transparent 8px
       ),
       /* Base aged parchment with more variation */
-        linear-gradient(135deg, #faf7f0 0%, #f8f4e9 25%, #f6f2e7 50%, #f8f5ef 75%, #faf7f0 100%);
+      linear-gradient(135deg, #faf7f0 0%, #f8f4e9 25%, #f6f2e7 50%, #f8f5ef 75%, #faf7f0 100%);
     background-size:
       800px 600px,
       700px 500px,
@@ -293,7 +293,7 @@ const formatDate = (date: Date) => {
       radial-gradient(ellipse at 30% 20%, rgba(139, 90, 60, 0.05) 0%, transparent 50%),
       radial-gradient(ellipse at 70% 80%, rgba(212, 175, 55, 0.04) 0%, transparent 40%),
       /* Ink stains and age marks */
-        radial-gradient(circle at 10% 30%, rgba(139, 90, 60, 0.08) 1px, transparent 3px),
+      radial-gradient(circle at 10% 30%, rgba(139, 90, 60, 0.08) 1px, transparent 3px),
       radial-gradient(circle at 90% 70%, rgba(139, 90, 60, 0.06) 2px, transparent 4px),
       linear-gradient(135deg, #faf8f2, #f6f2e8);
 
@@ -742,12 +742,12 @@ const formatDate = (date: Date) => {
       radial-gradient(ellipse at 50% 5%, rgba(168, 181, 160, 0.06) 0%, transparent 20%),
       radial-gradient(ellipse at 25% 85%, rgba(139, 90, 60, 0.07) 0%, transparent 35%),
       /* Water stains and foxing */
-        radial-gradient(circle at 30% 40%, rgba(139, 90, 60, 0.08) 2px, transparent 8px),
+      radial-gradient(circle at 30% 40%, rgba(139, 90, 60, 0.08) 2px, transparent 8px),
       radial-gradient(circle at 70% 20%, rgba(139, 90, 60, 0.06) 3px, transparent 10px),
       radial-gradient(circle at 20% 80%, rgba(212, 175, 55, 0.05) 2px, transparent 6px),
       radial-gradient(circle at 80% 60%, rgba(139, 90, 60, 0.04) 4px, transparent 12px),
       /* Rough paper fiber texture */
-        repeating-linear-gradient(
+      repeating-linear-gradient(
           0deg,
           transparent,
           transparent 2px,
@@ -766,7 +766,7 @@ const formatDate = (date: Date) => {
         transparent 6px
       ),
       /* Cross-hatch texture for authenticity */
-        repeating-linear-gradient(
+      repeating-linear-gradient(
           45deg,
           transparent,
           transparent 4px,
@@ -785,7 +785,7 @@ const formatDate = (date: Date) => {
         transparent 18px
       ),
       /* Base aged parchment with natural variation */
-        linear-gradient(125deg, #faf8f2 0%, #f6f3e9 25%, #faf7f0 50%, #f4f0e6 75%, #f8f5ef 100%);
+      linear-gradient(125deg, #faf8f2 0%, #f6f3e9 25%, #faf7f0 50%, #f4f0e6 75%, #f8f5ef 100%);
 
     border: none;
     padding: var(--space-lg);
@@ -1053,7 +1053,7 @@ const formatDate = (date: Date) => {
       ),
       radial-gradient(circle at 45% 15%, rgba(139, 90, 60, 0.08) 1px, transparent 4px),
       /* Quill pen splatters */
-        radial-gradient(
+      radial-gradient(
           circle at 65% 85%,
           rgba(139, 90, 60, 0.18) 0.5px,
           rgba(139, 90, 60, 0.1) 1px,
@@ -1098,7 +1098,7 @@ const formatDate = (date: Date) => {
         transparent 32%
       ),
       /* Water damage marks */
-        radial-gradient(
+      radial-gradient(
           ellipse at 75% 25%,
           rgba(168, 181, 160, 0.08) 0%,
           rgba(168, 181, 160, 0.04) 12%,
@@ -1409,11 +1409,12 @@ const formatDate = (date: Date) => {
 <script>
   // Client-side filtering functionality
   document.addEventListener('DOMContentLoaded', () => {
-    const typeButtons = document.querySelectorAll('[data-type]') as NodeListOf<HTMLButtonElement>;
-    const tagButtons = document.querySelectorAll('[data-tag]') as NodeListOf<HTMLButtonElement>;
-    const notesGrid = document.getElementById('notes-grid') as HTMLElement;
-    const noteCards = Array.from(notesGrid.querySelectorAll('.note-card')) as HTMLElement[];
-    const visibleCountElement = document.getElementById('visible-count') as HTMLElement;
+    const typeButtons = document.querySelectorAll<HTMLButtonElement>('button[data-type]');
+    const tagButtons = document.querySelectorAll<HTMLButtonElement>('button[data-tag]');
+    const notesGrid = document.getElementById('notes-grid');
+    if (!notesGrid) return;
+    const noteCards = Array.from(notesGrid.querySelectorAll<HTMLElement>('.note-card'));
+    const visibleCountElement = document.getElementById('visible-count');
 
     let selectedType = '';
     let selectedTag = '';

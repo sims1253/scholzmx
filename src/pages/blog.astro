@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import NoteCardStack from '../components/NoteCardStack.astro';
-import Search from 'astro-pagefind/components/Search';
+import Search from '../components/Search.astro';
 
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
 const posts = allPosts.sort(
@@ -235,14 +235,14 @@ const tags = Array.from(new Set(posts.flatMap((p) => p.data.tags ?? []))).sort()
     let activeYear = '';
     let activeTag = '';
     function applyFilters() {
-      const cards = document.querySelectorAll('.nc-item');
+      const cards = document.querySelectorAll<HTMLElement>('.nc-item');
       cards.forEach((el) => {
         const year = el.getAttribute('data-year');
         const tagsAttr = el.getAttribute('data-tags') || '';
         const tags = tagsAttr ? tagsAttr.split(',') : [];
         const yearMatch = !activeYear || year === activeYear;
         const tagMatch = !activeTag || tags.includes(activeTag);
-        (el as HTMLElement).style.display = yearMatch && tagMatch ? '' : 'none';
+        el.style.display = yearMatch && tagMatch ? '' : 'none';
       });
     }
     function updateActive() {
@@ -250,7 +250,7 @@ const tags = Array.from(new Set(posts.flatMap((p) => p.data.tags ?? []))).sort()
         const year = btn.getAttribute('data-filter-year') || '';
         btn.classList.toggle('active', year === activeYear);
       });
-      document.querySelectorAll('[data-filter-tag]').forEach((btn) => {
+      document.querySelectorAll<HTMLButtonElement>('[data-filter-tag]').forEach((btn) => {
         const tag = btn.getAttribute('data-filter-tag') || '';
         btn.classList.toggle('active', tag === activeTag);
       });
@@ -262,7 +262,7 @@ const tags = Array.from(new Set(posts.flatMap((p) => p.data.tags ?? []))).sort()
         updateActive();
       });
     });
-    document.querySelectorAll('[data-filter-tag]').forEach((btn) => {
+    document.querySelectorAll<HTMLButtonElement>('[data-filter-tag]').forEach((btn) => {
       btn.addEventListener('click', () => {
         activeTag = btn.getAttribute('data-filter-tag') || '';
         applyFilters();

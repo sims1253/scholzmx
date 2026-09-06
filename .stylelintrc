@@ -4,7 +4,17 @@
     "at-rule-no-unknown": [
       true,
       {
-        "ignoreAtRules": ["layer", "container", "supports"]
+        "ignoreAtRules": [
+          "layer",
+          "container",
+          "supports",
+          "config",
+          "theme",
+          "source",
+          "utility",
+          "variant",
+          "custom-variant"
+        ]
       }
     ],
     "selector-pseudo-class-no-unknown": [
@@ -46,5 +56,13 @@
     "block-no-empty": null,
     "declaration-block-no-shorthand-property-overrides": null
   },
-  "ignoreFiles": ["public/**/*", "dist/**/*", "node_modules/**/*", "src/**/*.astro"]
+  "ignoreFiles": ["public/**/*", "dist/**/*", "node_modules/**/*", "src/**/*.astro"],
+  "overrides": [
+    {
+      "files": ["src/styles/tailwind.css"],
+      "rules": {
+        "import-notation": "string"
+      }
+    }
+  ]
 }

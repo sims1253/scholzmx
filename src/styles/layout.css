@@ -198,8 +198,8 @@
 }
 
 .nav-separator {
-  color: var(--color-lichen);
-  opacity: 0.4;
+  color: var(--color-text-primary);
+  opacity: 1;
   margin-inline: clamp(0px, 1vw, 4px); /* Minimal margin on mobile */
   font-weight: 300;
   font-size: clamp(0.7rem, 2vw, 1rem); /* Smaller on mobile */

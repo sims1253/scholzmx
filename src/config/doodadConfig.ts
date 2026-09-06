@@ -72,7 +72,23 @@ export interface DoodadCategory {
 
 export interface DoodadProps {
   active?: boolean;
-  [key: string]: any;
+  side?: 'left' | 'right';
+  variant?: number;
+  position?: Position;
+  rotation?: number;
+  scale?: number;
+  washX?: number;
+  washY?: number;
+  washAlpha?: number;
+  washTx?: number;
+  washTy?: number;
+  washR1?: number;
+  washR2?: number;
+  washX2?: number;
+  washY2?: number;
+  washBleed?: number;
+  ringScale?: number;
+  ringAlpha?: number;
 }
 
 export interface DoodadResults {

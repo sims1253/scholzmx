@@ -36,7 +36,7 @@ const formatDate = (date: Date) => {
   });
 };
 
-const getTypeColor = (type: string) => {
+const getTypeColor = (type: typeof note.data.type) => {
   const colors = {
     thought: 'var(--color-sage)',
     observation: 'var(--color-moss)',
@@ -44,7 +44,7 @@ const getTypeColor = (type: string) => {
     idea: 'var(--color-gold)',
     reference: 'var(--color-walnut)',
   };
-  return colors[type as keyof typeof colors] || 'var(--color-ink-medium)';
+  return colors[type] || 'var(--color-ink-medium)';
 };
 ---
 

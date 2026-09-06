@@ -1,0 +1,17 @@
+{
+  "defaults": {
+    "chromeLaunchConfig": {
+      "args": ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"]
+    },
+    "timeout": 30000,
+    "standard": "WCAG2AA"
+  },
+  "urls": [
+    "http://127.0.0.1:4321/",
+    "http://127.0.0.1:4321/blog/",
+    "http://127.0.0.1:4321/research/",
+    "http://127.0.0.1:4321/projects/",
+    "http://127.0.0.1:4321/notes/",
+    "http://127.0.0.1:4321/recipes/hokkaido-dinner-rolls/"
+  ]
+}

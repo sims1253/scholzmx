@@ -60,12 +60,12 @@ const publications = [
   },
 ];
 
-const publicationsByYear = publications.reduce(
+const publicationsByYear = publications.reduce<Record<number, (typeof publications)[number][]>>(
   (acc, pub) => {
     (acc[pub.year] ||= []).push(pub);
     return acc;
   },
-  {} as Record<number, (typeof publications)[number][]>
+  {}
 );
 const years = Object.keys(publicationsByYear).sort((a, b) => Number(b) - Number(a));
 ---

@@ -11,6 +11,8 @@ on:
       - '.github/workflows/content-render.yml'
       - 'astro.config.mjs'
       - 'package.json'
+      - 'bun.lock'
+      - '.node-version'
       - 'src/**/*.astro'
       - 'src/**/*.ts'
       - 'src/**/*.js'
@@ -38,7 +40,7 @@ jobs:
       needs-render: ${{ steps.cache-check.outputs.needs-render }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
 
@@ -54,6 +56,8 @@ jobs:
 
       - name: Check if rendering is needed
         id: cache-check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           needs_render=false
           force_rebuild="${{ steps.force-check.outputs.force-rebuild }}"
@@ -70,6 +74,18 @@ jobs:
             echo "Force rebuild requested - will render all content"
             needs_render=true
             echo "needs-render=$needs_render" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Artifacts expire even when content has not changed. Render again if reuse is impossible.
+          latest_run=$(gh run list --workflow=content-render.yml --status=success --limit=1 --json databaseId --jq '.[0].databaseId // empty')
+          reusable=false
+          if [ -n "$latest_run" ]; then
+            reusable=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$latest_run/artifacts" --jq 'any(.artifacts[]; .name == "rendered-content" and .expired == false)')
+          fi
+          if [ "$reusable" != "true" ]; then
+            echo "No unexpired content artifact; a fresh render is required"
+            echo "needs-render=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
@@ -133,10 +149,10 @@ jobs:
     if: needs.check-cache.outputs.needs-render == 'true'
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
 
       - name: Setup Quarto
-        uses: quarto-dev/quarto-actions/setup@v2
+        uses: quarto-dev/quarto-actions/setup@v2.2.0
 
       - name: Setup R
         id: setup-r
@@ -170,7 +186,7 @@ jobs:
             github::sims1253/bayesim
 
       - name: Cache render hashes
-        uses: actions/cache@v4
+        uses: actions/cache@v6.1.0
         with:
           path: .blog-cache
           key: render-cache-${{ runner.os }}-r${{ steps.setup-r.outputs.installed-r-version }}-${{ hashFiles('src/content/**/*.qmd', 'build-blog.sh', '_quarto.yml') }}
@@ -201,7 +217,7 @@ jobs:
       - name: Download previous rendered content
         id: download-previous
         if: ${{ !contains(github.event.head_commit.message, '[force-rebuild]') && steps.latest-render.outputs.run-id != '' }}
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8.0.1
         with:
           name: rendered-content
           path: .
@@ -236,7 +252,7 @@ jobs:
           fi
 
       - name: Upload rendered content artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: rendered-content
           if-no-files-found: error
@@ -244,6 +260,7 @@ jobs:
           retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
           path: |
             src/content/blog/*/*/
+            src/assets/images/blog/
             .blog-cache/
 
   reuse-artifact:
@@ -254,7 +271,7 @@ jobs:
     if: needs.check-cache.outputs.needs-render != 'true'
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
 
       - name: Find last successful render run
         id: latest-render
@@ -275,7 +292,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download rendered content from previous run
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8.0.1
         with:
           name: rendered-content
           path: .
@@ -293,7 +310,7 @@ jobs:
           echo "✓ Reusing $count rendered markdown files"
 
       - name: Re-upload rendered content artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: rendered-content
           if-no-files-found: error
@@ -301,4 +318,5 @@ jobs:
           retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
           path: |
             src/content/blog/*/*/
+            src/assets/images/blog/
             .blog-cache/

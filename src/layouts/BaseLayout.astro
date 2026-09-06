@@ -1,4 +1,6 @@
 ---
+import { getImage } from 'astro:assets';
+import portrait from '../assets/images/homepage/portrait.jpg';
 import BotanicalBorder from '../components/BotanicalBorder.astro';
 import IllustratedFooter from '../components/IllustratedFooter.astro';
 import BackToTop from '../components/BackToTop.astro';
@@ -44,7 +46,7 @@ export interface Props {
 const {
   title,
   description = 'A digital garden and personal website - thoughtful, slow web principles with a warm, botanical aesthetic.',
-  image = '/img/portrait-DY3LVcsu_ZVN2ds.webp',
+  image,
   addBorders = true,
   footerVariant = 'default',
   includeQuoteSection = false,
@@ -75,6 +77,8 @@ const resolvedProse = prose ?? longform ?? false;
 const resolvedLeading = leading ?? 'default';
 
 const currentPath = Astro.url.pathname;
+const socialImage = image ?? (await getImage({ src: portrait, width: 1200, format: 'webp' })).src;
+const socialImageURL = new URL(socialImage, Astro.site).href;
 ---
 
 <!doctype html>
@@ -210,14 +214,14 @@ const currentPath = Astro.url.pathname;
     <meta property="og:url" content={Astro.url.href} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={image} />
+    <meta property="og:image" content={socialImageURL} />
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content={Astro.url.href} />
     <meta property="twitter:title" content={title} />
     <meta property="twitter:description" content={description} />
-    <meta property="twitter:image" content={image} />
+    <meta property="twitter:image" content={socialImageURL} />
 
     <!-- Creative Commons License -->
     <link rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/" />
@@ -249,12 +253,12 @@ const currentPath = Astro.url.pathname;
       <!-- Navigation and Content in scrollable area -->
       <div class="nav-and-content-area">
         <nav
-          class="page-nav tw-w-full"
+          class="page-nav tw:w-full"
           role="navigation"
           aria-label="Main navigation"
           id="main-navigation"
         >
-          <div class="nav-content nav-wide tw-mx-auto">
+          <div class="nav-content nav-wide tw:mx-auto">
             <div class="nav-brand">
               <a href="/" class="site-logo">
                 <span class="logo-text">Grotto</span>
@@ -267,19 +271,19 @@ const currentPath = Astro.url.pathname;
                 class={currentPath.startsWith('/blog') ? 'nav-link active' : 'nav-link'}
                 aria-current={currentPath.startsWith('/blog') ? 'page' : undefined}>Blog</a
               >
-              <span class="nav-separator">·</span>
+              <span class="nav-separator" aria-hidden="true">·</span>
               <a
                 href="/projects"
                 class={currentPath.startsWith('/projects') ? 'nav-link active' : 'nav-link'}
                 aria-current={currentPath.startsWith('/projects') ? 'page' : undefined}>Projects</a
               >
-              <span class="nav-separator">·</span>
+              <span class="nav-separator" aria-hidden="true">·</span>
               <a
                 href="/recipes"
                 class={currentPath.startsWith('/recipes') ? 'nav-link active' : 'nav-link'}
                 aria-current={currentPath.startsWith('/recipes') ? 'page' : undefined}>Recipes</a
               >
-              <span class="nav-separator">·</span>
+              <span class="nav-separator" aria-hidden="true">·</span>
               <a
                 href="/research"
                 class={currentPath.startsWith('/research') ? 'nav-link active' : 'nav-link'}

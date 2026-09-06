@@ -1,5 +1,5 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import FaintLineDivider from '../../components/FaintLineDivider.astro';
 import ImageFrame from '../../components/ImageFrame.astro';
@@ -14,7 +14,7 @@ export async function getStaticPaths() {
 }
 
 // Helper function to get related posts based on tags
-const getRelatedPosts = async (currentPost: any) => {
+const getRelatedPosts = async (currentPost: CollectionEntry<'blog'>) => {
   const allPosts = await getCollection('blog');
   const currentTags = currentPost.data.tags || [];
 
@@ -33,7 +33,7 @@ const getRelatedPosts = async (currentPost: any) => {
 };
 
 // Helper function to get previous and next posts
-const getAdjacentPosts = async (currentPost: any) => {
+const getAdjacentPosts = async (currentPost: CollectionEntry<'blog'>) => {
   const allPosts = await getCollection('blog');
   const publishedPosts = allPosts
     .filter((post) => !post.data.draft)
@@ -68,9 +68,11 @@ const getReadingTime = (content: string): string => {
 
 const readingTime = getReadingTime(post.body || '');
 
-type HeroImageInput = string | { src: string; [key: string]: unknown } | null | undefined;
+type HeroImageInput = CollectionEntry<'blog'>['data']['heroImage'];
 
 const mapHeroImage = (heroImage: HeroImageInput, scale?: number, posX?: number, posY?: number) => {
+  // The collection schema validates the string/asset union before this point.
+  // oxlint-disable-next-line anti-slop/no-runtime-typeof
   if (typeof heroImage === 'string') {
     return {
       kind: 'url' as const,

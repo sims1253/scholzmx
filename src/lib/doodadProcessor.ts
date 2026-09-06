@@ -5,7 +5,7 @@
  * based on the configuration system.
  */
 
-import type { DoodadCategory, DoodadResults } from '../config/doodadConfig';
+import type { DoodadCategory, DoodadResults, DoodadItem } from '../config/doodadConfig';
 
 export interface RngFunctions {
   random: () => number;
@@ -112,7 +112,7 @@ export function extractDoodadsByKind(
   const itemsOfKind = [];
 
   // Build lookup map for item metadata
-  const itemLookup = new Map();
+  const itemLookup = new Map<string, DoodadItem>();
   for (const category of categories) {
     for (const item of category.items) {
       itemLookup.set(item.id, item);

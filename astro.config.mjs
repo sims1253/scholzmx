@@ -3,13 +3,16 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
-import lightningcss from 'vite-plugin-lightningcss';
+import { unified } from '@astrojs/markdown-remark';
 import purgecss from 'astro-purgecss';
 import pagefind from 'astro-pagefind';
+import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://www.scholzmx.com',
+  // Preserve the existing spaces between inline elements across the Astro 7 upgrade.
+  compressHTML: true,
   redirects: {
     // Preserve legacy blog post URLs from live site
     '/post/building-bayesim-intro/': '/blog/2023/04-26-building-bayesim/',
@@ -39,6 +42,8 @@ export default defineConfig({
       safelist: [
         // Keep all CSS custom properties (variables)
         /^--/,
+        /^tw:/,
+        /^pagefind-/,
         // Keep classes that might be added dynamically by JavaScript
         'active',
         'focus',
@@ -124,8 +129,7 @@ export default defineConfig({
 
   // Use Astro's native markdown processing with math support and Gruvbox themes
   markdown: {
-    remarkPlugins: [remarkMath],
-    rehypePlugins: [rehypeKatex],
+    processor: unified({ remarkPlugins: [remarkMath], rehypePlugins: [rehypeKatex] }),
     shikiConfig: {
       themes: {
         light: 'kanagawa-lotus',
@@ -143,36 +147,21 @@ export default defineConfig({
 
   // Reduce bundle size and improve loading
   vite: {
-    plugins: [
-      lightningcss({
-        minify: true,
-        targets: {
-          // Support modern browsers for better performance
-          chrome: 100,
-          firefox: 100,
-          safari: 15,
-          edge: 100,
-        },
-      }),
-    ],
-    server: {
-      host: true,
-      watch: {
-        usePolling: true,
-        interval: 1000,
+    plugins: [tailwindcss()],
+    css: {
+      transformer: 'lightningcss',
+      lightningcss: {
+        targets: { chrome: 100 << 16, firefox: 100 << 16, safari: 15 << 16, edge: 100 << 16 },
       },
     },
     build: {
       // Enable CSS code splitting
       cssCodeSplit: true,
       // Optimize build performance
-      minify: 'esbuild',
-      rollupOptions: {
+      cssMinify: 'lightningcss',
+      rolldownOptions: {
         output: {
           // Optimize chunk size and reduce main thread blocking
-          manualChunks: {
-            // Separate vendor chunks for better caching
-          },
           assetFileNames: (assetInfo) => {
             const name =
               assetInfo && assetInfo.names && assetInfo.names[0] ? assetInfo.names[0] : '';

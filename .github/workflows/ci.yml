@@ -20,15 +20,20 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
+
+      - name: Setup Node
+        uses: actions/setup-node@v7.0.0
+        with:
+          node-version-file: .node-version
 
       - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+        uses: oven-sh/setup-bun@v2.2.0
         with:
-          bun-version: latest
+          bun-version-file: package.json
 
       - name: Cache Bun dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v6.1.0
         with:
           path: |
             ~/.bun/install/cache
@@ -43,7 +48,7 @@ jobs:
       - name: TypeScript Check
         run: bun run typecheck
 
-      - name: ESLint Check
+      - name: Oxlint and anti-slop Check
         run: bun run lint:js
 
       - name: Stylelint Check
@@ -55,15 +60,6 @@ jobs:
       - name: Build Test
         run: bun run build
 
-      - name: Quality Summary
-        if: always()
-        run: |
-          echo "## Code Quality Results" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
-          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| TypeScript | ${{ steps.*.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
-
   accessibility-test:
     name: Accessibility Testing
     runs-on: ubuntu-latest
@@ -71,15 +67,20 @@ jobs:
     needs: code-quality
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
+
+      - name: Setup Node
+        uses: actions/setup-node@v7.0.0
+        with:
+          node-version-file: .node-version
 
       - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+        uses: oven-sh/setup-bun@v2.2.0
         with:
-          bun-version: latest
+          bun-version-file: package.json
 
       - name: Cache Bun dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v6.1.0
         with:
           path: |
             ~/.bun/install/cache
@@ -91,5 +92,13 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Build and Test Accessibility
-        run: bun run test:a11y
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@v2.2.0
+        id: chrome
+        with:
+          chrome-version: stable
+
+      - name: Build, Browser Smoke, and Accessibility Tests
+        env:
+          PUPPETEER_EXECUTABLE_PATH: ${{ steps.chrome.outputs.chrome-path }}
+        run: bun run test:site
