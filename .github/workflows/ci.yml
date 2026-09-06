@@ -5,103 +5,103 @@ on:
     branches: [main, master]
   pull_request:
     branches: [main, master]
+  workflow_dispatch:
+    inputs:
+      force-render:
+        description: Render every Quarto post without reusing the content cache
+        type: boolean
+        default: false
 
 permissions:
   contents: read
 
 concurrency:
-  group: 'ci-${{ github.ref }}'
-  cancel-in-progress: true
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  automation:
+    name: Workflow and render tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Lint GitHub Actions workflows
+        uses: docker://rhysd/actionlint:1.7.12
+        with:
+          args: -color
+      - name: Test render failures and artifact isolation
+        run: python3 -m unittest discover -s scripts/tests -v
+
   code-quality:
     name: Code Quality Checks
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v7.0.1
-
-      - name: Setup Node
-        uses: actions/setup-node@v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          node-version-file: .node-version
+          persist-credentials: false
+      - uses: ./.github/actions/setup-site
+      - run: bun run quality:check
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2.2.0
-        with:
-          bun-version-file: package.json
+  render:
+    uses: ./.github/workflows/content-render.yml
+    with:
+      force-render: ${{ inputs.force-render || false }}
 
-      - name: Cache Bun dependencies
-        uses: actions/cache@v6.1.0
-        with:
-          path: |
-            ~/.bun/install/cache
-            ~/.cache/bun
-          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock*') }}
-          restore-keys: |
-            ${{ runner.os }}-bun-
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: TypeScript Check
-        run: bun run typecheck
-
-      - name: Oxlint and anti-slop Check
-        run: bun run lint:js
-
-      - name: Test anti-slop rules
-        run: bun run test:lint-rules
-
-      - name: Stylelint Check
-        run: bun run lint:css
-
-      - name: Prettier Check
-        run: bun run format:check
-
-      - name: Build Test
-        run: bun run build
-
-  accessibility-test:
+  site:
     name: Accessibility Testing
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    needs: code-quality
+    needs: render
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v7.0.1
-
-      - name: Setup Node
-        uses: actions/setup-node@v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          node-version-file: .node-version
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2.2.0
+          persist-credentials: false
+      - uses: ./.github/actions/setup-site
+      - name: Download this run's generated content
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
-          bun-version-file: package.json
-
-      - name: Cache Bun dependencies
-        uses: actions/cache@v6.1.0
-        with:
-          path: |
-            ~/.bun/install/cache
-            ~/.cache/bun
-          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock*') }}
-          restore-keys: |
-            ${{ runner.os }}-bun-
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
+          name: rendered-content
+          path: .rendered-content
+      - name: Restore generated files and verify every Quarto post
+        run: python3 scripts/render-content.py restore
+      - name: Check the complete content collection
+        run: bun run typecheck
       - name: Setup Chrome
-        uses: browser-actions/setup-chrome@v2.2.0
+        uses: browser-actions/setup-chrome@48ad923757ca74d66703209fe939badbdf80f2f4 # v2.2.0
         id: chrome
         with:
           chrome-version: stable
-
-      - name: Build, Browser Smoke, and Accessibility Tests
+      - name: Build once and test the complete site
         env:
           PUPPETEER_EXECUTABLE_PATH: ${{ steps.chrome.outputs.chrome-path }}
         run: bun run test:site
+      - name: Upload the tested site
+        if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: dist
+          retention-days: 7
+
+  ci-passed:
+    name: CI passed
+    if: always()
+    needs: [automation, code-quality, render, site]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 1
+    steps:
+      - name: Require every check to pass
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: echo "$RESULTS" | jq -e 'all(.[]; .result == "success")'
+
+  deploy:
+    needs: ci-passed
+    if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    permissions:
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/deploy.yml

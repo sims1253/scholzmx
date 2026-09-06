@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
+import { globSync } from 'node:fs';
 import puppeteer from 'puppeteer';
 
-const baseURL = 'http://127.0.0.1:4321';
+const baseURL = process.env.SITE_TEST_URL || 'http://127.0.0.1:4321';
 const browser = await puppeteer.launch({
   headless: true,
   args: ['--no-sandbox'],
@@ -14,7 +15,10 @@ try {
   page.on('response', (response) => {
     if (response.status() >= 400) errors.push(`${response.status()} ${response.url()}`);
   });
-  const paths = ['/', '/blog/', '/recipes/', '/notes/', '/research/', '/projects/'];
+  const blogPaths = [...globSync('**/index.html', { cwd: 'dist/blog' })]
+    .filter((path) => path !== 'index.html')
+    .map((path) => `/blog/${path.replace(/index\.html$/, '')}`);
+  const paths = ['/', '/blog/', '/recipes/', '/notes/', '/research/', '/projects/', ...blogPaths];
   for (const width of [1440, 1280, 390]) {
     await page.setViewport({ width, height: 844 });
     for (const path of paths) {

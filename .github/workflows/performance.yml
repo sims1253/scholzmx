@@ -2,146 +2,87 @@ name: Performance Monitoring
 
 on:
   workflow_run:
-    workflows: ['Deploy to GitHub Pages']
+    workflows: ['Code Quality CI']
     types: [completed]
     branches: [main, master]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 concurrency:
-  group: 'performance-${{ github.ref }}'
+  group: performance-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  # Define audited pages centrally - easier to maintain
-  AUDIT_PATHS: '/ /blog/ /research/ /projects/ /notes/ /blog/2025/01-15-blog-post-features-template/ /recipes/hokkaido-dinner-rolls/'
-
 jobs:
-  lighthouse:
-    name: Lighthouse Performance Audit
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    if: |
+  audit:
+    name: Audit deployed site
+    if: >-
       github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
-    outputs:
-      base-url: ${{ steps.site.outputs.base-url }}
+      (github.event.workflow_run.conclusion == 'success' &&
+      (github.event.workflow_run.event == 'push' || github.event.workflow_run.event == 'workflow_dispatch'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v7.0.1
-
-      - name: Resolve deployed site URL
-        id: site
-        run: |
-          if [ -f public/CNAME ]; then
-            domain=$(cat public/CNAME | tr -d '\n' | tr -d '\r')
-            base_url="https://$domain"
-          else
-            owner="${{ github.repository_owner }}"
-            repo="${{ github.event.repository.name }}"
-            base_url="https://$owner.github.io/$repo"
-          fi
-          echo "base-url=$base_url" >> $GITHUB_OUTPUT
-          echo "Site URL: $base_url"
-
-      - name: Build Lighthouse URL list
-        id: urls
-        run: |
-          base_url="${{ steps.site.outputs.base-url }}"
-          urls=""
-          for path in $AUDIT_PATHS; do
-            urls="${urls}${base_url}${path}"$'\n'
-          done
-          # Write to file for the action (handles newlines better)
-          echo "$urls" > /tmp/lighthouse-urls.txt
-          echo "URLs to audit:"
-          cat /tmp/lighthouse-urls.txt
-
-      - name: Run Lighthouse CI Audit
-        uses: treosh/lighthouse-ci-action@12.6.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          urls: |
-            ${{ steps.site.outputs.base-url }}/
-            ${{ steps.site.outputs.base-url }}/blog/
-            ${{ steps.site.outputs.base-url }}/research/
-            ${{ steps.site.outputs.base-url }}/projects/
-            ${{ steps.site.outputs.base-url }}/notes/
-            ${{ steps.site.outputs.base-url }}/blog/2025/01-15-blog-post-features-template/
-            ${{ steps.site.outputs.base-url }}/recipes/hokkaido-dinner-rolls/
-          configPath: .lighthouserc.cjs
-          budgetPath: .lighthouse-budget.json
-          uploadArtifacts: true
-          temporaryPublicStorage: true
-
-      - name: Performance Summary
-        if: always()
-        run: |
-          echo "## Lighthouse Audit Results" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Site:** ${{ steps.site.outputs.base-url }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-          if [ -f .lighthouseci/manifest.json ]; then
-            echo "| Page | Perf | A11y | Best Practices | SEO |" >> $GITHUB_STEP_SUMMARY
-            echo "|------|------|------|----------------|-----|" >> $GITHUB_STEP_SUMMARY
-
-            jq -r '.[] | "\(.url)|\(.summary.performance)|\(.summary.accessibility)|\(.summary["best-practices"])|\(.summary.seo)"' .lighthouseci/manifest.json | while IFS='|' read -r url perf a11y bp seo; do
-              path=$(echo "$url" | sed "s|${{ steps.site.outputs.base-url }}||")
-              [ -z "$path" ] && path="/"
-              perf_pct=$(awk "BEGIN {printf \"%.0f\", $perf * 100}")
-              a11y_pct=$(awk "BEGIN {printf \"%.0f\", $a11y * 100}")
-              bp_pct=$(awk "BEGIN {printf \"%.0f\", $bp * 100}")
-              seo_pct=$(awk "BEGIN {printf \"%.0f\", $seo * 100}")
-              echo "| \`$path\` | $perf_pct | $a11y_pct | $bp_pct | $seo_pct |" >> $GITHUB_STEP_SUMMARY
-            done
-
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "Targets: Performance >= 90, others >= 80" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "No Lighthouse results available" >> $GITHUB_STEP_SUMMARY
-          fi
-
-  accessibility:
-    name: Deep Accessibility Audit
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    needs: lighthouse
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v7.0.1
-
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-site
       - name: Setup Chrome
-        uses: browser-actions/setup-chrome@v2.2.0
-        id: setup-chrome
+        uses: browser-actions/setup-chrome@48ad923757ca74d66703209fe939badbdf80f2f4 # v2.2.0
+        id: chrome
         with:
           chrome-version: stable
-
-      - name: Setup Node
-        uses: actions/setup-node@v7.0.0
-        with:
-          node-version-file: .node-version
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2.2.0
-        with:
-          bun-version-file: package.json
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Test accessibility with Pa11y CI
+      - name: Resolve audit URLs
         env:
-          PUPPETEER_EXECUTABLE_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
+          REPOSITORY: ${{ github.repository }}
         run: |
-          set -o pipefail
-          bunx --no-install pa11y-ci --config .pa11yci.json 2>&1 | tee /tmp/pa11y-output.txt
-
-      - name: Accessibility Summary
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          from urllib.parse import urlsplit
+          owner, repo = os.environ['REPOSITORY'].split('/')
+          cname = Path('public/CNAME')
+          if cname.exists():
+              base = 'https://' + cname.read_text().strip()
+          else:
+              base = f'https://{owner}.github.io'
+              if repo.lower() != f'{owner}.github.io'.lower():
+                  base += '/' + repo
+          config = json.loads(Path('.pa11yci.json').read_text())
+          config['urls'] = [base + urlsplit(url).path for url in config['urls']]
+          Path('/tmp/pa11yci.json').write_text(json.dumps(config))
+          PY
+      - name: Lighthouse budgets
+        env:
+          CHROME_PATH: ${{ steps.chrome.outputs.chrome-path }}
+        run: |
+          mapfile -t urls < <(jq -r '.urls[] | "--url=" + .' /tmp/pa11yci.json)
+          bunx --no-install lhci autorun --config=.lighthouserc.cjs "${urls[@]}"
+      - name: Accessibility audit
+        if: ${{ !cancelled() && steps.chrome.outcome == 'success' }}
+        env:
+          PUPPETEER_EXECUTABLE_PATH: ${{ steps.chrome.outputs.chrome-path }}
+        run: bunx --no-install pa11y-ci --config /tmp/pa11yci.json 2>&1 | tee /tmp/pa11y-output.txt
+      - name: Save audit reports
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: production-audits
+          path: |
+            .lighthouseci/
+            /tmp/pa11y-output.txt
+          include-hidden-files: true
+          retention-days: 14
+      - name: Audit summary
         if: always()
         run: |
-          echo "## Accessibility Audit (Pa11y CI)" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          cat /tmp/pa11y-output.txt >> $GITHUB_STEP_SUMMARY 2>/dev/null || echo "No results available"
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Standard: WCAG 2.1 AA" >> $GITHUB_STEP_SUMMARY
+          {
+            echo '## Production audits'
+            echo 'Lighthouse reports are attached in the production-audits artifact.'
+            echo '### Pa11y (WCAG 2 AA)'
+            echo '```'
+            cat /tmp/pa11y-output.txt 2>/dev/null || echo 'No Pa11y results available.'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

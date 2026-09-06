@@ -95,3 +95,7 @@ src/content/blog/**/*.png
 # Local performance reports
 .lighthouseci/
 lighthouse-report.html
+
+# CI render staging and Python bytecode
+.rendered-content/
+__pycache__/
