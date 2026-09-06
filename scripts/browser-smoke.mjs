@@ -39,6 +39,7 @@ try {
             const top = rect.top + (rect.height - paintedHeight) / 2;
             results.push({
               ratio,
+              paintedBounds: [left - bounds.left, top - bounds.top, paintedWidth, paintedHeight],
               coversFrame:
                 left <= bounds.left + 1 &&
                 left + paintedWidth >= bounds.right - 1 &&
@@ -53,6 +54,25 @@ try {
           portraits.every((portrait) => portrait.coversFrame),
           `Portrait gap at ${width}px`
         );
+        // Painted bounds measured on the live homepage; allow one pixel for image resize rounding.
+        const liveFraming =
+          width === 390
+            ? [
+                [-5.2, -13.328, 130.4, 173.6],
+                [-18.71, -3.5, 139.419, 210],
+              ]
+            : [
+                [-12.35, -28.808, 224.7, 299.6],
+                [-30, -5.75, 230, 345],
+              ];
+        for (const [index, portrait] of portraits.entries()) {
+          for (const [dimension, value] of portrait.paintedBounds.entries()) {
+            assert.ok(
+              Math.abs(value - liveFraming[index][dimension]) < 1,
+              `Portrait ${index} framing differs from live at ${width}px`
+            );
+          }
+        }
         // The optimized assets must retain the original 3840×5120 and 1066×1600 ratios.
         assert.ok(Math.abs(portraits[0].ratio - 3840 / 5120) < 0.01);
         assert.ok(Math.abs(portraits[1].ratio - 1066 / 1600) < 0.01);
