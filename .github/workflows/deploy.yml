@@ -1,191 +1,25 @@
 name: Deploy to GitHub Pages
 
 on:
-  workflow_run:
-    workflows: ['Content Render (Quarto → Markdown)']
-    types: [completed]
-    branches: [main, master]
-  workflow_dispatch:
+  workflow_call:
 
-permissions:
-  contents: read
-  actions: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: 'deploy-${{ github.ref }}'
-  cancel-in-progress: true
-
-env:
-  ARTIFACT_RETENTION_DAYS: 7
+permissions: {}
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    if: |
-      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') ||
-      (github.event_name == 'workflow_dispatch')
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v7.0.1
-        with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
-
-      - name: Setup Node
-        uses: actions/setup-node@v7.0.0
-        with:
-          node-version-file: .node-version
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2.2.0
-        with:
-          bun-version-file: package.json
-
-      - name: Cache Bun dependencies
-        uses: actions/cache@v6.1.0
-        with:
-          path: |
-            ~/.bun/install/cache
-            ~/.cache/bun
-          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock*') }}
-          restore-keys: |
-            ${{ runner.os }}-bun-
-
-      - name: Install JavaScript dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Get content render run ID
-        id: render-run
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_run" ]; then
-            run_id="${{ github.event.workflow_run.id }}"
-            echo "Using triggering workflow run: $run_id"
-          else
-            run_id=$(gh run list \
-              --workflow="Content Render (Quarto → Markdown)" \
-              --status=success \
-              --limit=1 \
-              --json=databaseId \
-              --jq='.[0].databaseId // empty')
-            
-            if [ -z "$run_id" ]; then
-              echo "::error::No successful render run found"
-              exit 1
-            fi
-            echo "Using latest successful run: $run_id"
-          fi
-          echo "run-id=$run_id" >> $GITHUB_OUTPUT
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Download rendered content
-        id: download-content
-        uses: actions/download-artifact@v8.0.1
-        with:
-          name: rendered-content
-          path: rendered
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ github.repository }}
-          run-id: ${{ steps.render-run.outputs.run-id }}
-
-      - name: Verify downloaded content
-        id: verify-content
-        run: |
-          count=$(find rendered/src/content/blog -path '*/index.md' -type f 2>/dev/null | wc -l || echo 0)
-          if [ "$count" -eq 0 ]; then
-            echo "::warning::No markdown content in primary artifact"
-            echo "has-content=false" >> $GITHUB_OUTPUT
-          else
-            echo "✓ Found $count rendered markdown files"
-            echo "has-content=true" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Fallback - Find alternative render run
-        id: fallback-run
-        if: steps.verify-content.outputs.has-content != 'true'
-        run: |
-          echo "::warning::Primary artifact empty, searching for fallback..."
-          fallback_run=$(gh run list \
-            --workflow="Content Render (Quarto → Markdown)" \
-            --status=success \
-            --limit=5 \
-            --json=databaseId \
-            --jq="map(select(.databaseId != ${{ steps.render-run.outputs.run-id }})) | .[0].databaseId // empty" || echo "")
-
-          if [ -z "$fallback_run" ]; then
-            echo "::error::No fallback render run available"
-            exit 1
-          fi
-
-          echo "Falling back to run: $fallback_run"
-          echo "run-id=$fallback_run" >> $GITHUB_OUTPUT
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Fallback - Download rendered content
-        if: steps.verify-content.outputs.has-content != 'true' && steps.fallback-run.outputs.run-id != ''
-        uses: actions/download-artifact@v8.0.1
-        with:
-          name: rendered-content
-          path: rendered
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ github.repository }}
-          run-id: ${{ steps.fallback-run.outputs.run-id }}
-
-      - name: Merge rendered blog content
-        run: |
-          set -e
-          if [ ! -d rendered/src/content/blog ]; then
-            echo "::error::No rendered content directory found"
-            exit 1
-          fi
-
-          echo "Merging rendered blog markdown..."
-          rsync -av rendered/src/content/blog/ src/content/blog/
-
-          echo "Merging rendered blog assets..."
-          if [ -d rendered/src/assets/images/blog ]; then
-            rsync -av rendered/src/assets/images/blog/ src/assets/images/blog/
-          fi
-
-          echo "::group::Merged Content Summary"
-          find src/content/blog -name '*.md' -type f | wc -l | xargs -I {} echo "Total markdown files: {}"
-          echo "::endgroup::"
-
-      - name: Final content verification
-        run: |
-          count=$(find src/content/blog -name '*.md' -type f | wc -l || echo 0)
-          if [ "$count" -eq 0 ]; then
-            echo "::error::No Markdown content found. Aborting to prevent empty site deployment."
-            exit 1
-          fi
-          echo "✓ Ready to build with $count markdown files"
-
-      - name: Build site
-        run: bun run build
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v5.0.0
-        with:
-          path: dist
-          retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
-
   deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
+    if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    concurrency:
+      group: github-pages
+      cancel-in-progress: false
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy to GitHub Pages
+      - name: Deploy the site already tested in this run
         id: deployment
-        uses: actions/deploy-pages@v5.0.1
-
-      - name: Deployment summary
-        run: |
-          echo "## 🚀 Deployment Complete" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Site URL:** ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

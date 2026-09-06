@@ -27,3 +27,5 @@ src/content/
 
 .lighthouseci/
 lighthouse-report.html
+
+.rendered-content/

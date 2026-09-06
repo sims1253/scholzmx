@@ -1,173 +1,72 @@
 name: Content Render (Quarto → Markdown)
 
 on:
-  push:
-    branches: [main, master]
-    paths:
-      - 'src/content/**/*.qmd'
-      - 'src/content/**/*.md'
-      - 'build-blog.sh'
-      - '_quarto.yml'
-      - '.github/workflows/content-render.yml'
-      - 'astro.config.mjs'
-      - 'package.json'
-      - 'bun.lock'
-      - '.node-version'
-      - 'src/**/*.astro'
-      - 'src/**/*.ts'
-      - 'src/**/*.js'
-      - 'src/styles/**/*.css'
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      force-render:
+        type: boolean
+        default: false
 
 permissions:
   contents: read
-  actions: read
-
-concurrency:
-  group: 'render-${{ github.ref }}'
-  cancel-in-progress: true
-
-env:
-  # Artifact retention for rendered content (days)
-  ARTIFACT_RETENTION_DAYS: 90
 
 jobs:
-  check-cache:
-    name: Check if rendering is needed
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    outputs:
-      needs-render: ${{ steps.cache-check.outputs.needs-render }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v7.0.1
-        with:
-          fetch-depth: 0
-
-      - name: Check for force rebuild
-        id: force-check
-        run: |
-          if git log -1 --pretty=%B | grep -q "\[force-rebuild\]"; then
-            echo "Force rebuild requested in commit message"
-            echo "force-rebuild=true" >> $GITHUB_OUTPUT
-          else
-            echo "force-rebuild=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Check if rendering is needed
-        id: cache-check
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          needs_render=false
-          force_rebuild="${{ steps.force-check.outputs.force-rebuild }}"
-
-          echo "::group::Debug Info"
-          echo "Event: ${{ github.event_name }}"
-          echo "Repository: ${{ github.repository }}"
-          echo "SHA: ${{ github.sha }}"
-          echo "Before: '${{ github.event.before }}' After: '${{ github.event.after }}'"
-          echo "::endgroup::"
-
-          # Force rebuild if requested
-          if [ "$force_rebuild" = "true" ]; then
-            echo "Force rebuild requested - will render all content"
-            needs_render=true
-            echo "needs-render=$needs_render" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-
-          # Artifacts expire even when content has not changed. Render again if reuse is impossible.
-          latest_run=$(gh run list --workflow=content-render.yml --status=success --limit=1 --json databaseId --jq '.[0].databaseId // empty') || latest_run=''
-          reusable=false
-          if [ -n "$latest_run" ]; then
-            reusable=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$latest_run/artifacts" --jq 'any(.artifacts[]; .name == "rendered-content" and .expired == false)') || reusable=false
-          fi
-          if [ "$reusable" != "true" ]; then
-            echo "No unexpired content artifact; a fresh render is required"
-            echo "needs-render=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          # Check for QMD files
-          qmd_files=$(find src/content/blog -name "index.qmd" -path "*/[0-9][0-9][0-9][0-9]/*/*" -type f | wc -l)
-          if [ "$qmd_files" -eq 0 ]; then
-            echo "No QMD files found to process"
-            echo "needs-render=false" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-
-          # Compute changed files for push events
-          if [ "${{ github.event_name }}" = "push" ]; then
-            before="${{ github.event.before }}"
-            after="${{ github.event.after }}"
-            zeros="0000000000000000000000000000000000000000"
-
-            if [ -n "$before" ] && [ "$before" != "$zeros" ] && git cat-file -e "$before^{commit}" 2>/dev/null && git cat-file -e "$after^{commit}" 2>/dev/null; then
-              changed_files=$(git diff --name-only "$before..$after")
-            else
-              changed_files=$(git diff --name-only HEAD~1..HEAD || true)
-            fi
-
-            echo "::group::Changed Files"
-            echo "$changed_files" | sed 's/^/  /'
-            echo "::endgroup::"
-          fi
-
-          # Check each QMD file for changes
-          while IFS= read -r -d '' qmd_file; do
-            echo "Checking $qmd_file..."
-
-            if [ "${{ github.event_name }}" = "push" ]; then
-              if echo "$changed_files" | grep -E -q "$(basename $(dirname "$qmd_file"))|$(basename "$qmd_file")|build-blog.sh|_quarto.yml"; then
-                echo "  → File or related content was modified"
-                needs_render=true
-                break
-              fi
-            else
-              md_file="${qmd_file%.qmd}.md"
-              if [ ! -f "$md_file" ]; then
-                echo "  → No MD file found"
-                needs_render=true
-                break
-              fi
-            fi
-          done < <(find src/content/blog -name "index.qmd" -path "*/[0-9][0-9][0-9][0-9]/*/*" -type f -print0)
-
-          echo "needs-render=$needs_render" >> $GITHUB_OUTPUT
-          if [ "$needs_render" = "true" ]; then
-            echo "✓ Rendering needed - content changes detected"
-          else
-            echo "✓ No rendering needed - no relevant changes"
-          fi
-
   render:
     name: Render Quarto content
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 60
-    needs: check-cache
-    if: needs.check-cache.outputs.needs-render == 'true'
     steps:
-      - name: Checkout
-        uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Fingerprint render inputs
+        id: inputs
+        run: echo "key=$(python3 scripts/render-content.py key)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore generated content for these exact inputs
+        id: cache
+        if: ${{ !inputs.force-render }}
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .rendered-content
+          key: rendered-v2-${{ runner.os }}-${{ runner.arch }}-${{ steps.inputs.outputs.key }}
 
       - name: Setup Quarto
-        uses: quarto-dev/quarto-actions/setup@v2.2.0
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: quarto-dev/quarto-actions/setup@8a96df13519ee81fd526f2dfca5962811136661b # v2.2.0
+        with:
+          version: '1.10.18'
 
       - name: Setup R
-        id: setup-r
-        uses: r-lib/actions/setup-r@v2
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: r-lib/actions/setup-r@465b7d8e732ca3921382b1674c59bada9cbf3399 # v2
+        with:
+          r-version: '4.6.1'
+          use-public-rspm: false
+          cran: https://packagemanager.posit.co/cran/__linux__/noble/2026-09-01
 
       - name: Setup R dependencies
-        uses: r-lib/actions/setup-r-dependencies@v2
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: r-lib/actions/setup-r-dependencies@465b7d8e732ca3921382b1674c59bada9cbf3399 # v2
         with:
           cache: always
+          install-quarto: false
+          install-pandoc: false
+          dependencies: 'NA'
+          cache-version: '2026-09-01'
           packages: 'any::sessioninfo'
+          # Binary RStan installs omit LinkingTo packages needed to compile models at runtime.
           extra-packages: |
             any::knitr
             any::rmarkdown
             any::tidyverse
             any::brms
+            any::BH
+            any::Rcpp
+            any::RcppEigen
+            any::RcppParallel
+            any::StanHeaders
             any::furrr
             any::patchwork
             any::extraDistr
@@ -175,150 +74,40 @@ jobs:
             any::ggdag
             any::GGally
             any::dagitty
-            any::plotly
-            any::DT
-            any::htmlwidgets
-            any::tidybayes
-            any::here
-            any::readr
-            any::lubridate
             any::ragg
-            github::sims1253/bayesim
 
-      - name: Cache render hashes
-        uses: actions/cache@v6.1.0
-        with:
-          path: .blog-cache
-          key: render-cache-${{ runner.os }}-r${{ steps.setup-r.outputs.installed-r-version }}-${{ hashFiles('src/content/**/*.qmd', 'build-blog.sh', '_quarto.yml') }}
-          restore-keys: |
-            render-cache-${{ runner.os }}-r${{ steps.setup-r.outputs.installed-r-version }}-
-            render-cache-${{ runner.os }}-
-
-      - name: Get latest content render run
-        id: latest-render
-        if: ${{ !contains(github.event.head_commit.message, '[force-rebuild]') }}
+      - name: Verify Stan compilation headers
+        if: steps.cache.outputs.cache-hit != 'true'
+        shell: Rscript {0}
         run: |
-          latest_run=$(gh run list \
-            --workflow="Content Render (Quarto → Markdown)" \
-            --status=success \
-            --limit=5 \
-            --json=databaseId \
-            --jq="map(select(.databaseId != ${{ github.run_id }})) | .[0].databaseId // empty" || echo "")
-          echo "run-id=$latest_run" >> $GITHUB_OUTPUT
-          if [ -n "$latest_run" ]; then
-            echo "Found previous run: $latest_run"
-          else
-            echo "No previous run found"
-          fi
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        continue-on-error: true
+          packages <- c("BH", "Rcpp", "RcppEigen", "RcppParallel", "StanHeaders")
+          headers <- vapply(packages, function(package) system.file("include", package = package), character(1))
+          missing <- packages[!nzchar(headers)]
+          if (length(missing)) stop("Missing Stan headers: ", paste(missing, collapse = ", "))
 
-      - name: Download previous rendered content
-        id: download-previous
-        if: ${{ !contains(github.event.head_commit.message, '[force-rebuild]') && steps.latest-render.outputs.run-id != '' }}
-        uses: actions/download-artifact@v8.0.1
+      - name: Render and export generated files
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          bash build-blog.sh --force
+          git diff --exit-code -- src/content src/assets
+          python3 scripts/render-content.py export
+
+      - name: Validate cached content
+        if: steps.cache.outputs.cache-hit == 'true'
+        run: python3 scripts/render-content.py restore
+
+      - name: Save generated content
+        if: steps.cache.outputs.cache-hit != 'true' && !inputs.force-render
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .rendered-content
+          key: rendered-v2-${{ runner.os }}-${{ runner.arch }}-${{ steps.inputs.outputs.key }}
+
+      - name: Upload generated content for this run
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: rendered-content
-          path: .
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ github.repository }}
-          run-id: ${{ steps.latest-render.outputs.run-id }}
-        continue-on-error: true
-
-      - name: Log previous content status
-        run: |
-          if [ "${{ steps.download-previous.outcome }}" = "success" ]; then
-            echo "✓ Downloaded previous rendered content for caching"
-            find src/content/blog -type f -name "*.md" | wc -l | xargs -I {} echo "  Found {} markdown files"
-          else
-            echo "⚠ No previous content available - will render everything"
-          fi
-
-      - name: Render Quarto posts
-        run: bash build-blog.sh
-
-      - name: Verify rendered output
-        run: |
-          echo "::group::Generated Files"
-          find src/content/blog -name "index.md" -type f | head -20
-          count=$(find src/content/blog -name "index.md" -type f | wc -l)
-          echo "Total: $count index.md files"
-          echo "::endgroup::"
-
-          if [ "$count" -eq 0 ]; then
-            echo "::error::No markdown files were generated"
-            exit 1
-          fi
-
-      - name: Upload rendered content artifact
-        uses: actions/upload-artifact@v7.0.1
-        with:
-          name: rendered-content
-          if-no-files-found: error
-          compression-level: 6
+          path: .rendered-content/
           include-hidden-files: true
-          retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
-          path: |
-            src/content/blog/*/*/
-            src/assets/images/blog/
-            .blog-cache/
-
-  reuse-artifact:
-    name: Reuse last rendered content
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    needs: check-cache
-    if: needs.check-cache.outputs.needs-render != 'true'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v7.0.1
-
-      - name: Find last successful render run
-        id: latest-render
-        run: |
-          latest_run=$(gh run list \
-            --workflow="Content Render (Quarto → Markdown)" \
-            --status=success \
-            --limit=5 \
-            --json=databaseId \
-            --jq='.[0].databaseId // empty' || echo "")
-          echo "run-id=$latest_run" >> $GITHUB_OUTPUT
-          if [ -z "$latest_run" ]; then
-            echo "::error::No previous successful render run found"
-            exit 1
-          fi
-          echo "Using previous run: $latest_run"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Download rendered content from previous run
-        uses: actions/download-artifact@v8.0.1
-        with:
-          name: rendered-content
-          path: .
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ github.repository }}
-          run-id: ${{ steps.latest-render.outputs.run-id }}
-
-      - name: Verify reused content
-        run: |
-          count=$(find src/content/blog -path '*/index.md' -type f | wc -l || echo 0)
-          if [ "$count" -eq 0 ]; then
-            echo "::error::No rendered Markdown found to reuse"
-            exit 1
-          fi
-          echo "✓ Reusing $count rendered markdown files"
-
-      - name: Re-upload rendered content artifact
-        uses: actions/upload-artifact@v7.0.1
-        with:
-          name: rendered-content
           if-no-files-found: error
-          compression-level: 6
-          include-hidden-files: true
-          retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
-          path: |
-            src/content/blog/*/*/
-            src/assets/images/blog/
-            .blog-cache/
+          retention-days: 7

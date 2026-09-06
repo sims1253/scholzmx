@@ -71,34 +71,19 @@ bun run quality:check # All of the above
 bun run lighthouse   # Local Lighthouse audit
 bun run a11y         # Accessibility testing with pa11y
 bun run test:a11y    # Build + accessibility checks on local pages
-bun run test:site    # Build + browser smoke tests + accessibility checks
+bun run test:site    # Build + browser smoke tests + accessibility checks (isolated server)
 ```
 
 ### CI/CD Pipeline
-The site has a sophisticated build process:
 
-1. **Content Render** (`content-render.yml`) - Runs when Quarto files change:
-   - Sets up R environment with all necessary packages (brms, ggdag, tidyverse, etc.)
-   - Runs `./build-blog.sh` to convert `.qmd` → `.md` + optimized images
-   - Caches expensive R computations
-   - Uploads rendered content as artifact
+Every PR and main/master push runs workflow linting, renderer regression tests,
+code quality checks, and a build with all Quarto posts included. Rendering uses an
+exact-input cache of generated files. CI tests the complete site, then deploys
+that same build on main/master after the `CI passed` check succeeds.
 
-2. **Quality Gates** (`ci.yml`) - Runs on every commit:
-   - TypeScript checking, linting, formatting
-   - Full build test
-   - Accessibility validation
-
-3. **Performance Monitoring** (`performance.yml`):
-   - Lighthouse CI audits on multiple pages
-   - Performance budgets that fail builds if exceeded
-   - Deep accessibility testing with PA11y
-
-4. **Deploy** (`deploy.yml`) - Production deployment:
-   - Downloads rendered content from step 1
-   - Builds Astro site with optimized assets
-   - Deploys to GitHub Pages
-
-This means I can push Quarto files and they automatically get rendered with R, optimized, and deployed. The performance monitoring ensures the site stays fast and accessible.
+Lighthouse and Pa11y monitor production after deployment. Dependabot opens weekly
+updates for Bun packages and GitHub Actions. See [the pipeline guide](QUARTO-TO-ASTRO-PIPELINE.md)
+for cache behavior, pinned R/Quarto versions, and manual rebuilds.
 
 ## Architecture Notes
 
