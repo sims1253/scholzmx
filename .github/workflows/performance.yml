@@ -27,7 +27,7 @@ jobs:
       base-url: ${{ steps.site.outputs.base-url }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
 
       - name: Resolve deployed site URL
         id: site
@@ -57,7 +57,7 @@ jobs:
           cat /tmp/lighthouse-urls.txt
 
       - name: Run Lighthouse CI Audit
-        uses: treosh/lighthouse-ci-action@v12
+        uses: treosh/lighthouse-ci-action@12.6.2
         with:
           urls: |
             ${{ steps.site.outputs.base-url }}/
@@ -107,43 +107,33 @@ jobs:
     needs: lighthouse
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
 
       - name: Setup Chrome
-        uses: browser-actions/setup-chrome@v2
+        uses: browser-actions/setup-chrome@v2.2.0
         id: setup-chrome
         with:
           chrome-version: stable
 
+      - name: Setup Node
+        uses: actions/setup-node@v7.0.0
+        with:
+          node-version-file: .node-version
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2.2.0
+        with:
+          bun-version-file: package.json
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
       - name: Test accessibility with Pa11y CI
         env:
-          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'true'
           PUPPETEER_EXECUTABLE_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}
         run: |
-          echo "Testing pages with Pa11y CI..."
-          echo "Using Chrome at: $PUPPETEER_EXECUTABLE_PATH"
-          set +e
-          npx -y pa11y-ci --config .pa11yci.json 2>&1 | tee /tmp/pa11y-output.txt
-          exit_code=$?
-          set -e
-
-          # Parse the summary line (e.g., "✘ 4/5 URLs passed" or "✔ 5/5 URLs passed")
-          if grep -q "URLs passed" /tmp/pa11y-output.txt; then
-            summary=$(grep "URLs passed" /tmp/pa11y-output.txt | tail -1)
-            passed=$(echo "$summary" | grep -oP '\d+(?=/\d+ URLs)')
-            total=$(echo "$summary" | grep -oP '\d+(?= URLs)')
-            failed=$((total - passed))
-          else
-            passed=0
-            failed=0
-          fi
-
-          echo "PASSED=$passed" >> $GITHUB_ENV
-          echo "FAILED=$failed" >> $GITHUB_ENV
-
-          if [ "$exit_code" -ne 0 ]; then
-            echo "::warning::$failed page(s) have accessibility issues"
-          fi
+          set -o pipefail
+          bunx --no-install pa11y-ci --config .pa11yci.json 2>&1 | tee /tmp/pa11y-output.txt
 
       - name: Accessibility Summary
         if: always()

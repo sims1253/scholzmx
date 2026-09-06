@@ -43,9 +43,9 @@ const {
   ornament = true,
   layout = 'stacked',
   headingLevel = 2,
-} = Astro.props as Props;
+} = Astro.props;
 
-const HeadingTag = `h${headingLevel}` as 'h2' | 'h3' | 'h4';
+const HeadingTag = `h${headingLevel}` as const;
 
 // TWEAK: Split RNG streams to prevent ripple changes when extending features
 const layoutRng = createSeededRng(seed, 'stackedcard-v3:layout');
@@ -162,7 +162,7 @@ const styleVars = {
   '--wash-r2': `${washR2}px`,
   '--wash2-x': `${washX2}%`,
   '--wash2-y': `${washY2}%`,
-} as Record<string, string>;
+} satisfies Record<string, string>;
 
 const styleInline = Object.entries(styleVars)
   .map(([k, v]) => `${k}: ${v}`)

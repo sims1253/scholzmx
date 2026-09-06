@@ -43,7 +43,7 @@ function applyTheme(theme: string): void {
   root.setAttribute('data-theme', theme);
 
   // Update theme-color meta tag
-  const meta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;
+  const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
   if (meta) {
     meta.content = theme === 'dark' ? '#0f100e' : '#f9f6f2';
   }

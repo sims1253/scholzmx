@@ -49,14 +49,14 @@ class MarginNotes {
 
   private positionNotesContainer(): void {
     const pageContainer =
-      (document.querySelector('.post-body.prose') as HTMLElement) ||
-      (document.querySelector('.recipe-body.prose') as HTMLElement) ||
-      (document.querySelector('.layout-prose') as HTMLElement) ||
-      (document.querySelector('.container') as HTMLElement);
+      document.querySelector<HTMLElement>('.post-body.prose') ||
+      document.querySelector<HTMLElement>('.recipe-body.prose') ||
+      document.querySelector<HTMLElement>('.layout-prose') ||
+      document.querySelector<HTMLElement>('.container');
     const wrapper = document.querySelector('.main-content');
     if (!pageContainer || !wrapper || !this.notesContainer) return;
     const contentRect = pageContainer.getBoundingClientRect();
-    const wrapperRect = (wrapper as HTMLElement).getBoundingClientRect();
+    const wrapperRect = wrapper.getBoundingClientRect();
     const gap = 28; // matches --margin-note-gap
     const leftPosition = contentRect.right - wrapperRect.left + gap;
     // Ensure notes don't overflow right edge of wrapper
@@ -68,7 +68,7 @@ class MarginNotes {
   private positionNotes(): void {
     const wrapper = document.querySelector('.main-content');
     if (!wrapper) return;
-    const wrapperRect = (wrapper as HTMLElement).getBoundingClientRect();
+    const wrapperRect = wrapper.getBoundingClientRect();
     const used: { top: number; height: number }[] = [];
     this.anchors.forEach((anchor, index) => {
       const anchorRect = anchor.getBoundingClientRect();
@@ -147,7 +147,7 @@ declare global {
 
 export function initMarginNotes(): void {
   const tryInit = () => {
-    const mainContent = document.querySelector('.main-content') as HTMLElement;
+    const mainContent = document.querySelector<HTMLElement>('.main-content');
     if (mainContent && mainContent.offsetWidth < 1088) return; // ~68rem
     if (window.__mnotes_inited) return;
 

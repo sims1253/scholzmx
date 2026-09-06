@@ -1,0 +1,32 @@
+---
+import '@pagefind/default-ui/css/ui.css';
+
+interface Props {
+  id: string;
+  className?: string;
+  uiOptions: {
+    showImages?: boolean;
+    debounceTimeoutMs?: number;
+    pageSize?: number;
+    excerptLength?: number;
+    showResultsCount?: boolean;
+    showEmptyFilters?: boolean;
+    filters?: Record<string, string>;
+    translations?: Record<string, string>;
+  };
+}
+
+const { id, className, uiOptions } = Astro.props;
+---
+
+<div id={id} class={className} data-search-options={JSON.stringify(uiOptions)}></div>
+<script>
+  import { PagefindUI } from '@pagefind/default-ui';
+
+  for (const element of document.querySelectorAll<HTMLElement>('[data-search-options]')) {
+    // The options are serialized from this component's typed props in the build above.
+    const options = JSON.parse(element.dataset.searchOptions ?? '{}');
+    const ui = new PagefindUI({ ...options, element, bundlePath: '/pagefind/' });
+    if (options.filters) ui.triggerFilters(options.filters);
+  }
+</script>

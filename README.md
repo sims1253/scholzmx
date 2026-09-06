@@ -37,6 +37,13 @@ I write posts in Quarto (`.qmd` files) with R code, math, and citations. A build
 ## Development
 
 ### Quick Start
+
+Use Node 24 or newer and Bun 1.4.0 (also declared in `.node-version` and
+`package.json`). CI installs the declared versions and uses the frozen lockfile.
+For local browser audits, install Chrome with `bunx puppeteer browsers install chrome`
+and set `PUPPETEER_EXECUTABLE_PATH` to its printed executable path. This lets both
+Puppeteer versions used by the audit tools use the same browser.
+
 ```bash
 bun install          # Install dependencies
 bun run dev          # Start dev server (localhost:4321)
@@ -54,15 +61,17 @@ bun run build-blog   # Convert Quarto files to markdown (runs ./build-blog.sh)
 
 # Quality assurance (what CI runs)
 bun run typecheck    # TypeScript checking
-bun run lint:js      # ESLint for JS/TS/Astro files
+bun run lint:js      # Oxlint with type-aware checks and anti-slop for JS/TS/Astro
 bun run lint:css     # Stylelint for CSS
 bun run format:check # Prettier formatting check
+bun run test:lint-rules # Vendored anti-slop rule tests
 bun run quality:check # All of the above
 
 # Performance monitoring
 bun run lighthouse   # Local Lighthouse audit
 bun run a11y         # Accessibility testing with pa11y
-bun run test:a11y    # Full build + a11y test
+bun run test:a11y    # Build + accessibility checks on local pages
+bun run test:site    # Build + browser smoke tests + accessibility checks
 ```
 
 ### CI/CD Pipeline
@@ -100,7 +109,25 @@ Images in `src/assets/` get automatic Astro optimization (WebP conversion, respo
 - Vanilla CSS with modern features (custom properties, container queries, etc.)
 - PurgeCSS removes unused styles in production
 - LightningCSS for optimal minification and modern browser targeting
-- No CSS frameworks - just thoughtful, semantic styling
+- Tailwind 4 utilities compile through the official Vite plugin; Preflight is disabled
+
+### Tooling compatibility
+
+Astro 7.3.1 uses the unified Markdown processor to preserve remark-math and
+rehype-katex rendering. HTML whitespace compression also retains the previous mode.
+Pagefind 2 builds the index; `Search.astro` uses the maintained default UI to keep
+existing search labels, styling, and collection filters.
+
+TypeScript is pinned to 6.0.3 because TypeScript 7 does not expose the programmatic
+API required by `astro check`. Upgrade this pin when the Astro language server
+supports TypeScript 7. Oxlint's type-aware checks use `oxlint-tsgolint` separately.
+Anti-slop's 15 generic rules are vendored under `tools/oxlint/anti-slop`, with the
+upstream commit and license recorded there. Three local `no-runtime-typeof`
+exceptions cover already-typed image unions; unnecessary casts were removed.
+
+The `qs`, `tmp`, and `uuid` overrides address advisories in audit-tool dependencies.
+`bun audit` still reports an unpatched `extract-zip@2.0.1` advisory in Puppeteer's
+Chrome downloader. This tooling is not shipped in the static site.
 
 ### Performance Philosophy
 - Inline styles are disabled (separate CSS files for better caching)

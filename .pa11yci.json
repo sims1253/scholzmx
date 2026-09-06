@@ -1,19 +1,18 @@
 {
   "defaults": {
     "chromeLaunchConfig": {
-      "executablePath": "/opt/hostedtoolcache/setup-chrome/chrome/stable/x64/chrome",
       "args": ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"]
     },
     "timeout": 30000,
     "standard": "WCAG2AA"
   },
   "urls": [
-    "https://scholzmx.com/",
-    "https://scholzmx.com/blog/",
-    "https://scholzmx.com/research/",
-    "https://scholzmx.com/projects/",
-    "https://scholzmx.com/notes/",
-    "https://scholzmx.com/recipes/hokkaido-dinner-rolls/",
-    "https://scholzmx.com/blog/2025/01-15-blog-post-features-template/"
+    "https://www.scholzmx.com/",
+    "https://www.scholzmx.com/blog/",
+    "https://www.scholzmx.com/research/",
+    "https://www.scholzmx.com/projects/",
+    "https://www.scholzmx.com/notes/",
+    "https://www.scholzmx.com/recipes/hokkaido-dinner-rolls/",
+    "https://www.scholzmx.com/blog/2025/01-15-blog-post-features-template/"
   ]
 }

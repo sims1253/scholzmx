@@ -26,7 +26,6 @@ module.exports = {
         'valid-lang': 'error',
 
         // Best practices
-        'uses-https': 'error',
         'is-on-https': 'error',
         'uses-http2': 'off', // Not always applicable for static sites
 
@@ -40,7 +39,6 @@ module.exports = {
         'unused-javascript': 'warn',
         'modern-image-formats': 'warn',
         'uses-optimized-images': 'warn',
-        'uses-webp-images': 'warn',
         'uses-text-compression': 'error',
       },
     },

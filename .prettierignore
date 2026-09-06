@@ -18,3 +18,12 @@ bar/
 .playwright-mcp/
 todo.md
 public/demo/
+# Vendored rules, agent files, and authored/generated content
+tools/oxlint/anti-slop/
+.claude/
+.quarto/
+_freeze/
+src/content/
+
+.lighthouseci/
+lighthouse-report.html
