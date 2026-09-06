@@ -15,7 +15,7 @@ export interface Props {
   positionX?: number; // Horizontal position as percentage (-50 to 50, where 0 is center)
   positionY?: number; // Vertical position as percentage (-50 to 50, where 0 is center)
   scale?: number; // Scale/zoom factor (e.g., 1.2 for 20% zoom in)
-  fillMode?: 'cover' | 'contain' | 'fill'; // How to handle image fitting when no scale/position given
+  fillMode?: 'cover' | 'contain' | 'fill'; // How to fit the image before applying scale/position
 
   // Focal control for object-fit (applies when not using custom positioning)
   focalX?: number; // -50 (left) to 50 (right), 0 center
@@ -255,7 +255,7 @@ const captionId = hasCaption
             <div class="frame-image custom-positioning tw:w-full tw:h-full tw:block tw:absolute tw:top-1/2 tw:left-1/2 tw:overflow-hidden">
               {typeof src === 'string' ? (
                 <img
-                  class="tw:w-full tw:h-full tw:object-contain tw:block"
+                  class={`tw:w-full tw:h-full tw:block ${objectFitClass}`}
                   src={src}
                   alt={alt}
                   loading={effectiveLoading}
@@ -266,12 +266,11 @@ const captionId = hasCaption
                   src={src}
                   alt={alt}
                   width={imageWidth}
-                  height={imageHeight}
                   widths={responsiveWidths}
                   sizes={style === 'hero' ? heroSizes : defaultSizes}
                   format="avif"
                   loading={effectiveLoading}
-                  class={`tw:w-full tw:h-full tw:object-contain tw:block`}
+                  class={`tw:w-full tw:h-full tw:block ${objectFitClass}`}
                   fetchpriority={effectiveFetchPriority}
                 />
               )}
@@ -319,7 +318,7 @@ const captionId = hasCaption
               <div class="frame-image custom-positioning tw:w-full tw:h-full tw:block tw:absolute tw:top-1/2 tw:left-1/2 tw:overflow-hidden">
                 {typeof alternateSrc === 'string' ? (
                   <img
-                    class="tw:w-full tw:h-full tw:object-contain tw:block"
+                    class={`tw:w-full tw:h-full tw:block ${alternateObjectFitClass}`}
                     src={alternateSrc}
                     alt={alternateAlt || alt}
                     loading="lazy"
@@ -329,12 +328,11 @@ const captionId = hasCaption
                     src={alternateSrc}
                     alt={alternateAlt || alt}
                     width={imageWidth}
-                    height={imageHeight}
                     widths={responsiveWidths}
                     sizes={style === 'hero' ? heroSizes : defaultSizes}
                     format="avif"
                     loading="lazy"
-                    class={`tw:w-full tw:h-full tw:object-contain tw:block`}
+                    class={`tw:w-full tw:h-full tw:block ${alternateObjectFitClass}`}
                   />
                 )}
               </div>
@@ -400,7 +398,7 @@ const captionId = hasCaption
           <div class="frame-image custom-positioning tw:w-full tw:h-full tw:block tw:absolute tw:top-1/2 tw:left-1/2 tw:overflow-hidden">
             {typeof src === 'string' ? (
               <img
-                class="tw:w-full tw:h-full tw:object-contain tw:block"
+                class={`tw:w-full tw:h-full tw:block ${objectFitClass}`}
                 src={src}
                 alt={alt}
                 loading={effectiveLoading}
@@ -412,12 +410,11 @@ const captionId = hasCaption
                 src={src}
                 alt={alt}
                 width={imageWidth}
-                height={imageHeight}
                 widths={responsiveWidths}
                 sizes={style === 'hero' ? heroSizes : defaultSizes}
                 format="avif"
                 loading={effectiveLoading}
-                class={`tw:w-full tw:h-full tw:object-contain tw:block`}
+                class={`tw:w-full tw:h-full tw:block ${objectFitClass}`}
                 fetchpriority={effectiveFetchPriority}
               />
             )}
@@ -463,7 +460,7 @@ const captionId = hasCaption
             <div class="frame-image custom-positioning tw:w-full tw:h-full tw:block tw:absolute tw:top-1/2 tw:left-1/2 tw:overflow-hidden">
               {typeof alternateSrc === 'string' ? (
                 <img
-                  class="tw:w-full tw:h-full tw:object-contain tw:block"
+                  class={`tw:w-full tw:h-full tw:block ${alternateObjectFitClass}`}
                   src={alternateSrc}
                   alt={alternateAlt || alt}
                   loading="lazy"
@@ -473,12 +470,11 @@ const captionId = hasCaption
                   src={alternateSrc}
                   alt={alternateAlt || alt}
                   width={imageWidth}
-                  height={imageHeight}
                   widths={responsiveWidths}
                   sizes={style === 'hero' ? heroSizes : defaultSizes}
                   format="avif"
                   loading="lazy"
-                  class={`tw:w-full tw:h-full tw:object-contain tw:block`}
+                  class={`tw:w-full tw:h-full tw:block ${alternateObjectFitClass}`}
                 />
               )}
             </div>
@@ -548,7 +544,6 @@ const captionId = hasCaption
   .frame-image.custom-positioning img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
   }
 
   /* Simple fill modes - for easy default usage */

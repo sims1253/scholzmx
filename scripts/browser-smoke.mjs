@@ -21,6 +21,43 @@ try {
       const response = await page.goto(`${baseURL}${path}`, { waitUntil: 'networkidle0' });
       assert.equal(response.status(), 200, path);
       assert.ok(await page.title(), `Missing title: ${path}`);
+      if (path === '/') {
+        const portraits = await page.$eval('.image-frame.clickable', async (frame) => {
+          const bounds = frame.getBoundingClientRect();
+          const results = [];
+          for (const image of frame.querySelectorAll('img')) {
+            await image.decode();
+            const rect = image.getBoundingClientRect();
+            const ratio = image.naturalWidth / image.naturalHeight;
+            let paintedWidth = rect.width;
+            let paintedHeight = rect.height;
+            if (getComputedStyle(image).objectFit === 'contain') {
+              if (paintedWidth / paintedHeight > ratio) paintedWidth = paintedHeight * ratio;
+              else paintedHeight = paintedWidth / ratio;
+            }
+            const left = rect.left + (rect.width - paintedWidth) / 2;
+            const top = rect.top + (rect.height - paintedHeight) / 2;
+            results.push({
+              ratio,
+              coversFrame:
+                left <= bounds.left + 1 &&
+                left + paintedWidth >= bounds.right - 1 &&
+                top <= bounds.top + 1 &&
+                top + paintedHeight >= bounds.bottom - 1,
+            });
+          }
+          return results;
+        });
+        assert.equal(portraits.length, 2);
+        assert.ok(
+          portraits.every((portrait) => portrait.coversFrame),
+          `Portrait gap at ${width}px`
+        );
+        // The optimized assets must retain the original 3840×5120 and 1066×1600 ratios.
+        assert.ok(Math.abs(portraits[0].ratio - 3840 / 5120) < 0.01);
+        assert.ok(Math.abs(portraits[1].ratio - 1066 / 1600) < 0.01);
+      }
+
       assert.equal(
         await page.evaluate(() => document.documentElement.scrollWidth > innerWidth),
         false,
