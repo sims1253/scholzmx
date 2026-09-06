@@ -1,0 +1,87 @@
+.reading-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: start;
+  gap: 0.5rem 1.5rem;
+  margin-block: 1rem 2rem;
+  padding-inline-start: 1rem;
+  border-inline-start: 3px solid var(--color-moss);
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.reading-tools:has(.reading-size[hidden]):not(:has(details)) {
+  display: none;
+}
+
+.reading-contents {
+  flex: 1 1 16rem;
+  min-width: 0;
+}
+
+.reading-contents summary {
+  min-height: 44px;
+  align-content: center;
+  cursor: pointer;
+  color: var(--color-text-primary);
+}
+
+.reading-contents summary span {
+  margin-inline-start: 0.5rem;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+.reading-contents ul {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0;
+}
+
+.reading-contents li {
+  margin: 0;
+}
+
+.reading-contents a {
+  display: block;
+  padding-block: 0.5rem;
+  min-height: 44px;
+  overflow-wrap: anywhere;
+}
+
+.reading-size:not([hidden]) {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 44px;
+}
+
+.reading-size select {
+  min-height: 44px;
+  padding: 0.25rem 0.5rem;
+  font: inherit;
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  border: 1px solid var(--color-text-muted);
+  border-radius: 4px;
+}
+
+.reading-tools :focus-visible {
+  outline: 2px solid var(--color-text-primary);
+  outline-offset: 4px;
+}
+
+[data-reading-body] {
+  --text-md: calc(1rem * var(--reading-scale, 1));
+  --text-lg: calc(1.2rem * var(--reading-scale, 1));
+  --text-xl: calc(1.4rem * var(--reading-scale, 1));
+  --text-2xl: calc(1.8rem * var(--reading-scale, 1));
+}
+
+@media print {
+  .reading-tools,
+  .collection-trail {
+    display: none;
+  }
+}

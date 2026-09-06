@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Grotto — reading proposal</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: Georgia, serif;
+        color: #2a2318;
+        background: #fdfbf6;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: clamp(20px, 4vw, 64px);
+      }
+      main {
+        max-width: 1280px;
+        margin: auto;
+      }
+      h1 {
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        font-weight: 400;
+        margin: 0 0 16px;
+      }
+      h2 {
+        font-size: 1.4rem;
+        font-weight: 400;
+      }
+      p {
+        max-width: 70ch;
+        line-height: 1.6;
+      }
+      a {
+        color: #5b4639;
+        text-underline-offset: 4px;
+      }
+      button {
+        font: inherit;
+        padding: 12px 18px;
+        border: 1px solid #586a51;
+        border-radius: 4px;
+        color: inherit;
+        background: transparent;
+        cursor: pointer;
+      }
+      button[aria-pressed='true'] {
+        background: #586a51;
+        color: #fff;
+      }
+      :focus-visible {
+        outline: 3px solid #2a2318;
+        outline-offset: 4px;
+      }
+      .choices {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin: 28px 0;
+      }
+      .comparison {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+      }
+      figure {
+        margin: 0;
+        min-width: 0;
+      }
+      figcaption {
+        line-height: 1.5;
+        margin-bottom: 12px;
+      }
+      img {
+        display: block;
+        width: 100%;
+        border: 1px solid #cfd7cb;
+      }
+      .phone img {
+        max-width: 390px;
+        margin-inline: auto;
+      }
+      .decisions {
+        margin-top: 36px;
+        border-left: 3px solid #586a51;
+        padding-left: 24px;
+      }
+      .decisions p {
+        margin: 12px 0;
+      }
+      .links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 24px;
+        margin-top: 24px;
+      }
+      .links a {
+        padding-block: 12px;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      @media (max-width: 720px) {
+        .comparison {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>A little more room to read.</h1>
+      <p>
+        A selection from PRs #6 and #7: find a section, choose a comfortable text size, and return
+        to the collection. The Grotto you already have, with a few useful reading tools.
+      </p>
+      <div class="choices" aria-label="Comparison view">
+        <button type="button" aria-pressed="true" data-view="desktop">Desktop</button>
+        <button type="button" aria-pressed="false" data-view="mobile">Phone · largest text</button>
+        <button type="button" aria-pressed="false" data-view="dark">Dark theme</button>
+      </div>
+      <div class="comparison" id="comparison">
+        <figure>
+          <figcaption>
+            <strong>Current main</strong><br />The article starts below the introduction.
+          </figcaption>
+          <img
+            id="before"
+            src="before-desktop.png"
+            alt="Current Pumpkin Softies recipe without section navigation or text-size controls."
+          />
+        </figure>
+        <figure>
+          <figcaption>
+            <strong>Proposed version</strong><br />Contents open on request; text size belongs
+            beside the article.
+          </figcaption>
+          <img
+            id="after"
+            src="reading-desktop.png"
+            alt="Proposed Pumpkin Softies recipe showing its three section links and reading text-size selector."
+          />
+        </figure>
+      </div>
+      <p id="view-note">
+        Actual builds of main and this proposal, aligned at the recipe title. Contents are shown
+        expanded for comparison; they start closed.
+      </p>
+      <div class="decisions">
+        <h2>My recommendation</h2>
+        <p>
+          <strong>Keep:</strong> contents, collection links, text size, local project logos, unique
+          divider IDs, and the duplicate-copy-button guard.
+        </p>
+        <p>
+          <strong>Save separately:</strong> the Quarto publishing pipeline, broader card/homepage
+          redesign, and unpublished research and articles.
+        </p>
+        <p>
+          <strong>Leave out:</strong> swipe navigation, a fixed reading meter, animated lighting,
+          and superseded migration changes.
+        </p>
+      </div>
+      <nav class="links" aria-label="Review links">
+        <a href="http://127.0.0.1:4322/recipes/hokkaido-dinner-rolls/">Try the recipe</a>
+        <a href="http://127.0.0.1:4322/blog/2017/birth-of-coala/">Try a blog post</a>
+        <a href="http://127.0.0.1:4322/projects/">See the project logos</a>
+        <a href="old-pr-decisions.md">Read the decisions</a>
+      </nav>
+      <p>
+        Try-page links use the local preview on port 4322. Screenshots work without a server. Both
+        old PRs remain open for your decision.
+      </p>
+    </main>
+    <script>
+      const buttons = document.querySelectorAll('[data-view]');
+      for (const button of buttons) {
+        button.addEventListener('click', () => {
+          const view = button.dataset.view;
+          for (const other of buttons) other.setAttribute('aria-pressed', String(other === button));
+          document.getElementById('comparison').classList.toggle('phone', view === 'mobile');
+          document.getElementById('before').src =
+            view === 'mobile' ? 'before-mobile.png' : 'before-desktop.png';
+          document.getElementById('after').src = `reading-${view}.png`;
+          document.getElementById('view-note').textContent =
+            view === 'dark'
+              ? 'Proposal in the existing dark theme; baseline remains light. No new palette or animated lighting.'
+              : view === 'mobile'
+                ? '390px phone view. The proposal uses the largest reading size; navigation and controls keep their usual size.'
+                : 'Actual builds of main and this proposal, aligned at the recipe title. Contents are shown expanded for comparison; they start closed.';
+        });
+      }
+    </script>
+  </body>
+</html>

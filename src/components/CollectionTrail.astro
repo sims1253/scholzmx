@@ -1,0 +1,29 @@
+---
+interface Props {
+  collection: 'Blog' | 'Notes' | 'Recipes';
+}
+const { collection } = Astro.props;
+---
+
+<nav class="collection-trail" aria-label="Breadcrumb" data-pagefind-ignore>
+  <a href="/">Grotto</a>
+  <span aria-hidden="true">/</span>
+  <a href={`/${collection.toLowerCase()}/`}>{collection}</a>
+</nav>
+
+<style>
+  .collection-trail {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    margin-block-end: var(--space-md);
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+  }
+  .collection-trail a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+</style>

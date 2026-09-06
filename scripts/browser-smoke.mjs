@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import puppeteer from 'puppeteer';
 
-const baseURL = 'http://127.0.0.1:4321';
+const baseURL = process.env.SITE_TEST_URL ?? 'http://127.0.0.1:4321';
 const browser = await puppeteer.launch({
   headless: true,
   args: ['--no-sandbox'],
@@ -156,9 +156,81 @@ try {
   for (const path of ['/rss.xml', '/sitemap-index.xml', '/sitemap-0.xml']) {
     assert.equal((await fetch(`${baseURL}${path}`)).status, 200, path);
   }
+
+  for (const path of [
+    '/blog/2017/birth-of-coala/',
+    '/recipes/hokkaido-dinner-rolls/',
+    '/notes/digital-gardens-philosophy/',
+  ]) {
+    await page.goto(`${baseURL}${path}`, { waitUntil: 'networkidle0' });
+    await page.select('.reading-size select', '1');
+    assert.ok(
+      await page.$$eval('.hand-drawn-divider [id]', (elements) => {
+        const ids = elements.map((element) => element.id);
+        return new Set(ids).size === ids.length;
+      }),
+      `Duplicate divider IDs: ${path}`
+    );
+    const original = await page.$eval('[data-reading-body]', (el) =>
+      Number.parseFloat(getComputedStyle(el).fontSize)
+    );
+    const navigationSize = await page.$eval('.page-nav', (el) => getComputedStyle(el).fontSize);
+    await page.select('.reading-size select', '1.3');
+    await page.reload({ waitUntil: 'networkidle0' });
+    assert.equal(await page.$eval('.reading-size select', (el) => el.value), '1.3');
+    const enlarged = await page.$eval('[data-reading-body]', (el) =>
+      Number.parseFloat(getComputedStyle(el).fontSize)
+    );
+    assert.ok(Math.abs(enlarged / original - 1.3) < 0.01, `Text scaling: ${path}`);
+    assert.equal(
+      await page.$eval('.page-nav', (el) => getComputedStyle(el).fontSize),
+      navigationSize
+    );
+    for (const width of [1440, 390, 320]) {
+      await page.setViewport({ width, height: 844 });
+      assert.equal(
+        await page.evaluate(() => document.documentElement.scrollWidth > innerWidth),
+        false,
+        `Enlarged reading overflow: ${path} at ${width}px`
+      );
+    }
+    const contents = await page.$('.reading-contents summary');
+    if (contents) {
+      await contents.focus();
+      await page.keyboard.press('Enter');
+      assert.equal(await page.$eval('.reading-contents', (el) => el.open), true);
+      assert.ok(
+        await page.$$eval('.reading-contents a', (links) =>
+          links.every((link) => document.getElementById(decodeURIComponent(link.hash.slice(1))))
+        )
+      );
+      await page.click('.reading-contents a');
+      assert.ok(new URL(page.url()).hash, 'Section links should update the URL');
+    }
+  }
+
+  await page.setJavaScriptEnabled(false);
+  await page.goto(`${baseURL}/recipes/hokkaido-dinner-rolls/`, { waitUntil: 'networkidle0' });
+  await page.click('.reading-contents summary');
+  assert.equal(await page.$eval('.reading-contents', (el) => el.open), true);
+  assert.equal(await page.$eval('.reading-size', (el) => getComputedStyle(el).display), 'none');
+  await page.click('.reading-contents a');
+  assert.ok(new URL(page.url()).hash, 'Contents work without JavaScript');
+  await page.setJavaScriptEnabled(true);
+
+  await page.evaluateOnNewDocument(() => {
+    Object.defineProperty(window, 'localStorage', {
+      get() {
+        throw new DOMException('Storage blocked', 'SecurityError');
+      },
+    });
+  });
+  await page.goto(`${baseURL}/recipes/hokkaido-dinner-rolls/`, { waitUntil: 'networkidle0' });
+  await page.select('.reading-size select', '1.15');
+  assert.equal(await page.$eval('.reading-size select', (el) => el.value), '1.15');
   assert.deepEqual(errors, [], 'Browser errors or failed asset requests');
   console.log(
-    'Browser smoke checks passed: routes, mobile layout, theme, images, search, RSS, sitemap.'
+    'Browser smoke checks passed: routes, mobile layout, theme, images, search, RSS, sitemap, reading controls, no-JS contents, blocked storage, unique IDs.'
   );
 } finally {
   await browser.close();
