@@ -24,3 +24,6 @@ tools/oxlint/anti-slop/
 .quarto/
 _freeze/
 src/content/
+
+.lighthouseci/
+lighthouse-report.html

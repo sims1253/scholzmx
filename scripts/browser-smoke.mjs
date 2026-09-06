@@ -9,12 +9,13 @@ const browser = await puppeteer.launch({
 const errors = [];
 try {
   const page = await browser.newPage();
+  await page.setCacheEnabled(false);
   page.on('pageerror', (error) => errors.push(error.message));
   page.on('response', (response) => {
     if (response.status() >= 400) errors.push(`${response.status()} ${response.url()}`);
   });
   const paths = ['/', '/blog/', '/recipes/', '/notes/', '/research/', '/projects/'];
-  for (const width of [1280, 390]) {
+  for (const width of [1440, 1280, 390]) {
     await page.setViewport({ width, height: 844 });
     for (const path of paths) {
       const response = await page.goto(`${baseURL}${path}`, { waitUntil: 'networkidle0' });
@@ -47,14 +48,25 @@ try {
   ]) {
     await page.goto(`${baseURL}${path}`, { waitUntil: 'networkidle0' });
     await page.waitForSelector('.pagefind-ui__search-input');
-    await page.type('.pagefind-ui__search-input', term);
+    // A first input event also covers paste, which does not emit keyup.
+    await page.$eval(
+      '.pagefind-ui__search-input',
+      (input, value) => {
+        input.value = value;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+      },
+      term
+    );
+    if (path === '/recipes/') {
+      assert.equal(await page.$eval('.nc-item', (card) => card.style.display), 'none');
+    }
     await page.waitForSelector('.pagefind-ui__result-link');
     const links = await page.$$eval('.pagefind-ui__result-link', (elements) =>
       elements.map((element) => element.getAttribute('href'))
     );
     assert.ok(
       links.every((link) => link.startsWith(prefix)),
-      `Search escaped ${prefix}: ${links}`
+      `Search escaped ${prefix}: ${links.join(', ')}`
     );
   }
 

@@ -306,7 +306,7 @@ const tags = Array.from(new Set(recipes.flatMap((r) => r.data.tags ?? []))).sort
     margin-top: var(--space-xs);
   }
 
-  @media (max-width: 1024px) {
+  @media (max-width: 90rem) {
     .recipes-content {
       position: static;
     }
@@ -458,7 +458,7 @@ const tags = Array.from(new Set(recipes.flatMap((r) => r.data.tags ?? []))).sort
   // Monitor search input changes
   document.addEventListener('DOMContentLoaded', () => {
     // Use mutation observer to detect when pagefind UI is loaded
-    const observer = new MutationObserver(() => {
+    const connectSearch = () => {
       const searchInput = document.querySelector<HTMLInputElement>('.pagefind-ui__search-input');
       if (searchInput && !searchInput.dataset.listenerAdded) {
         searchInput.dataset.listenerAdded = 'true';
@@ -486,7 +486,9 @@ const tags = Array.from(new Set(recipes.flatMap((r) => r.data.tags ?? []))).sort
         const resultsObserver = new MutationObserver(updateSearchStatus);
         resultsObserver.observe(resultsContainer, { childList: true, subtree: true });
       }
-    });
+    };
+    connectSearch();
+    const observer = new MutationObserver(connectSearch);
     observer.observe(document.body, { childList: true, subtree: true });
   });
 

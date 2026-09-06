@@ -91,3 +91,7 @@ plans.db
 
 src/content/blog/**/*.svg
 src/content/blog/**/*.png
+
+# Local performance reports
+.lighthouseci/
+lighthouse-report.html

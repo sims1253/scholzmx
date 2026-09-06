@@ -1,18 +1,4 @@
-/* Force Tailwind to generate the utilities we need */
-
-/* Modern responsive grid utilities that work with our fluid design */
-.tw\:grid {
-  display: grid;
-}
-.tw\:grid-cols-1 {
-  grid-template-columns: repeat(1, minmax(0, 1fr));
-}
-.tw\:grid-cols-2 {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-.tw\:grid-cols-3 {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
+/* Project-specific utilities; standard utilities come from Tailwind. */
 
 /* Fluid spacing utilities that complement our design system */
 .tw\:gap-fluid {
@@ -38,18 +24,7 @@
   container-type: inline-size;
 }
 
-/* Logical property utilities */
-.tw\:text-start {
-  text-align: start;
-}
-.tw\:text-end {
-  text-align: end;
-}
-
 /* Modern width utilities */
-.tw\:w-full {
-  width: 100%;
-}
 .tw\:w-fluid {
   width: clamp(20rem, 50vw, 60rem);
 }
