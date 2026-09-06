@@ -56,11 +56,17 @@ jobs:
           dependencies: 'NA'
           cache-version: '2026-09-01'
           packages: 'any::sessioninfo'
+          # Binary RStan installs omit LinkingTo packages needed to compile models at runtime.
           extra-packages: |
             any::knitr
             any::rmarkdown
             any::tidyverse
             any::brms
+            any::BH
+            any::Rcpp
+            any::RcppEigen
+            any::RcppParallel
+            any::StanHeaders
             any::furrr
             any::patchwork
             any::extraDistr
@@ -69,6 +75,15 @@ jobs:
             any::GGally
             any::dagitty
             any::ragg
+
+      - name: Verify Stan compilation headers
+        if: steps.cache.outputs.cache-hit != 'true'
+        shell: Rscript {0}
+        run: |
+          packages <- c("BH", "Rcpp", "RcppEigen", "RcppParallel", "StanHeaders")
+          headers <- vapply(packages, function(package) system.file("include", package = package), character(1))
+          missing <- packages[!nzchar(headers)]
+          if (length(missing)) stop("Missing Stan headers: ", paste(missing, collapse = ", "))
 
       - name: Render and export generated files
         if: steps.cache.outputs.cache-hit != 'true'
