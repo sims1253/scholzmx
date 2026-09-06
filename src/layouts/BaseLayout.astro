@@ -186,8 +186,27 @@ const socialImageURL = new URL(socialImage, Astro.site).href;
       )
     }
 
-    <!-- Specialty fonts loaded on demand -->
-    <link rel="stylesheet" href="/fonts/et-initials.css" />
+    {/* Load the decorative initial before it can change the first paragraph's wrapping. */}
+    {
+      (currentPath === '/' || /^\/(recipes|notes)\/.+/.test(currentPath)) && (
+        <>
+          <link
+            rel="preload"
+            href="/fonts/EBGaramond-InitialsF1.woff2"
+            as="font"
+            type="font/woff2"
+            crossorigin
+          />
+          <link
+            rel="preload"
+            href="/fonts/EBGaramond-InitialsF2.woff2"
+            as="font"
+            type="font/woff2"
+            crossorigin
+          />
+        </>
+      )
+    }
 
     <!-- Only preload fonts critical for initial render -->
     <link
