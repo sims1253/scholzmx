@@ -74,11 +74,11 @@ Apply by toggling data-theme on <html> or top container.
 - Test with Lighthouse or OS high-contrast modes.
 
 ## Do/Don’t
-- Do import tokens once (global.css) and rely on cascade; component scopes may override with semantics.
+- Do import tokens once (via `BaseLayout.astro`'s styles) and rely on cascade; component scopes may override with semantics.
 - Don’t hardcode hex or duplicate tokens in components.
 - Do keep line rules and borders subtle using --rule-ink.
 - Don’t mix too many warms/cools in the same block; choose one accent.
 
 ## References
 - tokens: src/styles/tokens.colors.css
-- globals: src/styles/global.css
+- base: src/styles/base.css

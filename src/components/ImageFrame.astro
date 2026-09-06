@@ -86,7 +86,7 @@ const finalAlternatePositionY = alternatePositionY || 0;
 const finalAlternateScale = alternateScale || 1;
 const finalAlternateFillMode = alternateFillMode || fillMode;
 
-// Tailwind object-fit class mapping for simple fill mode
+// tw-* object-fit class mapping for simple fill mode
 const objectFitClass =
   fillMode === 'cover'
     ? 'tw-object-cover'
@@ -214,8 +214,19 @@ const effectiveFetchPriority = style === 'hero' ? 'high' : undefined;
 const heroSizes = '(min-width: 90rem) 1100px, (min-width: 72rem) 72rem, 100vw';
 const decodingAttr = effectiveLoading === 'eager' ? 'sync' : 'async';
 const hasCaption = Astro.slots?.has?.('caption') || caption;
+
+// Stable, unique id per captioned image. A render-local counter would reset
+// to 0 on every component instance, producing duplicate `imgcap-0` ids across
+// a page (invalid HTML + broken aria-describedby associations).
+function hashId(input: string): string {
+  let hash = 5381;
+  for (let i = 0; i < input.length; i++) {
+    hash = ((hash << 5) + hash + input.charCodeAt(i)) >>> 0;
+  }
+  return hash.toString(36);
+}
 const captionId = hasCaption
-  ? `imgcap-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`
+  ? `imgcap-${hashId(`${typeof src === 'string' ? src : (src?.src ?? '')}|${alt}|${caption ?? ''}`)}`
   : undefined;
 ---
 
@@ -229,7 +240,7 @@ const captionId = hasCaption
             : ''
         } ${containerClass} ${
           style === 'hero'
-            ? 'tw-w-full tw-max-w-5xl tw-mx-auto tw-px-8 tw--mt-lg tw-mb-lg tw-aspect-[3/2] md:tw-aspect-[3/2] sm:tw-aspect-[4/3]'
+            ? 'tw-w-full tw-max-w-5xl tw-mx-auto tw-px-8 tw--mt-lg tw-mb-lg tw-aspect-[3/2] sm:tw-aspect-[4/3]'
             : ''
         }`}
         style={`${aspectRatio ? `aspect-ratio: ${aspectRatio};` : ''} ${style !== 'hero' && style !== 'simple' ? `width: ${finalWidth}; height: ${finalHeight};` : ''}`}
@@ -375,7 +386,7 @@ const captionId = hasCaption
         isClickable ? 'clickable tw-cursor-pointer' : ''
       } ${containerClass} ${
         style === 'hero'
-          ? 'tw-w-full tw-max-w-5xl tw-mx-auto tw-px-8 tw--mt-lg tw-mb-lg tw-aspect-[3/2] md:tw-aspect-[3/2] sm:tw-aspect-[4/3]'
+          ? 'tw-w-full tw-max-w-5xl tw-mx-auto tw-px-8 tw--mt-lg tw-mb-lg tw-aspect-[3/2] sm:tw-aspect-[4/3]'
           : ''
       }`}
       style={`${aspectRatio ? `aspect-ratio: ${aspectRatio};` : ''} ${style !== 'hero' && style !== 'simple' ? `width: ${finalWidth}; height: ${finalHeight};` : ''}`}
@@ -562,7 +573,7 @@ const captionId = hasCaption
     height: 100%;
   }
 
-  /* object-fit handled via Tailwind utilities now */
+  /* object-fit handled via tw-* utilities (see tailwind-utilities.css) */
 
   /* Hero image style - for blog post headers */
   .image-frame-hero {
@@ -675,9 +686,7 @@ const captionId = hasCaption
   /* Mobile responsiveness */
   @media (max-width: 768px) {
     .image-frame-botanical,
-    .image-frame-polaroid,
-    .image-frame-gentle-oval,
-    .image-frame-watercolor {
+    .image-frame-polaroid {
       max-width: 140px;
       max-height: 140px;
     }
@@ -717,4 +726,6 @@ const captionId = hasCaption
   }
 </style>
 
-{isClickable && <script src="/scripts/image-frame-toggle.js" is:inline />}
+<script>
+  import '../scripts/image-frame-toggle.ts';
+</script>

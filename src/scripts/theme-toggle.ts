@@ -1,6 +1,8 @@
 // Theme toggle functionality
 const KEY = 'theme-preference';
 
+let initialized = false;
+
 function getThemePreference(): string | null {
   try {
     return localStorage.getItem(KEY);
@@ -74,6 +76,8 @@ function toggleTheme(): void {
 
 // Initialize
 export function initThemeToggle(): void {
+  if (initialized) return;
+
   const btn = document.getElementById('nav-theme-toggle');
 
   applyTheme(getEffectiveTheme());
@@ -81,6 +85,8 @@ export function initThemeToggle(): void {
   if (btn) {
     btn.addEventListener('click', toggleTheme);
   }
+
+  initialized = true;
 }
 
 // Auto-initialize

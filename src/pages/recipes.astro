@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import NoteCardStack from '../components/NoteCardStack.astro';
-import Search from 'astro-pagefind/components/Search';
+import Search from 'astro-pagefind/components/Search.astro';
 
 const allRecipes = await getCollection('recipes', ({ data }) => !data.draft);
 const recipes = allRecipes.sort((a, b) => a.data.title.localeCompare(b.data.title));
@@ -31,6 +31,7 @@ const tags = Array.from(new Set(recipes.flatMap((r) => r.data.tags ?? []))).sort
           <NoteCardStack
             columns={1}
             aspectRatio="3/2"
+            tagBasePath="/recipes"
             items={recipes.map((r) => ({
               id: r.id,
               title: r.data.title,
@@ -54,30 +55,16 @@ const tags = Array.from(new Set(recipes.flatMap((r) => r.data.tags ?? []))).sort
         <section class="sidebar-section" role="search" aria-labelledby="search-heading">
           <h3 id="search-heading">Search recipes</h3>
           <Search
-            id="search"
+            instance="recipe"
             className="pagefind-ui"
-            uiOptions={{
-              showImages: false,
-              debounceTimeoutMs: 100,
-              pageSize: 5,
-              excerptLength: 80,
-              showResultsCount: true,
-              showEmptyFilters: false,
-              filters: { type: 'recipe' },
-              translations: {
-                placeholder: 'Search recipes...',
-                clear_search: 'Clear search',
-                load_more: 'Load more results',
-                search_label: 'Search recipes',
-                filters_label: 'Filters',
-                zero_results: 'No recipes found matching your search.',
-                many_results: '# recipes found',
-                one_result: '1 recipe found',
-                alt_search: 'Search for [SEARCH_TERM]',
-                search_suggestion: 'Try searching for a recipe name, ingredient, or cooking method',
-              },
-            }}
+            configOptions={{ 'excerpt-length': 80 }}
+            searchboxOptions={{ placeholder: 'Search recipes...' }}
           />
+          <script>
+            import { configurePagefindFilter } from '../scripts/pagefind-filter';
+            // Restrict this search instance to recipes only.
+            configurePagefindFilter('recipe', 'recipe');
+          </script>
           <div id="search-status" class="search-status" aria-live="polite" aria-atomic="true"></div>
         </section>
         <section class="sidebar-section" role="group" aria-labelledby="filter-heading">

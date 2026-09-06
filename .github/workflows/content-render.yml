@@ -2,7 +2,7 @@ name: Content Render (Quarto → Markdown)
 
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, dev]
     paths:
       - 'src/content/**/*.qmd'
       - 'src/content/**/*.md'

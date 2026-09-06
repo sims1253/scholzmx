@@ -2,9 +2,11 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import HandDrawnDivider from '../../components/HandDrawnDivider.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
 
 export async function getStaticPaths() {
-  const notes = await getCollection('notes');
+  const notes = await getCollection('notes', ({ data }) => !data.draft);
   return notes.map((note) => ({
     params: { slug: note.id },
     props: { note },
@@ -58,6 +60,8 @@ const getTypeColor = (type: string) => {
 >
   <div class="note-page">
     <div class="note-container">
+      <Breadcrumb items={[{ label: 'Notes', href: '/notes' }, { label: note.data.title }]} />
+
       <article class="note-content">
         <header class="note-header">
           <div class="note-meta">
@@ -97,9 +101,11 @@ const getTypeColor = (type: string) => {
           }
         </header>
 
+        <TableOfContents maxDepth={3} />
+
         <HandDrawnDivider variant="botanical" width="wide" />
 
-        <div class="note-body prose">
+        <div id="note-body" class="note-body prose">
           <!-- Ensure first paragraph of Content begins with a DropCap for consistent manuscript style.
                If the markdown content starts with a heading or image, consider moving DropCap usage into
                the content itself or adding a lead paragraph here. -->

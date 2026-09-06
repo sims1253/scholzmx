@@ -57,6 +57,106 @@
       text-decoration-color 150ms ease-out;
   }
 
+  /* Touch feedback system - visual feedback on tap */
+  @media (hover: none) and (pointer: coarse) {
+    /* Touch targets positioning */
+    .nav-link,
+    .torch-toggle,
+    .copy-button,
+    .site-logo,
+    button,
+    .sc-item,
+    .note-card,
+    .project-item,
+    a[href],
+    input[type='button'],
+    input[type='submit'] {
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Ripple effect on touch */
+    .nav-link:active,
+    .torch-toggle:active,
+    .copy-button:active,
+    .site-logo:active,
+    button:active,
+    .sc-item:active,
+    .note-card:active,
+    .project-item:active {
+      transform: scale(0.97);
+    }
+
+    /* Subtle scale on touch for better feedback */
+    .nav-link,
+    .torch-toggle,
+    .copy-button,
+    button,
+    .sc-item,
+    .note-card,
+    .project-item {
+      transition: transform 0.1s ease-out;
+    }
+
+    /* Remove hover effects on touch devices to prevent stuck states */
+    .nav-link:hover,
+    .torch-toggle:hover,
+    .copy-button:hover,
+    .site-logo:hover,
+    a:not(.nav-link):not(.site-logo):hover,
+    button:not(.torch-toggle):not(.copy-button):hover,
+    details.code-collapse summary:hover {
+      background-color: transparent;
+      color: inherit;
+    }
+
+    /* Only apply active state for touch feedback */
+    .nav-link:active,
+    .torch-toggle:active,
+    .copy-button:active,
+    .site-logo:active,
+    a:not(.nav-link):not(.site-logo):active,
+    button:not(.torch-toggle):not(.copy-button):active,
+    details.code-collapse summary:active {
+      background-color: var(--color-walnut);
+      color: var(--color-parchment-light);
+    }
+
+    /* Larger tap targets for all interactive elements */
+    .nav-link,
+    .torch-toggle,
+    .copy-button,
+    button,
+    a.nav-link,
+    a.torch-toggle,
+    a[role='button'],
+    input[type='button'],
+    input[type='submit'] {
+      min-height: 44px;
+      min-width: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Cards have touch feedback */
+    .sc-item,
+    .note-card,
+    .project-item,
+    .manuscript-page,
+    .handcrafted-card {
+      transition: transform 0.1s ease-out;
+    }
+
+    .sc-item:active,
+    .note-card:active,
+    .project-item:active,
+    .manuscript-page:active,
+    .handcrafted-card:active {
+      transform: scale(0.98);
+    }
+  }
+
   .nav-link:hover,
   .torch-toggle:hover,
   .copy-button:hover,
@@ -158,7 +258,8 @@
   }
 
   html {
-    font-size: clamp(18px, 2.5vw, 21px); /* Fluid base font size */
+    /* Fluid base font size with scaling support via --font-scale variable */
+    font-size: calc(clamp(18px, 2.5vw, 21px) * var(--font-scale, 1));
     line-height: var(--spacing-line-height);
     scroll-behavior: smooth;
   }
@@ -238,7 +339,6 @@
     line-height: 1.25;
     font-family: var(--font-heading);
     font-weight: var(--heading-weight-strong);
-    font-optical-sizing: auto;
     font-feature-settings:
       'liga' 1,
       'kern' 1;
@@ -246,20 +346,22 @@
   }
 
   h1 {
-    font-size: clamp(var(--text-2xl), 5vw, var(--text-3xl)); /* Fluid heading size */
+    font-size: calc(
+      clamp(var(--text-2xl), 5vw, var(--text-3xl)) * var(--font-scale, 1)
+    ); /* Fluid heading size */
     font-weight: var(--heading-weight-strong);
     margin-block-end: var(--space-lg);
     letter-spacing: 0.005em;
   }
 
   h2 {
-    font-size: clamp(var(--text-xl), 4vw, var(--text-2xl));
+    font-size: calc(clamp(var(--text-xl), 4vw, var(--text-2xl)) * var(--font-scale, 1));
     margin-block-start: var(--space-xl);
     letter-spacing: 0.002em;
   }
 
   h3 {
-    font-size: clamp(var(--text-lg), 3.5vw, var(--text-xl));
+    font-size: calc(clamp(var(--text-lg), 3.5vw, var(--text-xl)) * var(--font-scale, 1));
     margin-block-start: var(--space-lg);
   }
 
@@ -290,7 +392,7 @@
     text-underline-offset: 0.15em;
   }
 
-  a:focus {
+  a:focus:not(:focus-visible) {
     box-shadow:
       0 0 0 1px color-mix(in srgb, var(--color-moss) 40%, transparent),
       0 0 8px color-mix(in srgb, var(--color-sage) 20%, transparent);
@@ -372,7 +474,7 @@
     position: absolute;
     inset-inline-start: var(--space-sm);
     inset-block-start: 0;
-    font-size: clamp(3rem, 6vw, 4rem); /* Fluid quote mark */
+    font-size: calc(clamp(3rem, 6vw, 4rem) * var(--font-scale, 1)); /* Fluid quote mark */
     line-height: 1;
     font-family: var(--font-heading);
   }
@@ -401,13 +503,6 @@
     color: var(--color-ink-dark);
     background-color: var(--color-parchment-light);
     font-weight: 600;
-  }
-
-  /* Performance optimizations */
-  img {
-    /* Reduce layout shift */
-    height: auto;
-    max-width: 100%;
   }
 
   /* Optimize code block rendering */

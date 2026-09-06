@@ -14,7 +14,9 @@
 
 /* Personal variant - warm and playful for welcome/recipes */
 .dropcap--personal {
-  font-size: 4.3rem; /* ~2.7 lines at 1.6 line-height, sized for optical alignment */
+  font-size: calc(
+    4.3rem * var(--font-scale, 1)
+  ); /* ~2.7 lines at 1.6 line-height, sized for optical alignment */
   line-height: 1;
   margin-right: 0.06em;
   margin-top: 0.11em; /* Mobile default */
@@ -30,7 +32,9 @@
 
 /* Serious variant - formal and elegant for blog/notes */
 .dropcap--serious {
-  font-size: 4.15rem; /* ~2.7 lines at 1.55 line-height, sized for optical alignment */
+  font-size: calc(
+    4.15rem * var(--font-scale, 1)
+  ); /* ~2.7 lines at 1.55 line-height, sized for optical alignment */
   line-height: 1;
   margin-right: 0.06em;
   margin-top: 0.03em;

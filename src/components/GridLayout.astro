@@ -1,6 +1,6 @@
 ---
-// GridLayout.astro - Flexible responsive grid component using Tailwind utilities
-// Replaces fragile custom CSS grid patterns with robust Tailwind classes
+// GridLayout.astro - Flexible responsive grid component using hand-written utilities
+// Replaces fragile custom CSS grid patterns with robust tw-* classes
 
 export interface Props {
   columns?: 1 | 2 | 3 | 'auto'; // Number of columns at largest breakpoint
@@ -24,7 +24,7 @@ const {
 const getGridClasses = () => {
   const classes = ['tw-grid'];
 
-  // Gap classes - use custom spacing tokens defined in tailwind.config.mjs
+  // Gap classes - map to the design system's spacing tokens (see tailwind-utilities.css)
   const gapMap = {
     xs: 'tw-gap-xs',
     sm: 'tw-gap-sm',
@@ -87,7 +87,7 @@ const mergedStyle = [gridStyle].filter(Boolean).join('; ');
 <style>
   /* Support for custom grid templates when needed */
   :global(.grid-layout-custom) {
-    /* Custom grid patterns can be added here if Tailwind utilities aren't sufficient */
+    /* Custom grid patterns can be added here if the tw-* utilities aren't sufficient */
   }
 
   /* Ensure grid items don't overflow */

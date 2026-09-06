@@ -1,66 +1,53 @@
 ---
 // Import shared quotes data to avoid duplication between server and client
-import { personalQuotes } from '../data/quotes.js';
+import { getQuoteOfTheDay } from '../data/quotes.js';
 
-// Get random quote for initial display
-const getRandomQuote = () => personalQuotes[Math.floor(Math.random() * personalQuotes.length)];
-const initialQuote = getRandomQuote();
+// Deterministic quote for the current day (stable across builds/deploys)
+const initialQuote = getQuoteOfTheDay();
 ---
 
-<div class="quote-container" id="quote-container" aria-live="polite" aria-label="Quote of the day">
+<div class="quote-container" id="quote-container">
+  <blockquote class="daily-quote" aria-live="polite" aria-label="Quote of the day">
+    <p class="quote-text" id="quote-text">{initialQuote.text}</p>
+    <footer class="quote-attribution">
+      <cite class="quote-author" id="quote-author">— {initialQuote.author}</cite>
+    </footer>
+  </blockquote>
   <button
     class="quote-interactive-wrapper"
     type="button"
-    aria-label="Click to get a new quote"
     id="quote-wrapper-button"
-  >
-    <blockquote class="daily-quote">
-      <p class="quote-text" id="quote-text">{initialQuote!.text}</p>
-      <footer class="quote-attribution">
-        <cite class="quote-author" id="quote-author">— {initialQuote!.author}</cite>
-      </footer>
-    </blockquote>
-  </button>
+    aria-label="Show another quote"></button>
 </div>
 
 <script>
   // Import shared quotes data to ensure consistency with server-side rendering
-  import { personalQuotes } from '../data/quotes.js';
-
-  function getRandomQuote() {
-    return personalQuotes[Math.floor(Math.random() * personalQuotes.length)];
-  }
+  import { getQuoteOfTheDay } from '../data/quotes.js';
 
   function updateQuote() {
-    const newQuote = getRandomQuote();
+    const newQuote = getQuoteOfTheDay();
     const quoteText = document.getElementById('quote-text');
     const quoteAuthor = document.getElementById('quote-author');
     const container = document.getElementById('quote-container');
 
     if (quoteText && quoteAuthor && container) {
-      // Add fade out class
-      container.style.opacity = '0.5';
-      container.style.transform = 'translateY(5px)';
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      setTimeout(() => {
-        quoteText.textContent = newQuote!.text;
-        quoteAuthor.textContent = `— ${newQuote!.author}`;
+      // Fade out (transition defined in CSS)
+      container.classList.add('is-fading');
 
+      const applyNewQuote = () => {
+        quoteText.textContent = newQuote.text;
+        quoteAuthor.textContent = `— ${newQuote.author}`;
         // Fade back in
-        container.style.opacity = '1';
-        container.style.transform = 'translateY(0)';
+        container.classList.remove('is-fading');
+      };
 
-        // Create accessible announcement for screen readers
-        const announcement = `New quote: ${newQuote!.text} by ${newQuote!.author}`;
-
-        // Update the aria-label for immediate announcement
-        container.setAttribute('aria-label', `Quote of the day: ${announcement}`);
-
-        // Reset aria-label after announcement
-        setTimeout(() => {
-          container.setAttribute('aria-label', 'Quote of the day');
-        }, 3000);
-      }, 200);
+      if (prefersReducedMotion) {
+        applyNewQuote();
+      } else {
+        setTimeout(applyNewQuote, 150);
+      }
     }
   }
 
@@ -68,7 +55,6 @@ const initialQuote = getRandomQuote();
   document.addEventListener('DOMContentLoaded', () => {
     const quoteWrapperButton = document.getElementById('quote-wrapper-button');
 
-    // Add click handler to the quote wrapper button
     if (quoteWrapperButton) {
       quoteWrapperButton.addEventListener('click', () => {
         updateQuote();
@@ -91,20 +77,34 @@ const initialQuote = getRandomQuote();
     background: transparent;
     border: none;
     box-shadow: none;
+    transition:
+      opacity 0.15s ease,
+      transform 0.15s ease;
+  }
+
+  .quote-container.is-fading {
+    opacity: 0.5;
+    transform: translateY(5px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .quote-container,
+    .quote-container.is-fading {
+      transition: none;
+    }
   }
 
   .quote-interactive-wrapper {
-    display: block;
+    position: absolute;
+    inset: 0;
     width: 100%;
+    height: 100%;
     background: none;
     border: none;
     padding: 0;
     margin: 0;
     cursor: pointer;
     text-align: inherit;
-    font: inherit;
-    color: inherit;
-    text-decoration: none;
     border-radius: var(--border-radius);
   }
 

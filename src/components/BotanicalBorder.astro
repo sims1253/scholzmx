@@ -1,18 +1,17 @@
 ---
 export interface Props {
   position?: 'top' | 'bottom' | 'left' | 'right' | 'corner';
-  variant?: 'vine' | 'leaves' | 'flowers' | 'geometric';
   intensity?: 'light' | 'medium' | 'heavy';
   className?: string;
 }
 
-const { position = 'top', variant = 'vine', intensity = 'medium', className = '' } = Astro.props;
+const { position = 'top', intensity = 'medium', className = '' } = Astro.props;
 
 const opacity = intensity === 'light' ? 0.15 : intensity === 'medium' ? 0.25 : 0.35;
 const strokeWidth = intensity === 'light' ? '2' : intensity === 'medium' ? '3' : '4';
 ---
 
-<div class={`botanical-border ${position} ${variant} ${className}`}>
+<div class={`botanical-border ${position} ${className}`}>
   {
     position === 'top' && (
       <svg class="border-svg" viewBox="0 0 820 160" preserveAspectRatio="none">
@@ -72,7 +71,7 @@ const strokeWidth = intensity === 'light' ? '2' : intensity === 'medium' ? '3' :
     position === 'left' && (
       <svg class="border-svg vertical" viewBox="0 0 180 800">
         <defs>
-          <filter id="organicTexture" x="-20%" y="-20%" width="140%" height="140%">
+          <filter id="borderOrganicTextureLeft" x="-20%" y="-20%" width="140%" height="140%">
             <feTurbulence baseFrequency="0.02" numOctaves="2" result="noise" seed="2" />
             <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.5" />
           </filter>
@@ -84,11 +83,11 @@ const strokeWidth = intensity === 'light' ? '2' : intensity === 'medium' ? '3' :
           stroke={`rgba(139, 90, 60, ${opacity + 0.15})`}
           stroke-width={strokeWidth}
           fill="none"
-          filter="url(#organicTexture)"
+          filter="url(#borderOrganicTextureLeft)"
         />
 
         {/* Botanical elements with depth */}
-        <g fill={`rgba(90, 107, 71, ${opacity})`} filter="url(#organicTexture)">
+        <g fill={`rgba(90, 107, 71, ${opacity})`} filter="url(#borderOrganicTextureLeft)">
           {/* Leaves with shadow layers */}
           <path d="M30,100 Q42,95 48,108 Q42,120 30,115 Q18,108 30,100" />
           <path
@@ -275,6 +274,18 @@ const strokeWidth = intensity === 'light' ? '2' : intensity === 'medium' ? '3' :
     }
   }
 
+  .border-svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 2px 4px rgba(139, 90, 60, 0.1));
+  }
+
+  .botanical-border.top {
+    top: 0;
+    height: 128px;
+  }
+
+  /* Mobile-specific overrides for top border */
   @media (max-width: 768px) {
     /* Hide side borders completely on mobile */
     .botanical-border.left,
@@ -292,17 +303,6 @@ const strokeWidth = intensity === 'light' ? '2' : intensity === 'medium' ? '3' :
     .botanical-border.top .border-svg {
       filter: drop-shadow(0 1px 2px rgba(139, 90, 60, 0.05));
     }
-  }
-
-  .border-svg {
-    width: 100%;
-    height: 100%;
-    filter: drop-shadow(0 2px 4px rgba(139, 90, 60, 0.1));
-  }
-
-  .botanical-border.top {
-    top: 0;
-    height: 128px;
   }
 
   .botanical-border.bottom {

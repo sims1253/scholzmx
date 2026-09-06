@@ -7,10 +7,11 @@ html {
   scrollbar-gutter: stable both-edges;
 }
 
-/* Fluid root type with safe bounds (keeps existing design scale intact) */
+/* Fluid root type with safe bounds (keeps existing design scale intact).
+   Must honor --font-scale so FontSizeControl scales root-relative text. */
 @supports (font-size: clamp(1rem, 1vw, 2rem)) {
   html {
-    font-size: clamp(18px, 1.1vw + 14px, 21px);
+    font-size: calc(clamp(18px, 1.1vw + 14px, 21px) * var(--font-scale, 1));
   }
 }
 
@@ -96,26 +97,26 @@ html {
   /* Container query tweaks for tighter spaces */
   @container nav (inline-size <= 52rem) {
     .nav-links {
-      font-size: var(--text-md);
+      font-size: calc(var(--text-md) * var(--font-scale, 1));
       gap: var(--space-xs);
     }
   }
   @container nav (inline-size <= 38rem) {
     .nav-links {
-      font-size: var(--text-sm);
+      font-size: calc(var(--text-sm) * var(--font-scale, 1));
     }
   }
 
   /* Page headings should scale with the page content container, not the nav */
   @container page (inline-size <= 52rem) {
     h1 {
-      font-size: clamp(1.75rem, 4cqw + 1rem, var(--text-2xl));
+      font-size: calc(clamp(1.75rem, 4cqw + 1rem, var(--text-2xl)) * var(--font-scale, 1));
     }
     h2 {
-      font-size: clamp(1.25rem, 3cqw + 0.75rem, var(--text-xl));
+      font-size: calc(clamp(1.25rem, 3cqw + 0.75rem, var(--text-xl)) * var(--font-scale, 1));
     }
     h3 {
-      font-size: clamp(1.1rem, 2.5cqw + 0.5rem, var(--text-lg));
+      font-size: calc(clamp(1.1rem, 2.5cqw + 0.5rem, var(--text-lg)) * var(--font-scale, 1));
     }
   }
 

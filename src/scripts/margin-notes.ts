@@ -1,5 +1,13 @@
 // Margin Notes positioning logic (progressive enhancement)
 
+const MARGIN_NOTES_BREAKPOINT = 1088;
+
+// `> margin:` blockquotes are converted to anchors exactly once, regardless of
+// viewport, so the literal "margin:" prefix is never shown to readers. On narrow
+// viewports the CSS renders these anchors inline; on wide ones MarginNotes
+// positions them in the rail.
+let blockquotesConverted = false;
+
 function convertMarginBlockquotesToAnchors(): void {
   const blockquotes = document.querySelectorAll('.post-body blockquote, .recipe-body blockquote');
   blockquotes.forEach((blockquote) => {
@@ -21,6 +29,9 @@ class MarginNotes {
   private anchors: NodeListOf<HTMLElement>;
   private notesContainer: HTMLElement | null;
   private notes: HTMLElement[] = [];
+  private onResize?: () => void;
+  private onLoad?: () => void;
+  private timeout?: number;
 
   constructor() {
     this.anchors = document.querySelectorAll('.note-anchor');
@@ -74,9 +85,10 @@ class MarginNotes {
       const anchorRect = anchor.getBoundingClientRect();
       const note = this.notes[index];
       if (!note) return;
+      const height = this.getNoteHeight(note);
       let top = anchorRect.top - wrapperRect.top;
-      top = this.avoidCollisions(top, used, note);
-      used.push({ top, height: this.getNoteHeight(note) });
+      top = this.avoidCollisions(top, used, height);
+      used.push({ top, height });
       note.style.top = top + 'px';
       setTimeout(() => {
         note.classList.add('visible');
@@ -106,10 +118,9 @@ class MarginNotes {
   private avoidCollisions(
     desiredTop: number,
     used: { top: number; height: number }[],
-    note: HTMLElement
+    height: number
   ): number {
     let adjusted = desiredTop;
-    const height = this.getNoteHeight(note);
     const minGap = 24;
     const sorted = used.slice().sort((a, b) => a.top - b.top);
     for (const u of sorted) {
@@ -121,21 +132,38 @@ class MarginNotes {
   }
 
   private setupEventListeners(): void {
-    let timeout: number | undefined;
-    const onResize = () => {
-      if (timeout) window.clearTimeout(timeout);
-      timeout = window.setTimeout(() => {
+    this.onResize = () => {
+      if (this.timeout) window.clearTimeout(this.timeout);
+      this.timeout = window.setTimeout(() => {
         this.positionNotesContainer();
         this.positionNotes();
       }, 200);
     };
-    window.addEventListener('resize', onResize);
-    window.addEventListener('load', () => this.refresh());
+    this.onLoad = () => this.refresh();
+    window.addEventListener('resize', this.onResize);
+    window.addEventListener('load', this.onLoad);
   }
 
   public refresh(): void {
     this.positionNotesContainer();
     this.positionNotes();
+  }
+
+  public destroy(): void {
+    if (this.onResize) window.removeEventListener('resize', this.onResize);
+    if (this.onLoad) window.removeEventListener('load', this.onLoad);
+    if (this.timeout) window.clearTimeout(this.timeout);
+    this.onResize = undefined;
+    this.onLoad = undefined;
+    this.timeout = undefined;
+
+    // Clean up DOM elements
+    this.notes.forEach((note) => note.remove());
+    this.notes = [];
+
+    // Reset global state if re-initialization is needed
+    window.__mnotes_inited = false;
+    marginNotesInstance = null;
   }
 }
 
@@ -145,19 +173,42 @@ declare global {
   }
 }
 
+export { MarginNotes };
+export let marginNotesInstance: MarginNotes | null = null;
+
+let initResizeObserver: ResizeObserver | null = null;
+let initResizeHandler: (() => void) | null = null;
+
+function cleanupInitListeners(): void {
+  if (initResizeObserver) {
+    initResizeObserver.disconnect();
+    initResizeObserver = null;
+  }
+  if (initResizeHandler) {
+    window.removeEventListener('resize', initResizeHandler);
+    initResizeHandler = null;
+  }
+}
+
 export function initMarginNotes(): void {
   const tryInit = () => {
+    // Always convert margin blockquotes, even on narrow viewports, so the
+    // note text is shown inline via CSS instead of as a raw "margin:" blockquote.
+    if (!blockquotesConverted) {
+      convertMarginBlockquotesToAnchors();
+      blockquotesConverted = true;
+    }
+
     const mainContent = document.querySelector('.main-content') as HTMLElement;
-    if (mainContent && mainContent.offsetWidth < 1088) return; // ~68rem
+    if (!mainContent || mainContent.offsetWidth < MARGIN_NOTES_BREAKPOINT) return;
     if (window.__mnotes_inited) return;
 
-    // Ensure anchors exist by converting any Quarto-style margin notes first
-    convertMarginBlockquotesToAnchors();
     const anchors = document.querySelectorAll('.note-anchor');
     const container = document.getElementById('notesContainer');
     if (!anchors.length || !container) return;
-    new MarginNotes();
+    marginNotesInstance = new MarginNotes();
     window.__mnotes_inited = true;
+    cleanupInitListeners();
   };
 
   document.addEventListener('DOMContentLoaded', () => {
@@ -167,18 +218,18 @@ export function initMarginNotes(): void {
   window.addEventListener('load', tryInit);
 
   if ('ResizeObserver' in window) {
-    const resizeObserver = new ResizeObserver(() => {
+    initResizeObserver = new ResizeObserver(() => {
       if (window.__mnotes_inited) return;
       setTimeout(tryInit, 50);
     });
     const mainContent = document.querySelector('.main-content');
-    if (mainContent) resizeObserver.observe(mainContent);
+    if (mainContent) initResizeObserver.observe(mainContent);
   }
 
-  // Also listen for resize as fallback (works in all browsers)
-  window.addEventListener('resize', () => {
+  initResizeHandler = () => {
     if (!window.__mnotes_inited) setTimeout(tryInit, 50);
-  });
+  };
+  window.addEventListener('resize', initResizeHandler);
 }
 
 // Auto-initialize

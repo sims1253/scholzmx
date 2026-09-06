@@ -2,12 +2,13 @@ name: Code Quality CI
 
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, dev]
   pull_request:
-    branches: [main, master]
+    branches: [main, master, dev]
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: 'ci-${{ github.ref }}'
@@ -17,7 +18,7 @@ jobs:
   code-quality:
     name: Code Quality Checks
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -41,18 +42,77 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: TypeScript Check
+        id: typecheck
         run: bun run typecheck
 
-      - name: ESLint Check
+      - name: Lint (oxlint)
+        id: lintjs
         run: bun run lint:js
 
       - name: Stylelint Check
+        id: lintcss
         run: bun run lint:css
 
       - name: Prettier Check
+        id: format
         run: bun run format:check
 
+      - name: Get latest content render run
+        id: render-run
+        run: |
+          latest_run=$(gh run list \
+            --workflow="Content Render (Quarto → Markdown)" \
+            --status=success \
+            --limit=1 \
+            --json=databaseId \
+            --jq='.[0].databaseId // empty' || echo "")
+          echo "run-id=$latest_run" >> $GITHUB_OUTPUT
+          if [ -n "$latest_run" ]; then
+            echo "Found previous render run: $latest_run"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      - name: Download rendered content
+        if: steps.render-run.outputs.run-id != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: rendered-content
+          path: rendered
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ steps.render-run.outputs.run-id }}
+        continue-on-error: true
+
+      - name: Merge rendered content
+        if: steps.render-run.outputs.run-id != ''
+        run: |
+          set -e
+          if [ -d rendered/src/content/blog ]; then
+            rsync -av rendered/src/content/blog/ src/content/blog/
+            echo "Merged rendered blog markdown"
+          fi
+          if [ -d rendered/src/assets/images/blog ]; then
+            rsync -av rendered/src/assets/images/blog/ src/assets/images/blog/
+            echo "Merged rendered blog assets"
+          fi
+          find src/content/blog -name '*.md' -type f 2>/dev/null | wc -l | xargs -I {} echo "Total markdown files: {}"
+
+      - name: Verify rendered content
+        if: steps.render-run.outputs.run-id != ''
+        run: |
+          # Fail fast if a render run was found but no generated posts merged in,
+          # so we never build or validate against an incomplete content set.
+          generated=$(find src/content/blog -path '*/index.md' -type f 2>/dev/null | wc -l)
+          if [ "$generated" -eq 0 ]; then
+            echo "::error::Render run ${{ steps.render-run.outputs.run-id }} was found but produced no generated posts; refusing to build an incomplete site."
+            exit 1
+          fi
+          echo "✓ $generated generated post(s) present"
+
       - name: Build Test
+        id: build
         run: bun run build
 
       - name: Quality Summary
@@ -62,12 +122,16 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| TypeScript | ${{ steps.*.outcome == 'success' && '✅' || '❌' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| TypeScript | ${{ steps.typecheck.outcome == 'success' && 'PASS' || 'FAIL' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| oxlint | ${{ steps.lintjs.outcome == 'success' && 'PASS' || 'FAIL' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Stylelint | ${{ steps.lintcss.outcome == 'success' && 'PASS' || 'FAIL' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Prettier | ${{ steps.format.outcome == 'success' && 'PASS' || 'FAIL' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | ${{ steps.build.outcome == 'success' && 'PASS' || 'FAIL' }} |" >> $GITHUB_STEP_SUMMARY
 
   accessibility-test:
     name: Accessibility Testing
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     needs: code-quality
     steps:
       - name: Checkout code

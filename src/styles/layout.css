@@ -91,7 +91,9 @@
   gap: var(--space-xs);
   text-decoration: none;
   font-family: var(--font-heading);
-  font-size: clamp(0.9rem, 3vw, var(--text-xl)); /* Extra compact on mobile */
+  font-size: calc(
+    clamp(0.9rem, 3vw, var(--text-xl)) * var(--font-scale, 1)
+  ); /* Extra compact on mobile */
   font-weight: 600;
   color: var(--color-ink-dark);
   margin-left: 0;
@@ -114,8 +116,10 @@
 .nav-links {
   display: flex;
   align-items: center;
-  gap: clamp(0.15rem, 1vw, 1rem); /* Ultra tight gap on mobile */
-  font-size: clamp(0.8rem, 2.2vw, var(--text-lg)); /* Even more aggressive mobile scaling */
+  gap: clamp(0.15rem, 1vw, 1rem);
+  font-size: calc(
+    clamp(0.8rem, 2.2vw, var(--text-lg)) * var(--font-scale, 1)
+  ); /* Even more aggressive mobile scaling */
   font-family: var(--font-heading);
   margin-inline-start: auto;
   min-width: 0;
@@ -130,13 +134,13 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: clamp(28px, 6vw, 40px); /* More compact on mobile */
-  height: clamp(28px, 6vw, 40px);
-  min-width: 40px; /* Reduced minimum for space efficiency */
-  min-height: 40px;
+  width: clamp(44px, 10vw, 48px);
+  height: clamp(44px, 10vw, 48px);
+  min-width: 44px;
+  min-height: 44px;
   border: 1px solid color-mix(in srgb, var(--color-lichen) 50%, transparent);
   background: color-mix(in srgb, var(--color-surface) 40%, transparent);
-  padding: clamp(2px, 0.5vw, 6px); /* Tighter padding */
+  padding: clamp(4px, 1vw, 8px);
   border-radius: 50%;
   color: var(--color-walnut);
 }
@@ -150,7 +154,7 @@
   height: clamp(16px, 4vw, 22px);
 }
 
-.torch-toggle:focus {
+.torch-toggle:focus-visible {
   outline: 2px solid var(--color-tansy);
   outline-offset: 2px;
 }
@@ -160,18 +164,20 @@
 .nav-link {
   text-decoration: none;
   color: var(--color-ink-light);
-  padding-block: clamp(4px, 1vw, 8px); /* More compact mobile padding */
-  padding-inline: clamp(6px, 1.5vw, 12px);
+  padding-block: clamp(6px, 1.5vw, 10px);
+  padding-inline: clamp(8px, 2vw, 16px);
   font-weight: 400;
   letter-spacing: 0.01em;
   position: relative;
   border-radius: 4px;
-  min-height: clamp(36px, 8vw, 44px); /* Reduced min-height on mobile */
-  display: flex;
+  min-height: clamp(44px, 10vw, 48px);
+  min-width: 44px;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
 }
 
-.nav-link:focus {
+.nav-link:focus-visible {
   outline: 2px solid var(--color-tansy);
   outline-offset: 2px;
 }
@@ -200,9 +206,12 @@
 .nav-separator {
   color: var(--color-lichen);
   opacity: 0.4;
-  margin-inline: clamp(0px, 1vw, 4px); /* Minimal margin on mobile */
+  margin-inline: clamp(2px, 0.5vw, 6px);
   font-weight: 300;
-  font-size: clamp(0.7rem, 2vw, 1rem); /* Smaller on mobile */
+  font-size: calc(clamp(0.7rem, 2vw, 1rem) * var(--font-scale, 1));
+  display: inline-flex;
+  align-items: center;
+  padding: 0 2px;
 }
 
 /* Page layout structure */
@@ -225,7 +234,8 @@
 }
 
 .main-content {
-  padding: var(--space-sm) 0;
+  padding-inline: 0;
+  padding-block: clamp(0.25rem, 1vw, var(--space-sm)) 0;
   flex: 1 1 auto;
   display: block; /* Prevent flex from shrinking inner layout wrappers */
   position: relative; /* required for margin-notes absolute container */
@@ -264,12 +274,7 @@
 }
 
 /* Modern responsive layout using logical properties */
-.main-content {
-  padding-block: clamp(0.25rem, 1vw, var(--space-sm)) 0; /* Minimal top padding on mobile */
-  flex: 1 1 auto;
-  display: block;
-  position: relative;
-}
+/* (merged into the .main-content rule above) */
 
 /* Smart separator visibility using modern CSS */
 @container (max-width: 30rem) {
@@ -293,11 +298,11 @@
   }
 
   .nav-brand .site-logo {
-    font-size: 0.9rem; /* Slightly larger title */
+    font-size: calc(0.9rem * var(--font-scale, 1)); /* Slightly larger title */
   }
 
   .nav-links {
-    font-size: 0.8rem; /* Slightly larger nav links */
+    font-size: calc(0.8rem * var(--font-scale, 1)); /* Slightly larger nav links */
     gap: 0.12rem; /* Minimal gap between nav items */
   }
 

@@ -15,7 +15,7 @@
  * Probability Semantics:
  * - Category probability: Bernoulli roll to enable the entire category (0.0-1.0)
  * - Exclusive categories: Item "probability" values are WEIGHTS for weighted selection
- *   Example: primaryAccents has 80% gate, then weighted pick among items (0.5:0.3:0.4 ratio)
+ *   Example: primaryAccents has 80% gate, then weighted chance among items (0.5:0.3:0.4 ratio)
  * - Non-exclusive categories: Item probabilities are independent Bernoulli rolls (0.0-1.0)
  *   Example: stickers can have both TR and BL active if both roll succeed
  *
@@ -37,8 +37,8 @@ export type DoodadItem = {
   conflicts?: string[];
   generate?: (rng: {
     random: () => number;
-    pick: (p: number) => boolean;
-    map: (min: number, max: number) => number;
+    chance: (p: number) => boolean;
+    between: (min: number, max: number) => number;
     betweenInt: (min: number, max: number) => number;
   }) => DoodadProps;
 } & (
@@ -92,7 +92,7 @@ export const doodadCategories: DoodadCategory[] = [
         probability: 0.4,
         layerTypes: ['all'],
         kind: 'element',
-        generate: ({ pick }) => ({ side: pick(0.5) ? 'right' : 'left' }),
+        generate: ({ chance }) => ({ side: chance(0.5) ? 'right' : 'left' }),
       },
       {
         id: 'tapeCorners',
@@ -142,9 +142,9 @@ export const doodadCategories: DoodadCategory[] = [
         src: '/doodles/doodle-berries.svg',
         defaultSize: '1.8rem',
         positions: ['topRight', 'topLeft'],
-        generate: ({ pick, map }) => ({
-          position: pick(0.5) ? 'topRight' : 'topLeft',
-          rotation: Math.round(map(-15, 15)),
+        generate: ({ chance, between }) => ({
+          position: chance(0.5) ? 'topRight' : 'topLeft',
+          rotation: Math.round(between(-15, 15)),
         }),
       },
       {
@@ -155,9 +155,9 @@ export const doodadCategories: DoodadCategory[] = [
         src: '/doodles/doodle-fern.svg',
         defaultSize: '2.2rem',
         positions: ['bottomLeft', 'bottomRight'],
-        generate: ({ pick, map }) => ({
-          position: pick(0.5) ? 'bottomLeft' : 'bottomRight',
-          rotation: Math.round(map(-20, 20)),
+        generate: ({ chance, between }) => ({
+          position: chance(0.5) ? 'bottomLeft' : 'bottomRight',
+          rotation: Math.round(between(-20, 20)),
         }),
       },
       {
@@ -168,9 +168,9 @@ export const doodadCategories: DoodadCategory[] = [
         src: '/doodles/doodle-flower-lavender.svg',
         defaultSize: '1.6rem',
         positions: ['center', 'topLeft', 'topRight'],
-        generate: ({ pick, map }) => ({
-          position: pick(0.3) ? 'center' : pick(0.5) ? 'topLeft' : 'topRight',
-          rotation: Math.round(map(-12, 12)),
+        generate: ({ chance, between }) => ({
+          position: chance(0.3) ? 'center' : chance(0.5) ? 'topLeft' : 'topRight',
+          rotation: Math.round(between(-12, 12)),
         }),
       },
       {
@@ -181,10 +181,10 @@ export const doodadCategories: DoodadCategory[] = [
         src: '/doodles/doodle-old-key.svg',
         defaultSize: '2.5rem',
         positions: ['center'],
-        generate: ({ map }) => ({
+        generate: ({ between }) => ({
           position: 'center',
-          rotation: Math.round(map(-25, 25)),
-          scale: map(0.8, 1.1),
+          rotation: Math.round(between(-25, 25)),
+          scale: between(0.8, 1.1),
         }),
       },
       {
@@ -195,9 +195,9 @@ export const doodadCategories: DoodadCategory[] = [
         src: '/doodles/doodle-seed-pod.svg',
         defaultSize: '1.9rem',
         positions: ['bottomLeft', 'bottomRight'],
-        generate: ({ pick, map }) => ({
-          position: pick(0.5) ? 'bottomLeft' : 'bottomRight',
-          rotation: Math.round(map(-18, 18)),
+        generate: ({ chance, between }) => ({
+          position: chance(0.5) ? 'bottomLeft' : 'bottomRight',
+          rotation: Math.round(between(-18, 18)),
         }),
       },
     ],
@@ -247,17 +247,17 @@ export const doodadCategories: DoodadCategory[] = [
         probability: 0.4,
         layerTypes: ['all'],
         kind: 'background',
-        generate: ({ map }) => ({
-          washX: map(35, 65),
-          washY: map(30, 60),
-          washAlpha: map(0.4, 0.6),
-          washTx: Math.round(map(-12, 12)),
-          washTy: Math.round(map(-10, 10)),
-          washR1: Math.round(map(70, 100)),
-          washR2: Math.round(map(50, 80)),
-          washX2: Math.round(Math.max(10, Math.min(90, map(35, 65) + map(-15, 15)))),
-          washY2: Math.round(Math.max(10, Math.min(90, map(30, 60) + map(-10, 10)))),
-          washBleed: Math.round(map(110, 140)),
+        generate: ({ between }) => ({
+          washX: between(35, 65),
+          washY: between(30, 60),
+          washAlpha: between(0.4, 0.6),
+          washTx: Math.round(between(-12, 12)),
+          washTy: Math.round(between(-10, 10)),
+          washR1: Math.round(between(70, 100)),
+          washR2: Math.round(between(50, 80)),
+          washX2: Math.round(Math.max(10, Math.min(90, between(35, 65) + between(-15, 15)))),
+          washY2: Math.round(Math.max(10, Math.min(90, between(30, 60) + between(-10, 10)))),
+          washBleed: Math.round(between(110, 140)),
         }),
       },
       {
@@ -265,17 +265,17 @@ export const doodadCategories: DoodadCategory[] = [
         probability: 0.3,
         layerTypes: ['all'],
         kind: 'background',
-        generate: ({ map }) => ({
-          washX: map(25, 75),
-          washY: map(20, 70),
-          washAlpha: map(0.7, 0.9),
-          washTx: Math.round(map(-18, 18)),
-          washTy: Math.round(map(-14, 14)),
-          washR1: Math.round(map(90, 130)),
-          washR2: Math.round(map(70, 110)),
-          washX2: Math.round(Math.max(10, Math.min(90, map(25, 75) + map(-20, 20)))),
-          washY2: Math.round(Math.max(10, Math.min(90, map(20, 70) + map(-15, 15)))),
-          washBleed: Math.round(map(130, 170)),
+        generate: ({ between }) => ({
+          washX: between(25, 75),
+          washY: between(20, 70),
+          washAlpha: between(0.7, 0.9),
+          washTx: Math.round(between(-18, 18)),
+          washTy: Math.round(between(-14, 14)),
+          washR1: Math.round(between(90, 130)),
+          washR2: Math.round(between(70, 110)),
+          washX2: Math.round(Math.max(10, Math.min(90, between(25, 75) + between(-20, 20)))),
+          washY2: Math.round(Math.max(10, Math.min(90, between(20, 70) + between(-15, 15)))),
+          washBleed: Math.round(between(130, 170)),
         }),
       },
       {
@@ -283,9 +283,9 @@ export const doodadCategories: DoodadCategory[] = [
         probability: 0.1,
         layerTypes: ['all'],
         kind: 'background',
-        generate: ({ map }) => ({
-          ringScale: map(0.8, 1.0),
-          ringAlpha: map(0.15, 0.3),
+        generate: ({ between }) => ({
+          ringScale: between(0.8, 1.0),
+          ringAlpha: between(0.15, 0.3),
         }),
       },
     ],

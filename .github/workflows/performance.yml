@@ -15,6 +15,10 @@ env:
   # Define audited pages centrally - easier to maintain
   AUDIT_PATHS: '/ /blog/ /research/ /projects/ /notes/ /blog/2025/01-15-blog-post-features-template/ /recipes/hokkaido-dinner-rolls/'
 
+permissions:
+  contents: read
+  actions: read
+
 jobs:
   lighthouse:
     name: Lighthouse Performance Audit
@@ -42,19 +46,6 @@ jobs:
           fi
           echo "base-url=$base_url" >> $GITHUB_OUTPUT
           echo "Site URL: $base_url"
-
-      - name: Build Lighthouse URL list
-        id: urls
-        run: |
-          base_url="${{ steps.site.outputs.base-url }}"
-          urls=""
-          for path in $AUDIT_PATHS; do
-            urls="${urls}${base_url}${path}"$'\n'
-          done
-          # Write to file for the action (handles newlines better)
-          echo "$urls" > /tmp/lighthouse-urls.txt
-          echo "URLs to audit:"
-          cat /tmp/lighthouse-urls.txt
 
       - name: Run Lighthouse CI Audit
         uses: treosh/lighthouse-ci-action@v12
@@ -109,11 +100,57 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Get latest content render run
+        id: render-run
+        run: |
+          latest_run=$(gh run list \
+            --workflow="Content Render (Quarto → Markdown)" \
+            --status=success \
+            --limit=1 \
+            --json=databaseId \
+            --jq='.[0].databaseId // empty' || echo "")
+          echo "run-id=$latest_run" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      - name: Download rendered content
+        if: steps.render-run.outputs.run-id != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: rendered-content
+          path: rendered
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ steps.render-run.outputs.run-id }}
+        continue-on-error: true
+
+      - name: Merge rendered content
+        if: steps.render-run.outputs.run-id != ''
+        run: |
+          if [ -d rendered/src/content/blog ]; then
+            rsync -av rendered/src/content/blog/ src/content/blog/
+          fi
+          if [ -d rendered/src/assets/images/blog ]; then
+            rsync -av rendered/src/assets/images/blog/ src/assets/images/blog/
+          fi
+
       - name: Setup Chrome
         uses: browser-actions/setup-chrome@v2
         id: setup-chrome
         with:
           chrome-version: stable
+
+      - name: Build site
+        run: bun run build
 
       - name: Test accessibility with Pa11y CI
         env:
@@ -123,8 +160,23 @@ jobs:
           echo "Testing pages with Pa11y CI..."
           echo "Using Chrome at: $PUPPETEER_EXECUTABLE_PATH"
           set +e
-          npx -y pa11y-ci --config .pa11yci.json 2>&1 | tee /tmp/pa11y-output.txt
+          bun run preview > /tmp/preview.log 2>&1 &
+          PREVIEW_PID=$!
+          # Wait for the preview server to come up
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:4321/ > /dev/null 2>&1; then break; fi
+            sleep 1
+          done
+          bunx pa11y-ci --config .pa11yci.json \
+            http://localhost:4321/ \
+            http://localhost:4321/blog/ \
+            http://localhost:4321/research/ \
+            http://localhost:4321/projects/ \
+            http://localhost:4321/notes/ \
+            http://localhost:4321/recipes/hokkaido-dinner-rolls/ \
+            http://localhost:4321/blog/2025/01-15-blog-post-features-template/ 2>&1 | tee /tmp/pa11y-output.txt
           exit_code=$?
+          kill $PREVIEW_PID 2>/dev/null
           set -e
 
           # Parse the summary line (e.g., "✘ 4/5 URLs passed" or "✔ 5/5 URLs passed")

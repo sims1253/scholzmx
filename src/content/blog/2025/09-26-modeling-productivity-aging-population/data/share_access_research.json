@@ -1,0 +1,25 @@
+{
+  "name": ["Survey of Health, Ageing and Retirement in Europe (SHARE)"],
+  "website": ["http://www.share-project.org/"],
+  "data_access": ["http://www.share-project.org/data-access.html"],
+  "key_variables": [
+    "Individual cognitive test scores over time",
+    "Employment histories with productivity proxies",
+    "Technology adoption patterns by age cohort",
+    "Health and socioeconomic factors"
+  ],
+  "waves": [
+    "Wave 1 (2004-2005): Baseline",
+    "Wave 2 (2006-2007): Follow-up",
+    "Wave 3 (2008-2009): SHARELIFE retrospective",
+    "Wave 4 (2011-2012): Regular follow-up",
+    "Wave 5 (2013): Regular follow-up",
+    "Wave 6 (2015): Regular follow-up",
+    "Wave 7 (2017): Regular follow-up",
+    "Wave 8 (2020): COVID-19 special"
+  ],
+  "german_sample": ["~6,000 individuals aged 50+ per wave"],
+  "registration_required": [true],
+  "cost": ["Free for academic research"],
+  "approval_time": ["2-4 weeks for simple requests"]
+}

@@ -19,6 +19,7 @@
   /* Botanicals */
   --color-moss: #586a51; /* Structural green (frames/secondary) */
   --color-sage: #aeb7a8; /* Quiet substrate */
+  --color-sage-dark: #7c8a72; /* Darker sage for emphasis */
   --color-lichen: #cfd7cb; /* Underlines/keylines */
 
   /* Cool/meta */
@@ -51,7 +52,7 @@
 
 /* Torchlight Night Theme — same vibe, dusk parchment, ember inks, moss shadows */
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
+  :root:not([data-theme='light']):not([data-theme='dark']) {
     --color-parchment: #120f0d;
     --color-parchment-light: #171310;
 
@@ -66,6 +67,7 @@
 
     --color-moss: #7c916f; /* moonlit moss (slight lift) */
     --color-sage: #747866; /* warmer sage */
+    --color-sage-dark: #93a37f; /* darker sage for emphasis */
     --color-lichen: #586055; /* lighter keylines to avoid muddiness */
 
     --color-iron: #8da0b6;
@@ -109,6 +111,7 @@
 
   --color-moss: #7c916f;
   --color-sage: #747866;
+  --color-sage-dark: #93a37f;
   --color-lichen: #586055;
 
   --color-iron: #8da0b6;

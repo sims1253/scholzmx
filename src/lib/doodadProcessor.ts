@@ -9,8 +9,8 @@ import type { DoodadCategory, DoodadResults } from '../config/doodadConfig';
 
 export interface RngFunctions {
   random: () => number;
-  pick: (probability: number) => boolean;
-  map: (min: number, max: number) => number;
+  chance: (probability: number) => boolean;
+  between: (min: number, max: number) => number;
   betweenInt: (min: number, max: number) => number;
 }
 
@@ -33,7 +33,7 @@ export function processDoodadCategories(
   ornament: boolean,
   rng: RngFunctions
 ): DoodadResults {
-  const { random, pick, map, betweenInt } = rng;
+  const { random, chance, between, betweenInt } = rng;
   const results: DoodadResults = {};
   const activatedItems: string[] = [];
 
@@ -45,7 +45,7 @@ export function processDoodadCategories(
     }
 
     // Category-level probability gate
-    if (!categoryEnabled || !pick(category.probability)) continue;
+    if (!categoryEnabled || !chance(category.probability)) continue;
 
     // Filter items by layer compatibility and prop restrictions
     let availableItems = category.items.filter((item) => {
@@ -75,7 +75,9 @@ export function processDoodadCategories(
       for (const item of availableItems) {
         randomWeight -= item.probability;
         if (randomWeight <= 0) {
-          const params = item.generate ? item.generate({ random, pick, map, betweenInt }) : {};
+          const params = item.generate
+            ? item.generate({ random, chance, between, betweenInt })
+            : {};
           results[item.id] = { active: true, ...params };
           activatedItems.push(item.id);
           break;
@@ -84,8 +86,10 @@ export function processDoodadCategories(
     } else {
       // Non-exclusive category: each item rolls independently
       for (const item of availableItems) {
-        if (pick(item.probability)) {
-          const params = item.generate ? item.generate({ random, pick, map, betweenInt }) : {};
+        if (chance(item.probability)) {
+          const params = item.generate
+            ? item.generate({ random, chance, between, betweenInt })
+            : {};
           results[item.id] = { active: true, ...params };
           activatedItems.push(item.id);
         }

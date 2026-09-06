@@ -1,0 +1,143 @@
+---
+title: "Buying Agency in over/under"
+description: "What happens when your soup kitchen accidentally becomes the richest establishment on the server and you have no idea what to do with the money."
+date: 2025-12-07
+lastUpdated: 2025-12-07
+categories: [RPG]
+tags: ["over/under", "RPG", "Economy", "Mothership"]
+#heroImage: ../../../../assets/images/blog/2025/12-07-ou-agency/ball-invite.png
+#heroImagePositionX: 0
+#heroImagePositionY: 0
+#heroImageScale: 1
+draft: true
+execute:
+  echo: true
+  eval: true
+  warning: false
+  message: false
+format:
+  md:
+    variant: gfm
+    preserve-yaml: true
+    code-fold: false
+    code-block-bg: false
+    code-tools: false
+    title-block-style: none
+cache: true
+freeze: false
+---
+
+<span class="dropcap dropcap--ornate dropcap--serious" data-first-letter="I" aria-hidden="true">I</span> had 2,000 credits and a soup kitchen. Two days later I had 150,000 credits, 1,000 contraband tokens, and no idea what to do with any of it.
+
+This is what happens when you run a charity in a game where nobody needs saving.
+
+In my [last post](../11-23-ou-meta/index.qmd), I wrote about running the O2 Kitchen. This is what happened when the wargame collided with the roleplay, and I learned the hard way that having agency doesn't mean you know what to do with it.
+
+## The Invitation
+
+Sylvana ran the Bratva. Early on she tried to recruit me. I said no - mO2 doesn't join the mob. We became friends anyway.
+
+Here's where the meta starts: I was playing a principled character who believed in community over power. But me, the player? I was thrilled that a faction Boss wanted to be friends with my little soup kitchen NPC. The Kitchen had gravity. Real gravity, not just the roleplay kind.
+
+She kept visiting after becoming Boss. Other leaders disappeared into war rooms. She kept showing up for coffee. That's when I realized something important: the Kitchen wasn't just my little corner of roleplay. It had become a third space in the game, somewhere between the faction politics and the market chaos.
+
+When her birthday came around, she invited me to the Bratva Ball. And I had to figure out what happens when your character gets invited to the space mafia's birthday party.
+
+## Dress Shopping
+
+mO2 wears aprons. She ties her braid with kitchen twine and rubber gaskets from maintenance drawers. She doesn't do balls.
+
+I needed a dress. This became a whole production with Answer and the Head Witch helping me figure out how to make a 1.85m Valkyrie look like she belongs at a formal event.
+
+The Head Witch came over. We did the teen movie getting-ready scene. She helped me find something that didn't look like a costume.
+
+At the ball I gave Sylvana a comb. It matched the dress. She kept wearing it in the Bratva sauna channels for the rest of the game. Small things like that make these games work.
+
+## The Money Fight
+
+Sylvana took the podium. "The Bratva donates 75,000 credits to the O2 Kitchen."
+
+Here's where player and character started to blur. mO2, the character, was overwhelmed by the generosity. Me, the player, was doing math: that's enough coffee to run the Kitchen for the rest of the game ten times over. But also: that's more money than I'd seen any single player have in the game.
+
+**TODO: What did it actually feel like to watch those numbers change? The moment when you realized you were suddenly "rich" - describe the physical sensation, the thoughts racing through your head.**
+
+The Cowboys wouldn't be outdone by the mafia. Beefstink and Seraphim matched it plus threw in a thousand tokens.
+
+Five minutes. 150,000 credits. My soup kitchen had accidentally become the richest establishment on the station.
+
+mO2 got drunk because that's what her character would do. I sat there wondering what the hell you do with that much monopoly money when you started the game trying to give away imaginary soup.
+
+**TODO: How did this change mO2's personality? Did having "fuck you money" change how she carried herself, talked to people, approached problems? What did the Kitchen regulars think about their soup kitchen suddenly having a millionaire owner?**
+
+
+
+## The Fight (and the First OOC Check-in)
+
+Next day the Cowboys came to transfer the funds. Someone started a rumor that station citizens were just simulations and mining tokens hurt the station.
+
+Here's where the separation between player knowledge and character knowledge became a real problem:
+
+**Me, the Player:** I knew mining helped factions. If I accepted tokens to distribute to the poor, I was essentially feeding the war machine I wanted to stay neutral in.
+**mO2, the Character:** She just saw people behaving like jerks in her sanctuary.
+
+The factions started arguing in my Kitchen. Bratva vs Cowboys. Someone got threatened with a bucket. My neutral ground became a war zone.
+
+I threw everyone out. Mafia, cowboys, friends - everyone. First time I broke character diplomacy. "Mom has had enough" moment. The Kitchen had rules, and rule number one was "leave your differences at the door."
+
+One player messaged me out-of-character: "Hey, hope this is okay, we're just doing a bit. You good?"
+
+First OOC check-in I've experienced. Let us have massive drama while knowing everyone was safe. It was the moment I realized that the best roleplay happens when everyone trusts that nobody's actually trying to hurt anyone.
+
+Kept the money. Lost the neutrality. But gained something more important: the understanding that the Kitchen had become real enough that people would fight over it.
+
+## The Problem (or: How I Learned to Stop Worrying and Love the Liquidity)
+
+I had 150,000 credits. Oxygen tax was cheap. Everyone made more than they needed.
+
+This is where the existential crisis hit. I was running a charity where nobody needed charity, in a game that had accidentally given me enough liquidity to fund a small war. The Kitchen had become a mechanical absurdity: a poverty simulation in a post-scarcity economy.
+
+**The Data Brokers:** I literally went to the information brokers—The Gorilla and the Stratmeyer Syndicate—and bought data. Lists of players who were "squalid" (low lifestyle) or inactive. They sent CSV files with 400 names. I spent hours manually cross-referencing these names in Discord to see who was still playing.
+
+**TODO: Give a specific example from the CSV hunt - one person you found who actually needed help vs. one who'd quit. What was the actual process of hunting through 400 names like? Any patterns you noticed?**
+
+**The Manual Labor Scheme:** I started paying players exorbitant salaries just to roleplay washing dishes. Tipped people thousands of credits just for saying hello. Created elaborate economic schemes to inject money into the economy.
+
+Rich. Liquid. Desperate to find a problem that money could actually solve.
+
+Nothing. The game mechanics had created a perfect welfare state where everyone had enough, and my charity was a solution in search of a problem.
+
+**TODO: Do the math - how many people would you need to help to burn through 150k credits when daily expenses are trivial? Did you ever calculate how long it would take to go broke giving away money in a post-scarcity economy?**
+
+## The Chokespawn (or: Finally, a Problem Worth Solving)
+
+Rumors spread. The Choke was coming. Oxygen tax spiking. Finally, a crisis that matched my budget.
+
+I announced the Relocation Program. 10,000 credits to anyone evacuating danger zones. Players lined up. I typed `!transfer` commands until 3 AM, manually dispensing hope in digital form.
+
+**TODO: Describe the physical experience of those 3 AM transfer sessions - how many people did you actually help? What was it like to sit there typing the same command hundreds of times? Any memorable encounters during the evacuation rush?**
+
+For the first time since the money appeared, I felt like I was actually doing something. The money had purpose. The Kitchen had purpose. I had purpose.
+
+Then we learned the danger was mostly narrative. The factions played their wargame while we panicked about threats the mechanics didn't really support.
+
+**TODO: The moment of realization - when did you figure out the Chokespawn wasn't mechanically dangerous? Who told you? What did it feel like to realize you'd been roleplaying a ghost story?**
+
+**The Metagaming Realization:** The adults had handed the kids a pile of money and told us to play house while they fought the real war. We were roleplaying a crisis that existed only in our collective imagination, while the actual game mechanics ground on elsewhere. My 150,000 credits could buy a lot of imaginary safety, but it couldn't buy relevance in the actual wargame.
+
+## The Aftermath (or: How to be Rich and Irrelevant)
+
+The Kitchen worked as narrative. We built something real - a community that transcended the wargame's mechanics. But here's the thing about agency in games: you can have all the money in the world and still be mechanically irrelevant.
+
+I had proven that you could accidentally become the richest person on the server through pure roleplay. I had also proven that being the richest person on the server meant exactly nothing in the actual game mechanics.
+
+**The Meta Question:** How do you run a charity when the system is designed so that no one can fail? When your entire narrative arc - from desperate poverty to accidental wealth to existential crisis - exists entirely outside the game's actual win conditions?
+
+150,000 credits. 300 names on a spreadsheet. One lingering question that cuts to the heart of what we were actually doing in that Discord server for a month.
+
+**TODO: What happened to the money in the end? Does mO2 still have a fortune gathering digital dust, or did you find a way to give it all away? Also - did other players treat you differently once you were "rich"? Any scam attempts or people trying to manipulate the Kitchen?**
+
+**TODO: How did this experience change your approach to data/analysis problems? Did you catch yourself thinking about this like a statistics problem - trying to optimize charity distribution, analyze player behavior patterns, etc?**
+
+The Kitchen might have been the most real place on the station precisely because it didn't matter to the wargame. We weren't playing to win. We were playing to be somewhere together. Sometimes that's enough. Sometimes it's everything.
+
+Next time: what it means to create content in a game that doesn't need you, and why the Kitchen might have been more real than the war we were supposedly fighting.

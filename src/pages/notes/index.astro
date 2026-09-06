@@ -62,7 +62,11 @@ const formatDate = (date: Date) => {
               <span class="rubric-letter">S</span>cripta
             </h3>
             <div class="type-list" id="type-list">
-              <button class="filter-button manuscript-button active" data-type="">
+              <button
+                class="filter-button manuscript-button active"
+                data-type=""
+                aria-pressed="true"
+              >
                 <span class="initial-letter">O</span>
                 <span class="button-text">mnia</span>
                 <span class="roman-numeral">({publishedNotes.length})</span>
@@ -71,7 +75,11 @@ const formatDate = (date: Date) => {
                 allTypes.map((type) => {
                   const count = publishedNotes.filter((note) => note.data.type === type).length;
                   return (
-                    <button class="filter-button manuscript-button" data-type={type}>
+                    <button
+                      class="filter-button manuscript-button"
+                      data-type={type}
+                      aria-pressed="false"
+                    >
                       <span class="type-marker" />
                       <span class="button-text">{type}</span>
                       <span class="roman-numeral">({count})</span>
@@ -91,7 +99,11 @@ const formatDate = (date: Date) => {
               <span class="rubric-letter">T</span>hemata
             </h3>
             <div class="tag-list" id="tag-list">
-              <button class="filter-button manuscript-button active" data-tag="">
+              <button
+                class="filter-button manuscript-button active"
+                data-tag=""
+                aria-pressed="true"
+              >
                 <span class="initial-letter">O</span>
                 <span class="button-text">mnia</span>
                 <span class="roman-numeral">({allTags.length})</span>
@@ -102,7 +114,11 @@ const formatDate = (date: Date) => {
                     note.data.tags?.includes(tag)
                   ).length;
                   return (
-                    <button class="filter-button manuscript-button" data-tag={tag}>
+                    <button
+                      class="filter-button manuscript-button"
+                      data-tag={tag}
+                      aria-pressed="false"
+                    >
                       <span class="topic-marker" />
                       <span class="button-text">{tag}</span>
                       <span class="roman-numeral">({count})</span>
@@ -1422,21 +1438,17 @@ const formatDate = (date: Date) => {
       // Update type buttons
       typeButtons.forEach((button) => {
         const buttonType = button.dataset.type || '';
-        if (buttonType === selectedType) {
-          button.classList.add('active');
-        } else {
-          button.classList.remove('active');
-        }
+        const isActive = buttonType === selectedType;
+        button.classList.toggle('active', isActive);
+        button.setAttribute('aria-pressed', String(isActive));
       });
 
       // Update tag buttons
       tagButtons.forEach((button) => {
         const buttonTag = button.dataset.tag || '';
-        if (buttonTag === selectedTag) {
-          button.classList.add('active');
-        } else {
-          button.classList.remove('active');
-        }
+        const isActive = buttonTag === selectedTag;
+        button.classList.toggle('active', isActive);
+        button.setAttribute('aria-pressed', String(isActive));
       });
     }
 
@@ -1445,7 +1457,7 @@ const formatDate = (date: Date) => {
 
       noteCards.forEach((card) => {
         const cardType = card.dataset.type || '';
-        const cardTags = card.dataset.tags || '';
+        const cardTags = (card.dataset.tags || '').split(',');
 
         const typeMatch = !selectedType || cardType === selectedType;
         const tagMatch = !selectedTag || cardTags.includes(selectedTag);

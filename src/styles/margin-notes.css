@@ -11,8 +11,16 @@
   container-name: main-content;
 }
 
-/* Container lives inside .main-content and is absolutely positioned */
-.notes-container {
+/*
+ * The positioning rail for margin notes.
+ *
+ * IMPORTANT: this class is intentionally NOT named `.notes-container`.
+ * That name is also used by `src/pages/notes/index.astro` as its layout
+ * wrapper. When both shared the class, these absolute-positioning rules
+ * (and the `display: none` fallbacks below) leaked onto the notes index
+ * page and broke its layout / hid it on narrow viewports.
+ */
+.margin-notes-rail {
   position: absolute;
   top: 0;
   width: clamp(200px, 20vw, var(--margin-note-width));
@@ -73,7 +81,7 @@
 
 /* Modern responsive behavior using container queries */
 @container main-content (max-width: 68rem) {
-  .notes-container {
+  .margin-notes-rail {
     display: none;
   }
 
@@ -96,7 +104,7 @@
 
 /* Fallback for browsers without container query support */
 @media (max-width: 1100px) {
-  .notes-container {
+  .margin-notes-rail {
     display: none;
   }
 
