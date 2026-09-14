@@ -7,7 +7,7 @@
 #   ./build-blog.sh --force                            # Force rebuild all
 #   ./build-blog.sh --force path/to/post-folder/index.qmd # Force rebuild specific
 
-set -e  # Exit on any error
+set -euo pipefail
 
 # Parse arguments
 FORCE_REBUILD=false
@@ -39,6 +39,8 @@ fi
 
 # Create cache directory
 mkdir -p .blog-cache
+RENDER_INPUT_HASH=$(python3 scripts/render-content.py key --toolchain)
+RENDER_CONFIG="$(pwd)/_quarto.yml"
 
 # Function to check if qmd file needs rendering
 needs_rendering() {
@@ -64,8 +66,8 @@ needs_rendering() {
         return 0
     fi
 
-    # Calculate current hash of QMD file content
-    local current_hash=$(sha256sum "$qmd_file" | cut -d' ' -f1)
+    # Include source files, configuration, renderer, and installed R/Quarto versions
+    local current_hash="$RENDER_INPUT_HASH"
     local cached_hash=$(cat "$hash_file" 2>/dev/null || echo "")
 
     # If content changed, needs rendering
@@ -83,7 +85,7 @@ needs_rendering() {
 update_cache() {
     local qmd_file="$1"
     local hash_file=".blog-cache/$(echo "$qmd_file" | sed 's|/|_|g').hash"
-    local current_hash=$(sha256sum "$qmd_file" | cut -d' ' -f1)
+    local current_hash="$RENDER_INPUT_HASH"
     echo "$current_hash" > "$hash_file"
 }
 
@@ -182,18 +184,23 @@ process_qmd_file() {
         echo "Rendering $qmd_file"
 
         # Change to the post directory and render
+        rm -f "${qmd_file%.qmd}.md"
         cd "$dir"
         mkdir -p .blog-cache
-        if ! quarto render "index.qmd" --to gfm --output-dir . --execute-daemon=false 2> .blog-cache/last-error.log; then
+        if ! quarto render "index.qmd" --to gfm --metadata-file "$RENDER_CONFIG" --execute-daemon=false --cache-refresh 2> .blog-cache/last-error.log; then
           echo "Error: Quarto render failed. See $dir/.blog-cache/last-error.log" >&2
-          quarto render "index.qmd" --to gfm --output-dir . --execute-daemon=false || true
+          cat .blog-cache/last-error.log >&2
           cd - > /dev/null
-          return 0
+          return 1
         fi
         cd - > /dev/null
 
         # Post-processing: clean up Quarto output for Astro
         local md_file="${qmd_file%.qmd}.md"
+        if [ ! -s "$md_file" ]; then
+            echo "Error: Render produced no Markdown: $md_file" >&2
+            return 1
+        fi
         if [ -f "$md_file" ]; then
             # Extract year and folder name for image path fixing
             year=$(echo "$qmd_file" | sed 's|.*/\([0-9]\{4\}\)/.*|\1|')
@@ -232,9 +239,8 @@ process_qmd_file() {
             # This handles cases where the subfolder structure varies (figure-commonmark, figure-gfm, etc.)
             sed -i 's|index_files/[^/]*/\([^)]*\)|./\1|g' "$md_file"
 
-            # Fix old-style ../../../../assets/images/blog paths (from cached/legacy markdown files)
-            # These should be converted to simple relative paths since images are colocated
-            sed -i "s|\.\./\.\./\.\./\.\./assets/images/blog/${year}/${post_folder}/\([^)]*\)|./\1|g" "$md_file"
+            # Preserve authored ../../../../assets/... references. Astro resolves them
+            # against the post; only generated Quarto paths need colocation rewrites.
 
             # Convert plain image references (no path) to relative paths with ./
             sed -i "s|!\[\](\([^/.][^/)]*\.\(png\|jpg\|jpeg\|gif\|svg\|webp\)\))|![](./\1)|g" "$md_file"
@@ -243,6 +249,8 @@ process_qmd_file() {
             # (these work because Astro handles frontmatter images via content config schema)
             # No change needed for frontmatter - keep existing paths
 
+
+            python3 scripts/render-content.py normalize "$md_file"
 
             # 3. Extract code block output from code-collapse details blocks
             extract_output_from_details "$md_file"

@@ -1,97 +1,56 @@
-# Quarto to Astro Blog Pipeline
+# Quarto to Astro blog pipeline
 
-The workflow for converting Quarto files with R code into optimized blog posts.
+Write Quarto posts at `src/content/blog/YEAR/POST/index.qmd`. Run commands from the repository root. The renderer needs Python 3, Quarto, R, and the R packages listed in `.github/workflows/content-render.yml`.
 
-## How it works
-
-Write posts in `.qmd` files with R code, math, and citations. The build script converts them to markdown with properly optimized images, and CI handles the rest.
-
-### Quarto Config (`_quarto.yml`)
-```yaml
-format:
-  gfm:
-    preserve-yaml: true
-    wrap: preserve
-```
-
-Don't add `project: type: website` - that makes Quarto render to `_site` instead of in-place.
-
-### Image Pipeline
-1. **Quarto generates**: Images in `{filename}_files/figure-*/` next to the `.qmd`
-2. **Build script moves them**: To `src/assets/images/blog/YEAR/{post-name}/`
-3. **Build script rewrites paths**: Markdown gets `../../../../assets/images/blog/YEAR/{post-name}/image.png`
-4. **Astro optimizes**: Everything in `src/assets/` gets WebP conversion, responsive sizing, lazy loading
-
-### Astro Config
-The key parts in `astro.config.mjs`:
-```js
-image: {
-  service: {
-    entrypoint: 'astro/assets/services/sharp',
-    config: { limitInputPixels: 268402689 }  // ~268MP limit for safety
-  }
-}
-```
-
-## Daily Usage
-
-### Writing a new post:
-1. Create `.qmd` file in `src/content/blog/YEAR/MM-DD-post-name/index.qmd`
-2. Run `bun run build-blog` to convert to markdown
-3. Restart dev server if the post doesn't show up (Astro caches content collections)
-
-### Build script commands:
 ```bash
-./build-blog.sh                                    # Build all changed files
-./build-blog.sh src/content/blog/2022/my-post/index.qmd  # Build specific file
-./build-blog.sh --force                            # Force rebuild everything
-./build-blog.sh --force src/content/blog/2022/my-post/index.qmd  # Force specific file
+bash build-blog.sh                                      # Render when inputs change
+bash build-blog.sh src/content/blog/2022/POST/index.qmd   # Render one post
+bash build-blog.sh --force                              # Ignore local render hashes
+bun run test:site                                       # Build and audit the rendered site
 ```
 
-### Caching behavior:
-- Only rebuilds files that have changed
-- Saves timestamps in `.blog-cache/` to track what's been built
-- Delete the `.md` file to force a rebuild of that post
-- Use `--force` to ignore cache completely
+Quarto produces `index.md` and figures. The script puts generated figures beside the post and rewrites Markdown image references to relative paths. Generated HTML figures with Quarto alt text become Markdown images so Astro can resolve their files. Authored asset paths remain unchanged. Astro then builds the site and optimizes images. Authored sources stay in Git; generated Markdown and figures do not.
 
-## CI/CD Process
+## CI and deployment
 
-The build happens in two stages in GitHub Actions:
+`ci.yml` runs on every pull request targeting main/master, every push to those branches, and manual dispatch. There are no path filters that can silently skip site changes.
 
-### Content Render Workflow (`content-render.yml`)
-Runs when `.qmd` files change:
-1. Sets up R environment with packages (brms, ggdag, tidyverse, etc.)
-2. Runs `./build-blog.sh` to convert Quarto → markdown
-3. Uploads rendered content as artifact
-4. Caches R packages and build timestamps
+1. Workflow linting, renderer regression tests, and code quality checks run alongside the reusable content-render workflow.
+2. The renderer restores an exact-input cache or installs R and Quarto and renders all posts. Failed renders fail the job. The artifact contains only generated Markdown and images.
+3. The site job downloads that same run's artifact into a staging directory. It validates every Quarto post and refuses to overwrite tracked sources or restore output for deleted posts.
+4. The complete content collection is typechecked. Astro builds once; browser smoke tests visit every built blog post as well as the main pages at desktop and mobile widths. Pa11y checks representative pages. Both tools use an isolated preview server on an automatically assigned port.
+5. `CI passed` requires every prerequisite job to succeed. A failed, skipped, or cancelled prerequisite fails this check. On main/master, deployment publishes the tested Pages artifact from this run. PRs cannot deploy. New PR commits cancel older PR runs; main runs finish without interrupting an active deployment.
+6. After successful main/master CI and deployment, production monitoring runs Lighthouse budgets and Pa11y. These are post-deployment alerts; they do not roll back a release. Audit reports are retained for 14 days.
 
-### Deploy Workflow (`deploy.yml`)
-Runs on every push to main:
-1. Downloads the rendered content artifact
-2. Builds Astro site with optimized images
-3. Deploys to GitHub Pages
+The deploy workflow can only be called by another workflow. To deploy manually, run **Code Quality CI** on main/master. This runs the same checks as a push.
 
-This separation means expensive R computations only run when content changes, but the site gets rebuilt and deployed on every push.
+## Caches and reproducibility
+
+The content cache has no fallback restore key and no cross-run artifact lookup. Its fingerprint includes the names and contents of blog sources, bibliographies, assets, public files, scripts, Quarto configuration, and the render workflow. Renaming or deleting a source changes the key. Expired or missing caches cause a fresh render.
+
+R and Quarto versions and the CRAN snapshot date are pinned in the render workflow. Change those values together when updating the rendering toolchain; the workflow change invalidates the content cache. Only packages used by executable post chunks are installed. The `bayesim` example is not evaluated and does not require installing its development dependencies.
+
+Local render hashes also include the installed Quarto version and R package versions. A changed input causes rerendering with Quarto's execution cache refreshed. `--force` bypasses the local hashes.
+
+To bypass the CI content cache, manually run **Code Quality CI** with **force-render** enabled. This run uses newly rendered output but does not replace an immutable existing cache entry. Delete the matching GitHub Actions cache or change the rendering inputs if subsequent runs must rebuild too.
+
+## Dependency updates and checks
+
+Dependabot checks Bun packages and GitHub Actions weekly. Minor and patch updates are grouped; major updates remain separate. Updates require review and CI; there is no automatic merge workflow. Action references use commit SHAs with version comments, except the separately managed Pullfrog workflow and the versioned actionlint container.
+
+`bun audit` currently reports [GHSA-jmr9-qjv8-65gv](https://github.com/advisories/GHSA-jmr9-qjv8-65gv) in the browser tooling's transitive `extract-zip` dependency. As of September 7, 2026, the advisory lists no patched release. CI disables Puppeteer's browser downloads and supplies Chrome separately. Keep the alert open until upstream replaces or fixes the dependency; this mitigation does not make the dependency audit clean.
+
+Use `CI passed` as the required branch status check. It remains a single stable check while individual jobs change. Pages write and OIDC permissions are granted only to the deployment job. Other CI jobs use a read-only token and do not retain checkout credentials.
+
+```bash
+actionlint
+python3 -m unittest discover -s scripts/tests -v
+bun run quality:check
+```
 
 ## Troubleshooting
 
-**Post doesn't appear**: Restart dev server (Astro caches content collections aggressively)
-
-**Images broken**: Check `src/assets/images/blog/YEAR/post-name/` exists and has the right files
-
-**"File not changed" but you want to rebuild**: Delete the `.md` file or use `--force`
-
-**R packages missing in CI**: Add them to the `extra-packages` list in `content-render.yml`
-
-**Build fails on large images**: The Sharp service has a 268MP limit for safety
-
-## Image Path Magic
-
-The script does some regex magic to fix paths:
-
-1. Quarto generates images in `post-folder_files/figure-*/`
-2. Script moves them to `src/assets/images/blog/YEAR/post-folder/`
-3. Script rewrites markdown: `![](image.png)` → `![](../../../../assets/images/blog/YEAR/post-folder/image.png)`
-4. Astro sees images in `src/assets/` and optimizes them automatically
-
-The `../../../../` path looks ugly but it's correct for the nested blog structure.
+- **Render failed:** the job prints Quarto's error log and exits unsuccessfully. Locally, the log is in the post's `.blog-cache/last-error.log`.
+- **Missing R package:** add it to the render workflow's `extra-packages` list. This invalidates cached content.
+- **Missing generated post or source collision:** fix the artifact producer. Restore refuses incomplete or unsafe artifacts instead of using older output.
+- **Missing image:** check whether it is an authored asset that belongs in Git or a figure generated during rendering. The artifact cannot supply missing authored sources.

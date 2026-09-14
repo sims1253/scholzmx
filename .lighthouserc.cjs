@@ -1,6 +1,7 @@
 module.exports = {
   ci: {
     collect: {
+      settings: { budgets: require('./.lighthouse-budget.json') },
       numberOfRuns: 3, // Run Lighthouse 3 times and take median for more reliable results
     },
     assert: {
