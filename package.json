@@ -58,7 +58,7 @@
     "pa11y-ci": "^4.1.1",
     "postcss": "^8.5.28",
     "prettier": "3.9.6",
-    "prettier-plugin-astro": "0.14.1",
+    "prettier-plugin-astro": "1.0.0",
     "puppeteer": "^25.10.0",
     "purgecss": "^8.0.0",
     "stylelint": "^17.15.0",
