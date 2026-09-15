@@ -1,0 +1,57 @@
+---
+// Shared watercolor SVG filters — include once per page via BaseLayout.
+//
+// Why a shared block: every `filter="url(#...)"` reference resolves
+// document-wide, so one definition serves all components with zero
+// per-instance cost. Both filters are fully static (no animation):
+// browsers rasterize them once and cache the result, so the runtime
+// cost is a single paint, comparable to a blurred box-shadow.
+//
+// Keep instance counts in mind: prefer pure-CSS washes (see
+// watercolor.css) for repeated elements like cards, and reserve these
+// filters for low-count showcases (portrait frame, vine borders).
+---
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <!--
+      wc-roughen: breaks perfect circles/edges into feathery pigment
+      boundaries (Curtis et al. "uneven boundary" cue). Low spatial
+      frequency (0.012) gives broad lobes; 3 octaves adds fine fingers.
+      Scale 26 displaces edges up to ~13px each way.
+    -->
+    <filter id="wc-roughen" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence
+        type="fractalNoise"
+        baseFrequency="0.012 0.016"
+        numOctaves="3"
+        seed="7"
+        result="warp"></feTurbulence>
+      <feDisplacementMap
+        in="SourceGraphic"
+        in2="warp"
+        scale="26"
+        xChannelSelector="R"
+        yChannelSelector="G"></feDisplacementMap>
+    </filter>
+    <!--
+      wc-roughen-soft: gentler variant for thin wash rings where a full
+      roughen would tear the shape apart. Higher frequency keeps detail
+      local; scale 10 stays inside typical padding/overflow budgets.
+    -->
+    <filter id="wc-roughen-soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence
+        type="fractalNoise"
+        baseFrequency="0.02 0.024"
+        numOctaves="2"
+        seed="11"
+        result="warp"></feTurbulence>
+      <feDisplacementMap
+        in="SourceGraphic"
+        in2="warp"
+        scale="10"
+        xChannelSelector="R"
+        yChannelSelector="G"></feDisplacementMap>
+    </filter>
+  </defs>
+</svg>

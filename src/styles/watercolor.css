@@ -1,0 +1,44 @@
+@layer components {
+  /*
+   * Shared watercolor system — static CSS/SVG only, no JS, no images.
+   *
+   * Realism cues (after Curtis et al. 1997, the model behind tools like
+   * sudoaquarelle): darkened pigment edges, granulation in the paper
+   * tooth, irregular non-circular boundaries, and translucent glazing.
+   * Each cue below is one cheap background layer or less.
+   *
+   * Budget: this file must stay under ~2 KB minified. No animations on
+   * filter primitives, small tilable grain, theme-aware color-mix tokens
+   * so dark mode adapts for free.
+   */
+  :root {
+    /*
+     * Granulation tile: fractal noise collapsed to a warm umber speckle.
+     * ~400 bytes, tiles seamlessly (stitchTiles), used with
+     * background-blend-mode: multiply at low element opacity.
+     */
+    --wc-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.36 0 0 0 0 0.27 0 0 0 0 0.18 0 0 0 0.6 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+
+    /* Irregular blob radii: never circular, never symmetric. */
+    --wc-blob-a: 46% 54% 58% 42% / 52% 44% 56% 48%;
+    --wc-blob-b: 58% 42% 52% 48% / 44% 56% 46% 54%;
+  }
+
+  /*
+   * Reusable granulation overlay. Apply to a positioned pseudo-element
+   * or empty div over a wash; multiply lets paper "show through".
+   */
+  .wc-grain-overlay {
+    background-image: var(--wc-grain);
+    background-size: 140px 140px;
+    mix-blend-mode: multiply;
+    opacity: 0.28;
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wc-grain-overlay {
+      opacity: 0.22;
+    }
+  }
+}

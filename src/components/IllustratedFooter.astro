@@ -48,14 +48,6 @@ const { variant = 'default', className = '', includeQuoteSection = false } = Ast
           ></feDisplacementMap>
           <feGaussianBlur in="displaced" stdDeviation="1" result="finalSmooth"></feGaussianBlur>
         </filter>
-
-        <filter id="fillTexture" x="-100%" y="-100%" width="400%" height="400%">
-          <feTurbulence baseFrequency="0.002" numOctaves="3" result="noise" seed="5"></feTurbulence>
-          <feGaussianBlur in="noise" stdDeviation="5" result="smoothed"></feGaussianBlur>
-          <feDisplacementMap in="SourceGraphic" in2="smoothed" scale="25" result="displaced"
-          ></feDisplacementMap>
-          <feGaussianBlur in="displaced" stdDeviation="5" result="finalSmooth"></feGaussianBlur>
-        </filter>
       </defs>
 
       {/* Ground line with organic texture */}
@@ -84,16 +76,6 @@ const { variant = 'default', className = '', includeQuoteSection = false } = Ast
         fill="none"
         filter="url(#pathVar)"
         stroke-linecap="round"></path>
-
-      {
-        /* <path
-        d="M50,60 Q200,35 400,65 T750,55"
-        stroke="rgba(99, 123, 103, 0.12)"
-        stroke-width="26"
-        fill="none"
-        filter="url(#fillTexture)"
-      /> */
-      }
 
       <path
         d="M60,62 Q220,37 420,67 T754,50"

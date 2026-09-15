@@ -116,33 +116,46 @@ const { intensity = 'medium', pattern = 'paper', className = '' } = Astro.props;
       40px 40px;
   }
 
-  /* Watercolor pattern - warm, hand-painted feel */
+  /* Watercolor pattern - mottled glazing wash with granulation.
+     Large soft pools (uneven pigment) + shared grain tile (granulation)
+     multiplied over them. Opacity stays low: this is an overlay. */
   .paper-texture--watercolor::before {
     background-image:
-      /* Warm fiber texture diagonal */
-      linear-gradient(
-        45deg,
-        transparent 40%,
-        rgba(180, 130, 90, 0.08) 41%,
-        rgba(180, 130, 90, 0.08) 43%,
-        transparent 44%
+      var(--wc-grain),
+      /* mottled pools: pigment settling unevenly */
+      radial-gradient(
+          ellipse 55% 40% at 22% 18%,
+          color-mix(in srgb, var(--color-sage) 12%, transparent) 0%,
+          transparent 70%
+        ),
+      radial-gradient(
+        ellipse 50% 45% at 82% 78%,
+        color-mix(in srgb, var(--color-walnut) 9%, transparent) 0%,
+        transparent 70%
       ),
-      /* Subtle grain */
-      radial-gradient(circle at 30% 80%, rgba(160, 120, 80, 0.06) 1px, transparent 2px),
-      /* Occasional pigment spots */
-      radial-gradient(circle at 70% 20%, rgba(139, 90, 60, 0.04) 2px, transparent 4px),
-      /* Soft wash effect */
-      radial-gradient(ellipse at 50% 50%, rgba(250, 245, 235, 0.1) 0%, transparent 70%);
+      /* occasional pigment spots */
+      radial-gradient(circle at 70% 20%, rgba(139, 90, 60, 0.05) 2px, transparent 4px),
+      /* warm fiber texture diagonal */
+      linear-gradient(
+          45deg,
+          transparent 40%,
+          rgba(180, 130, 90, 0.08) 41%,
+          rgba(180, 130, 90, 0.08) 43%,
+          transparent 44%
+        );
     background-size:
-      16px 16px,
-      6px 6px,
+      140px 140px,
+      100% 100%,
+      100% 100%,
       40px 40px,
-      100% 100%;
+      16px 16px;
     background-position:
+      0 0,
       0 0,
       0 0,
       20px 30px,
       0 0;
+    background-blend-mode: multiply, normal, normal, normal, normal;
   }
 
   /* Additional overlay for depth */

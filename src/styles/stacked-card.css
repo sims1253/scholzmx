@@ -183,7 +183,11 @@
   }
 
   /* Background textures removed for better dark mode compatibility */
-  /* Watercolor blob overlay - super blurry filled circles with radial gradients */
+  /* Pigment wash overlay — irregular pool with darkened edge + granulation.
+     Pure CSS (no SVG filters: cards repeat per page, filters would
+     re-rasterize per instance). Per-card variety comes from the existing
+     seeded --wash-* custom properties; the blob clip + rim break the
+     circular symmetry that read as "digital". */
   .sc-card[data-wash]:not([data-wash='none']) .sc-face::after {
     content: '';
     position: absolute;
@@ -195,25 +199,38 @@
       radial-gradient(
         circle var(--wash-r1, 240px) at var(--wash-x, 50%) var(--wash-y, 50%),
         color-mix(in srgb, var(--wash-base) calc(var(--wash-alpha, 0.6) * 100%), transparent) 0%,
-        transparent 100%
+        transparent 70%
       ),
       radial-gradient(
         circle var(--wash-r2, 180px) at var(--wash2-x, 60%) var(--wash2-y, 60%),
         color-mix(in srgb, var(--wash-base) calc(var(--wash-alpha, 0.6) * 60%), transparent) 0%,
-        transparent 100%
-      );
+        transparent 70%
+      ),
+      /* pigment edge: darker rim just inside the main pool boundary */
+        radial-gradient(
+          circle var(--wash-r1, 240px) at var(--wash-x, 50%) var(--wash-y, 50%),
+          transparent 58%,
+          color-mix(in srgb, var(--wash-base) calc(var(--wash-alpha, 0.6) * 55%), transparent) 68%,
+          transparent 80%
+        ),
+      /* granulation: paper tooth showing through the glaze */ var(--wc-grain);
     background-repeat: no-repeat;
     background-size:
       100% 100%,
-      100% 100%;
-    background-position: center, center;
-    transform: translate(calc(-50% + var(--wash-tx, 0)), calc(-50% + var(--wash-ty, 0)));
-    border-radius: inherit;
+      100% 100%,
+      100% 100%,
+      140px 140px;
+    background-position: center, center, center, center;
+    background-blend-mode: normal, normal, normal, multiply;
+    transform: translate(calc(-50% + var(--wash-tx, 0)), calc(-50% + var(--wash-ty, 0)))
+      rotate(-7deg);
+    border-radius: var(--wc-blob-a, 46% 54% 58% 42% / 52% 44% 56% 48%);
     z-index: 0;
     pointer-events: none;
   }
 
-  /* Ring effect overlay - subtle coffee ring or water mark style */
+  /* Drying-ring overlay — two offset arcs, not one perfect circle, so the
+     coffee-ring cue reads as pigment rather than clip-art. */
   .sc-card[data-ring]:not([data-ring='none']) .sc-face::before {
     content: '';
     position: absolute;
@@ -221,15 +238,22 @@
     top: 50%;
     width: calc(100% * var(--ring-scale, 0.9));
     height: calc(100% * var(--ring-scale, 0.9));
-    background: radial-gradient(
-      circle at 45% 35%,
-      transparent 35%,
-      color-mix(in srgb, var(--color-walnut) calc(var(--ring-alpha, 0.2) * 100%), transparent) 38%,
-      color-mix(in srgb, var(--color-walnut) calc(var(--ring-alpha, 0.2) * 80%), transparent) 42%,
-      transparent 45%
-    );
+    background:
+      radial-gradient(
+        circle at 45% 35%,
+        transparent 35%,
+        color-mix(in srgb, var(--color-walnut) calc(var(--ring-alpha, 0.2) * 100%), transparent) 38%,
+        color-mix(in srgb, var(--color-walnut) calc(var(--ring-alpha, 0.2) * 80%), transparent) 42%,
+        transparent 45%
+      ),
+      radial-gradient(
+        circle at 56% 62%,
+        transparent 37%,
+        color-mix(in srgb, var(--color-walnut) calc(var(--ring-alpha, 0.2) * 60%), transparent) 40%,
+        transparent 44%
+      );
     transform: translate(-50%, -50%) rotate(-15deg);
-    border-radius: 50%;
+    border-radius: var(--wc-blob-b, 58% 42% 52% 48% / 44% 56% 46% 54%);
     z-index: 0;
     pointer-events: none;
   }

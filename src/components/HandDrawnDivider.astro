@@ -21,7 +21,7 @@ const strokeWeight = 3;
         <defs>
           <filter id="dividerTexture" x="-40%" y="-40%" width="180%" height="180%">
             <feTurbulence baseFrequency="0.03" numOctaves="2" result="noise" seed="3" />
-            <feDisplacementMap in="SourceGraphic" in2="noise" scale="1" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" />
           </filter>
 
           <filter id="dividerShadow" x="-40%" y="-40%" width="180%" height="180%">
@@ -35,16 +35,9 @@ const strokeWeight = 3;
             </feMerge>
           </filter>
 
-          <filter id="fillTexture" x="-100%" y="-100%" width="400%" height="400%">
-            <feTurbulence baseFrequency="0.002" numOctaves="3" result="noise" seed="5" />
-            <feGaussianBlur in="noise" stdDeviation="5" result="smoothed" />
-            <feDisplacementMap in="SourceGraphic" in2="smoothed" scale="25" result="displaced" />
-            <feGaussianBlur in="displaced" stdDeviation="5" result="finalSmooth" />
-          </filter>
-
-          <filter id="dividerBlur" x="-40%" y="-40%" width="180%" height="180%">
-            <feGaussianBlur stdDeviation="0.005" />
-          </filter>
+          {/* Dead filters removed: fillTexture (400% region, double blur,
+              never referenced) and dividerBlur (stdDeviation 0.005 no-op).
+              Fewer primitives = cheaper paint on every divider. */}
         </defs>
 
         {/* Main vine line */}
@@ -94,7 +87,7 @@ const strokeWeight = 3;
         <defs>
           <filter id="simpleTexture" x="0%" y="0%" width="100%" height="100%">
             <feTurbulence baseFrequency="0.05" numOctaves="1" result="noise" seed="5" />
-            <feDisplacementMap in="SourceGraphic" in2="noise" scale="0.8" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.5" />
           </filter>
         </defs>
 
@@ -122,7 +115,7 @@ const strokeWeight = 3;
         <defs>
           <filter id="botanicalTexture" x="-40%" y="-40%" width="180%" height="180%">
             <feTurbulence baseFrequency="0.02" numOctaves="2" result="noise" seed="7" />
-            <feDisplacementMap in="SourceGraphic" in2="noise" scale="1" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" />
           </filter>
 
           <filter id="botanicalBlur" x="-40%" y="-40%" width="180%" height="180%">
@@ -146,6 +139,7 @@ const strokeWeight = 3;
           fill={`color-mix(in srgb, ${leafColor} 42%, transparent)`}
           stroke={`color-mix(in srgb, ${vineColor} 25%, transparent)`}
           stroke-width="0.6"
+          filter="url(#botanicalTexture)"
         >
           {/* Left leaf pair: tangent ~ -10deg at x≈150 */}
           <g transform="translate(150,30) rotate(-10)">
@@ -173,6 +167,7 @@ const strokeWeight = 3;
           stroke-width="1.3"
           fill="none"
           stroke-linecap="round"
+          filter="url(#botanicalTexture)"
         >
           {/* Left tendril: start on spine near x≈170, gentle C matching slope */}
           <path d="M170,33 C176,36 182,35 188,33" />
@@ -189,7 +184,7 @@ const strokeWeight = 3;
         <defs>
           <filter id="ornateTexture" x="0%" y="0%" width="100%" height="100%">
             <feTurbulence baseFrequency="0.025" numOctaves="2" result="noise" seed="9" />
-            <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.2" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" />
           </filter>
           <filter id="ornateShadow" x="0%" y="0%" width="120%" height="120%">
             <feGaussianBlur in="SourceAlpha" stdDeviation="2" />
@@ -243,7 +238,7 @@ const strokeWeight = 3;
         <defs>
           <filter id="sketchTexture" x="0%" y="0%" width="100%" height="100%">
             <feTurbulence baseFrequency="0.08" numOctaves="2" result="noise" seed="11" />
-            <feDisplacementMap in="SourceGraphic" in2="noise" scale="0.5" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" />
           </filter>
         </defs>
 

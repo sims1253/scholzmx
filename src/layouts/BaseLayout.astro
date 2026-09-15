@@ -4,6 +4,7 @@ import portrait from '../assets/images/homepage/portrait.jpg';
 import BotanicalBorder from '../components/BotanicalBorder.astro';
 import IllustratedFooter from '../components/IllustratedFooter.astro';
 import BackToTop from '../components/BackToTop.astro';
+import WatercolorDefs from '../components/WatercolorDefs.astro';
 
 // Import CSS files
 import '../styles/layers.css';
@@ -24,6 +25,7 @@ import '../styles/tailwind.css'; // Utilities only - preserves existing design
 import '../styles/tailwind-utilities.css'; // Force utility generation
 import '../styles/margin-notes.css';
 import '../styles/stacked-card.css';
+import '../styles/watercolor.css';
 
 export interface Props {
   title: string;
@@ -249,6 +251,8 @@ const socialImageURL = new URL(socialImage, Astro.site).href;
   </head>
 
   <body class={resolvedTone === 'personal' ? 'personal-content' : 'serious-content'}>
+    <!-- Shared watercolor SVG filters (single definition, page-wide refs) -->
+    <WatercolorDefs />
     <!-- Skip Links for Keyboard Navigation -->
     <a href="#main-content" class="skip-link"
       >Skip to main content (blog posts, articles, and page content)</a
