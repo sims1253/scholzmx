@@ -9,9 +9,10 @@ updates:
       timezone: Europe/Berlin
     open-pull-requests-limit: 5
     ignore:
-      # astro check (@astrojs/check) only supports TypeScript 5 and 6; remove once it supports 7.
+      # astro check does not support TypeScript 7 and will be deprecated. Its replacement,
+      # @astrojs/ts-content-mapper, needs TypeScript 7.1+, so only 7.0 is skipped.
       - dependency-name: typescript
-        update-types: [version-update:semver-major]
+        versions: ['7.0.x']
     groups:
       minor-and-patch:
         update-types: [minor, patch]
