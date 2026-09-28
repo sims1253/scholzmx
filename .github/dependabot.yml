@@ -8,6 +8,10 @@ updates:
       time: '09:00'
       timezone: Europe/Berlin
     open-pull-requests-limit: 5
+    ignore:
+      # astro check (@astrojs/check) only supports TypeScript 5 and 6; remove once it supports 7.
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
     groups:
       minor-and-patch:
         update-types: [minor, patch]
