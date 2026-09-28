@@ -20,6 +20,29 @@ const { className = '' } = Astro.props;
         <stop offset="75%" stop-color="rgba(189, 191, 165, 0.12)"></stop>
         <stop offset="100%" stop-color="rgba(90, 107, 71, 0.12)"></stop>
       </linearGradient>
+      <!-- Leaf washes: pigment is transparent in the middle and dries
+        darkest at the boundary — edge darkening is what makes a blob read
+        as watercolour rather than a sticker. -->
+      <radialGradient id="leafSage" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="rgba(126, 153, 129, 0.26)"></stop>
+        <stop offset="62%" stop-color="rgba(110, 136, 112, 0.4)"></stop>
+        <stop offset="100%" stop-color="rgba(64, 80, 52, 0.62)"></stop>
+      </radialGradient>
+      <radialGradient id="leafMoss" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="rgba(90, 107, 71, 0.24)"></stop>
+        <stop offset="62%" stop-color="rgba(88, 106, 81, 0.38)"></stop>
+        <stop offset="100%" stop-color="rgba(56, 71, 46, 0.6)"></stop>
+      </radialGradient>
+      <radialGradient id="leafOchre" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="rgba(176, 146, 44, 0.2)"></stop>
+        <stop offset="62%" stop-color="rgba(160, 132, 62, 0.34)"></stop>
+        <stop offset="100%" stop-color="rgba(110, 84, 30, 0.58)"></stop>
+      </radialGradient>
+      <radialGradient id="leafFern" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="rgba(168, 181, 160, 0.24)"></stop>
+        <stop offset="62%" stop-color="rgba(142, 158, 136, 0.38)"></stop>
+        <stop offset="100%" stop-color="rgba(84, 98, 72, 0.58)"></stop>
+      </radialGradient>
     </defs>
 
     <!-- Primary vine structure - segmented approach -->
@@ -27,21 +50,21 @@ const { className = '' } = Astro.props;
     <path
       d="M15,15 Q50,9 85,16 Q120,11 135,18"
       stroke="rgba(90, 107, 71, 0.32)"
-      stroke-width="3"
+      stroke-width="9.9"
       fill="none"
       stroke-linecap="round"
       filter="url(#wc-ink)"></path>
     <path
       d="M15,105 Q50,108 85,103 Q120,107 135,102"
       stroke="rgba(90, 107, 71, 0.32)"
-      stroke-width="3"
+      stroke-width="9.9"
       fill="none"
       stroke-linecap="round"
       filter="url(#wc-ink)"></path>
     <path
       d="M15,15 Q13,35 16,55 Q12,75 16,95 Q14,102 15,105"
       stroke="rgba(90, 107, 71, 0.32)"
-      stroke-width="3"
+      stroke-width="9.9"
       fill="none"
       stroke-linecap="round"
       filter="url(#wc-ink)"></path>
@@ -50,14 +73,14 @@ const { className = '' } = Astro.props;
     <path
       d="M120,16 Q155,12 190,18 Q225,14 260,19 Q280,17 285,18"
       stroke="rgba(126, 153, 129, 0.24)"
-      stroke-width="2.5"
+      stroke-width="8.2"
       fill="none"
       stroke-linecap="round"
       filter="url(#wc-ink)"></path>
     <path
       d="M120,104 Q155,107 190,102 Q225,106 260,101 Q280,103 285,102"
       stroke="rgba(126, 153, 129, 0.24)"
-      stroke-width="2.5"
+      stroke-width="8.2"
       fill="none"
       stroke-linecap="round"
       filter="url(#wc-ink)"></path>
@@ -66,21 +89,21 @@ const { className = '' } = Astro.props;
     <path
       d="M270,19 Q305,15 340,20 Q375,16 390,20"
       stroke="rgba(133, 148, 103, 0.18)"
-      stroke-width="2.8"
+      stroke-width="9.3"
       fill="none"
       stroke-linecap="round"
       filter="url(#wc-ink)"></path>
     <path
       d="M270,101 Q305,104 340,100 Q375,103 390,100"
       stroke="rgba(133, 148, 103, 0.18)"
-      stroke-width="2.8"
+      stroke-width="9.3"
       fill="none"
       stroke-linecap="round"
       filter="url(#wc-ink)"></path>
     <path
       d="M390,20 Q392,40 389,60 Q393,80 389,100 Q388,102 387,105"
       stroke="rgba(133, 148, 103, 0.18)"
-      stroke-width="2.8"
+      stroke-width="9.3"
       fill="none"
       stroke-linecap="round"
       filter="url(#wc-ink)"></path>
@@ -89,14 +112,14 @@ const { className = '' } = Astro.props;
     <path
       d="M18,18 Q85,13 150,19 Q215,15 280,20 Q345,16 375,19"
       stroke="rgba(189, 191, 165, 0.14)"
-      stroke-width="1.5"
+      stroke-width="4.9"
       fill="none"
       stroke-linecap="round"
       filter="url(#wc-ink)"></path>
     <path
       d="M18,102 Q85,106 150,101 Q215,104 280,100 Q345,102 375,101"
       stroke="rgba(189, 191, 165, 0.14)"
-      stroke-width="1.5"
+      stroke-width="4.9"
       fill="none"
       stroke-linecap="round"
       filter="url(#wc-ink)"></path>
@@ -105,7 +128,7 @@ const { className = '' } = Astro.props;
     <path
       d="M22,20 Q90,16 160,21 Q230,17 300,22 Q350,18 370,21"
       stroke="rgba(142, 156, 148, 0.11)"
-      stroke-width="1"
+      stroke-width="3.3"
       fill="none"
       stroke-linecap="round"
       filter="url(#wc-ink)"></path>
@@ -116,108 +139,70 @@ const { className = '' } = Astro.props;
     <g filter="url(#wc-paint)">
       <!-- Cluster 1: Left side -->
       <g transform="translate(45,13) rotate(20)">
-        <ellipse rx="6" ry="3" fill="rgba(90, 107, 71, 0.34)"></ellipse>
-        <ellipse rx="4.6" ry="2" cx="0.5" cy="0.4" fill="rgba(90, 107, 71, 0.42)"></ellipse>
-        <ellipse rx="6" ry="3" fill="none" stroke="rgba(64, 80, 52, 0.5)" stroke-width="0.9"
-        ></ellipse>
+        <ellipse rx="13.2" ry="6.6" fill="url(#leafMoss)"></ellipse>
       </g>
       <g transform="translate(47,11) rotate(15)">
-        <ellipse rx="3.4" ry="1.7" fill="rgba(126, 153, 129, 0.32)"></ellipse>
-        <ellipse rx="2.6" ry="1.1" cx="0.3" cy="0.2" fill="rgba(126, 153, 129, 0.4)"></ellipse>
+        <ellipse rx="7.5" ry="3.7" fill="url(#leafFern)"></ellipse>
       </g>
 
       <!-- Cluster 2: Top center -->
       <g transform="translate(160,15) rotate(-15)">
-        <ellipse rx="7" ry="3.5" fill="rgba(126, 153, 129, 0.34)"></ellipse>
-        <ellipse rx="5.4" ry="2.3" cx="0.6" cy="0.4" fill="rgba(126, 153, 129, 0.42)"></ellipse>
-        <ellipse rx="7" ry="3.5" fill="none" stroke="rgba(64, 80, 52, 0.5)" stroke-width="0.9"
-        ></ellipse>
+        <ellipse rx="15.4" ry="7.7" fill="url(#leafSage)"></ellipse>
       </g>
       <g transform="translate(162,13) rotate(-20)">
-        <ellipse rx="3.8" ry="1.9" fill="rgba(90, 107, 71, 0.32)"></ellipse>
-        <ellipse rx="2.8" ry="1.2" cx="0.3" cy="0.2" fill="rgba(90, 107, 71, 0.4)"></ellipse>
+        <ellipse rx="8.4" ry="4.2" fill="url(#leafOchre)"></ellipse>
       </g>
 
       <!-- Cluster 3: Top right -->
       <g transform="translate(320,16) rotate(35)">
-        <ellipse rx="6.5" ry="3.2" fill="rgba(133, 148, 103, 0.34)"></ellipse>
-        <ellipse rx="5" ry="2.1" cx="0.5" cy="0.4" fill="rgba(133, 148, 103, 0.42)"></ellipse>
-        <ellipse rx="6.5" ry="3.2" fill="none" stroke="rgba(64, 80, 52, 0.5)" stroke-width="0.9"
-        ></ellipse>
+        <ellipse rx="14.3" ry="7.0" fill="url(#leafMoss)"></ellipse>
       </g>
       <g transform="translate(322,14) rotate(30)">
-        <ellipse rx="3.4" ry="1.6" fill="rgba(90, 107, 71, 0.32)"></ellipse>
-        <ellipse rx="2.5" ry="1.1" cx="0.3" cy="0.2" fill="rgba(90, 107, 71, 0.4)"></ellipse>
+        <ellipse rx="7.5" ry="3.5" fill="url(#leafFern)"></ellipse>
       </g>
 
       <!-- Right side clusters -->
       <g transform="translate(391,40) rotate(85)">
-        <ellipse rx="5.5" ry="2.8" fill="rgba(90, 107, 71, 0.34)"></ellipse>
-        <ellipse rx="4.2" ry="1.8" cx="0.4" cy="0.3" fill="rgba(90, 107, 71, 0.42)"></ellipse>
-        <ellipse rx="5.5" ry="2.8" fill="none" stroke="rgba(64, 80, 52, 0.5)" stroke-width="0.8"
-        ></ellipse>
+        <ellipse rx="12.1" ry="6.2" fill="url(#leafSage)"></ellipse>
       </g>
       <g transform="translate(391,60) rotate(95)">
-        <ellipse rx="6" ry="3" fill="rgba(126, 153, 129, 0.34)"></ellipse>
-        <ellipse rx="4.6" ry="2" cx="0.5" cy="0.3" fill="rgba(126, 153, 129, 0.42)"></ellipse>
-        <ellipse rx="6" ry="3" fill="none" stroke="rgba(64, 80, 52, 0.5)" stroke-width="0.8"
-        ></ellipse>
+        <ellipse rx="13.2" ry="6.6" fill="url(#leafOchre)"></ellipse>
       </g>
       <g transform="translate(391,80) rotate(75)">
-        <ellipse rx="5" ry="2.5" fill="rgba(133, 148, 103, 0.32)"></ellipse>
-        <ellipse rx="3.8" ry="1.7" cx="0.4" cy="0.3" fill="rgba(133, 148, 103, 0.4)"></ellipse>
+        <ellipse rx="11.0" ry="5.5" fill="url(#leafMoss)"></ellipse>
       </g>
 
       <!-- Bottom clusters -->
       <g transform="translate(300,104) rotate(-40)">
-        <ellipse rx="6.5" ry="3.2" fill="rgba(189, 191, 165, 0.34)"></ellipse>
-        <ellipse rx="5" ry="2.1" cx="0.5" cy="0.4" fill="rgba(189, 191, 165, 0.42)"></ellipse>
-        <ellipse rx="6.5" ry="3.2" fill="none" stroke="rgba(64, 80, 52, 0.5)" stroke-width="0.9"
-        ></ellipse>
+        <ellipse rx="14.3" ry="7.0" fill="url(#leafFern)"></ellipse>
       </g>
       <g transform="translate(298,106) rotate(-35)">
-        <ellipse rx="4.5" ry="2.2" fill="rgba(90, 107, 71, 0.32)"></ellipse>
-        <ellipse rx="3.4" ry="1.5" cx="0.3" cy="0.3" fill="rgba(90, 107, 71, 0.4)"></ellipse>
+        <ellipse rx="9.9" ry="4.8" fill="url(#leafSage)"></ellipse>
       </g>
 
       <g transform="translate(180,106) rotate(25)">
-        <ellipse rx="7" ry="3.5" fill="rgba(126, 153, 129, 0.34)"></ellipse>
-        <ellipse rx="5.4" ry="2.3" cx="0.6" cy="0.4" fill="rgba(126, 153, 129, 0.42)"></ellipse>
-        <ellipse rx="7" ry="3.5" fill="none" stroke="rgba(64, 80, 52, 0.5)" stroke-width="0.9"
-        ></ellipse>
+        <ellipse rx="15.4" ry="7.7" fill="url(#leafOchre)"></ellipse>
       </g>
       <g transform="translate(178,104) rotate(30)">
-        <ellipse rx="5" ry="2.5" fill="rgba(133, 148, 103, 0.32)"></ellipse>
-        <ellipse rx="3.8" ry="1.7" cx="0.4" cy="0.3" fill="rgba(133, 148, 103, 0.4)"></ellipse>
+        <ellipse rx="11.0" ry="5.5" fill="url(#leafMoss)"></ellipse>
       </g>
 
       <g transform="translate(80,107) rotate(-25)">
-        <ellipse rx="6" ry="3" fill="rgba(90, 107, 71, 0.34)"></ellipse>
-        <ellipse rx="4.6" ry="2" cx="0.5" cy="0.3" fill="rgba(90, 107, 71, 0.42)"></ellipse>
-        <ellipse rx="6" ry="3" fill="none" stroke="rgba(64, 80, 52, 0.5)" stroke-width="0.8"
-        ></ellipse>
+        <ellipse rx="13.2" ry="6.6" fill="url(#leafFern)"></ellipse>
       </g>
       <g transform="translate(82,105) rotate(-20)">
-        <ellipse rx="4" ry="2" fill="rgba(189, 191, 165, 0.32)"></ellipse>
-        <ellipse rx="3" ry="1.3" cx="0.3" cy="0.2" fill="rgba(189, 191, 165, 0.4)"></ellipse>
+        <ellipse rx="8.8" ry="4.4" fill="url(#leafSage)"></ellipse>
       </g>
 
       <!-- Left side clusters -->
       <g transform="translate(13,35) rotate(-85)">
-        <ellipse rx="5.5" ry="2.8" fill="rgba(126, 153, 129, 0.34)"></ellipse>
-        <ellipse rx="4.2" ry="1.8" cx="0.4" cy="0.3" fill="rgba(126, 153, 129, 0.42)"></ellipse>
-        <ellipse rx="5.5" ry="2.8" fill="none" stroke="rgba(64, 80, 52, 0.5)" stroke-width="0.8"
-        ></ellipse>
+        <ellipse rx="12.1" ry="6.2" fill="url(#leafOchre)"></ellipse>
       </g>
       <g transform="translate(13,55) rotate(-75)">
-        <ellipse rx="6" ry="3" fill="rgba(90, 107, 71, 0.34)"></ellipse>
-        <ellipse rx="4.6" ry="2" cx="0.5" cy="0.3" fill="rgba(90, 107, 71, 0.42)"></ellipse>
-        <ellipse rx="6" ry="3" fill="none" stroke="rgba(64, 80, 52, 0.5)" stroke-width="0.8"
-        ></ellipse>
+        <ellipse rx="13.2" ry="6.6" fill="url(#leafMoss)"></ellipse>
       </g>
       <g transform="translate(13,75) rotate(-95)">
-        <ellipse rx="5" ry="2.5" fill="rgba(133, 148, 103, 0.32)"></ellipse>
-        <ellipse rx="3.8" ry="1.7" cx="0.4" cy="0.3" fill="rgba(133, 148, 103, 0.4)"></ellipse>
+        <ellipse rx="11.0" ry="5.5" fill="url(#leafFern)"></ellipse>
       </g>
     </g>
 

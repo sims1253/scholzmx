@@ -688,22 +688,14 @@ const captionId = hasCaption
     }
   }
 
-  /* Watercolor Frame - irregular pigment wash pooling around the photo.
-     Static CSS + one shared SVG roughening filter (see WatercolorDefs):
-     no JS, no images. Layers are plain alpha compositing (mix-blend-mode
-     proved unreliable on these pseudo-elements).
-
-     The photo keeps a soft wobbly edge (organic radius) — NOT a full blob
-     clip, which reads as a sticker rather than a painting. The wash does
-     the organic work: roughened boundary, edge darkening, granulation.
-
-     NOTE: the wash bleeds OUTSIDE the frame (inset: -20px). The element
-     carries tw:overflow-hidden, which would clip it away — the doubled
-     selector below out-specifies that utility on purpose. */
+  /* Watercolor Frame — the photo is mounted on a warm wash of pigment.
+     Deliberately NO displacement filter here: warping a pale gradient just
+     reads as a grey smudge. Instead: soft-edged pigment pools, a dried-edge
+     band where the wash meets the paper, and grain over the whole thing. */
   .image-frame.image-frame-watercolor {
     overflow: visible;
-    border-radius: var(--organic-md);
-    padding: 14px;
+    border-radius: 14px 22px 12px 20px / 20px 12px 22px 14px;
+    padding: 16px;
     background: transparent;
     box-shadow: none;
   }
@@ -711,66 +703,63 @@ const captionId = hasCaption
   .image-frame-watercolor::before {
     content: '';
     position: absolute;
-    inset: -20px;
+    inset: -18px;
     z-index: 0;
     pointer-events: none;
-    border-radius: var(--wc-blob-a, 46% 54% 58% 42% / 52% 44% 56% 48%);
+    border-radius: 18px 28px 16px 26px / 26px 16px 28px 18px;
     background-image:
-      /* main glaze pool */
+      /* warm pigment pool, upper left */
       radial-gradient(
-        ellipse 70% 64% at 32% 28%,
-        color-mix(in srgb, var(--color-sage) 72%, transparent) 0%,
-        color-mix(in srgb, var(--color-sage) 40%, transparent) 50%,
-        transparent 74%
+        ellipse 72% 66% at 30% 26%,
+        color-mix(in srgb, var(--color-ochre) 26%, transparent) 0%,
+        color-mix(in srgb, var(--color-ochre) 12%, transparent) 52%,
+        transparent 78%
       ),
-      /* secondary glaze, offset (overlaps shift hue like real glazing) */
+      /* cooler counter-pool, lower right (glazing overlap) */
       radial-gradient(
-          ellipse 64% 70% at 70% 72%,
-          color-mix(in srgb, var(--color-ochre) 32%, transparent) 0%,
-          color-mix(in srgb, var(--color-clay) 20%, transparent) 52%,
-          transparent 76%
+          ellipse 66% 72% at 72% 74%,
+          color-mix(in srgb, var(--color-sage) 34%, transparent) 0%,
+          color-mix(in srgb, var(--color-sage) 16%, transparent) 52%,
+          transparent 80%
         ),
-      /* EDGE DARKENING: the signature cue. Pigment migrates to the wash
-         boundary while drying and dries darker there (Curtis et al.). */
+      /* DRIED EDGE: pigment pools darkest where the wash stops */
       radial-gradient(
-          ellipse 86% 82% at 50% 50%,
-          transparent 52%,
-          color-mix(in srgb, var(--color-walnut) 38%, transparent) 68%,
-          color-mix(in srgb, var(--color-walnut) 14%, transparent) 80%,
-          transparent 92%
+          ellipse 92% 88% at 50% 50%,
+          transparent 62%,
+          color-mix(in srgb, var(--color-clay) 30%, transparent) 78%,
+          color-mix(in srgb, var(--color-clay) 10%, transparent) 88%,
+          transparent 97%
         ),
-      /* base wash: uneven, never flat */
+      /* base mount tint — warm, uneven */
       linear-gradient(
-          135deg,
-          color-mix(in srgb, var(--color-sage) 32%, transparent) 0%,
-          color-mix(in srgb, var(--color-lichen) 42%, transparent) 100%
+          148deg,
+          color-mix(in srgb, var(--color-ochre) 14%, transparent) 0%,
+          color-mix(in srgb, var(--color-sage) 18%, transparent) 100%
         );
-    filter: url('#wc-roughen-soft');
     box-shadow:
-      0 14px 32px color-mix(in srgb, var(--color-walnut) 18%, transparent),
-      0 2px 6px color-mix(in srgb, var(--color-sage) 22%, transparent);
+      0 16px 34px color-mix(in srgb, var(--color-walnut) 18%, transparent),
+      0 3px 8px color-mix(in srgb, var(--color-sage) 20%, transparent);
   }
 
-  /* Granulation fades toward the halo edge so the noise never shows the
-     layer's box as a hard rectangle. */
+  /* Granulation, kept light so it textures rather than muddies. */
   .image-frame-watercolor::after {
     content: '';
     position: absolute;
-    inset: -20px;
+    inset: -18px;
     z-index: 2;
     pointer-events: none;
     border-radius: inherit;
     background-image: var(--wc-grain);
     background-repeat: repeat;
     background-size: 140px 140px;
-    opacity: 0.32;
+    opacity: 0.16;
     -webkit-mask-image: radial-gradient(
-      ellipse 72% 68% at 50% 50%,
+      ellipse 70% 66% at 50% 50%,
       #000 0%,
-      #000 50%,
-      transparent 96%
+      #000 52%,
+      transparent 98%
     );
-    mask-image: radial-gradient(ellipse 72% 68% at 50% 50%, #000 0%, #000 50%, transparent 96%);
+    mask-image: radial-gradient(ellipse 70% 66% at 50% 50%, #000 0%, #000 52%, transparent 98%);
   }
 
   .image-frame-watercolor .frame-image {

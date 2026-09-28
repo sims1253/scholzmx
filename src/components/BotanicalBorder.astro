@@ -13,10 +13,10 @@ const strokeWidth = intensity === 'light' ? '2' : intensity === 'medium' ? '3' :
 
 /* Watercolor palette: glaze tones sit a little above the old line opacity
    so pigment actually reads once the paint filter erodes into it. */
-const glaze = Math.min(0.55, opacity + 0.16); // body of the leaf
-const glazeDeep = Math.min(0.62, opacity + 0.24); // second pass, overlaps read darker
-const rim = Math.min(0.7, opacity + 0.3); // dried edge
-const vineStroke = Math.min(0.55, opacity + 0.18);
+const glaze = Math.min(0.68, opacity + 0.26); // body of the leaf
+const glazeDeep = Math.min(0.78, opacity + 0.36); // second pass, overlaps read darker
+const rim = Math.min(0.85, opacity + 0.42); // dried edge
+const vineStroke = Math.min(0.68, opacity + 0.3);
 ---
 
 <div class={`botanical-border ${position} ${variant} ${className}`}>
@@ -45,7 +45,7 @@ const vineStroke = Math.min(0.55, opacity + 0.18);
             dries deeper — the glazing cue */}
         <path
           d="M55,52 Q152,33 248,57 T452,43 T648,62 T792,52"
-          stroke={`rgba(139, 90, 60, ${vineStroke * 0.55})`}
+          stroke={`rgba(139, 90, 60, ${vineStroke * 0.6})`}
           stroke-width={Number(strokeWidth) * 0.55}
           fill="none"
           stroke-linecap="round"
@@ -56,56 +56,32 @@ const vineStroke = Math.min(0.55, opacity + 0.18);
         <g filter="url(#wc-paint)">
           {/* leaf cluster 1 */}
           <g transform="translate(120,20) rotate(45)">
-            <ellipse rx="9" ry="4.2" fill={`rgba(90, 107, 71, ${glaze})`} />
-            <ellipse rx="7" ry="2.8" cx="0.8" cy="0.6" fill={`rgba(90, 107, 71, ${glazeDeep})`} />
-            <ellipse
-              rx="9"
-              ry="4.2"
-              fill="none"
-              stroke={`rgba(64, 80, 52, ${rim})`}
-              stroke-width="1.1"
-            />
+            <ellipse rx="18.9" ry="8.8" fill="url(#leafMoss)" />
           </g>
           {/* leaf cluster 2 */}
           <g transform="translate(320,30) rotate(-30)">
-            <ellipse rx="8" ry="3.6" fill={`rgba(90, 107, 71, ${glaze})`} />
-            <ellipse rx="6" ry="2.4" cx="0.7" cy="0.5" fill={`rgba(90, 107, 71, ${glazeDeep})`} />
-            <ellipse
-              rx="8"
-              ry="3.6"
-              fill="none"
-              stroke={`rgba(64, 80, 52, ${rim})`}
-              stroke-width="1"
-            />
+            <ellipse rx="16.8" ry="7.6" fill="url(#leafFern)" />
           </g>
           {/* leaf cluster 3 */}
           <g transform="translate(520,23) rotate(60)">
-            <ellipse rx="9" ry="4.5" fill={`rgba(90, 107, 71, ${glaze})`} />
-            <ellipse rx="6.8" ry="2.9" cx="0.9" cy="0.4" fill={`rgba(90, 107, 71, ${glazeDeep})`} />
-            <ellipse
-              rx="9"
-              ry="4.5"
-              fill="none"
-              stroke={`rgba(64, 80, 52, ${rim})`}
-              stroke-width="1.1"
-            />
+            <ellipse rx="18.9" ry="9.5" fill="url(#leafSage)" />
           </g>
 
           {/* flowers: stacked translucent washes, offset so overlaps deepen */}
           <g transform="translate(180,45)">
-            <circle r="3.2" fill={`rgba(168, 181, 160, ${glaze})`} />
-            <circle r="2.2" cx="0.4" cy="0.3" fill={`rgba(139, 90, 60, ${glazeDeep * 0.75})`} />
-            <circle r="1.1" cx="0.2" cy="0.1" fill={`rgba(176, 146, 44, ${rim * 0.8})`} />
+            <circle r="6.7" fill={`rgba(168, 181, 160, ${glaze})`} />
+            <circle r="4.6" cx="0.4" cy="0.3" fill={`rgba(139, 90, 60, ${glazeDeep * 0.75})`} />
+            <circle r="2.3" cx="0.2" cy="0.1" fill={`rgba(176, 146, 44, ${rim * 0.8})`} />
           </g>
           <g transform="translate(380,35)">
-            <circle r="2.6" fill={`rgba(168, 181, 160, ${glaze})`} />
-            <circle r="1.7" cx="0.3" cy="0.3" fill={`rgba(139, 90, 60, ${glazeDeep * 0.75})`} />
-            <circle r="0.9" fill={`rgba(176, 146, 44, ${rim * 0.8})`} />
+            <circle r="5.5" fill={`rgba(168, 181, 160, ${glaze})`} />
+            <circle r="3.6" cx="0.3" cy="0.3" fill={`rgba(139, 90, 60, ${glazeDeep * 0.75})`} />
+            <circle r="1.9" fill={`rgba(176, 146, 44, ${rim * 0.8})`} />
           </g>
           <g transform="translate(580,50)">
-            <circle r="3.4" fill={`rgba(168, 181, 160, ${glaze})`} />
-            <circle r="2.3" cx="0.5" cy="0.2" fill={`rgba(139, 90, 60, ${glazeDeep * 0.75})`} />
-            <circle r="1.2" fill={`rgba(176, 146, 44, ${rim * 0.8})`} />
+            <circle r="7.1" fill={`rgba(168, 181, 160, ${glaze})`} />
+            <circle r="4.8" cx="0.5" cy="0.2" fill={`rgba(139, 90, 60, ${glazeDeep * 0.75})`} />
+            <circle r="2.5" fill={`rgba(176, 146, 44, ${rim * 0.8})`} />
           </g>
         </g>
       </svg>
@@ -128,7 +104,7 @@ const vineStroke = Math.min(0.55, opacity + 0.18);
         />
         <path
           d="M28,10 Q37,125 32,245 Q28,365 37,485 Q41,605 32,725 Q27,800 36,800"
-          stroke={`rgba(139, 90, 60, ${vineStroke * 0.55})`}
+          stroke={`rgba(139, 90, 60, ${vineStroke * 0.6})`}
           stroke-width={Number(strokeWidth) * 0.55}
           fill="none"
           stroke-linecap="round"
@@ -138,49 +114,25 @@ const vineStroke = Math.min(0.55, opacity + 0.18);
         {/* Botanical elements: layered pigment glazes with dried edges */}
         <g filter="url(#wc-paint)">
           <g transform="translate(30,108)">
-            <ellipse rx="9" ry="4" fill={`rgba(90, 107, 71, ${glaze})`} />
-            <ellipse rx="7" ry="2.7" cx="0.7" cy="0.5" fill={`rgba(90, 107, 71, ${glazeDeep})`} />
-            <ellipse
-              rx="9"
-              ry="4"
-              fill="none"
-              stroke={`rgba(64, 80, 52, ${rim})`}
-              stroke-width="1.1"
-            />
+            <ellipse rx="18.9" ry="8.4" fill="url(#leafMoss)" />
           </g>
           <g transform="translate(33,226)">
-            <ellipse rx="9" ry="4" fill={`rgba(90, 107, 71, ${glaze})`} />
-            <ellipse rx="6.8" ry="2.6" cx="0.8" cy="0.4" fill={`rgba(90, 107, 71, ${glazeDeep})`} />
-            <ellipse
-              rx="9"
-              ry="4"
-              fill="none"
-              stroke={`rgba(64, 80, 52, ${rim})`}
-              stroke-width="1.1"
-            />
+            <ellipse rx="18.9" ry="8.4" fill="url(#leafFern)" />
           </g>
           <g transform="translate(29,346)">
-            <ellipse rx="9" ry="4" fill={`rgba(90, 107, 71, ${glaze})`} />
-            <ellipse rx="7" ry="2.6" cx="0.6" cy="0.6" fill={`rgba(90, 107, 71, ${glazeDeep})`} />
-            <ellipse
-              rx="9"
-              ry="4"
-              fill="none"
-              stroke={`rgba(64, 80, 52, ${rim})`}
-              stroke-width="1.1"
-            />
+            <ellipse rx="18.9" ry="8.4" fill="url(#leafSage)" />
           </g>
 
           {/* Flowers with glazing layers */}
           <g transform="translate(40,150)">
-            <circle r="5" fill={`rgba(168, 181, 160, ${glaze})`} />
-            <circle r="3.4" cx="0.5" cy="0.4" fill={`rgba(139, 90, 60, ${glazeDeep * 0.75})`} />
-            <circle r="1.8" fill={`rgba(176, 146, 44, ${rim * 0.8})`} />
+            <circle r="10.5" fill={`rgba(168, 181, 160, ${glaze})`} />
+            <circle r="7.1" cx="0.5" cy="0.4" fill={`rgba(139, 90, 60, ${glazeDeep * 0.75})`} />
+            <circle r="3.8" fill={`rgba(176, 146, 44, ${rim * 0.8})`} />
           </g>
           <g transform="translate(23,380)">
-            <circle r="4.2" fill={`rgba(168, 181, 160, ${glaze})`} />
-            <circle r="2.8" cx="0.4" cy="0.5" fill={`rgba(139, 90, 60, ${glazeDeep * 0.75})`} />
-            <circle r="1.5" fill={`rgba(176, 146, 44, ${rim * 0.8})`} />
+            <circle r="8.8" fill={`rgba(168, 181, 160, ${glaze})`} />
+            <circle r="5.9" cx="0.4" cy="0.5" fill={`rgba(139, 90, 60, ${glazeDeep * 0.75})`} />
+            <circle r="3.2" fill={`rgba(176, 146, 44, ${rim * 0.8})`} />
           </g>
         </g>
       </svg>
@@ -213,7 +165,7 @@ const vineStroke = Math.min(0.55, opacity + 0.18);
         <circle
           cx="40"
           cy="40"
-          r="12"
+          r="25.2"
           fill={`rgba(90, 107, 71, ${opacity + 0.1})`}
           filter="url(#cornerEmboss)"
         />
@@ -261,14 +213,14 @@ const vineStroke = Math.min(0.55, opacity + 0.18);
 
         {/* Scattered botanical elements */}
         <g fill={`rgba(90, 107, 71, ${opacity})`} filter="url(#shadowBottom)">
-          <ellipse cx="120" cy="20" rx="10" ry="5" transform="rotate(45 120 20)" />
-          <ellipse cx="320" cy="30" rx="8" ry="4" transform="rotate(-30 320 30)" />
-          <ellipse cx="520" cy="23" rx="9" ry="5" transform="rotate(60 520 23)" />
+          <ellipse cx="120" cy="20" rx="21.0" ry="10.5" transform="rotate(45 120 20)" />
+          <ellipse cx="320" cy="30" rx="16.8" ry="8.4" transform="rotate(-30 320 30)" />
+          <ellipse cx="520" cy="23" rx="18.9" ry="10.5" transform="rotate(60 520 23)" />
 
           {/* Small flowers */}
-          <circle cx="180" cy="45" r="3" fill={`rgba(168, 181, 160, ${opacity})`} />
-          <circle cx="380" cy="35" r="2.5" fill={`rgba(168, 181, 160, ${opacity})`} />
-          <circle cx="580" cy="50" r="3.5" fill={`rgba(168, 181, 160, ${opacity})`} />
+          <circle cx="180" cy="45" r="6.3" fill={`rgba(168, 181, 160, ${opacity})`} />
+          <circle cx="380" cy="35" r="5.2" fill={`rgba(168, 181, 160, ${opacity})`} />
+          <circle cx="580" cy="50" r="7.4" fill={`rgba(168, 181, 160, ${opacity})`} />
         </g>
       </svg>
     )
@@ -290,7 +242,7 @@ const vineStroke = Math.min(0.55, opacity + 0.18);
         />
         <path
           d="M28,10 Q37,125 32,245 Q28,365 37,485 Q41,605 32,725 Q27,800 36,800"
-          stroke={`rgba(139, 90, 60, ${vineStroke * 0.55})`}
+          stroke={`rgba(139, 90, 60, ${vineStroke * 0.6})`}
           stroke-width={Number(strokeWidth) * 0.55}
           fill="none"
           stroke-linecap="round"
@@ -300,92 +252,44 @@ const vineStroke = Math.min(0.55, opacity + 0.18);
         {/* Botanical elements: layered pigment glazes with dried edges */}
         <g filter="url(#wc-paint)">
           <g transform="translate(32,105)">
-            <ellipse rx="9" ry="4" fill={`rgba(90, 107, 71, ${glaze})`} />
-            <ellipse rx="7" ry="2.6" cx="0.7" cy="0.5" fill={`rgba(90, 107, 71, ${glazeDeep})`} />
-            <ellipse
-              rx="9"
-              ry="4"
-              fill="none"
-              stroke={`rgba(64, 80, 52, ${rim})`}
-              stroke-width="1.1"
-            />
+            <ellipse rx="18.9" ry="8.4" fill="url(#leafOchre)" />
           </g>
           <g transform="translate(30,228)">
-            <ellipse rx="9" ry="4" fill={`rgba(90, 107, 71, ${glaze})`} />
-            <ellipse rx="6.6" ry="2.7" cx="0.8" cy="0.4" fill={`rgba(90, 107, 71, ${glazeDeep})`} />
-            <ellipse
-              rx="9"
-              ry="4"
-              fill="none"
-              stroke={`rgba(64, 80, 52, ${rim})`}
-              stroke-width="1.1"
-            />
+            <ellipse rx="18.9" ry="8.4" fill="url(#leafMoss)" />
           </g>
           <g transform="translate(33,348)">
-            <ellipse rx="9" ry="4" fill={`rgba(90, 107, 71, ${glaze})`} />
-            <ellipse rx="7" ry="2.5" cx="0.6" cy="0.6" fill={`rgba(90, 107, 71, ${glazeDeep})`} />
-            <ellipse
-              rx="9"
-              ry="4"
-              fill="none"
-              stroke={`rgba(64, 80, 52, ${rim})`}
-              stroke-width="1.1"
-            />
+            <ellipse rx="18.9" ry="8.4" fill="url(#leafFern)" />
           </g>
           <g transform="translate(29,466)">
-            <ellipse rx="8.5" ry="3.8" fill={`rgba(90, 107, 71, ${glaze})`} />
-            <ellipse rx="6.5" ry="2.5" cx="0.7" cy="0.5" fill={`rgba(90, 107, 71, ${glazeDeep})`} />
-            <ellipse
-              rx="8.5"
-              ry="3.8"
-              fill="none"
-              stroke={`rgba(64, 80, 52, ${rim})`}
-              stroke-width="1.1"
-            />
+            <ellipse rx="17.9" ry="8.0" fill="url(#leafSage)" />
           </g>
           <g transform="translate(32,586)">
-            <ellipse rx="9" ry="4" fill={`rgba(90, 107, 71, ${glaze})`} />
-            <ellipse rx="6.8" ry="2.6" cx="0.8" cy="0.4" fill={`rgba(90, 107, 71, ${glazeDeep})`} />
-            <ellipse
-              rx="9"
-              ry="4"
-              fill="none"
-              stroke={`rgba(64, 80, 52, ${rim})`}
-              stroke-width="1.1"
-            />
+            <ellipse rx="18.9" ry="8.4" fill="url(#leafOchre)" />
           </g>
           <g transform="translate(30,706)">
-            <ellipse rx="9" ry="4" fill={`rgba(90, 107, 71, ${glaze})`} />
-            <ellipse rx="7" ry="2.6" cx="0.6" cy="0.5" fill={`rgba(90, 107, 71, ${glazeDeep})`} />
-            <ellipse
-              rx="9"
-              ry="4"
-              fill="none"
-              stroke={`rgba(64, 80, 52, ${rim})`}
-              stroke-width="1.1"
-            />
+            <ellipse rx="18.9" ry="8.4" fill="url(#leafMoss)" />
           </g>
 
           {/* Flowers with glazing layers */}
           <g transform="translate(45,150)">
-            <circle r="3.6" fill={`rgba(168, 181, 160, ${glaze})`} />
-            <circle r="2.4" cx="0.4" cy="0.3" fill={`rgba(139, 90, 60, ${glazeDeep * 0.75})`} />
-            <circle r="1.2" fill={`rgba(176, 146, 44, ${rim * 0.8})`} />
+            <circle r="7.6" fill={`rgba(168, 181, 160, ${glaze})`} />
+            <circle r="5.0" cx="0.4" cy="0.3" fill={`rgba(139, 90, 60, ${glazeDeep * 0.75})`} />
+            <circle r="2.5" fill={`rgba(176, 146, 44, ${rim * 0.8})`} />
           </g>
           <g transform="translate(40,300)">
-            <circle r="3" fill={`rgba(168, 181, 160, ${glaze})`} />
-            <circle r="2" cx="0.3" cy="0.3" fill={`rgba(139, 90, 60, ${glazeDeep * 0.75})`} />
-            <circle r="1" fill={`rgba(176, 146, 44, ${rim * 0.8})`} />
+            <circle r="6.3" fill={`rgba(168, 181, 160, ${glaze})`} />
+            <circle r="4.2" cx="0.3" cy="0.3" fill={`rgba(139, 90, 60, ${glazeDeep * 0.75})`} />
+            <circle r="2.1" fill={`rgba(176, 146, 44, ${rim * 0.8})`} />
           </g>
           <g transform="translate(48,500)">
-            <circle r="4" fill={`rgba(168, 181, 160, ${glaze})`} />
-            <circle r="2.6" cx="0.5" cy="0.4" fill={`rgba(139, 90, 60, ${glazeDeep * 0.75})`} />
-            <circle r="1.3" fill={`rgba(176, 146, 44, ${rim * 0.8})`} />
+            <circle r="8.4" fill={`rgba(168, 181, 160, ${glaze})`} />
+            <circle r="5.5" cx="0.5" cy="0.4" fill={`rgba(139, 90, 60, ${glazeDeep * 0.75})`} />
+            <circle r="2.7" fill={`rgba(176, 146, 44, ${rim * 0.8})`} />
           </g>
           <g transform="translate(42,650)">
-            <circle r="3.4" fill={`rgba(168, 181, 160, ${glaze})`} />
-            <circle r="2.2" cx="0.4" cy="0.3" fill={`rgba(139, 90, 60, ${glazeDeep * 0.75})`} />
-            <circle r="1.1" fill={`rgba(176, 146, 44, ${rim * 0.8})`} />
+            <circle r="7.1" fill={`rgba(168, 181, 160, ${glaze})`} />
+            <circle r="4.6" cx="0.4" cy="0.3" fill={`rgba(139, 90, 60, ${glazeDeep * 0.75})`} />
+            <circle r="2.3" fill={`rgba(176, 146, 44, ${rim * 0.8})`} />
           </g>
         </g>
       </svg>
