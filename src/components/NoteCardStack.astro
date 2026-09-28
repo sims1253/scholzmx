@@ -52,69 +52,57 @@ const {
 ---
 
 <GridLayout columns={columns} itemMinWidth={itemMinWidth ?? '22rem'} gap="xl" class={className}>
-  {
-    items.map((it) => (
-      <div
-        class="nc-item"
-        data-year={it.year}
-        data-tags={it.tags?.join(',') || ''}
-        style="width: 100%; max-width: var(--card-max-width); margin: 0 auto;"
-      >
-        <StackedCard
-          seed={`stack/${it.id}`}
-          title={it.title}
-          subtitle={it.subtitle}
-          href={it.href}
-          layers={layers}
-        >
-          {it.hero && (
-            <div class="sc-media" slot="media">
-              <ImageFrame
-                src={it.hero.kind === 'url' ? it.hero.src : it.hero.src}
-                alt=""
-                aspectRatio={aspectRatio}
-                style="simple"
-                fillMode="cover"
-                positionX={it.hero.posX !== undefined ? it.hero.posX * 100 : undefined}
-                positionY={it.hero.posY !== undefined ? it.hero.posY * 100 : undefined}
-                scale={it.hero.scale}
-                width={1200}
-                height={450}
-                containerClass="tw:w-full"
-              />
-            </div>
-          )}
-          <div class="sc-meta">
-            <div class="sc-dates">
-              {it.writtenDate && (
-                <div class="sc-date-item">
-                  <span class="sc-date-label">Written:</span>
-                  <time class="sc-date" datetime={it.writtenDate}>
-                    {it.writtenDate}
-                  </time>
-                </div>
-              )}
-              {it.updatedDate && (
-                <div class="sc-date-item">
-                  <span class="sc-date-label">Updated:</span>
-                  <time class="sc-date" datetime={it.updatedDate}>
-                    {it.updatedDate}
-                  </time>
-                </div>
-              )}
-            </div>
-            <div class="sc-tags">
-              {it.tags?.map((tag) => (
-                <a class="sc-chip" href={`/blog?tag=${encodeURIComponent(tag)}`}>
-                  #{tag}
-                </a>
-              ))}
-            </div>
-          </div>
-        </StackedCard>
+  {items.map((it) => <div
+    class="nc-item"
+    data-year={it.year}
+    data-tags={it.tags?.join(',') || ''}
+    style="width: 100%; max-width: var(--card-max-width); margin: 0 auto"
+  >
+    <StackedCard
+      seed={`stack/${it.id}`}
+      title={it.title}
+      subtitle={it.subtitle}
+      href={it.href}
+      layers={layers}
+    >
+      {it.hero && <div class="sc-media" slot="media">
+        <ImageFrame
+          src={it.hero.kind === 'url' ? it.hero.src : it.hero.src}
+          alt=""
+          aspectRatio={aspectRatio}
+          style="simple"
+          fillMode="cover"
+          positionX={it.hero.posX !== undefined ? it.hero.posX * 100 : undefined}
+          positionY={it.hero.posY !== undefined ? it.hero.posY * 100 : undefined}
+          scale={it.hero.scale}
+          width={1200}
+          height={450}
+          containerClass="tw:w-full"
+        />
+      </div>}
+      <div class="sc-meta">
+        <div class="sc-dates">
+          {it.writtenDate && <div class="sc-date-item">
+            <span class="sc-date-label">Written:</span>
+            <time class="sc-date" datetime={it.writtenDate}>
+              {it.writtenDate}
+            </time>
+          </div>}
+          {it.updatedDate && <div class="sc-date-item">
+            <span class="sc-date-label">Updated:</span>
+            <time class="sc-date" datetime={it.updatedDate}>
+              {it.updatedDate}
+            </time>
+          </div>}
+        </div>
+        <div class="sc-tags">
+          {it.tags?.map((tag) => <a class="sc-chip" href={`/blog?tag=${encodeURIComponent(tag)}`}>
+            #{tag}
+          </a>)}
+        </div>
       </div>
-    ))
-  }
+    </StackedCard>
+  </div>)}
 </GridLayout>
 
 <style>

@@ -81,12 +81,10 @@ const formatDate = (date: Date) => date.toISOString().split('T')[0];
         <div class="prose content">
           <p class="prose">
             <DropCap letter="I" variant="personal" />'m Maximilian. My best friend once painted me a
-            t-shirt that read <em>verspielt und liebenswürdig</em> (playful and endearing) and I've yet
-            to find a better description. The best feedback I've ever gotten described me as a <em
-              >herder of cat herders</em
-            > and my music taste has been characterized as being <em
-              >an atmospheric futurist with a nostalgic heart</em
-            >.<br /><br />
+            t-shirt that read <em>verspielt und liebenswürdig</em> (playful and endearing) and I've
+            yet to find a better description. The best feedback I've ever gotten described me as a
+            <em>herder of cat herders</em> and my music taste has been characterized as being
+            <em>an atmospheric futurist with a nostalgic heart</em>.<br /><br />
 
             I tend to make things. Software infrastructure that hopefully helps others, harsh vocals
             and guitar covers, a concept Call of Cthulhu campaign for a deathcore album (much to my
@@ -102,26 +100,22 @@ const formatDate = (date: Date) => date.toISOString().split('T')[0];
             them :)
           </p>
         </div>
-        {
-          newestPost && (
-            <aside class="latest-scribble">
-              <span class="scribble-label">Newest post</span>
-              <a
-                href={
-                  newestPost.type === 'blog'
-                    ? `/blog/${newestPost.post.id}`
-                    : `/recipes/${newestPost.post.id}`
-                }
-                class="scribble-title"
-              >
-                {newestPost.post.data.title}
-              </a>
-              <time class="scribble-date" datetime={newestPost.date.toISOString()}>
-                {formatDate(newestPost.date)}
-              </time>
-            </aside>
-          )
-        }
+        {newestPost && <aside class="latest-scribble">
+          <span class="scribble-label">Newest post</span>
+          <a
+            href={
+              newestPost.type === 'blog'
+                ? `/blog/${newestPost.post.id}`
+                : `/recipes/${newestPost.post.id}`
+            }
+            class="scribble-title"
+          >
+            {newestPost.post.data.title}
+          </a>
+          <time class="scribble-date" datetime={newestPost.date.toISOString()}>
+            {formatDate(newestPost.date)}
+          </time>
+        </aside>}
       </div>
     </div>
   </div>

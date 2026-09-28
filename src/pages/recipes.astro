@@ -89,24 +89,22 @@ const tags = Array.from(new Set(recipes.flatMap((r) => r.data.tags ?? []))).sort
                 data-filter-tag=""
                 role="radio"
                 aria-checked="true"
-                aria-label="Show all recipes">All</button
+                aria-label="Show all recipes"
               >
+                All
+              </button>
             </li>
-            {
-              tags.map((t) => (
-                <li>
-                  <button
-                    class="filter-btn"
-                    data-filter-tag={t}
-                    role="radio"
-                    aria-checked="false"
-                    aria-label={`Filter by tag: ${t}`}
-                  >
-                    #{t}
-                  </button>
-                </li>
-              ))
-            }
+            {tags.map((t) => <li>
+              <button
+                class="filter-btn"
+                data-filter-tag={t}
+                role="radio"
+                aria-checked="false"
+                aria-label={`Filter by tag: ${t}`}
+              >
+                #{t}
+              </button>
+            </li>)}
           </ul>
         </section>
       </aside>
