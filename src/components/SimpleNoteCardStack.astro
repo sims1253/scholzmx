@@ -39,22 +39,20 @@ const backgroundRotations = [
 
 <div
   class={`tw:grid tw:gap-lg ${className || ''}`}
-  style="grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: var(--space-lg);"
+  style="grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: var(--space-lg)"
 >
-  {
-    items.map((item, index) => {
-      const rotation = rotations[index % rotations.length];
-      const backgroundRotation = backgroundRotations[index % backgroundRotations.length];
+  {items.map((item, index) => {
+    const rotation = rotations[index % rotations.length];
+    const backgroundRotation = backgroundRotations[index % backgroundRotations.length];
 
-      return (
-        <SimpleCard
-          title={item.title}
-          subtitle={item.subtitle}
-          href={item.href}
-          rotation={rotation}
-          backgroundRotation={backgroundRotation}
-        />
-      );
-    })
-  }
+    return (
+      <SimpleCard
+        title={item.title}
+        subtitle={item.subtitle}
+        href={item.href}
+        rotation={rotation}
+        backgroundRotation={backgroundRotation}
+      />
+    );
+  })}
 </div>

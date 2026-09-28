@@ -71,13 +71,12 @@ const getTypeColor = (type: typeof note.data.type) => {
             <time class="note-date" datetime={note.data.created.toISOString()}>
               Planted {formatDate(note.data.created)}
             </time>
-            {
-              note.data.updated && (
-                <time class="note-updated" datetime={note.data.updated.toISOString()}>
-                  Tended {formatDate(note.data.updated)}
-                </time>
-              )
-            }
+            {note.data.updated && <time
+              class="note-updated"
+              datetime={note.data.updated.toISOString()}
+            >
+              Tended {formatDate(note.data.updated)}
+            </time>}
           </div>
 
           <h1 class="note-title">
@@ -86,15 +85,9 @@ const getTypeColor = (type: typeof note.data.type) => {
 
           {note.data.description && <p class="note-description">{note.data.description}</p>}
 
-          {
-            note.data.tags && note.data.tags.length > 0 && (
-              <div class="note-tags">
-                {note.data.tags.map((tag) => (
-                  <span class="tag">#{tag}</span>
-                ))}
-              </div>
-            )
-          }
+          {note.data.tags && note.data.tags.length > 0 && <div class="note-tags">
+            {note.data.tags.map((tag) => <span class="tag">#{tag}</span>)}
+          </div>}
         </header>
 
         <HandDrawnDivider variant="botanical" width="wide" />
@@ -107,54 +100,45 @@ const getTypeColor = (type: typeof note.data.type) => {
         </div>
 
         <!-- Connections Section -->
-        {
-          (forwardLinks.length > 0 || backlinks.length > 0) && (
-            <div>
-              <HandDrawnDivider variant="simple" width="medium" />
+        {(forwardLinks.length > 0 || backlinks.length > 0) && <div>
+          <HandDrawnDivider variant="simple" width="medium" />
 
-              <section class="connections-section">
-                <h2 class="connections-title">Connected Growth</h2>
+          <section class="connections-section">
+            <h2 class="connections-title">Connected Growth</h2>
 
-                {forwardLinks.length > 0 && (
-                  <div class="connection-group">
-                    <h3 class="connection-group-title">Seeds from this note:</h3>
-                    <div class="connection-list">
-                      {forwardLinks.map((linkedNote) => (
-                        <a href={`/notes/${linkedNote.id}`} class="connection-link">
-                          <span class="connection-icon">
-                            <span class="manuscript-type-marker" data-type={linkedNote.data.type} />
-                          </span>
-                          <span class="connection-title">{linkedNote.data.title}</span>
-                          <span class="connection-type">{linkedNote.data.type}</span>
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                )}
+            {forwardLinks.length > 0 && <div class="connection-group">
+              <h3 class="connection-group-title">Seeds from this note:</h3>
+              <div class="connection-list">
+                {forwardLinks.map((linkedNote) => <a
+                  href={`/notes/${linkedNote.id}`}
+                  class="connection-link"
+                >
+                  <span class="connection-icon">
+                    <span class="manuscript-type-marker" data-type={linkedNote.data.type} />
+                  </span>
+                  <span class="connection-title">{linkedNote.data.title}</span>
+                  <span class="connection-type">{linkedNote.data.type}</span>
+                </a>)}
+              </div>
+            </div>}
 
-                {backlinks.length > 0 && (
-                  <div class="connection-group">
-                    <h3 class="connection-group-title">Notes that reference this one:</h3>
-                    <div class="connection-list">
-                      {backlinks.map((backlinkNote) => (
-                        <a href={`/notes/${backlinkNote.id}`} class="connection-link">
-                          <span class="connection-icon">
-                            <span
-                              class="manuscript-type-marker"
-                              data-type={backlinkNote.data.type}
-                            />
-                          </span>
-                          <span class="connection-title">{backlinkNote.data.title}</span>
-                          <span class="connection-type">{backlinkNote.data.type}</span>
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </section>
-            </div>
-          )
-        }
+            {backlinks.length > 0 && <div class="connection-group">
+              <h3 class="connection-group-title">Notes that reference this one:</h3>
+              <div class="connection-list">
+                {backlinks.map((backlinkNote) => <a
+                  href={`/notes/${backlinkNote.id}`}
+                  class="connection-link"
+                >
+                  <span class="connection-icon">
+                    <span class="manuscript-type-marker" data-type={backlinkNote.data.type} />
+                  </span>
+                  <span class="connection-title">{backlinkNote.data.title}</span>
+                  <span class="connection-type">{backlinkNote.data.type}</span>
+                </a>)}
+              </div>
+            </div>}
+          </section>
+        </div>}
 
         <HandDrawnDivider variant="simple" width="medium" />
 

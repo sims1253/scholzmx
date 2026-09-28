@@ -94,69 +94,68 @@ const years = Object.keys(publicationsByYear).sort((a, b) => Number(b) - Number(
             class="chip-link"
             href="https://scholar.google.com/citations?user=JhwHgX4AAAAJ"
             target="_blank"
-            rel="noopener">Google Scholar</a
+            rel="noopener"
+            >Google Scholar</a
           >
           <a
             class="chip-link"
             href="https://orcid.org/0000-0002-4486-1393"
             target="_blank"
-            rel="noopener">ORCID</a
+            rel="noopener"
+            >ORCID</a
           >
         </section>
       </aside>
 
       <main class="research-content">
         <section class="cards-grid" aria-label="Publications">
-          {
-            years.map((year) => (
-              <div class="year-group" data-year-group={year}>
-                <h2 class="year-heading" id={`year-${year}`}>
-                  <>
-                    <span class="vine" />
-                    <span class="year-text">{year}</span>
-                    <span class="vine" />
-                  </>
-                </h2>
-                <GridLayout columns={1} gap="xl" class="cards">
-                  {publicationsByYear[Number(year)].map((pub, idx) => {
-                    const primaryLink = pub.links?.pdf || pub.links?.doi || undefined;
-                    return (
-                      <div class="pub-item">
-                        <StackedCard
-                          seed={`pub/${year}/${idx}/${pub.title}`}
-                          title={pub.title}
-                          subtitle={pub.venue}
-                          href={primaryLink}
-                          layers={1}
-                          ornament={false}
-                        >
-                          <div class="sc-meta">
-                            <div class="sc-dates">
-                              <div class="sc-date-item">
-                                <span class="sc-date-label">Type:</span>
-                                <span class="sc-date">{pub.type}</span>
-                              </div>
-                              <div class="sc-date-item">
-                                <span class="sc-date-label">Authors:</span>
-                                <span class="sc-date">{pub.authors.join(', ')}</span>
-                              </div>
-                            </div>
-                            <div class="sc-tags">
-                              {Object.entries(pub.links || {}).map(([k, url]) => (
-                                <a class="sc-chip" href={url} target="_blank" rel="noopener">
-                                  {k}
-                                </a>
-                              ))}
-                            </div>
-                          </div>
-                        </StackedCard>
+          {years.map((year) => <div class="year-group" data-year-group={year}>
+            <h2 class="year-heading" id={`year-${year}`}>
+              <>
+                <span class="vine" />
+                <span class="year-text">{year}</span>
+                <span class="vine" />
+              </>
+            </h2>
+            <GridLayout columns={1} gap="xl" class="cards">
+              {publicationsByYear[Number(year)].map((pub, idx) => {
+                const primaryLink = pub.links?.pdf || pub.links?.doi || undefined;
+                return <div class="pub-item">
+                  <StackedCard
+                    seed={`pub/${year}/${idx}/${pub.title}`}
+                    title={pub.title}
+                    subtitle={pub.venue}
+                    href={primaryLink}
+                    layers={1}
+                    ornament={false}
+                  >
+                    <div class="sc-meta">
+                      <div class="sc-dates">
+                        <div class="sc-date-item">
+                          <span class="sc-date-label">Type:</span>
+                          <span class="sc-date">{pub.type}</span>
+                        </div>
+                        <div class="sc-date-item">
+                          <span class="sc-date-label">Authors:</span>
+                          <span class="sc-date">{pub.authors.join(', ')}</span>
+                        </div>
                       </div>
-                    );
-                  })}
-                </GridLayout>
-              </div>
-            ))
-          }
+                      <div class="sc-tags">
+                        {Object.entries(pub.links || {}).map(([k, url]) => <a
+                          class="sc-chip"
+                          href={url}
+                          target="_blank"
+                          rel="noopener"
+                        >
+                          {k}
+                        </a>)}
+                      </div>
+                    </div>
+                  </StackedCard>
+                </div>;
+              })}
+            </GridLayout>
+          </div>)}
         </section>
       </main>
     </div>

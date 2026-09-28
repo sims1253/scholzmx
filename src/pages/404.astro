@@ -12,18 +12,37 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   layout="prose"
 >
   <section
-    style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:55vh;text-align:center;gap:var(--space-md);"
+    style="
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 55vh;
+      text-align: center;
+      gap: var(--space-md);
+    "
   >
     <h1
-      style="font-family:var(--font-heading);font-size:clamp(2rem,4vw,3rem);margin:0;color:var(--color-ink-dark);"
+      style="
+        font-family: var(--font-heading);
+        font-size: clamp(2rem, 4vw, 3rem);
+        margin: 0;
+        color: var(--color-ink-dark);
+      "
     >
       It is getting late...
     </h1>
-    <p style="max-width:50ch;color:var(--color-ink-medium);margin:0;">
+    <p style="max-width: 50ch; color: var(--color-ink-medium); margin: 0">
       This page has wandered off the path. It may have been moved, renamed, or never existed.
     </p>
     <div
-      style="display:flex;gap:var(--space-sm);flex-wrap:wrap;justify-content:center;margin-top:var(--space-sm);"
+      style="
+        display: flex;
+        gap: var(--space-sm);
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: var(--space-sm);
+      "
     >
       <a href="/" class="btn">Go home</a>
     </div>

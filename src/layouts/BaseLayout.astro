@@ -116,97 +116,89 @@ const socialImageURL = new URL(socialImage, Astro.site).href;
     />
 
     {/* Conditional preloading based on tone */}
-    {
-      resolvedTone === 'personal' ? (
-        <link
-          rel="preload"
-          href="/fonts/Alegreya/alegreya-v38-latin-regular.woff2"
-          as="font"
-          type="font/woff2"
-          crossorigin
-        />
-      ) : (
-        <link
-          rel="preload"
-          href="/fonts/et-book-roman-old-style-figures.woff2"
-          as="font"
-          type="font/woff2"
-          crossorigin
-        />
-      )
-    }
+    {resolvedTone === 'personal' ? (
+      <link
+        rel="preload"
+        href="/fonts/Alegreya/alegreya-v38-latin-regular.woff2"
+        as="font"
+        type="font/woff2"
+        crossorigin
+      />
+    ) : (
+      <link
+        rel="preload"
+        href="/fonts/et-book-roman-old-style-figures.woff2"
+        as="font"
+        type="font/woff2"
+        crossorigin
+      />
+    )}
 
     {/* Only preload code fonts for content that likely has code blocks */}
-    {
-      (currentPath.includes('/blog/') ||
-        currentPath.includes('/notes/') ||
-        currentPath.includes('/projects')) && (
-        <>
-          <link
-            rel="preload"
-            href="/fonts/FiraCode-Regular.woff2"
-            as="font"
-            type="font/woff2"
-            crossorigin
-          />
-          <link
-            rel="preload"
-            href="/fonts/FiraCode-Medium.woff2"
-            as="font"
-            type="font/woff2"
-            crossorigin
-          />
-        </>
-      )
-    }
+    {(currentPath.includes('/blog/') ||
+      currentPath.includes('/notes/') ||
+      currentPath.includes('/projects')) && (
+      <>
+        <link
+          rel="preload"
+          href="/fonts/FiraCode-Regular.woff2"
+          as="font"
+          type="font/woff2"
+          crossorigin
+        />
+        <link
+          rel="preload"
+          href="/fonts/FiraCode-Medium.woff2"
+          as="font"
+          type="font/woff2"
+          crossorigin
+        />
+      </>
+    )}
 
     {/* Only preload math fonts for content that likely has equations */}
-    {
-      (currentPath.includes('/blog/') ||
-        currentPath.includes('/notes/') ||
-        currentPath.includes('/research')) && (
-        <>
-          <link
-            rel="preload"
-            href="/katex/fonts/KaTeX_Main-Regular.woff2"
-            as="font"
-            type="font/woff2"
-            crossorigin
-          />
-          <link
-            rel="preload"
-            href="/katex/katex.min.css"
-            as="style"
-            onload={"this.onload=null;this.rel='stylesheet'"}
-          />
-          <noscript>
-            <link rel="stylesheet" href="/katex/katex.min.css" />
-          </noscript>
-        </>
-      )
-    }
+    {(currentPath.includes('/blog/') ||
+      currentPath.includes('/notes/') ||
+      currentPath.includes('/research')) && (
+      <>
+        <link
+          rel="preload"
+          href="/katex/fonts/KaTeX_Main-Regular.woff2"
+          as="font"
+          type="font/woff2"
+          crossorigin
+        />
+        <link
+          rel="preload"
+          href="/katex/katex.min.css"
+          as="style"
+          onload={"this.onload=null;this.rel='stylesheet'"}
+        />
+        <noscript>
+          <link rel="stylesheet" href="/katex/katex.min.css" />
+        </noscript>
+      </>
+    )}
 
     {/* Load the decorative initial before it can change the first paragraph's wrapping. */}
-    {
-      (currentPath === '/' || /^\/(blog|recipes|notes)\/.+/.test(currentPath)) && (
-        <>
-          <link
-            rel="preload"
-            href="/fonts/EBGaramond-InitialsF1.woff2"
-            as="font"
-            type="font/woff2"
-            crossorigin
-          />
-          <link
-            rel="preload"
-            href="/fonts/EBGaramond-InitialsF2.woff2"
-            as="font"
-            type="font/woff2"
-            crossorigin
-          />
-        </>
-      )
-    }
+    {(currentPath === '/' || /^\/(blog|recipes|notes)\/.+/.test(currentPath)) && (
+      <>
+        <link
+          rel="preload"
+          href="/fonts/EBGaramond-InitialsF1.woff2"
+          as="font"
+          type="font/woff2"
+          crossorigin
+        />
+        <link
+          rel="preload"
+          href="/fonts/EBGaramond-InitialsF2.woff2"
+          as="font"
+          type="font/woff2"
+          crossorigin
+        />
+      </>
+    )}
 
     <!-- Only preload fonts critical for initial render -->
     <link
@@ -259,15 +251,11 @@ const socialImageURL = new URL(socialImage, Astro.site).href;
 
     <div class="page-wrapper">
       <!-- Organic botanical borders -->
-      {
-        addBorders && (
-          <div>
-            <BotanicalBorder position="top" variant="vine" intensity="light" />
-            <BotanicalBorder position="left" variant="vine" intensity="light" />
-            <BotanicalBorder position="right" variant="vine" intensity="light" />
-          </div>
-        )
-      }
+      {addBorders && <div>
+        <BotanicalBorder position="top" variant="vine" intensity="light" />
+        <BotanicalBorder position="left" variant="vine" intensity="light" />
+        <BotanicalBorder position="right" variant="vine" intensity="light" />
+      </div>}
 
       <!-- Navigation and Content in scrollable area -->
       <div class="nav-and-content-area">
@@ -288,25 +276,29 @@ const socialImageURL = new URL(socialImage, Astro.site).href;
               <a
                 href="/blog"
                 class={currentPath.startsWith('/blog') ? 'nav-link active' : 'nav-link'}
-                aria-current={currentPath.startsWith('/blog') ? 'page' : undefined}>Blog</a
+                aria-current={currentPath.startsWith('/blog') ? 'page' : undefined}
+                >Blog</a
               >
               <span class="nav-separator" aria-hidden="true">·</span>
               <a
                 href="/projects"
                 class={currentPath.startsWith('/projects') ? 'nav-link active' : 'nav-link'}
-                aria-current={currentPath.startsWith('/projects') ? 'page' : undefined}>Projects</a
+                aria-current={currentPath.startsWith('/projects') ? 'page' : undefined}
+                >Projects</a
               >
               <span class="nav-separator" aria-hidden="true">·</span>
               <a
                 href="/recipes"
                 class={currentPath.startsWith('/recipes') ? 'nav-link active' : 'nav-link'}
-                aria-current={currentPath.startsWith('/recipes') ? 'page' : undefined}>Recipes</a
+                aria-current={currentPath.startsWith('/recipes') ? 'page' : undefined}
+                >Recipes</a
               >
               <span class="nav-separator" aria-hidden="true">·</span>
               <a
                 href="/research"
                 class={currentPath.startsWith('/research') ? 'nav-link active' : 'nav-link'}
-                aria-current={currentPath.startsWith('/research') ? 'page' : undefined}>Research</a
+                aria-current={currentPath.startsWith('/research') ? 'page' : undefined}
+                >Research</a
               >
               <button
                 id="nav-theme-toggle"
@@ -334,8 +326,15 @@ const socialImageURL = new URL(socialImage, Astro.site).href;
                     d="M32 8c6 7 4 13-1 18 5-1 8-5 8-10 5 5 7 13 2 19-4 5-12 6-18 3-7-4-7-12-2-17 0 6 6 9 10 7-3-2-5-6-5-9 0-2 1-5 6-11z"
                     fill="url(#flame)"
                     stroke="var(--color-ink-medium)"
-                    stroke-width="1"></path>
-                  <rect x="28" y="44" width="8" height="10" rx="2" fill="var(--color-ink-medium)"
+                    stroke-width="1"
+                  ></path>
+                  <rect
+                    x="28"
+                    y="44"
+                    width="8"
+                    height="10"
+                    rx="2"
+                    fill="var(--color-ink-medium)"
                   ></rect>
                 </svg>
               </button>
