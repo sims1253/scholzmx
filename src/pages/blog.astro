@@ -102,30 +102,20 @@ const tags = Array.from(new Set(posts.flatMap((p) => p.data.tags ?? []))).sort()
           <h3>Filter by year</h3>
           <ul class="filter-list">
             <li><button class="filter-btn active" data-filter-year="">All</button></li>
-            {
-              years.map((y) => (
-                <li>
-                  <button class="filter-btn" data-filter-year={y}>
-                    {y}
-                  </button>
-                </li>
-              ))
-            }
+            {years.map((y) => <li>
+              <button class="filter-btn" data-filter-year={y}>
+                {y}
+              </button>
+            </li>)}
           </ul>
         </section>
         <section class="sidebar-section">
           <h3>Filter by tag</h3>
           <ul class="filter-list">
             <li><button class="filter-btn active" data-filter-tag="">All</button></li>
-            {
-              tags.map((t) => (
-                <li>
-                  <button class="filter-btn" data-filter-tag={t}>
-                    #{t}
-                  </button>
-                </li>
-              ))
-            }
+            {tags.map((t) => <li>
+              <button class="filter-btn" data-filter-tag={t}>#{t}</button>
+            </li>)}
           </ul>
         </section>
       </aside>
@@ -276,5 +266,4 @@ const tags = Array.from(new Set(posts.flatMap((p) => p.data.tags ?? []))).sort()
     if (qTag) activeTag = qTag;
     applyFilters();
     updateActive();
-  </script>
-</BaseLayout>
+  </script></BaseLayout>

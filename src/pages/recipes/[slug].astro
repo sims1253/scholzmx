@@ -33,23 +33,21 @@ const { Content } = await render(recipe);
 >
   <div class="recipe-post">
     <article class="recipe-content" itemscope itemtype="https://schema.org/Recipe">
-      {
-        recipe.data.heroImage && (
-          <ImageFrame
-            src={recipe.data.heroImage}
-            alt={recipe.data.title}
-            style="hero"
-            aspectRatio="3/2"
-            scale={recipe.data.heroImageScale}
-            positionX={recipe.data.heroImagePositionX ? recipe.data.heroImagePositionX * 100 : 0}
-            positionY={recipe.data.heroImagePositionY ? recipe.data.heroImagePositionY * 100 : 0}
-            loading="eager"
-            width={800}
-            height={400}
-            className="recipe-hero"
-          />
-        )
-      }
+      {recipe.data.heroImage && (
+        <ImageFrame
+          src={recipe.data.heroImage}
+          alt={recipe.data.title}
+          style="hero"
+          aspectRatio="3/2"
+          scale={recipe.data.heroImageScale}
+          positionX={recipe.data.heroImagePositionX ? recipe.data.heroImagePositionX * 100 : 0}
+          positionY={recipe.data.heroImagePositionY ? recipe.data.heroImagePositionY * 100 : 0}
+          loading="eager"
+          width={800}
+          height={400}
+          className="recipe-hero"
+        />
+      )}
 
       <header class="recipe-header">
         <h1 class="recipe-title" itemprop="name" data-pagefind-meta="title">
@@ -67,21 +65,13 @@ const { Content } = await render(recipe);
               <span class="info-value" itemprop="totalTime">{recipe.data.time}</span>
             </div>
           </div>
-          {
-            recipe.data.tags && (
-              <ul
-                class="recipe-tags"
-                aria-label="Tags"
-                data-pagefind-meta="tags:{recipe.data.tags.join(', ')}"
-              >
-                {recipe.data.tags.map((tag) => (
-                  <li class="tag" itemprop="recipeCategory">
-                    #{tag}
-                  </li>
-                ))}
-              </ul>
-            )
-          }
+          {recipe.data.tags && <ul
+            class="recipe-tags"
+            aria-label="Tags"
+            data-pagefind-meta="tags:{recipe.data.tags.join(', ')}"
+          >
+            {recipe.data.tags.map((tag) => <li class="tag" itemprop="recipeCategory">#{tag}</li>)}
+          </ul>}
         </div>
 
         <p class="recipe-description" itemprop="description" data-pagefind-meta="description">

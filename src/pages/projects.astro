@@ -104,45 +104,40 @@ const optimizeExternalImage = (url: string) => {
         <div class="projects-inner container-wide">
           <section aria-label="Projects">
             <GridLayout columns={1} gap="xl" class="projects-grid">
-              {
-                sortedProjects.map((project, index) => {
-                  const primaryLink = project.links?.[0]?.url;
-                  const isFirst = index === 0;
-                  return (
-                    <div class="nc-item project-item">
-                      <StackedCard
-                        seed={`project/${project.title}`}
-                        title={project.title}
-                        subtitle={project.description}
-                        href={primaryLink}
-                        layers={3}
-                        layout="side"
+              {sortedProjects.map((project, index) => {
+                const primaryLink = project.links?.[0]?.url;
+                const isFirst = index === 0;
+                return <div class="nc-item project-item">
+                  <StackedCard
+                    seed={`project/${project.title}`}
+                    title={project.title}
+                    subtitle={project.description}
+                    href={primaryLink}
+                    layers={3}
+                    layout="side"
+                  >
+                    {project.banner && <div slot="media" class="project-logo">
+                      <ImageFrame
+                        src={optimizeExternalImage(project.banner)}
+                        alt={project.title}
+                        style="simple"
+                        fillMode="contain"
+                        loading={isFirst ? 'eager' : 'lazy'}
+                      />
+                    </div>}
+                    {project.links?.length && <div class="project-links sc-tags">
+                      {project.links.map((l) => <a
+                        class="sc-chip"
+                        href={l.url}
+                        target="_blank"
+                        rel="noopener"
                       >
-                        {project.banner && (
-                          <div slot="media" class="project-logo">
-                            <ImageFrame
-                              src={optimizeExternalImage(project.banner)}
-                              alt={project.title}
-                              style="simple"
-                              fillMode="contain"
-                              loading={isFirst ? 'eager' : 'lazy'}
-                            />
-                          </div>
-                        )}
-                        {project.links?.length && (
-                          <div class="project-links sc-tags">
-                            {project.links.map((l) => (
-                              <a class="sc-chip" href={l.url} target="_blank" rel="noopener">
-                                {l.type}
-                              </a>
-                            ))}
-                          </div>
-                        )}
-                      </StackedCard>
-                    </div>
-                  );
-                })
-              }
+                        {l.type}
+                      </a>)}
+                    </div>}
+                  </StackedCard>
+                </div>;
+              })}
             </GridLayout>
           </section>
         </div>
