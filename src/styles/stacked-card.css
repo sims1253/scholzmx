@@ -195,36 +195,60 @@
     top: 50%;
     width: var(--wash-bleed, 240%);
     height: var(--wash-bleed, 240%);
+    /* MASK to the pigment pool. The box is deliberately oversized (bleed),
+       and the grain layer tiles the whole box — without this mask the noise
+       reveals the box itself as a hard rotated rectangle (the "square"). */
+    /* stylelint-disable property-no-vendor-prefix -- mask-image is unprefixed only from Chrome 120 */
+    -webkit-mask-image: radial-gradient(
+      circle var(--wash-r1, 240px) at var(--wash-x, 50%) var(--wash-y, 50%),
+      #000 0%,
+      #000 52%,
+      transparent 86%
+    );
+    /* stylelint-enable property-no-vendor-prefix */
+    mask-image: radial-gradient(
+      circle var(--wash-r1, 240px) at var(--wash-x, 50%) var(--wash-y, 50%),
+      #000 0%,
+      #000 52%,
+      transparent 86%
+    );
     background-image:
       radial-gradient(
         circle var(--wash-r1, 240px) at var(--wash-x, 50%) var(--wash-y, 50%),
         color-mix(in srgb, var(--wash-base) calc(var(--wash-alpha, 0.6) * 100%), transparent) 0%,
-        transparent 70%
+        color-mix(in srgb, var(--wash-base) calc(var(--wash-alpha, 0.6) * 82%), transparent) 42%,
+        color-mix(in srgb, var(--wash-base) calc(var(--wash-alpha, 0.6) * 45%), transparent) 62%,
+        transparent 78%
       ),
       radial-gradient(
         circle var(--wash-r2, 180px) at var(--wash2-x, 60%) var(--wash2-y, 60%),
-        color-mix(in srgb, var(--wash-base) calc(var(--wash-alpha, 0.6) * 60%), transparent) 0%,
-        transparent 70%
+        color-mix(in srgb, var(--wash-base) calc(var(--wash-alpha, 0.6) * 70%), transparent) 0%,
+        transparent 72%
       ),
-      /* pigment edge: darker rim just inside the main pool boundary */
+      /* pigment edge: dries darkest at the pool boundary */
         radial-gradient(
           circle var(--wash-r1, 240px) at var(--wash-x, 50%) var(--wash-y, 50%),
-          transparent 58%,
-          color-mix(in srgb, var(--wash-base) calc(var(--wash-alpha, 0.6) * 55%), transparent) 68%,
-          transparent 80%
+          transparent 50%,
+          color-mix(in srgb, var(--wash-base) calc(var(--wash-alpha, 0.6) * 85%), transparent) 62%,
+          color-mix(in srgb, var(--wash-base) calc(var(--wash-alpha, 0.6) * 35%), transparent) 74%,
+          transparent 88%
         ),
       /* granulation: paper tooth showing through the glaze */ var(--wc-grain);
-    background-repeat: no-repeat;
+    /* per-layer repeat: gradients no-repeat (100% size), grain REPEATS —
+       a single no-repeat tile painted one 140px noise square per card */
+    background-repeat: no-repeat, no-repeat, no-repeat, repeat;
     background-size:
       100% 100%,
       100% 100%,
       100% 100%,
       140px 140px;
-    background-position: center, center, center, center;
+    background-position:
+      center,
+      center,
+      center,
+      0 0;
     background-blend-mode: normal, normal, normal, multiply;
-    transform: translate(calc(-50% + var(--wash-tx, 0)), calc(-50% + var(--wash-ty, 0)))
-      rotate(-7deg);
-    border-radius: var(--wc-blob-a, 46% 54% 58% 42% / 52% 44% 56% 48%);
+    transform: translate(calc(-50% + var(--wash-tx, 0)), calc(-50% + var(--wash-ty, 0)));
     z-index: 0;
     pointer-events: none;
   }
