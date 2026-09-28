@@ -53,5 +53,48 @@
         xChannelSelector="R"
         yChannelSelector="G"></feDisplacementMap>
     </filter>
+    <!--
+      wc-paint: makes a FILLED shape read as pigment. Two steps:
+      1. fractal displacement breaks the outline into lobes/fingers
+      2. noise-driven alpha erosion mottles the interior and nibbles the
+         boundary (granulation — pigment settling unevenly in the paper).
+      Use on leaf/flower groups, not on thin strokes (erosion eats them).
+    -->
+    <filter id="wc-paint" x="-15%" y="-15%" width="130%" height="130%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.028" numOctaves="3" seed="5" result="warp"
+      ></feTurbulence>
+      <feDisplacementMap
+        in="SourceGraphic"
+        in2="warp"
+        scale="6"
+        xChannelSelector="R"
+        yChannelSelector="G"
+        result="shape"></feDisplacementMap>
+      <feTurbulence type="fractalNoise" baseFrequency="0.55" numOctaves="2" seed="9" result="grain"
+      ></feTurbulence>
+      <feColorMatrix
+        in="grain"
+        type="matrix"
+        values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1.7 -0.42"
+        result="grainA"></feColorMatrix>
+      <feComposite in="shape" in2="grainA" operator="in"></feComposite>
+    </filter>
+    <!--
+      wc-ink: same idea for STROKES — wobble plus a soft bleed, so a line
+      reads as a loaded brush rather than a vector path. No alpha erosion
+      here or thin strokes dissolve.
+    -->
+    <filter id="wc-ink" x="-25%" y="-25%" width="150%" height="150%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.032" numOctaves="2" seed="13" result="warp"
+      ></feTurbulence>
+      <feDisplacementMap
+        in="SourceGraphic"
+        in2="warp"
+        scale="3.2"
+        xChannelSelector="R"
+        yChannelSelector="G"
+        result="st"></feDisplacementMap>
+      <feGaussianBlur in="st" stdDeviation="0.55"></feGaussianBlur>
+    </filter>
   </defs>
 </svg>
