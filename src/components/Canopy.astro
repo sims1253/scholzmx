@@ -1,0 +1,101 @@
+---
+/**
+ * The vine canopy over the top of every page.
+ *
+ * By day it casts leaf shadows that sway with the wind; after dark the same leaves
+ * stand in front of a torch. The leaves are SVG masks drawn by scripts/draw-canopy.mjs,
+ * so their colour comes from --canopy-shade and the effect costs two cached images and
+ * compositor-only animation.
+ */
+---
+
+<div class="canopy" aria-hidden="true">
+  <div class="canopy-leaves canopy-leaves--high"></div>
+  <div class="canopy-leaves canopy-leaves--low"></div>
+</div>
+
+<style>
+  .canopy {
+    position: absolute;
+    inset: 0 0 auto;
+    height: min(120vh, 64rem);
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+    mask-image: linear-gradient(to bottom, #000 28%, transparent 96%);
+  }
+
+  /* Torchlight sits behind the leaves and flickers on its own. */
+  .canopy::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--canopy-glow);
+    animation: var(--canopy-flicker);
+  }
+
+  .canopy-leaves {
+    position: absolute;
+    inset: -3rem -5rem 0;
+    background-color: var(--canopy-shade);
+    mask: url('/grotto/canopy-high.svg') top center / cover no-repeat;
+    transform-origin: 50% 0;
+    will-change: transform;
+  }
+
+  /* The high canopy moves slowly; the low tendrils catch every gust. */
+  .canopy-leaves--high {
+    animation: sway-high 23s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+  }
+
+  .canopy-leaves--low {
+    mask-image: url('/grotto/canopy-low.svg');
+    animation: sway-low 11s cubic-bezier(0.37, 0, 0.63, 1) infinite alternate;
+  }
+
+  @keyframes sway-high {
+    0% {
+      transform: translate3d(-0.5%, 0, 0) rotate(-0.25deg);
+    }
+    60% {
+      transform: translate3d(0.3%, 0.3%, 0) rotate(0.15deg);
+    }
+    100% {
+      transform: translate3d(0.6%, 0.1%, 0) rotate(0.3deg);
+    }
+  }
+
+  @keyframes sway-low {
+    0% {
+      transform: translate3d(0.7%, -0.2%, 0) rotate(0.5deg);
+    }
+    35% {
+      transform: translate3d(-0.4%, 0.4%, 0) rotate(-0.2deg);
+    }
+    55% {
+      transform: translate3d(-0.2%, 0.3%, 0) rotate(-0.1deg);
+    }
+    100% {
+      transform: translate3d(-0.9%, 0.5%, 0) rotate(-0.55deg);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .canopy {
+      height: min(95vh, 40rem);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .canopy::before,
+    .canopy-leaves {
+      animation: none;
+    }
+  }
+
+  @media print {
+    .canopy {
+      display: none;
+    }
+  }
+</style>

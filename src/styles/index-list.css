@@ -1,0 +1,329 @@
+/* Index pages read like the index of an herbal: entries in a single column of text,
+ with the year hanging in the margin beside them. Shared by blog, recipes, research. */
+
+/* ===== Page header ===== */
+
+.page-header {
+  max-width: 38rem;
+  margin: clamp(1.25rem, 5vw, 3.5rem) 0 var(--space-xl);
+}
+
+.page-title {
+  margin: 0 0 0.3em;
+  font-size: var(--text-display);
+  font-weight: 400;
+  line-height: 1.05;
+}
+
+.page-lede {
+  margin: 0;
+  font-family: var(--font-body-personal);
+  font-size: var(--text-lg);
+  font-style: italic;
+  line-height: 1.45;
+  color: var(--color-text-secondary);
+  hyphens: manual;
+}
+
+.page-lede + .page-lede {
+  margin-top: 0.6em;
+}
+
+/* ===== Index grid: margin column for years, text column for entries ===== */
+
+.index-page {
+  --index-margin: 6rem;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.index-group {
+  margin: 0 0 var(--space-xl);
+}
+
+.index-group[hidden] {
+  display: none;
+}
+
+.index-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin: 0 0 var(--space-md);
+  font-family: var(--font-heading);
+  font-size: var(--text-xl);
+  font-weight: 400;
+  line-height: 1;
+  color: var(--color-moss);
+  font-variant-numeric: oldstyle-nums;
+}
+
+.index-label::after {
+  content: '';
+  flex: 1;
+  border-top: 1px solid var(--rule-ink);
+}
+
+@media (min-width: 52rem) {
+  .index-page {
+    grid-template-columns: var(--index-margin) minmax(0, 1fr);
+    column-gap: var(--space-lg);
+  }
+
+  .index-page > * {
+    grid-column: 2;
+  }
+
+  .index-page > .index-group {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+  }
+
+  .index-label {
+    grid-column: 1;
+    position: sticky;
+    top: 1.5rem;
+    align-self: start;
+    justify-content: flex-end;
+    margin: -0.12em 0 0; /* Share a baseline with the first entry's title */
+    font-size: var(--text-2xl);
+  }
+
+  .index-label::after {
+    display: none;
+  }
+
+  .index-group > :not(.index-label) {
+    grid-column: 2;
+  }
+}
+
+/* ===== Entries ===== */
+
+.index-entries {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.index-entry {
+  margin: 0 0 var(--space-lg);
+  padding: 0;
+}
+
+.index-entry:last-child {
+  margin-bottom: 0;
+}
+
+.entry-title {
+  margin: 0 0 0.2em;
+  font-family: var(--font-heading);
+  font-size: var(--text-xl);
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.25;
+  text-wrap: balance;
+}
+
+.entry-title a {
+  color: var(--color-text-primary);
+  text-decoration-line: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.18em;
+}
+
+.entry-title a:hover {
+  color: var(--color-text-primary);
+  text-decoration-color: var(--color-tansy);
+}
+
+.entry-summary {
+  margin: 0 0 0.3em;
+  max-width: 36rem;
+  color: var(--color-text-secondary);
+}
+
+.entry-meta {
+  margin: 0;
+  font-family: var(--font-body-personal);
+  font-size: var(--text-sm);
+  font-style: italic;
+  color: var(--color-text-muted);
+  font-variant-numeric: oldstyle-nums;
+}
+
+.entry-meta a {
+  color: inherit;
+  text-decoration-color: color-mix(in srgb, currentcolor 35%, transparent);
+}
+
+.entry-meta a:hover {
+  color: var(--color-link-hover);
+  text-decoration-color: var(--color-tansy);
+}
+
+/* ===== Photographs pasted into the notebook with two paper strips ===== */
+
+.pasted {
+  position: relative;
+  display: block;
+}
+
+.pasted::before,
+.pasted::after {
+  content: '';
+  position: absolute;
+  top: -0.55rem;
+  z-index: 1;
+  width: 3.2rem;
+  height: 1.1rem;
+  background: color-mix(in srgb, var(--color-parchment) 72%, var(--color-sage));
+  opacity: 0.88;
+  box-shadow: 0 1px 1px color-mix(in srgb, var(--color-ink-dark) 12%, transparent);
+  pointer-events: none;
+}
+
+.pasted::before {
+  left: 0.9rem;
+  transform: rotate(-4deg);
+}
+
+.pasted::after {
+  right: 0.9rem;
+  transform: rotate(3deg);
+}
+
+/* ===== Finder: search, year jumps, tags ===== */
+
+.index-finder {
+  margin: 0 0 var(--space-xl);
+  font-family: var(--font-ui);
+}
+
+.finder-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 2rem;
+  margin-top: 0.75rem;
+  font-size: var(--text-sm);
+}
+
+.finder-jumps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  font-variant-numeric: oldstyle-nums;
+}
+
+.finder-jumps a {
+  color: var(--color-text-secondary);
+}
+
+.finder-tags summary {
+  color: var(--color-link);
+  cursor: pointer;
+}
+
+.finder-tags summary::marker {
+  color: var(--color-moss);
+}
+
+.finder-tags ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.5rem;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.finder-tags li {
+  margin: 0;
+}
+
+.finder-tags button {
+  padding: 0.2rem 0.65rem;
+  border: 1px solid var(--rule-ink);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font: inherit;
+  cursor: pointer;
+}
+
+.finder-tags button:hover {
+  border-color: var(--color-moss);
+  color: var(--color-text-primary);
+}
+
+.finder-tags button[aria-pressed='true'] {
+  border-color: var(--color-ochre);
+  background: color-mix(in srgb, var(--color-tansy) 28%, transparent);
+  color: var(--color-text-primary);
+}
+
+.finder-status {
+  margin: 0.5rem 0 0;
+  font-size: var(--text-sm);
+  font-style: italic;
+  color: var(--color-text-muted);
+}
+
+.finder-status:empty {
+  display: none;
+}
+
+/* Pagefind's default UI, dressed for the page */
+.pagefind-ui {
+  --pagefind-ui-scale: 0.78;
+  --pagefind-ui-primary: var(--color-walnut);
+  --pagefind-ui-text: var(--color-text-primary);
+  --pagefind-ui-background: var(--color-background);
+  --pagefind-ui-border: var(--rule-ink);
+  --pagefind-ui-tag: var(--color-surface);
+  --pagefind-ui-border-width: 1px;
+  --pagefind-ui-border-radius: 4px;
+  --pagefind-ui-font: var(--font-ui);
+
+  max-width: 30rem;
+}
+
+.pagefind-ui .pagefind-ui__search-input {
+  background-color: color-mix(in srgb, var(--color-background) 70%, transparent);
+  font-weight: 400;
+}
+
+.pagefind-ui .pagefind-ui__search-input::placeholder {
+  color: var(--color-text-muted);
+  opacity: 1;
+}
+
+.pagefind-ui .pagefind-ui__result {
+  padding-block: 0.9rem;
+  border-top-color: var(--rule-ink);
+}
+
+.pagefind-ui .pagefind-ui__result-link {
+  color: var(--color-text-primary);
+  font-family: var(--font-heading);
+  font-weight: 400;
+}
+
+.pagefind-ui .pagefind-ui__result-excerpt {
+  color: var(--color-text-secondary);
+}
+
+.pagefind-ui mark {
+  background: color-mix(in srgb, var(--color-tansy) 35%, transparent);
+  color: inherit;
+}
+
+.pagefind-ui .pagefind-ui__message {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--color-text-muted);
+}

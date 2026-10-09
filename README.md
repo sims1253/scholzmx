@@ -23,13 +23,16 @@ Built with [Astro](https://astro.build) because it lets me write content in Quar
 - **Notes** (`/notes`): Shorter thoughts and observations
 
 ### Key Components
+- `Canopy.astro` - The vine canopy over every page: leaf shadows that sway by day, a flickering torch after dark
 - `DropCap.astro` - Those decorative first letters you see in posts
-- `PaperTexture.astro` - Subtle background textures for that manuscript feel
-- `StackedCard.astro` - Cards with the doodad system (more on that below)
-- `MarginNote.astro` - Sidenotes that appear in the right margin
+- `IndexFinder.astro` - Search and tag filtering for the blog and recipe indexes
+- `QuoteOfTheDay.astro` - The homepage quote; every new quote opens another tansy flower
+- `TansyMark.astro` - The tansy mark next to the site name
 
-### The Doodad System
-Random decorative elements that make cards feel more organic. SVG doodles, background effects, and visual variety that makes the site feel alive. See `DOODAD_GUIDE.md` for the technical details.
+Margin notes come from `> margin:` blockquotes in Markdown and are placed by `src/scripts/margin-notes.ts`.
+
+### The Canopy
+The leaf shadows are two SVG masks drawn by `scripts/draw-canopy.mjs` (grape and kiwi leaves, tansy fronds and tendrils). The script is seeded, so `node scripts/draw-canopy.mjs` reproduces `public/grotto/canopy-*.svg`. CSS supplies the colour, so the same leaves cast green shade by day and stand in front of the torch at night. The motion is transform-only and stops under `prefers-reduced-motion`.
 
 ### Blog Pipeline
 I write posts in Quarto (`.qmd` files) with R code, math, and citations. A build script converts them to markdown with properly optimized images. The whole process is automated in CI. See `QUARTO-TO-ASTRO-PIPELINE.md` for details.

@@ -1,8 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import GridLayout from '../components/GridLayout.astro';
-import StackedCard from '../components/StackedCard.astro';
-import ImageFrame from '../components/ImageFrame.astro';
+import Series from '../components/Series.astro';
 
 const projects = [
   {
@@ -52,7 +50,6 @@ const projects = [
     year: 2024,
     status: 'Active',
     banner: 'https://sims1253.github.io/huerd/reference/figures/logo.png',
-    isLocal: false, // Mark external images
     tech: ['R', 'OKLAB', 'nloptr'],
     links: [
       { type: 'GitHub', url: 'https://github.com/sims1253/huerd' },
@@ -76,168 +73,115 @@ const projects = [
 // Sort projects by year (most recent first)
 const sortedProjects = projects.sort((a, b) => b.year - a.year);
 
-// Helper function for external image optimization
-const optimizeExternalImage = (url: string) => {
-  // Simple URL-based image optimization service (you could replace with ImageKit, Cloudinary, etc.)
-  // For now, we'll use original URL but with proper loading attributes
-  return url;
+// "ry — Static Checker for R" becomes a plate name and its common name.
+const plateName = (title: string) => {
+  const [name = title, common] = title.split(' — ');
+  return { name, common };
 };
+const linkLabel = (type: string) => (type === 'GitHub' ? 'source' : 'documentation');
 ---
 
-<BaseLayout
-  title="Projects"
-  description="Selected projects"
-  footerVariant="projects"
-  tone="serious"
-  layout="wide"
->
+<BaseLayout title="Projects" description="Selected projects" tone="serious" layout="listing">
   <div class="projects-page">
-    <header class="projects-header">
+    <header class="page-header">
       <h1 class="page-title">Projects & Software</h1>
-      <p class="page-description">
+      <p class="page-lede">
         I tend to build stuff to procrastinate. This is where I feel good about it.
       </p>
     </header>
 
-    <div class="projects-container">
-      <main class="projects-content">
-        <div class="projects-inner container-wide">
-          <section aria-label="Projects">
-            <GridLayout columns={1} gap="xl" class="projects-grid">
-              {sortedProjects.map((project, index) => {
-                const primaryLink = project.links?.[0]?.url;
-                const isFirst = index === 0;
-                return <div class="nc-item project-item">
-                  <StackedCard
-                    seed={`project/${project.title}`}
-                    title={project.title}
-                    subtitle={project.description}
-                    href={primaryLink}
-                    layers={3}
-                    layout="side"
-                  >
-                    {project.banner && <div slot="media" class="project-logo">
-                      <ImageFrame
-                        src={optimizeExternalImage(project.banner)}
-                        alt={project.title}
-                        style="simple"
-                        fillMode="contain"
-                        loading={isFirst ? 'eager' : 'lazy'}
-                      />
-                    </div>}
-                    {project.links?.length && <div class="project-links sc-tags">
-                      {project.links.map((l) => <a
-                        class="sc-chip"
-                        href={l.url}
-                        target="_blank"
-                        rel="noopener"
-                      >
-                        {l.type}
-                      </a>)}
-                    </div>}
-                  </StackedCard>
-                </div>;
-              })}
-            </GridLayout>
-          </section>
-        </div>
-      </main>
-    </div>
+    <ol class="plates">
+      {sortedProjects.map((project, index) => {
+        const { name, common } = plateName(project.title);
+        return <li class="plate">
+          <a href={project.links[0]!.url} class="plate-art pasted" tabindex="-1" aria-hidden="true">
+            <img
+              src={project.banner}
+              alt=""
+              width="240"
+              height="240"
+              loading={index < 2 ? 'eager' : 'lazy'}
+              decoding="async"
+            />
+          </a>
+          <h2 class="plate-name"><a href={project.links[0]!.url}>{name}</a></h2>
+          {common && <p class="plate-common">{common}</p>}
+          <p class="plate-description">{project.description}</p>
+          <p class="entry-meta">
+            {project.tech.join(', ')}, {project.year}. Read the
+            <Series
+              items={project.links.map((link) => ({ text: linkLabel(link.type), href: link.url }))}
+              last="or"
+            />.
+          </p>
+        </li>;
+      })}
+    </ol>
   </div>
 </BaseLayout>
 
 <style>
-  .projects-page {
-    max-width: 100%;
+  /* Each project is a specimen plate: the logo pasted in, the name set like a binomial. */
+  .plates {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+    gap: var(--space-xxl) var(--space-xl);
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
 
-  .projects-header {
-    text-align: center;
-    max-width: var(--measure-listing);
-    margin: 0 auto var(--space-xs);
+  .plate {
+    margin: 0;
   }
 
-  .page-title {
-    font-size: clamp(var(--text-2xl), 5vw, var(--text-3xl));
-    margin-bottom: var(--space-xs);
-    color: var(--color-ink-dark);
+  .plate-art {
+    width: min(11rem, 60%);
+    margin: 0 0 var(--space-md);
+    background: var(--paper-sheet);
+    box-shadow:
+      0 1px 2px color-mix(in srgb, var(--color-ink-dark) 14%, transparent),
+      0 12px 22px -14px color-mix(in srgb, var(--color-ink-dark) 38%, transparent);
+    text-decoration: none;
   }
 
-  .page-description {
-    font-size: var(--text-lg);
-    line-height: 1.6;
-    color: var(--color-ink-medium);
-    font-style: italic;
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  /* Centering handled by BaseLayout container (contentWidth) */
-
-  /* Legacy card styles removed in favor of StackedCard */
-  /* Width/centering handled via .container-wide */
-  .projects-grid {
-    margin-bottom: var(--space-xl);
-  }
-  .project-item {
-    width: 40rem;
-    max-width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  .project-logo .image-frame {
-    width: 240px;
-    max-width: 100%;
-  }
-  .project-item {
-    margin-bottom: var(--space-lg);
-  }
-  /* Remove any default frames/shadows around logo images */
-  .project-logo .image-frame {
-    box-shadow: none;
-    border: 0;
-    background: transparent;
+  .plate-art img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: contain;
     border-radius: 0;
   }
-  .project-logo .frame-image {
-    box-shadow: none;
-    background: transparent;
-  }
-  .project-logo img {
-    box-shadow: none !important;
-    border-radius: 0 !important;
+
+  .plate-name {
+    margin: 0;
+    font-size: var(--text-2xl);
+    font-style: italic;
+    font-weight: 400;
+    line-height: 1.1;
   }
 
-  /* Keep side layout, but make content column flex so links can sit at bottom */
-  .projects-page .sc-row {
-    align-items: stretch;
-  }
-  .projects-page .sc-col.content {
-    display: flex;
-    flex-direction: column;
-  }
-  .projects-page .project-links {
-    margin-top: auto;
-    padding-top: var(--space-xs);
+  .plate-name a {
+    color: var(--color-text-primary);
+    text-decoration-color: transparent;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.15em;
   }
 
-  @media (max-width: 768px) {
-    .project-card {
-      grid-template-columns: 1fr;
-      gap: var(--space-md);
-    }
-    .thumb {
-      min-height: 120px;
-      order: -1; /* Move image above content on mobile */
-    }
+  .plate-name a:hover {
+    text-decoration-color: var(--color-tansy);
   }
-  @media (max-width: 480px) {
-    .card-title {
-      font-size: var(--text-lg);
-    }
-    .project-card {
-      padding: var(--space-md);
-    }
+
+  .plate-common {
+    margin: 0.2em 0 0.6em;
+    font-family: var(--font-heading);
+    font-size: var(--text-lg);
+    color: var(--color-moss);
+  }
+
+  .plate-description {
+    margin: 0 0 0.4em;
+    color: var(--color-text-secondary);
   }
 </style>

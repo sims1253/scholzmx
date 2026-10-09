@@ -101,13 +101,9 @@ export default defineConfig({
         // Responsive variants for grid
         'md:tw-grid-cols-2',
         'lg:tw-grid-cols-3',
-        // StackedCard dynamic doodle classes
-        /^sc-/,
-        /^topLeft$/,
-        /^topRight$/,
-        /^bottomLeft$/,
-        /^bottomRight$/,
-        /^center$/,
+        // Theme-toggle and quote states set from scripts
+        'is-turning',
+        'open',
       ],
       keyframes: true,
       // Keep all @font-face declarations so production keeps heading/body/dropcap fonts

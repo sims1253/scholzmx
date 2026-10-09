@@ -1,8 +1,9 @@
 ---
 import { getImage } from 'astro:assets';
 import portrait from '../assets/images/homepage/portrait.jpg';
-import BotanicalBorder from '../components/BotanicalBorder.astro';
-import IllustratedFooter from '../components/IllustratedFooter.astro';
+import Canopy from '../components/Canopy.astro';
+import TansyMark from '../components/TansyMark.astro';
+import SiteFooter from '../components/SiteFooter.astro';
 import BackToTop from '../components/BackToTop.astro';
 
 // Import CSS files
@@ -23,62 +24,42 @@ import '../styles/dropcap.css';
 import '../styles/tailwind.css'; // Utilities only - preserves existing design
 import '../styles/tailwind-utilities.css'; // Force utility generation
 import '../styles/margin-notes.css';
-import '../styles/stacked-card.css';
+import '../styles/index-list.css';
 
 export interface Props {
   title: string;
   description?: string;
   image?: string;
-  addBorders?: boolean;
-  footerVariant?: 'garden' | 'kitchen' | 'craft' | 'writing' | 'projects' | 'research' | 'default';
   includeQuoteSection?: boolean;
-  /* Legacy props (for backward-compat) */
-  longform?: boolean;
-  personal?: boolean;
-  contentWidth?: 'default' | 'wide' | 'full';
-  /* New props */
   tone?: 'personal' | 'serious';
   layout?: 'prose' | 'listing' | 'wide' | 'full';
   prose?: boolean;
-  leading?: 'default' | 'relaxed' | 'tight';
 }
 
 const {
   title,
   description = 'A digital garden and personal website - thoughtful, slow web principles with a warm, botanical aesthetic.',
   image,
-  addBorders = true,
-  footerVariant = 'default',
   includeQuoteSection = false,
-  /* legacy */
-  longform = false,
-  personal = true,
-  contentWidth = 'default',
-  /* new */
-  tone,
-  layout,
-  prose,
-  leading,
+  tone = 'personal',
+  layout = 'prose',
+  prose = false,
 } = Astro.props;
-
-/* Backward-compatible mapping */
-const resolvedTone = tone ?? (personal ? 'personal' : 'serious');
-const isProseLayoutLegacy = longform || contentWidth === 'default';
-const resolvedLayout =
-  layout ??
-  (isProseLayoutLegacy
-    ? 'prose'
-    : contentWidth === 'wide'
-      ? 'wide'
-      : contentWidth === 'full'
-        ? 'full'
-        : 'prose');
-const resolvedProse = prose ?? longform ?? false;
-const resolvedLeading = leading ?? 'default';
 
 const currentPath = Astro.url.pathname;
 const socialImage = image ?? (await getImage({ src: portrait, width: 1200, format: 'webp' })).src;
 const socialImageURL = new URL(socialImage, Astro.site).href;
+
+const sections = [
+  { href: '/blog', label: 'Blog' },
+  { href: '/projects', label: 'Projects' },
+  { href: '/recipes', label: 'Recipes' },
+  { href: '/research', label: 'Research' },
+];
+
+const isHome = currentPath === '/';
+const hasCode = currentPath.startsWith('/blog/') || currentPath.startsWith('/notes/');
+const hasInitial = isHome || /^\/(blog|recipes|notes)\/.+/.test(currentPath);
 ---
 
 <!doctype html>
@@ -90,10 +71,18 @@ const socialImageURL = new URL(socialImage, Astro.site).href;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
 
-    <!-- Canonical URL -->
+    <!-- Apply a stored theme before first paint so the page never flashes the wrong light. -->
+    <script is:inline>
+      try {
+        const stored = localStorage.getItem('theme-preference');
+        if (stored === 'dark' || stored === 'light') {
+          document.documentElement.dataset.theme = stored;
+        }
+      } catch {
+        // Storage can be unavailable in private modes; the system preference applies.
+      }
+    </script>
     <link rel="canonical" href={`https://www.scholzmx.com${Astro.url.pathname}`} />
-
-    <!-- RSS Feed autodiscovery -->
     <link
       rel="alternate"
       type="application/rss+xml"
@@ -101,30 +90,26 @@ const socialImageURL = new URL(socialImage, Astro.site).href;
       href={new URL('rss.xml', Astro.site)}
     />
 
-    <!-- Critical resource hints for performance -->
-
     <slot name="head" />
 
-    <!-- Preload fonts based on page type for optimal performance -->
-    <!-- Always preload heading font (used on all pages) -->
+    <!-- Alegreya sets navigation and headings on every page. -->
     <link
       rel="preload"
-      href="/fonts/cormorant-garamond-600.woff2"
+      href="/fonts/Alegreya/alegreya-v38-latin-regular.woff2"
       as="font"
       type="font/woff2"
       crossorigin
     />
-
-    {/* Conditional preloading based on tone */}
-    {resolvedTone === 'personal' ? (
+    {isHome && (
       <link
         rel="preload"
-        href="/fonts/Alegreya/alegreya-v38-latin-regular.woff2"
+        href="/fonts/Alegreya/alegreya-v38-latin-italic.woff2"
         as="font"
         type="font/woff2"
         crossorigin
       />
-    ) : (
+    )}
+    {tone === 'serious' && (
       <link
         rel="preload"
         href="/fonts/et-book-roman-old-style-figures.woff2"
@@ -134,10 +119,7 @@ const socialImageURL = new URL(socialImage, Astro.site).href;
       />
     )}
 
-    {/* Only preload code fonts for content that likely has code blocks */}
-    {(currentPath.includes('/blog/') ||
-      currentPath.includes('/notes/') ||
-      currentPath.includes('/projects')) && (
+    {hasCode && (
       <>
         <link
           rel="preload"
@@ -146,21 +128,6 @@ const socialImageURL = new URL(socialImage, Astro.site).href;
           type="font/woff2"
           crossorigin
         />
-        <link
-          rel="preload"
-          href="/fonts/FiraCode-Medium.woff2"
-          as="font"
-          type="font/woff2"
-          crossorigin
-        />
-      </>
-    )}
-
-    {/* Only preload math fonts for content that likely has equations */}
-    {(currentPath.includes('/blog/') ||
-      currentPath.includes('/notes/') ||
-      currentPath.includes('/research')) && (
-      <>
         <link
           rel="preload"
           href="/katex/fonts/KaTeX_Main-Regular.woff2"
@@ -181,7 +148,7 @@ const socialImageURL = new URL(socialImage, Astro.site).href;
     )}
 
     {/* Load the decorative initial before it can change the first paragraph's wrapping. */}
-    {(currentPath === '/' || /^\/(blog|recipes|notes)\/.+/.test(currentPath)) && (
+    {hasInitial && (
       <>
         <link
           rel="preload"
@@ -200,24 +167,7 @@ const socialImageURL = new URL(socialImage, Astro.site).href;
       </>
     )}
 
-    <!-- Only preload fonts critical for initial render -->
-    <link
-      rel="preload"
-      href="/fonts/et-book-roman-old-style-figures.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      href="/fonts/cormorant-garamond-400.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-
-    <!-- Performance hints - will be updated by theme toggle -->
-    <meta name="theme-color" content="#f9f6f2" />
+    <meta name="theme-color" content="#f2f1e8" />
     <meta name="color-scheme" content="light dark" />
 
     <!-- Open Graph / Facebook -->
@@ -240,152 +190,91 @@ const socialImageURL = new URL(socialImage, Astro.site).href;
     <title>{title}</title>
   </head>
 
-  <body class={resolvedTone === 'personal' ? 'personal-content' : 'serious-content'}>
-    <!-- Skip Links for Keyboard Navigation -->
-    <a href="#main-content" class="skip-link"
-      >Skip to main content (blog posts, articles, and page content)</a
-    >
-    <a href="#main-navigation" class="skip-link"
-      >Skip to site navigation (Blog, Projects, Research links)</a
-    >
+  <body class={tone === 'personal' ? 'personal-content' : 'serious-content'}>
+    <a href="#main-content" class="skip-link">Skip to content</a>
 
     <div class="page-wrapper">
-      <!-- Organic botanical borders -->
-      {addBorders && <div>
-        <BotanicalBorder position="top" variant="vine" intensity="light" />
-        <BotanicalBorder position="left" variant="vine" intensity="light" />
-        <BotanicalBorder position="right" variant="vine" intensity="light" />
-      </div>}
+      <Canopy />
 
-      <!-- Navigation and Content in scrollable area -->
-      <div class="nav-and-content-area">
-        <nav
-          class="page-nav tw:w-full"
-          role="navigation"
-          aria-label="Main navigation"
-          id="main-navigation"
-        >
-          <div class="nav-content nav-wide tw:mx-auto">
-            <div class="nav-brand">
-              <a href="/" class="site-logo">
-                <span class="logo-text">Grotto</span>
-              </a>
-            </div>
+      <header class="site-header">
+        <nav class="page-nav" aria-label="Main navigation" id="main-navigation">
+          <a href="/" class="site-logo" aria-current={isHome ? 'page' : undefined}>
+            <TansyMark class="site-mark" />
+            <span class="logo-text">Grotto</span>
+          </a>
 
-            <div class="nav-links">
-              <a
-                href="/blog"
-                class={currentPath.startsWith('/blog') ? 'nav-link active' : 'nav-link'}
-                aria-current={currentPath.startsWith('/blog') ? 'page' : undefined}
-                >Blog</a
-              >
-              <span class="nav-separator" aria-hidden="true">·</span>
-              <a
-                href="/projects"
-                class={currentPath.startsWith('/projects') ? 'nav-link active' : 'nav-link'}
-                aria-current={currentPath.startsWith('/projects') ? 'page' : undefined}
-                >Projects</a
-              >
-              <span class="nav-separator" aria-hidden="true">·</span>
-              <a
-                href="/recipes"
-                class={currentPath.startsWith('/recipes') ? 'nav-link active' : 'nav-link'}
-                aria-current={currentPath.startsWith('/recipes') ? 'page' : undefined}
-                >Recipes</a
-              >
-              <span class="nav-separator" aria-hidden="true">·</span>
-              <a
-                href="/research"
-                class={currentPath.startsWith('/research') ? 'nav-link active' : 'nav-link'}
-                aria-current={currentPath.startsWith('/research') ? 'page' : undefined}
-                >Research</a
-              >
-              <button
-                id="nav-theme-toggle"
-                class="torch-toggle"
-                aria-label="Toggle theme"
-                aria-pressed="false"
-                title="Toggle day/night"
-                type="button"
-              >
-                <svg
-                  class="torch-icon"
-                  viewBox="0 0 64 64"
-                  width="22"
-                  height="22"
-                  aria-hidden="true"
+          <ul class="nav-links">
+            {sections.map(({ href, label }) => {
+              const active = currentPath.startsWith(href);
+              return <li>
+                <a
+                  href={href}
+                  class:list={['nav-link', { active }]}
+                  aria-current={active ? 'page' : undefined}
                 >
-                  <defs>
-                    <linearGradient id="flame" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stop-color="var(--color-ochre)"></stop>
-                      <stop offset="60%" stop-color="var(--color-walnut)"></stop>
-                      <stop offset="100%" stop-color="var(--color-tansy)"></stop>
-                    </linearGradient>
-                  </defs>
-                  <path
-                    d="M32 8c6 7 4 13-1 18 5-1 8-5 8-10 5 5 7 13 2 19-4 5-12 6-18 3-7-4-7-12-2-17 0 6 6 9 10 7-3-2-5-6-5-9 0-2 1-5 6-11z"
-                    fill="url(#flame)"
-                    stroke="var(--color-ink-medium)"
-                    stroke-width="1"
-                  ></path>
-                  <rect
-                    x="28"
-                    y="44"
-                    width="8"
-                    height="10"
-                    rx="2"
-                    fill="var(--color-ink-medium)"
-                  ></rect>
-                </svg>
-              </button>
-            </div>
-          </div>
-        </nav>
+                  {label}
+                </a>
+              </li>;
+            })}
+          </ul>
 
-        <!-- Main content area -->
-        <main class="main-content" id="main-content">
-          <div
-            class={`layout-${resolvedLayout} ${resolvedProse ? 'prose' : ''} ${resolvedLeading !== 'default' ? `leading-${resolvedLeading}` : ''}`}
+          <button
+            id="nav-theme-toggle"
+            class="torch-toggle"
+            aria-label="Torchlight"
+            aria-pressed="false"
+            title="Light the torch"
+            type="button"
           >
-            <slot />
-          </div>
-          <div class="notes-container" id="notesContainer"></div>
-        </main>
+            <svg class="torch-icon" viewBox="0 0 32 32" width="24" height="24" aria-hidden="true">
+              <path class="torch-handle" d="M10.5 29.5 18.4 15.6"></path>
+              <path class="torch-head" d="M16.2 12.6l5.6 3.2-2.1 3.6-5.6-3.2Z"></path>
+              <path class="torch-wrap" d="M15.6 14.8l5 2.9"></path>
+              <path
+                class="torch-flame"
+                d="M20.4 2.4c.6 3.2 4.6 4.6 3.5 8.6-.6 2.2-2.6 3.4-4.6 3.2-2.5-.3-3.9-2.6-3.3-4.9.3-1.3 1.2-2.1 1.6-3.3.4 1.2.2 2.2.9 2.8.5-2.3 2.2-3.5 1.9-6.4Z"
+              ></path>
+            </svg>
+          </button>
+        </nav>
+      </header>
 
-        <!-- Illustrated Footer -->
-        <div class="footer-area">
-          <IllustratedFooter variant={footerVariant} includeQuoteSection={includeQuoteSection} />
+      <main class="main-content" id="main-content">
+        <div class:list={[`layout-${layout}`, { prose }]}>
+          <slot />
         </div>
-      </div>
+        <div class="notes-container" id="notesContainer"></div>
+      </main>
 
-      <!-- Back to Top Button -->
-      <BackToTop />
+      <SiteFooter includeQuoteSection={includeQuoteSection} />
+    </div>
 
-      <style is:global>
-        /* Shiki dual theme switching - use only dark variables that Astro generates */
+    <BackToTop />
 
-        /* Dark theme styles - when explicitly set */
-        [data-theme='dark'] .astro-code,
-        [data-theme='dark'] .astro-code span {
+    <style is:global>
+      /* Shiki dual theme switching - use only dark variables that Astro generates */
+
+      /* Dark theme styles - when explicitly set */
+      [data-theme='dark'] .astro-code,
+      [data-theme='dark'] .astro-code span {
+        color: var(--shiki-dark) !important;
+        background-color: var(--shiki-dark-bg) !important;
+      }
+
+      /* Dark theme styles - when system prefers dark and no explicit theme */
+      @media (prefers-color-scheme: dark) {
+        :not([data-theme]) .astro-code,
+        :not([data-theme]) .astro-code span {
           color: var(--shiki-dark) !important;
           background-color: var(--shiki-dark-bg) !important;
         }
+      }
+    </style>
 
-        /* Dark theme styles - when system prefers dark and no explicit theme */
-        @media (prefers-color-scheme: dark) {
-          :not([data-theme]) .astro-code,
-          :not([data-theme]) .astro-code span {
-            color: var(--shiki-dark) !important;
-            background-color: var(--shiki-dark-bg) !important;
-          }
-        }
-      </style>
-
-      <script>
-        import '../scripts/theme-toggle';
-        import '../scripts/copy-button';
-        import '../scripts/margin-notes';
-      </script>
-    </div>
+    <script>
+      import '../scripts/theme-toggle';
+      import '../scripts/copy-button';
+      import '../scripts/margin-notes';
+    </script>
   </body>
 </html>

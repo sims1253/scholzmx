@@ -57,54 +57,45 @@ const { className = '' } = Astro.props;
     /* Size and shape */
     width: 48px;
     height: 48px;
-    border-radius: 12px;
+    border-radius: 50%;
 
-    /* Botanical styling */
-    background: var(--color-moss);
-    border: 1px solid color-mix(in srgb, var(--color-moss) 80%, var(--color-parchment));
-    color: var(--color-parchment);
+    /* A quiet paper disc, so it never competes with the reading */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-background);
+    border: 1px solid var(--rule-ink);
+    color: var(--color-ink-medium);
 
     /* Interactions */
     cursor: pointer;
-    transition: all var(--transition-medium);
+    transition:
+      opacity var(--transition-medium),
+      transform var(--transition-medium),
+      border-color var(--transition-fast),
+      color var(--transition-fast);
 
     /* Initial hidden state */
     opacity: 0;
     transform: translateY(10px);
     pointer-events: none;
-
-    /* Button reset */
-    outline: none;
-    box-shadow: 0 4px 12px color-mix(in srgb, var(--color-moss) 30%, transparent);
   }
 
   .back-to-top.visible {
-    opacity: 0.85;
+    opacity: 1;
     transform: translateY(0);
     pointer-events: auto;
   }
 
-  .back-to-top:hover {
-    background: var(--color-walnut);
-    border-color: color-mix(in srgb, var(--color-walnut) 80%, var(--color-parchment));
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px color-mix(in srgb, var(--color-walnut) 40%, transparent);
-    opacity: 1;
+  .back-to-top:hover,
+  .back-to-top:focus-visible {
+    border-color: var(--color-moss);
+    color: var(--color-link-hover);
   }
 
   .back-to-top:focus-visible {
-    background: var(--color-walnut);
-    border-color: var(--color-ochre);
-    transform: translateY(-1px);
-    box-shadow:
-      0 6px 16px color-mix(in srgb, var(--color-walnut) 40%, transparent),
-      0 0 0 3px color-mix(in srgb, var(--color-ochre) 30%, transparent);
-    opacity: 1;
-  }
-
-  .back-to-top:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--color-walnut) 40%, transparent);
+    outline: 2px solid var(--color-walnut);
+    outline-offset: 2px;
   }
 
   .back-to-top-icon {
