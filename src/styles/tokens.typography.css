@@ -1,14 +1,15 @@
 :root {
   /* ===== Typography Tokens ===== */
 
-  /* Font families */
+  /* Two text faces, chosen by tone. Alegreya also sets every heading, so the
+     calligraphic voice stays constant while ET Book carries the technical writing. */
   --font-body-personal:
-    'Alegreya', 'EB Garamond', 'Times New Roman', georgia, serif; /* Welcome, recipes */
+    'Alegreya', 'EB Garamond', 'Times New Roman', georgia, serif; /* Welcome, recipes, notes */
   --font-body-serious:
-    'ET Book Roman', 'EB Garamond', 'Times New Roman', georgia, serif; /* Blog, notes, projects */
+    'ET Book Roman', 'EB Garamond', 'Times New Roman', georgia, serif; /* Blog, research, projects */
   --font-body: var(--font-body-personal);
-  --font-heading: 'Cormorant Garamond', 'EB Garamond', 'Times New Roman', georgia, serif;
-  --font-ui: 'Alegreya', georgia, sans-serif;
+  --font-heading: 'Alegreya', 'EB Garamond', 'Times New Roman', georgia, serif;
+  --font-ui: 'Alegreya', georgia, serif;
   --font-mono: 'Fira Code', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
 
   /* Font weights */
@@ -16,25 +17,26 @@
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
-  --heading-weight-strong: var(--font-weight-semibold);
+  --heading-weight-strong: var(--font-weight-medium);
   --heading-weight-medium: var(--font-weight-medium);
 
-  /* Typography scale (rem units scale with user font preferences) */
-  --text-xxs: 0.75rem; /* Was 0.65rem - increased to 12px minimum for accessibility */
-  --text-xs: 0.75rem;
-  --text-sm: 0.875rem;
+  /* The classical scale (Bringhurst) on an 18px root: 14 16 18 21 24 36 48 60 */
+  --text-xxs: 0.778rem;
+  --text-xs: 0.778rem;
+  --text-sm: 0.889rem;
   --text-md: 1rem;
-  --text-lg: 1.2rem;
-  --text-xl: 1.4rem;
-  --text-2xl: 1.8rem;
-  --text-3xl: 2.2rem;
+  --text-lg: 1.167rem;
+  --text-xl: 1.333rem;
+  --text-2xl: 2rem;
+  --text-3xl: 2.667rem;
+  --text-display: clamp(2rem, 1.1rem + 2.4vw, 3.333rem);
 
   /* Dropcap fonts */
   --font-dropcap-background: 'EBGaramond-InitialsF1';
   --font-dropcap-foreground: 'EBGaramond-InitialsF2';
-  --dropcap-color-background: var(--color-sage);
+  --dropcap-color-background: var(--color-moss);
   --dropcap-color-foreground: var(--color-ink-dark);
 
   /* Typography spacing */
-  --spacing-line-height: 1.6; /* Was 1.45 - increased for better readability */
+  --spacing-line-height: 1.6;
 }

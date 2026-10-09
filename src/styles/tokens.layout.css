@@ -7,7 +7,7 @@
   --measure-prose: var(--measure-prose-personal); /* Default, set dynamically by tone */
 
   /* Page layout measures */
-  --measure-listing: 960px; /* px for consistent grid layouts */
+  --measure-listing: 50rem; /* Index pages: entries plus a hanging margin for years */
   --measure-wide: 80rem; /* rem for responsive wide layouts */
   --measure-full: 90rem; /* rem for maximum content width */
 

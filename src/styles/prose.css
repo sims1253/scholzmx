@@ -41,13 +41,12 @@
   }
 
   .prose blockquote {
-    border-left: 3px solid var(--color-sage);
-    padding-left: var(--space-md);
+    border-left: 2px solid var(--color-moss);
+    padding: 0.1em 0 0.1em var(--space-md);
     margin: var(--space-lg) 0;
     font-style: italic;
     color: var(--color-text-secondary);
-    background: rgba(168, 181, 160, 0.08);
-    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+    background: none;
     max-width: 100%;
   }
 

@@ -1,77 +1,51 @@
 # Component Usage Guide
 
-Quick reference for how to use the main components without making the site look messy.
+Quick reference for the shared pieces and where they belong.
 
-## PaperTexture.astro
-Adds subtle background texture. Use once per page at the top level.
+## Page shells
+`BaseLayout.astro` draws the canopy, navigation and footer. Pick a `tone` (`personal` sets text in Alegreya, `serious` in ET Book) and a `layout` (`prose`, `listing`, `wide`, `full`).
+
+## Index pages
+Blog, recipes, research and notes share `src/styles/index-list.css`:
 
 ```astro
-<!-- Homepage -->
-<PaperTexture pattern="botanical" intensity="light" />
-
-<!-- Blog pages -->
-<PaperTexture pattern="linen" intensity="light" />
+<div class="index-page">
+  <header class="page-header">
+    <h1 class="page-title">Blog</h1>
+    <p class="page-lede">One sentence about the section.</p>
+  </header>
+  <section class="index-group" data-index-group>
+    <h2 class="index-label">2025</h2>
+    <ol class="index-entries">
+      <li class="index-entry nc-item" data-tags="R,brms">…</li>
+    </ol>
+  </section>
+</div>
 ```
 
-Don't nest multiple PaperTexture components.
+The label hangs in the left margin on wide screens. Add `IndexFinder.astro` for search and tag filters; it filters `.nc-item` entries by `data-tags`.
+
+## Series.astro
+Inline, comma-separated lists of words or links (tags, authors). Use it instead of mapping inside running text, which would add stray spaces before commas.
 
 ## DropCap.astro
 Decorative first letter for long posts only.
 
 ```astro
-<!-- In blog post content -->
 <span class="dropcap dropcap--ornate dropcap--serious" data-first-letter="T" aria-hidden="true">T</span> ext continues...
 ```
 
 Use exactly once per post, only for long essays (600+ words). Skip for short posts, lists, or titles.
 
-## BotanicalBorder.astro
-Page border applied in BaseLayout. Don't add extra borders inside pages.
+## Photographs
+Wrap photos that should look pasted into the notebook in `.pasted`; it adds two paper strips.
 
-## MarginNote.astro
-Side notes in the right margin.
-
-```astro
-<MarginNote>This appears in the margin</MarginNote>
-```
-
-Or in markdown:
+## Margin notes
 ```markdown
 > margin: This appears in the margin
 ```
 
-Use sparingly - homepage okay for personality, avoid on blog index, optional for long posts.
-
-## IllustratedFooter.astro
-Different footer illustrations for different sections.
-
-```astro
-<!-- Homepage -->
-<IllustratedFooter footerVariant="default" />
-
-<!-- Blog pages -->
-<IllustratedFooter footerVariant="writing" />
-```
-
-Applied in BaseLayout - keep consistent per section.
-
-## HandDrawnDivider.astro
-Section separators with sketchy/ink style.
-
-Good for blog posts: one after the header, one before footer. Use sparingly elsewhere.
-
-## PortraitFrame.astro
-Framed portrait with organic styling. Homepage only - avoid on blog pages to keep focus on content.
-
-## Experimental Components
-- `VineFrame.astro` / `SmoothVineFrame.astro` - Ornamental framing, not used on main pages
-- `Slideshow.astro` - Image carousel, currently experimental
+Notes sit in the right margin on wide screens and fall back to inline notes on narrow ones.
 
 ## Typography Guidelines
-
-Use `.longform` class for reading content:
-- Homepage: Only around the main bio paragraph
-- Blog index: On the posts container so excerpts inherit proper rhythm
-- Blog posts: Already applied to article body
-
-Stick to global font styles - avoid per-page font overrides unless there's a specific need.
+Stick to global font styles. Headings are Alegreya everywhere; avoid per-page font overrides unless there's a specific need.

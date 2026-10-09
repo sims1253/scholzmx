@@ -1,0 +1,24 @@
+---
+/**
+ * An inline, comma-separated series of words or links, rendered without the stray
+ * whitespace that line breaks inside template expressions would add.
+ */
+interface Item {
+  text: string;
+  href?: string;
+  strong?: boolean;
+}
+
+interface Props {
+  items: Item[];
+  /** Joins the last two items, e.g. "and". Commas otherwise. */
+  last?: string;
+}
+
+const { items, last } = Astro.props;
+const separator = (index: number) =>
+  index === 0 ? '' : last && index === items.length - 1 ? ` ${last} ` : ', ';
+---
+
+<!-- prettier-ignore -->
+{items.map((item, index) => <>{separator(index)}{item.href ? <a href={item.href}>{item.text}</a> : item.strong ? <strong>{item.text}</strong> : item.text}</>)}
