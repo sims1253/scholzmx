@@ -6,15 +6,116 @@ time: '3 hours (2h rising)'
 tags: ['Snack', 'Bread', 'Vegan']
 heroImage: '../../assets/images/recipes/hokkaido-dinner-rolls/stack.jpg'
 draft: false
+makes: { amount: 15, unit: rolls }
+prepMinutes: 10
+equipment:
+  - a baking sheet
+  - { name: a 34 × 24 cm baking dish, doubled: two 34 × 24 cm baking dishes }
+  - parchment paper
+ingredients:
+  - id: squash
+    amount: 350
+    unit: g
+    name: Hokkaido squash
+    prep: cut into small cubes, the skin can stay on
+  - id: water
+    amount: 120
+    unit: ml
+    name: water
+    note: up to {180 ml} makes fluffier rolls that are harder to shape
+  - id: flour
+    amount: 400
+    unit: g
+    name: flour
+  - id: sugar
+    amount: 75
+    unit: g
+    name: brown sugar
+    note: '{50 g} is a snack, {100 g} is dessert'
+  - id: butter
+    amount: 60
+    unit: g
+    name: butter
+    prep: softened
+    note: or a plant-based alternative to make them vegan
+  - id: yeast
+    amount: 7
+    unit: g
+    name: instant yeast
+    note: '{1 bag}'
+  - id: cinnamon
+    amount: 1
+    unit: tsp
+    name: cinnamon
+  - id: cardamom
+    amount: 1
+    unit: tsp
+    name: cardamom
+  - id: nutmeg
+    name: a pinch of nutmeg
+  - id: salt
+    name: a pinch of salt
+steps:
+  - id: roast
+    uses: [squash]
+    do: Roast
+    heat: 160 °C
+    minutes: 25
+    wait: true
+    result: roasted squash
+    detail: Spread the cubes on a baking sheet and roast at 160 °C (320 °F) for about 25 minutes, until soft enough to mash easily.
+  - id: blend
+    uses: [roast, water]
+    do: Blend, then cool
+    minutes: 5
+    result: squash purée
+    detail: Let the squash cool a little, then blend it with the water until smooth. Set it aside to reach about room temperature while you get everything else ready.
+  - id: knead
+    uses: [blend, flour, sugar, butter, yeast, cinnamon, cardamom, nutmeg, salt]
+    do: Knead
+    minutes: 10
+    result: dough
+    detail: Combine the squash purée with the flour, sugar, soft butter, yeast and spices. Don't forget the salt! Knead well until the dough is smooth.
+  - id: rise
+    uses: [knead]
+    do: Rise, covered
+    minutes: 60
+    wait: true
+    result: risen dough
+    detail: Cover the dough and let it rise for an hour.
+  - id: shape
+    uses: [rise]
+    do: Shape into balls
+    minutes: 15
+    result: shaped rolls
+    detail: Line the baking dish with parchment. Divide the dough into equal pieces (15 fit a 34 × 24 cm dish in a 3 × 5 pattern), shape them into balls and set them in the dish with a little space between.
+  - id: proof
+    uses: [shape]
+    do: Rise again
+    minutes: 60
+    wait: true
+    result: risen rolls
+    detail: Cover and let rise for another hour, until the balls have puffed up and touch.
+  - id: bake
+    uses: [proof]
+    do: Bake
+    heat: 220 → 200 °C
+    minutes: 23
+    wait: true
+    result: softies
+    detail: Bake for 8 minutes at 220 °C (425 °F), then turn the oven down to 200 °C (400 °F) and bake until golden brown on top, about 23 minutes in total. With convection, use 200 °C, then 180 °C.
+  - id: serve
+    uses: [bake]
+    do: Cool in the form
+    detail: Let them cool in the form and enjoy with friends. Cottage cheese and jam work well, or just butter.
+meanwhile:
+  - do: Preheat the oven to 220 °C (425 °F)
+    during: proof
 ---
 
 <span class="dropcap dropcap--ornate dropcap--personal" data-first-letter="T" aria-hidden="true">T</span>hese dinner rolls have become a staple of the baking-grandma in our Brindlewood Bay group and are perfect for any occasion where you want some easy-to-portion bread on the side. The squash gives them a lovely color and keeps them soft. The Spices add a touch of autumn to them on top.
 
 > margin: You can swap the butter for a plant-based alternative to make these vegan.
-
-For the dough you'll need **350g Hokkaido squash**, **120ml water**, **400g flour**, **75g brown sugar**, **60g soft butter**, **7g instant yeast (1 bag)**, **1 tsp cinnamon**, **1 tsp cardamom**, **a pinch of nutmeg**, and a **pinch of salt**.
-
----
 
 ## The Squash
 

@@ -1,0 +1,1259 @@
+---
+/**
+ * The recipe card: one recipe description rendered as Michael Chu's table (wide screens),
+ * as numbered steps with a list to gather from (phones, screen readers, anyone who wants
+ * the details), and as a cooking mode that walks through the steps with timers.
+ * See src/lib/recipe.ts.
+ */
+import Series from './Series.astro';
+import {
+  formatAmount,
+  formatClock,
+  formatDuration,
+  formatStepTime,
+  layOut,
+  rowEntries,
+  splitAmounts,
+  startTimes,
+  timing,
+  type RecipeEquipment,
+  type RecipeIngredient,
+  type RecipeMeanwhile,
+  type RecipeStep,
+} from '../lib/recipe';
+
+interface Props {
+  ingredients: RecipeIngredient[];
+  steps: RecipeStep[];
+  meanwhile?: RecipeMeanwhile[];
+  makes?: { amount: number; unit: string };
+  prepMinutes?: number;
+  equipment?: RecipeEquipment[];
+}
+
+const { ingredients, steps, meanwhile = [], makes, prepMinutes = 0, equipment = [] } = Astro.props;
+
+const grid = layOut(ingredients, steps);
+const { active, total } = timing(steps, prepMinutes);
+const starts = startTimes(steps, prepMinutes);
+const ingredientById = new Map(ingredients.map((ingredient) => [ingredient.id, ingredient]));
+const stepIndex = new Map(steps.map((step, index) => [step.id, index]));
+
+// A "get ready" stage collects the prep that ingredient lists usually hide. In the table
+// it is the ingredient column, so the table, the list and cooking mode count the same steps.
+const prepWork = ingredients.filter((ingredient) => ingredient.prep);
+const getReady = prepWork.length > 0 || equipment.length > 0;
+const offset = getReady ? 1 : 0;
+const number = (index: number) => index + offset + 1;
+
+// Doubling can need different gear; both versions render and the script swaps them.
+const tools = equipment.map((item) => ({ text: item.name }));
+const toolsDoubled = equipment.map((item) => ({ text: item.doubled ?? item.name }));
+const gearChanges = equipment.some((item) => item.doubled);
+
+// Only say what the data supports: no "0 minutes of work" when steps aren't timed.
+const sentence = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
+const timeSentence =
+  active > 0 && total > active
+    ? `${sentence(formatDuration(active))} of work, ready in ${formatDuration(total)}.`
+    : total > 0
+      ? `Ready in ${formatDuration(total)}.`
+      : '';
+
+const amountOf = (ingredient: RecipeIngredient) =>
+  ingredient.amount === undefined ? '' : formatAmount(ingredient.amount, ingredient.unit);
+const asideOf = (ingredient: RecipeIngredient) =>
+  [ingredient.prep, ingredient.note].filter(Boolean).join('; ');
+const tasksDuring = (step: RecipeStep) =>
+  meanwhile.filter((task) => task.during === step.id).map((task) => task.do);
+const columnTasks = Array.from({ length: grid.columns }, (_, index) =>
+  grid.cells.filter((cell) => cell.col === index + 1).flatMap((cell) => tasksDuring(cell.step))
+);
+const longest = (step: RecipeStep) =>
+  step.minutes === undefined ? 0 : Array.isArray(step.minutes) ? step.minutes[1] : step.minutes;
+// Heat stays on one line, so "220 → 200 °C" never breaks at the arrow.
+const when = (step: RecipeStep) =>
+  [formatStepTime(step.minutes), step.heat?.replaceAll(' ', ' ')].filter(Boolean).join(', ');
+const inputsOf = (step: RecipeStep) =>
+  step.uses.map((id) => {
+    const ingredient = ingredientById.get(id);
+    if (ingredient) return { ingredient, text: ingredient.name };
+    const index = stepIndex.get(id) ?? 0;
+    return { ingredient: undefined, text: steps[index]?.result ?? `step ${number(index)}` };
+  });
+
+// A clock under the table: when each column's step can start, counted from the beginning.
+// It only means something when the steps are timed (the last one may just be serving).
+const timed = steps.slice(0, -1).every((step) => step.minutes !== undefined);
+const columnStarts = Array.from({ length: grid.columns }, (_, index) =>
+  Math.min(
+    ...grid.cells
+      .filter((cell) => cell.col === index + 1)
+      .map((cell) => starts.get(cell.step.id) ?? 0)
+  )
+);
+
+// Blank cells between an ingredient and the step that takes it carry a dotted leader.
+const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0;
+---
+
+<section class="recipe-card" data-recipe-card aria-labelledby="recipe-card-title">
+  <div class="rc-sheet pasted">
+    <header class="rc-header">
+      <h2 class="rc-title" id="recipe-card-title">The recipe</h2>
+      <p class="rc-summary">
+        {makes && (
+          <>Makes
+            <span class="rc-qty" data-amount={makes.amount}>{formatAmount(makes.amount)}</span>
+            {makes.unit}.
+          </>
+        )}{timeSentence}
+        {equipment.length > 0 && <span data-hide-doubled={gearChanges ? '' : undefined}>
+          You'll need <Series items={tools} last="and" />.
+        </span>}
+        {gearChanges && <span data-show-doubled hidden>
+          You'll need <Series items={toolsDoubled} last="and" />.
+        </span>}
+      </p>
+
+      <div class="rc-controls" data-rc-controls hidden>
+        <fieldset class="rc-choice">
+          <legend>Amount</legend>
+          <label><input type="radio" name="rc-scale" value="0.5" />Half</label>
+          <label><input type="radio" name="rc-scale" value="1" checked />As written</label>
+          <label><input type="radio" name="rc-scale" value="2" />Double</label>
+        </fieldset>
+        <fieldset class="rc-choice">
+          <legend>Show</legend>
+          <label><input type="radio" name="rc-view" value="table" checked />Table</label>
+          <label><input type="radio" name="rc-view" value="steps" />Steps</label>
+        </fieldset>
+        <button type="button" class="rc-start" data-rc-start>Start cooking</button>
+      </div>
+    </header>
+
+    <div class="rc-table-frame" data-rc-frame>
+      <p class="rc-more" aria-hidden="true">More to the right</p>
+      <div class="rc-table-wrap" role="region" aria-labelledby="rc-caption" tabindex="0">
+        <table class="rc-table">
+          <caption id="rc-caption">
+            <span class="rc-legend">
+              <span class="rc-read">Read left to right: each step combines the rows it spans.</span>
+              <span class="rc-key"><span class="rc-swatch"></span>Hands on</span>
+              <span class="rc-key"><span class="rc-swatch rc-swatch--wait"></span>Hands off</span>
+              {meanwhile.length > 0 && <span class="rc-key">
+                <span class="rc-swatch rc-swatch--slip"></span>Meanwhile: during the step below
+              </span>}
+            </span>
+          </caption>
+          {(getReady || meanwhile.length > 0) && <thead>
+            <tr>
+              <td class="rc-corner" data-stage={getReady ? 0 : undefined}>
+                {getReady && <span class="rc-num">1</span>}
+                {getReady && 'Get ready'}
+              </td>
+              {columnTasks.map((tasks) => <td class="rc-above">
+                {tasks.length > 0 && <span class="rc-slip">
+                  <span class="rc-slip-label">Meanwhile</span>
+                  {tasks.join('; ')}
+                </span>}
+              </td>)}
+            </tr>
+          </thead>}
+          <tbody>
+            {grid.rows.map((ingredient, row) => <tr
+              data-ingredient={ingredient.id}
+              data-taken-at={(grid.takenAt.get(ingredient.id) ?? 0) + offset}
+            >
+              <th scope="row" class="rc-ingredient">
+                <span class="rc-name">
+                  {ingredient.amount !== undefined && <span
+                    class="rc-qty"
+                    data-amount={ingredient.amount}
+                    data-unit={ingredient.unit}
+                    data-fixed={ingredient.scales === false ? '' : undefined}
+                    >{amountOf(ingredient)}</span
+                  >}
+                  {ingredient.name}
+                </span>
+                {asideOf(ingredient) && <span class="rc-aside">
+                  {splitAmounts(asideOf(ingredient)).map((part) =>
+                    part.kind === 'text' ? (
+                      part.text
+                    ) : (
+                      <span class="rc-qty" data-amount={part.amount} data-unit={part.unit}
+                        >{formatAmount(part.amount, part.unit)}</span
+                      >
+                    )
+                  )}
+                </span>}
+              </th>
+              {rowEntries(grid, row).map((entry) =>
+                entry.kind === 'empty' ? (
+                  <td
+                    class:list={['rc-blank', { 'rc-lead': entry.col < takenCol(ingredient.id) }]}
+                    colspan={entry.span > 1 ? entry.span : undefined}
+                  />
+                ) : (
+                  <td
+                    class:list={['rc-step', { 'rc-wait': entry.cell.step.wait }]}
+                    rowspan={entry.cell.rowSpan > 1 ? entry.cell.rowSpan : undefined}
+                    data-stage={entry.cell.index + offset}
+                  >
+                    <span class="rc-num">{number(entry.cell.index)}</span>
+                    <span class="rc-do">{entry.cell.step.do}</span>
+                    {when(entry.cell.step) && <span class="rc-when">{when(entry.cell.step)}</span>}
+                  </td>
+                )
+              )}
+            </tr>)}
+          </tbody>
+          {timed && <tfoot>
+            <tr>
+              <th scope="row" class="rc-clock-label">Starts at</th>
+              {columnStarts.map((minutes) => <td class="rc-clock">{formatClock(minutes)}</td>)}
+            </tr>
+          </tfoot>}
+        </table>
+      </div>
+    </div>
+
+    <div class="rc-steps-view">
+      <aside class="rc-gather" aria-labelledby="rc-gather-title">
+        <h3 class="rc-gather-title" id="rc-gather-title">Gather</h3>
+        <ul class="rc-gather-list">
+          {grid.rows.map((ingredient) => <li>
+            <label>
+              <input type="checkbox" />
+              <span class="rc-gather-qty">
+                {ingredient.amount !== undefined && <span
+                  class="rc-qty"
+                  data-amount={ingredient.amount}
+                  data-unit={ingredient.unit}
+                  data-fixed={ingredient.scales === false ? '' : undefined}
+                  >{amountOf(ingredient)}</span
+                >}
+              </span>
+              <span class="rc-gather-name">{ingredient.name}</span>
+            </label>
+          </li>)}
+        </ul>
+      </aside>
+
+      <ol class="rc-steps">
+        {getReady && <li class="rc-steps-item" data-stage="0" data-minutes="0">
+          <h3 class="rc-steps-do">Get ready</h3>
+          <div class="rc-steps-detail">
+            {equipment.length > 0 && <p data-hide-doubled={gearChanges ? '' : undefined}>
+              Set out <Series items={tools} last="and" />.
+            </p>}
+            {gearChanges && <p data-show-doubled hidden>
+              Set out <Series items={toolsDoubled} last="and" />.
+            </p>}
+            {prepWork.length > 0 && <ul class="rc-prep">
+              {prepWork.map((ingredient) => <li>
+                <span class="rc-prep-name">{ingredient.name}:</span>
+                {ingredient.prep}
+              </li>)}
+            </ul>}
+          </div>
+        </li>}
+        {steps.map((step, index) => <li
+          class:list={['rc-steps-item', { 'rc-steps-item--wait': step.wait }]}
+          data-stage={index + offset}
+          data-minutes={longest(step)}
+        >
+          <h3 class="rc-steps-do">{step.do}</h3>
+          <ul class="rc-uses">
+            {inputsOf(step).map((input) => <li>
+              <span class="rc-uses-qty">
+                {input.ingredient?.amount !== undefined && <span
+                  class="rc-qty"
+                  data-amount={input.ingredient.amount}
+                  data-unit={input.ingredient.unit}
+                  data-fixed={input.ingredient.scales === false ? '' : undefined}
+                  >{amountOf(input.ingredient)}</span
+                >}
+              </span>
+              <span class:list={['rc-uses-name', { 'rc-uses-result': !input.ingredient }]}
+                >{input.text}</span
+              >
+            </li>)}
+          </ul>
+          {step.detail && <p class="rc-steps-detail">{step.detail}</p>}
+          {(when(step) || step.wait) && <p
+            class:list={['rc-steps-when', { 'rc-steps-when--wait': step.wait }]}
+          >
+            {[when(step), step.wait ? 'hands off' : ''].filter(Boolean).join(', ')}
+          </p>}
+          {tasksDuring(step).map((task) => <p class="rc-steps-meanwhile">
+            <span>Meanwhile:</span>
+            {task}
+          </p>)}
+        </li>)}
+      </ol>
+    </div>
+  </div>
+
+  <div class="rc-cook" data-rc-cook hidden>
+    <div class="rc-cook-inner" data-rc-cook-inner>
+      <div class="rc-cook-step">
+        <p class="rc-cook-head">
+          <span class="rc-cook-count" data-rc-count></span>
+          <span class="rc-cook-do" data-rc-do></span>
+        </p>
+        <div class="rc-cook-uses" data-rc-uses></div>
+        <p class="rc-cook-detail" data-rc-detail></p>
+        <p class="rc-cook-meanwhile" data-rc-meanwhile hidden></p>
+        <ul class="rc-timers" data-rc-timers aria-label="Other timers"></ul>
+      </div>
+      <div class="rc-cook-clock">
+        <button type="button" class="rc-timer" data-rc-timer hidden>Start timer</button>
+        <p class="rc-countdown" data-rc-countdown hidden>
+          <span class="rc-countdown-time" data-rc-countdown-time></span>
+          <span class="rc-countdown-label">left on this step</span>
+        </p>
+      </div>
+      <div class="rc-cook-nav">
+        <button type="button" class="rc-link" data-rc-back>Back</button>
+        <button type="button" class="rc-next" data-rc-next>Next</button>
+        <button type="button" class="rc-link" data-rc-stop>Stop cooking</button>
+      </div>
+    </div>
+    <p class="sr-only" aria-live="assertive" data-rc-announce></p>
+  </div>
+</section>
+
+<script>
+  import '../scripts/recipe-card';
+</script>
+
+<style>
+  /* The card may be wider than the reading column: it breaks out to the page, then
+     shrinks to what it holds, so a small recipe is a small card. */
+  .recipe-card {
+    --card-width: min(72rem, 100cqi - 2 * var(--space-md));
+    --rc-rule: color-mix(in srgb, var(--color-ink-dark) 16%, var(--paper-sheet));
+    --rc-hatch: repeating-linear-gradient(
+      -45deg,
+      transparent 0 5px,
+      color-mix(in srgb, var(--color-moss) 34%, transparent) 5px 6.5px
+    );
+
+    width: var(--card-width);
+    margin: var(--space-lg) calc((100% - var(--card-width)) / 2) var(--space-xxl);
+  }
+
+  .rc-sheet {
+    width: fit-content;
+    min-width: min(100%, 44rem);
+    max-width: 100%;
+    margin-inline: auto;
+    padding: var(--space-lg) var(--space-lg) var(--space-md);
+    background: var(--paper-sheet);
+    border: 1px solid color-mix(in srgb, var(--color-ink-dark) 10%, transparent);
+    box-shadow:
+      0 1px 2px color-mix(in srgb, var(--color-ink-dark) 12%, transparent),
+      0 16px 32px -18px color-mix(in srgb, var(--color-ink-dark) 40%, transparent);
+  }
+
+  .rc-header {
+    margin-bottom: var(--space-md);
+  }
+
+  .rc-title {
+    margin: 0 0 0.2em;
+    font-size: var(--text-2xl);
+    font-style: normal;
+    font-weight: 400;
+  }
+
+  .rc-summary {
+    max-width: 44rem;
+    margin: 0;
+    font-style: italic;
+    color: var(--color-text-secondary);
+    font-variant-numeric: oldstyle-nums;
+  }
+
+  .rc-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: var(--space-sm) var(--space-lg);
+    margin-top: var(--space-md);
+  }
+
+  .rc-controls[hidden] {
+    display: none;
+  }
+
+  .rc-choice {
+    display: flex;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .rc-choice legend,
+  .rc-gather-title,
+  .rc-cook-count,
+  .rc-slip-label,
+  .rc-clock-label,
+  .rc-corner {
+    font-family: var(--font-label);
+    letter-spacing: 0.04em;
+  }
+
+  .rc-choice legend {
+    padding: 0;
+    margin-bottom: 0.25rem;
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+  }
+
+  .rc-choice label {
+    position: relative;
+    padding: 0.3rem 0.8rem;
+    border: 1px solid var(--rule-ink);
+    font-size: var(--text-sm);
+    cursor: pointer;
+  }
+
+  .rc-choice label + label {
+    border-left-width: 0;
+  }
+
+  .rc-choice label:first-of-type {
+    border-radius: 999px 0 0 999px;
+  }
+
+  .rc-choice label:last-of-type {
+    border-radius: 0 999px 999px 0;
+  }
+
+  .rc-choice input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Tansy is kept for the step you're on; a chosen option is a vine-green wash. */
+  .rc-choice label:has(input:checked) {
+    background: var(--wash-sage);
+    color: var(--color-walnut);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-walnut) 45%, transparent);
+  }
+
+  .rc-choice label:has(input:focus-visible) {
+    outline: 2px solid var(--color-walnut);
+    outline-offset: 2px;
+  }
+
+  .rc-start,
+  .rc-next {
+    padding: 0.45rem 1.1rem;
+    border: 1px solid var(--color-walnut);
+    border-radius: 999px;
+    background: var(--color-walnut);
+    color: var(--paper-sheet);
+    font: inherit;
+    font-size: var(--text-md);
+    cursor: pointer;
+  }
+
+  .rc-start {
+    margin-left: auto;
+  }
+
+  .rc-start:hover,
+  .rc-next:hover {
+    background: var(--btn-walnut-hover);
+  }
+
+  /* ===== Table ===== */
+
+  .rc-table-frame {
+    position: relative;
+  }
+
+  /* While more of the table hides to the right, the edge fades and says so. */
+  .rc-more {
+    display: none;
+    margin: 0 0 0.3rem;
+    font-size: var(--text-xs);
+    font-style: italic;
+    color: var(--color-text-muted);
+    text-align: right;
+  }
+
+  .rc-table-frame.has-more .rc-more {
+    display: block;
+  }
+
+  .rc-table-frame.has-more::after {
+    content: '';
+    position: absolute;
+    inset: 1.6rem 0 0 auto;
+    z-index: 3;
+    width: 3rem;
+    background: linear-gradient(to left, var(--paper-sheet), transparent);
+    pointer-events: none;
+  }
+
+  .rc-table-wrap {
+    overflow-x: auto;
+  }
+
+  .rc-table-wrap:focus-visible {
+    outline: 2px solid var(--color-walnut);
+    outline-offset: 4px;
+  }
+
+  /* As wide as its steps need, up to the card */
+  .rc-table {
+    inline-size: auto;
+    margin: 0;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+    line-height: 1.35;
+  }
+
+  /* The caption is the key: how to read the table, and what its fills mean. */
+  .rc-table caption {
+    caption-side: top;
+    padding-bottom: var(--space-sm);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    text-align: left;
+  }
+
+  .rc-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem 1.2rem;
+  }
+
+  .rc-read {
+    flex-basis: 100%;
+    font-style: italic;
+  }
+
+  .rc-key {
+    white-space: nowrap;
+  }
+
+  .rc-swatch {
+    display: inline-block;
+    width: 1.3em;
+    height: 0.85em;
+    margin-right: 0.4em;
+    border: 1px solid var(--rc-rule);
+    background: var(--wash-sage);
+    vertical-align: -0.05em;
+  }
+
+  .rc-swatch--wait {
+    background: var(--rc-hatch), var(--wash-sage);
+  }
+
+  .rc-swatch--slip {
+    border-style: dashed;
+    border-color: color-mix(in srgb, var(--color-ink-dark) 40%, transparent);
+    background: var(--paper-sheet);
+  }
+
+  .rc-table th,
+  .rc-table td {
+    padding: 0.45rem 0.6rem;
+    border: 1px solid var(--rc-rule);
+    vertical-align: middle;
+  }
+
+  /* The pinned column paints over the table's shared borders, so it draws its own rules. */
+  .rc-table .rc-ingredient {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    min-width: 11.5rem;
+    max-width: 15rem;
+    border-style: none;
+    background: var(--paper-sheet);
+    box-shadow:
+      inset 1px 0 0 var(--rc-rule),
+      inset -1px 0 0 var(--rc-rule),
+      inset 0 -1px 0 var(--rc-rule);
+    font-weight: 400;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .rc-table tbody tr:first-child .rc-ingredient {
+    box-shadow:
+      inset 1px 0 0 var(--rc-rule),
+      inset -1px 0 0 var(--rc-rule),
+      inset 0 -1px 0 var(--rc-rule),
+      inset 0 1px 0 var(--rc-rule);
+  }
+
+  .rc-name {
+    display: block;
+  }
+
+  .rc-qty {
+    font-weight: 600;
+    font-variant-numeric: oldstyle-nums;
+    white-space: nowrap;
+  }
+
+  .rc-aside {
+    display: block;
+    font-family: var(--font-body-personal);
+    font-size: var(--text-xs);
+    font-style: italic;
+    color: var(--color-text-muted);
+  }
+
+  .rc-aside .rc-qty {
+    font-weight: inherit;
+  }
+
+  .rc-step {
+    min-width: 5.25rem;
+    background: var(--wash-sage);
+    text-align: center;
+  }
+
+  /* Hands-off time is hatched: you can walk away. */
+  .rc-wait {
+    background: var(--rc-hatch), var(--wash-sage);
+  }
+
+  /* Step numbers match the step list and cooking mode. */
+  .rc-num {
+    display: block;
+    font-family: var(--font-heading);
+    font-size: var(--text-xs);
+    line-height: 1.2;
+    color: var(--color-moss);
+    font-variant-numeric: oldstyle-nums;
+  }
+
+  .rc-do {
+    display: block;
+    font-family: var(--font-heading);
+    font-size: var(--text-md);
+  }
+
+  .rc-when {
+    display: inline-block;
+    margin-top: 0.15rem;
+    color: var(--color-text-secondary);
+    font-variant-numeric: oldstyle-nums;
+  }
+
+  /* Over the hatching the time sits on a scrap of paper, so it stays legible. */
+  .rc-wait .rc-when {
+    padding: 0 0.45em;
+    border-radius: 0.6em;
+    background: var(--paper-sheet);
+  }
+
+  /* Blank cells are quiet: no grid, just a dotted leader from an ingredient to its step. */
+  .rc-table .rc-blank {
+    border-style: none;
+    background: transparent;
+  }
+
+  .rc-table .rc-lead {
+    background-image: radial-gradient(
+      circle,
+      color-mix(in srgb, var(--color-ink-dark) 40%, transparent) 0 1px,
+      transparent 1.4px
+    );
+    background-position: 0 calc(0.45rem + 0.675em - 2px);
+    background-repeat: repeat-x;
+    background-size: 7px 4px;
+  }
+
+  /* The band above the table holds "get ready" and the meanwhile slips. */
+  .rc-table thead td {
+    border-style: none;
+    vertical-align: bottom;
+  }
+
+  .rc-corner {
+    padding-bottom: 0.35rem;
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    text-align: left;
+  }
+
+  .rc-corner .rc-num {
+    display: inline;
+    margin-right: 0.3rem;
+    font-size: var(--text-sm);
+  }
+
+  .rc-table .rc-above {
+    padding: 0 0.15rem;
+  }
+
+  /* A slip of paper tucked into the top of the step it belongs to */
+  .rc-slip {
+    position: relative;
+    z-index: 2;
+    display: block;
+    margin: 0 0 -0.4rem 1.1rem;
+    padding: 0.3rem 0.45rem;
+    border: 1px dashed color-mix(in srgb, var(--color-ink-dark) 40%, transparent);
+    background: var(--paper-sheet);
+    box-shadow: 0 3px 6px -4px color-mix(in srgb, var(--color-ink-dark) 45%, transparent);
+    font-size: var(--text-xs);
+    line-height: 1.3;
+    text-align: center;
+    transform: rotate(-1.5deg);
+  }
+
+  .rc-slip-label {
+    display: block;
+    color: var(--color-text-muted);
+  }
+
+  .rc-table tfoot th,
+  .rc-table tfoot td {
+    padding-block: 0.3rem 0;
+    border-style: none;
+    background: transparent;
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+
+  .rc-clock-label {
+    font-weight: 400;
+    text-align: right;
+  }
+
+  .rc-clock {
+    text-align: center;
+    font-variant-numeric: oldstyle-nums tabular-nums;
+  }
+
+  /* ===== Steps ===== */
+
+  .rc-steps-view {
+    display: grid;
+    gap: var(--space-md) var(--space-xl);
+  }
+
+  /* On wide cards the list to gather from stays in view beside the steps. */
+  @media (min-width: 56rem) {
+    .rc-steps-view {
+      grid-template-columns: minmax(0, 40rem) minmax(13rem, 17rem);
+    }
+
+    .rc-gather {
+      grid-column: 2;
+      grid-row: 1;
+      position: sticky;
+      top: 1.5rem;
+      align-self: start;
+    }
+
+    .rc-steps {
+      grid-column: 1;
+      grid-row: 1;
+    }
+  }
+
+  .rc-gather {
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--rc-rule);
+    background: color-mix(in srgb, var(--wash-sage) 50%, var(--paper-sheet));
+  }
+
+  .rc-gather-title {
+    margin: 0 0 0.3rem;
+    font-size: var(--text-md);
+    font-style: normal;
+    font-weight: 400;
+    color: var(--color-text-secondary);
+  }
+
+  .rc-gather-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--text-sm);
+  }
+
+  .rc-gather-list li {
+    margin: 0;
+  }
+
+  .rc-gather-list label {
+    display: grid;
+    grid-template-columns: auto 3.6rem minmax(0, 1fr);
+    gap: 0.5rem;
+    align-items: baseline;
+    padding-block: 0.15rem;
+    cursor: pointer;
+  }
+
+  .rc-gather-list input {
+    accent-color: var(--color-walnut);
+  }
+
+  .rc-gather-qty {
+    text-align: right;
+    font-variant-numeric: oldstyle-nums tabular-nums;
+  }
+
+  .rc-gather-list li:has(input:checked) {
+    opacity: 0.5;
+  }
+
+  .rc-steps {
+    max-width: 40rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: rc-step;
+  }
+
+  .rc-steps-item {
+    position: relative;
+    margin: 0 0 var(--space-md);
+    padding: 0 0 0 2.6rem;
+    counter-increment: rc-step;
+  }
+
+  .rc-steps-item::before {
+    content: counter(rc-step);
+    position: absolute;
+    left: 0;
+    top: -0.1rem;
+    width: 2rem;
+    font-family: var(--font-heading);
+    font-size: var(--text-xl);
+    color: var(--color-moss);
+    text-align: right;
+    font-variant-numeric: oldstyle-nums;
+  }
+
+  .rc-steps-do {
+    margin: 0;
+    font-size: var(--text-lg);
+    font-style: normal;
+  }
+
+  /* What goes into a step, one per line, amounts in a column of their own */
+  .rc-uses {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    column-gap: 0.6rem;
+    margin: 0.15rem 0 0.4rem;
+    padding: 0;
+    list-style: none;
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .rc-uses li {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    margin: 0;
+  }
+
+  .rc-uses-qty {
+    text-align: right;
+    font-variant-numeric: oldstyle-nums tabular-nums;
+  }
+
+  .rc-uses-result {
+    font-style: italic;
+  }
+
+  .rc-steps-detail,
+  .rc-steps-detail p {
+    margin: 0 0 0.3rem;
+  }
+
+  .rc-prep {
+    margin: 0;
+    padding-left: 1.1rem;
+  }
+
+  .rc-prep-name {
+    font-weight: 600;
+  }
+
+  .rc-steps-when,
+  .rc-steps-meanwhile {
+    margin: 0;
+    font-size: var(--text-sm);
+    font-style: italic;
+    color: var(--color-text-muted);
+  }
+
+  /* Hands-off steps carry the table's hatching. */
+  .rc-steps-when--wait::before {
+    content: '';
+    display: inline-block;
+    width: 1.3em;
+    height: 0.85em;
+    margin-right: 0.4em;
+    border: 1px solid var(--rc-rule);
+    background: var(--rc-hatch), var(--wash-sage);
+    vertical-align: -0.05em;
+  }
+
+  .rc-steps-meanwhile span {
+    color: var(--color-ochre);
+  }
+
+  /* One view at a time. Without JavaScript the screen size decides. */
+  .recipe-card:not([data-view]) .rc-steps-view,
+  .recipe-card[data-view='table'] .rc-steps-view,
+  .recipe-card[data-view='steps'] .rc-table-frame {
+    display: none;
+  }
+
+  @media (max-width: 48rem) {
+    .recipe-card:not([data-view]) .rc-steps-view {
+      display: grid;
+    }
+
+    .recipe-card:not([data-view]) .rc-table-frame {
+      display: none;
+    }
+
+    .rc-sheet {
+      padding: var(--space-md) var(--space-sm);
+    }
+
+    .rc-start {
+      margin-left: 0;
+    }
+  }
+
+  /* ===== Cooking ===== */
+
+  .rc-step.is-current,
+  .rc-corner.is-current,
+  .recipe-card.is-gathering .rc-ingredient {
+    background: color-mix(in srgb, var(--color-tansy) 38%, var(--paper-sheet));
+  }
+
+  .rc-step.is-current {
+    outline: 2px solid var(--color-ochre);
+    outline-offset: -2px;
+  }
+
+  /* In the list, the step you're on gets a tansy rule rather than a block of colour. */
+  .rc-steps-item.is-current {
+    margin-inline: -0.6rem;
+    padding-block: 0.4rem;
+    padding-right: 0.6rem;
+    padding-left: 3.2rem;
+    background: color-mix(in srgb, var(--color-tansy) 12%, var(--paper-sheet));
+    box-shadow: inset 3px 0 0 var(--color-tansy);
+  }
+
+  .rc-steps-item.is-current::before {
+    left: 0.6rem;
+    top: 0.3rem;
+  }
+
+  .rc-step.is-done,
+  .rc-corner.is-done,
+  .rc-steps-item.is-done {
+    opacity: 0.5;
+  }
+
+  tr.is-current .rc-ingredient {
+    background: color-mix(in srgb, var(--color-tansy) 28%, var(--paper-sheet));
+  }
+
+  /* On tansy the usual rule disappears; lit cells draw theirs in ochre. */
+  .recipe-card.is-gathering .rc-ingredient,
+  tr.is-current .rc-ingredient {
+    --rc-rule: color-mix(in srgb, var(--color-ochre) 40%, var(--paper-sheet));
+  }
+
+  /* Used ingredients fade and get a tick, so the column never looks crossed out. */
+  tr.is-used .rc-ingredient > * {
+    opacity: 0.45;
+  }
+
+  tr.is-used .rc-name::after {
+    content: '';
+    display: inline-block;
+    width: 0.8em;
+    height: 0.8em;
+    margin-left: 0.3em;
+    background: var(--color-walnut);
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2 6.5 4.7 9 10 3' fill='none' stroke='%23000' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+  }
+
+  .recipe-card.is-cooking .rc-table [data-stage] {
+    cursor: pointer;
+  }
+
+  .rc-cook {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 1100;
+    padding: 0 0 var(--space-sm);
+    pointer-events: none;
+  }
+
+  .rc-cook[hidden] {
+    display: none;
+  }
+
+  /* Lined up with the card by the script; a gold line fills the top rule as a timer runs. */
+  .rc-cook-inner {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'step clock'
+      'step nav';
+    gap: 0.4rem var(--space-lg);
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--paper-sheet);
+    border: 1px solid color-mix(in srgb, var(--color-ink-dark) 12%, transparent);
+    border-top: 3px solid color-mix(in srgb, var(--color-tansy) 45%, var(--paper-sheet));
+    box-shadow: 0 -12px 30px -14px color-mix(in srgb, var(--color-ink-dark) 45%, transparent);
+    pointer-events: auto;
+  }
+
+  .rc-cook-inner::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: 0;
+    width: calc(var(--rc-progress, 0) * 100%);
+    height: 3px;
+    background: var(--color-tansy);
+    transition: width 1s linear;
+  }
+
+  .rc-cook-step {
+    grid-area: step;
+    min-width: 0;
+  }
+
+  .rc-cook-head {
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .rc-cook-count {
+    margin-right: 0.5rem;
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+  }
+
+  .rc-cook-do {
+    font-family: var(--font-heading);
+    font-size: var(--text-xl);
+  }
+
+  .rc-cook-uses .rc-uses {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 1rem;
+    margin: 0.2rem 0 0;
+  }
+
+  .rc-cook-uses .rc-uses li {
+    display: inline;
+  }
+
+  .rc-cook-uses .rc-uses-qty:not(:empty) {
+    margin-right: 0.3em;
+  }
+
+  .rc-cook-detail {
+    max-width: 44rem;
+    margin: 0.25rem 0 0;
+  }
+
+  /* In the step list the highlighted step already shows what goes in and what to do. */
+  .recipe-card[data-view='steps'] .rc-cook-uses,
+  .recipe-card[data-view='steps'] .rc-cook-detail {
+    display: none;
+  }
+
+  .rc-cook-meanwhile {
+    margin: 0.25rem 0 0;
+    font-style: italic;
+    color: var(--color-ochre);
+  }
+
+  .rc-cook-clock {
+    grid-area: clock;
+    justify-self: end;
+    text-align: right;
+  }
+
+  .rc-countdown {
+    margin: 0;
+    line-height: 1;
+  }
+
+  .rc-countdown-time {
+    display: block;
+    font-family: var(--font-heading);
+    font-size: 2.4rem;
+    color: var(--color-ochre);
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+
+  .rc-countdown-label {
+    font-size: var(--text-xs);
+    font-style: italic;
+    color: var(--color-text-muted);
+  }
+
+  .rc-cook-nav {
+    grid-area: nav;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    align-self: end;
+  }
+
+  .rc-timer,
+  .rc-timers button {
+    padding: 0.35rem 0.85rem;
+    border: 1px solid var(--color-ochre);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--color-text-primary);
+    font: inherit;
+    font-size: var(--text-sm);
+    cursor: pointer;
+  }
+
+  .rc-link {
+    padding: 0.35rem 0.2rem;
+    border: 0;
+    background: none;
+    color: var(--color-link);
+    font: inherit;
+    font-size: var(--text-sm);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, currentcolor 35%, transparent);
+    text-underline-offset: 0.18em;
+    cursor: pointer;
+  }
+
+  .rc-link:disabled {
+    color: var(--color-text-muted);
+    text-decoration: none;
+    cursor: default;
+  }
+
+  .rc-timers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0.4rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .rc-timers:empty {
+    display: none;
+  }
+
+  .rc-timers li {
+    margin: 0;
+  }
+
+  .rc-timers button {
+    padding: 0.15rem 0.7rem;
+    font-size: var(--text-xs);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .rc-timers button.is-done {
+    background: color-mix(in srgb, var(--color-tansy) 40%, var(--paper-sheet));
+  }
+
+  @media (max-width: 48rem) {
+    .rc-cook {
+      padding: 0;
+    }
+
+    .rc-cook-inner {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        'step'
+        'clock'
+        'nav';
+      border-inline: 0;
+      border-bottom: 0;
+    }
+
+    .rc-cook-clock {
+      justify-self: start;
+      text-align: left;
+    }
+
+    .rc-countdown-time {
+      display: inline;
+      margin-right: 0.5rem;
+      font-size: 2rem;
+    }
+
+    .rc-cook-clock:has([data-rc-timer][hidden]):has([data-rc-countdown][hidden]) {
+      display: none;
+    }
+
+    /* Next is the button you reach for; Back and Stop sit either side as words. */
+    .rc-cook-nav {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+    }
+  }
+
+  /* The bar covers the bottom of the page: keep what it lights above it. */
+  :global(html.rc-cooking) {
+    scroll-padding-bottom: calc(var(--rc-bar, 10rem) + 1rem);
+  }
+
+  :global(html.rc-cooking body) {
+    padding-bottom: calc(var(--rc-bar, 10rem) + 2rem);
+  }
+
+  :global(html.rc-cooking .back-to-top) {
+    display: none;
+  }
+
+  @media print {
+    .rc-controls,
+    .rc-cook,
+    .rc-steps-view,
+    .rc-more {
+      display: none !important;
+    }
+
+    .rc-table-frame {
+      display: block !important;
+    }
+
+    .rc-table-wrap {
+      overflow: visible;
+    }
+  }
+</style>

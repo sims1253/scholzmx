@@ -4,6 +4,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import DropCap from '../../components/DropCap.astro';
 import ImageFrame from '../../components/ImageFrame.astro';
 import Series from '../../components/Series.astro';
+import RecipeCard from '../../components/RecipeCard.astro';
+import { timing } from '../../lib/recipe';
 
 /* Note: Content markdown cannot render Astro components by default.
    To allow components inside markdown, pass them via the 'components' prop on <Content />. */
@@ -19,6 +21,14 @@ export async function getStaticPaths() {
 
 const { recipe } = Astro.props;
 const { Content } = await render(recipe);
+
+// With a recipe card the card states yield and time, computed from the steps; the header
+// only files the recipe. Search engines still get both.
+const { steps, prepMinutes } = recipe.data;
+const minutes = steps ? timing(steps, prepMinutes).total : 0;
+const isoDuration = `PT${Math.floor(minutes / 60)}H${minutes % 60}M`;
+const tags = recipe.data.tags ?? [];
+const tagLinks = tags.map((text) => ({ text, href: `/recipes?tag=${encodeURIComponent(text)}` }));
 ---
 
 <BaseLayout
@@ -37,22 +47,25 @@ const { Content } = await render(recipe);
       <p class="recipe-description" itemprop="description" data-pagefind-meta="description">
         {recipe.data.description}
       </p>
-      <p
-        class="recipe-meta"
-        data-pagefind-meta={recipe.data.tags ? `tags:${recipe.data.tags.join(', ')}` : undefined}
-      >
-        Makes <span itemprop="recipeYield">{recipe.data.servings}</span>, takes
-        <span itemprop="totalTime">{recipe.data.time}</span
-        >{recipe.data.tags && recipe.data.tags.length > 0 && (
-          <>. Filed under
-            <Series
-              items={recipe.data.tags.map((text) => ({
-                text,
-                href: `/recipes?tag=${encodeURIComponent(text)}`,
-              }))}
-            /></>
-        )}.
-      </p>
+      {steps ? (
+        <p
+          class="recipe-meta"
+          data-pagefind-meta={tags.length > 0 ? `tags:${tags.join(', ')}` : undefined}
+        >
+          <meta itemprop="recipeYield" content={recipe.data.servings} />
+          <meta itemprop="totalTime" content={isoDuration} />
+          {tags.length > 0 && <>Filed under <Series items={tagLinks} />.</>}
+        </p>
+      ) : (
+        <p
+          class="recipe-meta"
+          data-pagefind-meta={tags.length > 0 ? `tags:${tags.join(', ')}` : undefined}
+        >
+          Makes <span itemprop="recipeYield">{recipe.data.servings}</span>, takes
+          <span itemprop="totalTime">{recipe.data.time}</span
+          >{tags.length > 0 && <>. Filed under <Series items={tagLinks} /></>}.
+        </p>
+      )}
     </header>
 
     {recipe.data.heroImage && <div class="recipe-hero pasted">
@@ -69,6 +82,17 @@ const { Content } = await render(recipe);
         height={400}
       />
     </div>}
+
+    {recipe.data.steps && (
+      <RecipeCard
+        ingredients={recipe.data.ingredients ?? []}
+        steps={recipe.data.steps}
+        meanwhile={recipe.data.meanwhile}
+        makes={recipe.data.makes}
+        prepMinutes={recipe.data.prepMinutes}
+        equipment={recipe.data.equipment}
+      />
+    )}
 
     <section
       class="recipe-body prose"

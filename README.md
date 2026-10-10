@@ -28,6 +28,7 @@ Built with [Astro](https://astro.build) because it lets me write content in Quar
 - `DropCap.astro` - Those decorative first letters you see in posts
 - `IndexFinder.astro` - Search and tag filtering for the blog and recipe indexes
 - `QuoteOfTheDay.astro` - The homepage quote; every new quote opens another tansy flower
+- `RecipeCard.astro` - Recipes as data: Michael Chu's recipe table, a step list, and a cooking mode with timers (format in `COMPONENT-USAGE.md`)
 
 Margin notes come from `> margin:` blockquotes in Markdown and are placed by `src/scripts/margin-notes.ts`.
 
