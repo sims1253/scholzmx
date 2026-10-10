@@ -59,6 +59,10 @@
   --canopy-glow: none;
   --canopy-flicker: none;
 
+  /* Dappled light down the page: a third of the canopy's shade; by night, the torch */
+  --dapple-shade: rgb(58 78 26 / 0.075);
+  --dapple-glow: none;
+
   /* The flame in the navigation: still by day, alive by torchlight */
   --torch-flame-base: #b5651d;
   --torch-flame-glow: none;
@@ -105,6 +109,18 @@
       transparent 75%
     );
     --canopy-flicker: torch-flicker 5.3s linear infinite;
+    --dapple-shade: radial-gradient(
+      ellipse 75% 65% at 92% 0%,
+      rgb(10 7 4 / 0.5),
+      rgb(10 7 4 / 0.2) 45%,
+      transparent 75%
+    );
+    --dapple-glow: radial-gradient(
+      ellipse 75% 65% at 92% 0%,
+      rgb(255 150 60 / 0.14),
+      rgb(255 128 48 / 0.05) 45%,
+      transparent 75%
+    );
 
     --torch-flame-base: #f07f2a;
     --torch-flame-glow: drop-shadow(0 0 4px rgb(255 150 60 / 0.7));
@@ -151,6 +167,18 @@
     transparent 75%
   );
   --canopy-flicker: torch-flicker 5.3s linear infinite;
+  --dapple-shade: radial-gradient(
+    ellipse 75% 65% at 92% 0%,
+    rgb(10 7 4 / 0.5),
+    rgb(10 7 4 / 0.2) 45%,
+    transparent 75%
+  );
+  --dapple-glow: radial-gradient(
+    ellipse 75% 65% at 92% 0%,
+    rgb(255 150 60 / 0.14),
+    rgb(255 128 48 / 0.05) 45%,
+    transparent 75%
+  );
 
   --torch-flame-base: #f07f2a;
   --torch-flame-glow: drop-shadow(0 0 4px rgb(255 150 60 / 0.7));
