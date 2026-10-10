@@ -334,11 +334,10 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
   .recipe-card {
     --card-width: min(72rem, 100cqi - 2 * var(--space-md));
     --rc-rule: color-mix(in srgb, var(--color-ink-dark) 16%, var(--paper-sheet));
-    --rc-hatch: repeating-linear-gradient(
-      -45deg,
-      transparent 0 5px,
-      color-mix(in srgb, var(--color-moss) 34%, transparent) 5px 6.5px
-    );
+    /* Hands-off time rests in the shade: the page's dappled leaves, small, under a veil. */
+    --rc-veil: color-mix(in srgb, var(--wash-sage) var(--leaf-shade-veil), transparent);
+    --rc-shade:
+      linear-gradient(var(--rc-veil), var(--rc-veil)), url('/grotto/dapple.svg') 0 0 / 320px 320px;
 
     width: var(--card-width);
     margin: var(--space-lg) calc((100% - var(--card-width)) / 2) var(--space-xxl);
@@ -555,7 +554,7 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
   }
 
   .rc-swatch--wait {
-    background: var(--rc-hatch), var(--wash-sage);
+    background: var(--rc-shade), var(--wash-sage);
   }
 
   .rc-swatch--slip {
@@ -625,9 +624,9 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     text-align: center;
   }
 
-  /* Hands-off time is hatched: you can walk away. */
+  /* Hands-off time sits in the shade: you can walk away. */
   .rc-wait {
-    background: var(--rc-hatch), var(--wash-sage);
+    background: var(--rc-shade), var(--wash-sage);
   }
 
   /* Step numbers match the step list and cooking mode. */
@@ -653,7 +652,7 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     font-variant-numeric: oldstyle-nums;
   }
 
-  /* Over the hatching the time sits on a scrap of paper, so it stays legible. */
+  /* Over the shade the time sits on a scrap of paper, so it stays legible. */
   .rc-wait .rc-when {
     padding: 0 0.45em;
     border-radius: 0.6em;
@@ -898,7 +897,7 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     color: var(--color-text-muted);
   }
 
-  /* Hands-off steps carry the table's hatching. */
+  /* Hands-off steps carry the table's shade. */
   .rc-steps-when--wait::before {
     content: '';
     display: inline-block;
@@ -906,7 +905,7 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     height: 0.85em;
     margin-right: 0.4em;
     border: 1px solid var(--rc-rule);
-    background: var(--rc-hatch), var(--wash-sage);
+    background: var(--rc-shade), var(--wash-sage);
     vertical-align: -0.05em;
   }
 
