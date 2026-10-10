@@ -4,6 +4,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import DropCap from '../../components/DropCap.astro';
 import ImageFrame from '../../components/ImageFrame.astro';
 import Series from '../../components/Series.astro';
+import RecipeCard from '../../components/RecipeCard.astro';
 
 /* Note: Content markdown cannot render Astro components by default.
    To allow components inside markdown, pass them via the 'components' prop on <Content />. */
@@ -69,6 +70,17 @@ const { Content } = await render(recipe);
         height={400}
       />
     </div>}
+
+    {recipe.data.steps && (
+      <RecipeCard
+        ingredients={recipe.data.ingredients ?? []}
+        steps={recipe.data.steps}
+        meanwhile={recipe.data.meanwhile}
+        makes={recipe.data.makes}
+        prepMinutes={recipe.data.prepMinutes}
+        equipment={recipe.data.equipment}
+      />
+    )}
 
     <section
       class="recipe-body prose"
