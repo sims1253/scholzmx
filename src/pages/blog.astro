@@ -34,7 +34,7 @@ const heroOf = (post: Post) => {
 };
 ---
 
-<BaseLayout title="Blog" description="My long-form writing." tone="serious" layout="listing">
+<BaseLayout title="Blog" description="My long-form writing." tone="serious" layout="cards">
   <div class="index-page">
     <header class="page-header">
       <h1 class="page-title">Blog</h1>
@@ -57,7 +57,9 @@ const heroOf = (post: Post) => {
     >
       <h2 class="index-label" id={`year-${year}`}>{year}</h2>
       <NoteCardStack
-        columns={1}
+        columns="auto"
+        itemMinWidth="26rem"
+        media="thumb"
         headingLevel={3}
         items={entries.map((post) => ({
           id: post.id,

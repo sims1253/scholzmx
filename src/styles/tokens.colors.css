@@ -95,7 +95,7 @@
     --wash-sage: color-mix(in srgb, var(--color-sage) 18%, var(--color-parchment));
     --paper-sheet: var(--color-parchment-light);
     --print-sheet: #e2dacb;
-    --print-dim: brightness(0.9);
+    --print-dim: brightness(0.8) sepia(0.15); /* Warm and dim, like the paper around it */
 
     --canopy-shade: rgb(14 10 6 / 0.88);
     --canopy-glow: radial-gradient(
@@ -141,7 +141,7 @@
   --wash-sage: color-mix(in srgb, var(--color-sage) 18%, var(--color-parchment));
   --paper-sheet: var(--color-parchment-light);
   --print-sheet: #e2dacb;
-  --print-dim: brightness(0.9);
+  --print-dim: brightness(0.8) sepia(0.15);
 
   --canopy-shade: rgb(14 10 6 / 0.88);
   --canopy-glow: radial-gradient(

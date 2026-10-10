@@ -1,2 +1,4 @@
-/* Global layer order: base → components → enhancements → utilities */
+/* Global layer order: base → components → enhancements → utilities.
+   BaseLayout repeats this inline at the top of <head>, so it holds whatever order Astro
+   links the stylesheets in. */
 @layer base, components, enhancements, utilities;

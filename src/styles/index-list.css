@@ -170,7 +170,7 @@
 .finder-tags ul {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem 0.5rem;
+  gap: 0.15rem 1rem;
   margin: 0.6rem 0 0;
   padding: 0;
   list-style: none;
@@ -180,24 +180,35 @@
   margin: 0;
 }
 
+/* Tags read like a book's index; a chosen one is marked with a tansy highlighter. */
 .finder-tags button {
-  padding: 0.2rem 0.65rem;
-  border: 1px solid var(--rule-ink);
-  border-radius: 999px;
+  padding: 0 0.15em;
+  border: 0;
   background: transparent;
-  color: var(--color-text-secondary);
+  color: var(--color-link);
   font: inherit;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, currentcolor 35%, transparent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
   cursor: pointer;
 }
 
+.finder-tags button::before {
+  content: '#';
+}
+
 .finder-tags button:hover {
-  border-color: var(--color-moss);
-  color: var(--color-text-primary);
+  color: var(--color-link-hover);
+  text-decoration-color: currentcolor;
 }
 
 .finder-tags button[aria-pressed='true'] {
-  border-color: var(--color-ochre);
-  background: color-mix(in srgb, var(--color-tansy) 28%, transparent);
+  background: linear-gradient(
+    transparent 45%,
+    color-mix(in srgb, var(--color-tansy) 45%, transparent) 45% 90%,
+    transparent 90%
+  );
   color: var(--color-text-primary);
 }
 
@@ -212,8 +223,8 @@
   display: none;
 }
 
-/* Pagefind's default UI, dressed for the page */
-.pagefind-ui {
+/* Pagefind's default UI, dressed for the page: a line to write on, not a form field */
+.index-finder .pagefind-ui {
   --pagefind-ui-scale: 0.78;
   --pagefind-ui-primary: var(--color-walnut);
   --pagefind-ui-text: var(--color-text-primary);
@@ -221,20 +232,44 @@
   --pagefind-ui-border: var(--rule-ink);
   --pagefind-ui-tag: var(--color-surface);
   --pagefind-ui-border-width: 1px;
-  --pagefind-ui-border-radius: 4px;
-  --pagefind-ui-font: var(--font-ui);
+  --pagefind-ui-border-radius: 0;
+  --pagefind-ui-font: var(--font-body-personal);
 
   max-width: 30rem;
 }
 
-.pagefind-ui .pagefind-ui__search-input {
-  background-color: color-mix(in srgb, var(--color-background) 70%, transparent);
+.index-finder .pagefind-ui .pagefind-ui__search-input {
+  padding-inline-start: 2.1em;
+  border-width: 0 0 1px;
+  border-color: var(--rule-ink);
+  background-color: transparent;
+  font-family: var(--font-body-personal);
+  font-size: var(--text-md);
   font-weight: 400;
 }
 
-.pagefind-ui .pagefind-ui__search-input::placeholder {
+.index-finder .pagefind-ui .pagefind-ui__search-input:focus {
+  border-color: var(--color-moss);
+  outline: none;
+  box-shadow: 0 1px 0 var(--color-moss);
+}
+
+.index-finder .pagefind-ui .pagefind-ui__search-input::placeholder {
   color: var(--color-text-muted);
+  font-style: italic;
   opacity: 1;
+}
+
+.index-finder .pagefind-ui .pagefind-ui__form::before {
+  left: 0.35em;
+  opacity: 0.45;
+}
+
+.index-finder .pagefind-ui .pagefind-ui__search-clear {
+  background: transparent;
+  color: var(--color-text-muted);
+  font-family: var(--font-body-personal);
+  font-style: italic;
 }
 
 .pagefind-ui .pagefind-ui__result {

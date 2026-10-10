@@ -47,6 +47,70 @@ function kiwiLeaf(size) {
   return `<path d="M0,0 C${f(r * 0.9)},${f(r * 0.25)} ${f(r * 1.25)},${f(-r * 0.9)} ${f(r * 0.45)},${f(-r * 1.55)} C${f(r * 0.2)},${f(-r * 1.75)} 0,${f(-r * 1.6)} 0,${f(-r * 1.5)} C0,${f(-r * 1.6)} ${f(-r * 0.2)},${f(-r * 1.75)} ${f(-r * 0.45)},${f(-r * 1.55)} C${f(-r * 1.25)},${f(-r * 0.9)} ${f(-r * 0.9)},${f(r * 0.25)} 0,0Z"/>`;
 }
 
+// The low canopy hangs close to the page, so its shadows show the real outlines: a
+// grape leaf's five toothed lobes and deep stalk notch, a kiwi leaf's broad heart with
+// a short point. Both are traced around the stalk, where the veins meet.
+function outline(radius, size, points = 120) {
+  let d = '';
+  for (let i = 0; i < points; i++) {
+    const a = -Math.PI + (i / points) * Math.PI * 2;
+    const r = radius(a) * size;
+    d += `${i ? 'L' : 'M'}${f(Math.sin(a) * r)},${f(-Math.cos(a) * r)}`;
+  }
+  return `<path d="${d}Z"/>`;
+}
+
+const notch = (a, width) => 1 - Math.exp(-(((Math.PI - Math.abs(a)) / width) ** 2));
+const teeth = (a, count, depth) => 1 - depth * Math.abs(((a / (Math.PI * 2)) * count) % 1);
+
+function grapeOutline(rand) {
+  const lobes = [
+    [0, 0.36],
+    [1.05, 0.3],
+    [-1.05, 0.3],
+    [2.1, 0.2],
+    [-2.1, 0.2],
+  ].map(([at, reach]) => [at + (rand() - 0.5) * 0.16, reach * (0.85 + rand() * 0.3)]);
+  return (a) => {
+    // A broad palm with five pointed lobes standing out of it.
+    const lobe = Math.max(
+      ...lobes.map(([at, reach]) => {
+        const d = Math.abs(a - at);
+        return reach * Math.exp(-((d / 0.38) ** 2)) + 0.04 * Math.exp(-((d / 0.07) ** 2));
+      })
+    );
+    return (0.33 + lobe) * notch(a, 0.3) * teeth(a, 56, 0.07);
+  };
+}
+
+// Kiwi leaves are cordate: the stalk meets them in the notch, not the middle.
+function kiwiOutline(rand) {
+  const fullness = 0.5 + rand() * 0.12;
+  return (a) => {
+    const heart = 0.6 * ((1 + Math.cos(a)) / 2) ** fullness;
+    const tip = 0.07 * Math.exp(-((a / 0.1) ** 2));
+    return (heart + tip) * teeth(a, 90, 0.02);
+  };
+}
+
+// A tendril reaches out from the vine and ends in a tight curl.
+function curl(x, y, rand) {
+  const dir = rand() < 0.5 ? -1 : 1;
+  const reach = 50 + rand() * 60;
+  const ex = x + dir * reach * 0.6;
+  const ey = y + reach;
+  let d = `M${f(x)},${f(y)} Q${f(x + dir * reach * 0.9)},${f(y + reach * 0.3)} ${f(ex)},${f(ey)}`;
+  const turns = 1.4 + rand() * 0.8;
+  const radius = 7 + rand() * 6;
+  for (let i = 1; i <= 30; i++) {
+    const t = i / 30;
+    const a = dir * t * turns * Math.PI * 2;
+    const r = radius * (1 - t * 0.8);
+    d += ` L${f(ex - dir * radius + dir * Math.cos(a) * r)},${f(ey + Math.sin(Math.abs(a)) * r)}`;
+  }
+  return `<path d="${d}" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/>`;
+}
+
 function tendril(x, y, rand) {
   const turns = 2 + rand() * 1.5;
   const radius = 10 + rand() * 12;
@@ -65,7 +129,7 @@ function tendril(x, y, rand) {
 
 // A vine enters from the top edge and wanders across the canopy.
 function vine(rand, opts) {
-  const { startX, droop, span, leafCount, leafSize, kinds } = opts;
+  const { startX, droop, span, leafCount, leafSize, kinds, crisp } = opts;
   const p0 = [startX, -40];
   const p1 = [startX + span * 0.25, droop * 0.9];
   const p2 = [startX + span * 0.7, droop * 1.25];
@@ -85,7 +149,11 @@ function vine(rand, opts) {
     const t = (i + 0.5 + (rand() - 0.5) * 0.6) / leafCount;
     const [x, y] = at(t);
     const kind = kinds[Math.floor(rand() * kinds.length)];
-    const size = leafSize * (0.7 + rand() * 0.6);
+    // Crisp leaves come in three sizes; small grape leaves would read as stars.
+    const sizes = kind === 'grape' ? [0.8, 1, 1.2] : [0.6, 0.85, 1.1];
+    const size = crisp
+      ? leafSize * sizes[Math.floor(rand() * 3)] * (0.92 + rand() * 0.16)
+      : leafSize * (0.7 + rand() * 0.6);
     // Leaves hang from the vine, so they point mostly downwards.
     const angle = 180 + (rand() - 0.5) * 110;
     const stalk = size * 0.25;
@@ -94,16 +162,26 @@ function vine(rand, opts) {
     parts.push(
       `<path d="M${f(x)},${f(y)} L${f(sx)},${f(sy)}" fill="none" stroke="#000" stroke-width="${f(size * 0.03)}"/>`
     );
-    const leaf = kind === 'grape' ? grapeLeaf(size) : kiwiLeaf(size);
-    parts.push(`<g transform="translate(${f(sx)},${f(sy)}) rotate(${f(angle)})">${leaf}</g>`);
-    if (rand() < 0.35) parts.push(tendril(x, y, rand));
+    if (crisp) {
+      // Leaves turned away from the light cast narrower shadows.
+      const turn = 0.55 + rand() * 0.45;
+      const leaf = outline(kind === 'grape' ? grapeOutline(rand) : kiwiOutline(rand), size * 1.15);
+      parts.push(
+        `<g transform="translate(${f(sx)},${f(sy)}) rotate(${f(angle)}) scale(${f(turn * 100) / 100},1)">${leaf}</g>`
+      );
+      if (rand() < 0.2) parts.push(curl(x, y, rand));
+    } else {
+      const leaf = kind === 'grape' ? grapeLeaf(size) : kiwiLeaf(size);
+      parts.push(`<g transform="translate(${f(sx)},${f(sy)}) rotate(${f(angle)})">${leaf}</g>`);
+      if (rand() < 0.35) parts.push(tendril(x, y, rand));
+    }
   }
   return parts.join('');
 }
 
-function drawing({ seed, blur, vines, opacity }) {
+function drawing({ seed, blur, vines, opacity, crisp = false }) {
   const rand = rng(seed);
-  const body = vines.map((v) => vine(rand, v)).join('');
+  const body = vines.map((v) => vine(rand, { ...v, crisp })).join('');
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMin slice"><filter id="b" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="${blur}"/></filter><g filter="url(#b)" opacity="${opacity}">${body}</g></svg>\n`;
 }
 
@@ -141,6 +219,7 @@ const low = drawing({
   seed: 2318,
   blur: 1.8,
   opacity: 0.85,
+  crisp: true,
   vines: [
     { startX: -80, droop: 360, span: 520, leafCount: 6, leafSize: 92, kinds: ['grape', 'kiwi'] },
     {

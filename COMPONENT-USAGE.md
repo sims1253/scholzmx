@@ -16,12 +16,12 @@ Blog, recipes, research and notes share `src/styles/index-list.css`: a page head
   </header>
   <section class="index-group" data-index-group>
     <h2 class="index-label">2025</h2>
-    <NoteCardStack columns={1} headingLevel={3} items={posts} />
+    <NoteCardStack columns="auto" itemMinWidth="26rem" media="thumb" headingLevel={3} items={posts} />
   </section>
 </div>
 ```
 
-`NoteCardStack` renders the seeded note cards (see `DOODAD_GUIDE.md`); use `StackedCard` directly for custom card content. Add `IndexFinder.astro` for search and tag filters; it filters `.nc-item` cards by `data-tags`.
+`NoteCardStack` renders the seeded note cards (see `DOODAD_GUIDE.md`); use `StackedCard` directly for custom card content. With `columns="auto"` and `itemMinWidth`, cards fill rows of equal width; `media="thumb"` tapes the hero image into the card's corner instead of running it across the top. Pages with card grids use `layout="cards"`, which widens to two columns of cards on wide screens. Add `IndexFinder.astro` for search and tag filters; it filters `.nc-item` cards by `data-tags`.
 
 ## Photographs and plots
 Images that stand alone in a paragraph or figure in posts, recipes and notes are pasted in as prints automatically. Wrap other photos in `.pasted` for the same two paper strips.
