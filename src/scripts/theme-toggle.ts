@@ -1,39 +1,41 @@
-// Theme toggle functionality
-const KEY = 'theme-preference';
+// The torch. By night it lights itself (the head script in BaseLayout reads the
+// visitor's clock); the button overrides the clock until the next dawn or dusk.
+const KEY = 'torch';
+// Keep in step with the head script.
+const DAWN = 6;
+const DUSK = 21;
 
-function getThemePreference(): string | null {
-  try {
-    return localStorage.getItem(KEY);
-  } catch {
-    return null;
+declare global {
+  interface Window {
+    grottoSky?: () => void;
   }
 }
 
-function setThemePreference(value: string | null): void {
+function nextTurn(now: Date): number {
+  const turn = new Date(now);
+  const hour = now.getHours();
+  if (hour < DAWN) turn.setHours(DAWN, 0, 0, 0);
+  else if (hour < DUSK) turn.setHours(DUSK, 0, 0, 0);
+  else {
+    turn.setDate(turn.getDate() + 1);
+    turn.setHours(DAWN, 0, 0, 0);
+  }
+  return turn.getTime();
+}
+
+function remember(theme: 'dark' | 'light'): void {
   try {
-    if (value) {
-      if (value !== 'dark' && value !== 'light') {
-        return;
-      }
-      localStorage.setItem(KEY, value);
-    } else {
-      localStorage.removeItem(KEY);
-    }
+    localStorage.setItem(KEY, JSON.stringify({ theme, until: nextTurn(new Date()) }));
+    localStorage.removeItem('theme-preference');
   } catch {
     // Ignore storage errors (e.g., private browsing mode)
   }
 }
 
-function getSystemPreference(): 'dark' | 'light' {
-  return matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-}
-
 function getEffectiveTheme(): 'dark' | 'light' {
-  const pref = getThemePreference();
-  if (pref === 'dark' || pref === 'light') {
-    return pref;
-  }
-  return getSystemPreference();
+  const chosen = document.documentElement.dataset.theme;
+  if (chosen === 'dark' || chosen === 'light') return chosen;
+  return matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
 function applyTheme(theme: string): void {
@@ -60,7 +62,7 @@ function toggleTheme(): void {
   const next = current === 'dark' ? 'light' : 'dark';
 
   const run = () => {
-    setThemePreference(next);
+    remember(next);
     applyTheme(next);
   };
 
@@ -105,6 +107,12 @@ export function initThemeToggle(): void {
   if (btn) {
     btn.addEventListener('click', toggleTheme);
   }
+
+  // The day moves on while the page is open: shadows turn, and at dusk the torch lights.
+  setInterval(() => {
+    window.grottoSky?.();
+    applyTheme(getEffectiveTheme());
+  }, 5 * 60_000);
 }
 
 // Auto-initialize

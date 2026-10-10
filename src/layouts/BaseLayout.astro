@@ -76,16 +76,63 @@ const hasInitial = isHome || /^\/(blog|recipes|notes)\/.+/.test(currentPath);
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
 
-    <!-- Apply a stored theme before first paint so the page never flashes the wrong light. -->
+    <!-- The light follows the visitor's clock, set before first paint so it never flashes.
+         By day the canopy's shadows lean away from the sun, long and cool in the morning,
+         short and sharp at noon, long and gold towards evening. At night the torch lights
+         itself; the torch button overrides that until the next dawn or dusk.
+         src/scripts/theme-toggle.ts calls window.grottoSky again as the day moves on. -->
     <script is:inline>
-      try {
-        const stored = localStorage.getItem('theme-preference');
-        if (stored === 'dark' || stored === 'light') {
-          document.documentElement.dataset.theme = stored;
-        }
-      } catch {
-        // Storage can be unavailable in private modes; the system preference applies.
-      }
+      (() => {
+        const mix = (from, to, t) =>
+          from.map((value, index) => Math.round(value + (to[index] - value) * t));
+        const COOL = [52, 72, 80];
+        const GREEN = [58, 78, 26];
+        const GOLD = [100, 72, 16];
+
+        const torch = () => {
+          try {
+            const saved = JSON.parse(localStorage.getItem('torch') ?? 'null');
+            if (
+              saved &&
+              saved.until > Date.now() &&
+              (saved.theme === 'dark' || saved.theme === 'light')
+            ) {
+              return saved.theme;
+            }
+          } catch {
+            // Storage can be unavailable in private modes; the clock decides.
+          }
+          return null;
+        };
+
+        window.grottoSky = () => {
+          const now = new Date();
+          const hour = now.getHours() + now.getMinutes() / 60;
+          const night = hour < 6 || hour >= 21;
+          // -1 at sunrise, 0 at noon, 1 at sunset, from the sun's side of the sky
+          const sun = Math.max(-1, Math.min(1, (hour - 13.5) / 7));
+          const low = Math.abs(sun);
+          const shade = sun < 0 ? mix(GREEN, COOL, -sun) : mix(GREEN, GOLD, sun);
+          const glow =
+            sun > 0.35
+              ? `radial-gradient(ellipse 80% 70% at 100% 0%, rgb(255 186 80 / ${(0.32 * (sun - 0.35)) / 0.65}), transparent 70%)`
+              : sun < -0.35
+                ? `radial-gradient(ellipse 80% 70% at 0% 0%, rgb(214 232 255 / ${(0.28 * (-sun - 0.35)) / 0.65}), transparent 70%)`
+                : 'none';
+          const root = document.documentElement;
+          root.style.setProperty('--sun-skew', `${(-sun * 8).toFixed(2)}deg`);
+          root.style.setProperty('--sun-stretch', (1 + 0.3 * low ** 1.5).toFixed(3));
+          root.style.setProperty('--sun-crisp', (1 - 0.45 * low).toFixed(3));
+          root.style.setProperty('--sun-shade', shade.join(' '));
+          root.style.setProperty('--sun-glow', glow);
+
+          const theme = torch() ?? (night ? 'dark' : null);
+          if (theme) root.dataset.theme = theme;
+          else delete root.dataset.theme;
+        };
+
+        window.grottoSky();
+      })();
     </script>
     <link rel="canonical" href={`https://www.scholzmx.com${Astro.url.pathname}`} />
     <link

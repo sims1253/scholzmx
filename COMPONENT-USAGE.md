@@ -50,7 +50,7 @@ steps:
     do: Roast # the table cell
     detail: Roast at 160 °C until soft enough to mash. # cooking mode and step list
     minutes: 25 # or [8, 10] for a range
-    wait: true # hands-off time, drawn hatched
+    wait: true # hands-off time, drawn in leaf shade
     heat: 160 °C
     result: roasted squash # how later steps refer to it
 meanwhile:
