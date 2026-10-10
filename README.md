@@ -24,6 +24,7 @@ Built with [Astro](https://astro.build) because it lets me write content in Quar
 
 ### Key Components
 - `Canopy.astro` - The vine canopy over every page: leaf shadows that sway by day, a flickering torch after dark
+- `Dapple.astro` - Dappled light down the rest of the page: a fixed layer of soft leaf shadows (by night, the torch's glow) that the page scrolls under, kept nearly clear over the reading column
 - `StackedCard.astro` / `NoteCardStack.astro` - The note cards on the listing pages, with the doodad system (more on that below)
 - `DropCap.astro` - Those decorative first letters you see in posts
 - `IndexFinder.astro` - Search and tag filtering for the blog and recipe indexes
@@ -33,10 +34,10 @@ Built with [Astro](https://astro.build) because it lets me write content in Quar
 Margin notes come from `> margin:` blockquotes in Markdown and are placed by `src/scripts/margin-notes.ts`.
 
 ### The Doodad System
-Random decorative elements that make cards feel more organic. Seeded tilts and offsets, paper stacks, tape, doodles, coffee rings and the occasional patch of leaf shadow make every card a little different. See `DOODAD_GUIDE.md` for the technical details.
+Random decorative elements that make cards feel more organic. Seeded tilts and offsets, paper stacks, tape, doodles and coffee rings make every card a little different, and the dappled light passes over them as you scroll. See `DOODAD_GUIDE.md` for the technical details.
 
 ### The Canopy
-The leaf shadows are two SVG masks drawn by `scripts/draw-canopy.mjs`: a soft, high layer and a crisp, low one whose grape and kiwi leaves show their real outlines. The script is seeded, so `node scripts/draw-canopy.mjs` reproduces `public/grotto/canopy-*.svg`. CSS supplies the colour, so the same leaves cast green shade by day and stand in front of the torch at night. The motion is transform-only and stops under `prefers-reduced-motion`.
+The leaf shadows are SVG masks drawn by `scripts/draw-canopy.mjs`: a soft, high layer and a crisp, low one whose grape and kiwi leaves show their real outlines, plus a seamless tile of far-off vines for the dappled light further down. The script is seeded, so `node scripts/draw-canopy.mjs` reproduces `public/grotto/canopy-*.svg` and `dapple.svg`. CSS supplies the colour, so the same leaves cast green shade by day and stand in front of the torch at night. The motion is transform-only and stops under `prefers-reduced-motion`.
 
 ### Blog Pipeline
 I write posts in Quarto (`.qmd` files) with R code, math, and citations. A build script converts them to markdown with properly optimized images. The whole process is automated in CI. See `QUARTO-TO-ASTRO-PIPELINE.md` for details.

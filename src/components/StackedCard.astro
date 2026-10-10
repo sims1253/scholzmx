@@ -117,20 +117,7 @@ const showStickerTR = !!doodads.stickerTR?.active;
 const showStickerBL = !!doodads.stickerBL?.active;
 
 // Extract background effect variables using the new system
-const washEffect = backgroundDoodles.find((d) => d.id === 'washSubtle' || d.id === 'washBold');
 const ringEffect = backgroundDoodles.find((d) => d.id === 'ringEffect');
-
-// Wash variables
-const washX = washEffect?.props.washX || 50;
-const washY = washEffect?.props.washY || 50;
-const washAlpha = washEffect?.props.washAlpha || 0;
-const washTx = washEffect?.props.washTx || 0;
-const washTy = washEffect?.props.washTy || 0;
-const washR1 = washEffect?.props.washR1 || 0;
-const washR2 = washEffect?.props.washR2 || 0;
-const washX2 = washEffect?.props.washX2 || 50;
-const washY2 = washEffect?.props.washY2 || 50;
-const washBleed = washEffect?.props.washBleed || 120;
 
 // Ring variables
 const ringScale = ringEffect?.props.ringScale || layoutRng.between(0.6, 0.9);
@@ -143,7 +130,6 @@ const ringVariant = ringEffect?.props.variant ?? 1;
 // Data attributes kept for future hooks; not used by visuals now
 const dataBookmark = hasBookmark ? (bookmarkSide === 'right' ? 'right' : 'left') : 'none';
 const dataTape = hasTape ? 'corners' : 'none';
-const dataWash = washEffect ? (washEffect.id === 'washBold' ? 'bold' : 'subtle') : 'none';
 const dataRing = ringEffect ? 'active' : 'none';
 
 // Old hardcoded doodad logic has been replaced by category-based system above
@@ -160,16 +146,6 @@ const styleVars = {
   '--ring-y': `${ringY}%`,
   '--ring-turn': `${ringTurn}deg`,
   '--ring-src': `url(/grotto/coffee-ring-${ringVariant}.svg)`,
-  '--wash-x': `${washX}%`,
-  '--wash-y': `${washY}%`,
-  '--wash-alpha': `${washAlpha}`,
-  '--wash-tx': `${washTx}px`,
-  '--wash-ty': `${washTy}px`,
-  '--wash-bleed': `${washBleed}%`,
-  '--wash-r1': `${washR1}px`,
-  '--wash-r2': `${washR2}px`,
-  '--wash2-x': `${washX2}%`,
-  '--wash2-y': `${washY2}%`,
 } satisfies Record<string, string>;
 
 const styleInline = Object.entries(styleVars)
@@ -182,7 +158,6 @@ const styleInline = Object.entries(styleVars)
   style={styleInline}
   data-bookmark={dataBookmark}
   data-tape={dataTape}
-  data-wash={dataWash}
   data-ring={dataRing}
   data-layers={String(layerCount)}
   data-ornament-variant={String(ornamentVariant)}

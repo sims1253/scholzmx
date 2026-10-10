@@ -31,7 +31,7 @@
     border: 1px solid var(--sc-edge);
     box-shadow: var(--shadow-md);
     overflow: hidden; /* ensure overlays clip to rounded corners */
-    contain: layout paint; /* prevent CLS from oversized wash pseudo-elements */
+    contain: layout paint; /* keep the coffee ring inside the card */
   }
 
   /* Subtle hover lift - reduced from original dramatic transforms */
@@ -206,21 +206,6 @@
     display: none;
   }
 
-  /* Leaf shadow: a patch of the canopy falls across the card. Position, scale and
-     depth come from the seeded wash values, so no two cards catch the same shade. */
-  .sc-card[data-wash]:not([data-wash='none']) .sc-face::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-color: var(--canopy-shade);
-    mask: url('/grotto/canopy-high.svg') no-repeat;
-    mask-size: calc(var(--wash-bleed, 120%) * 2.2) auto;
-    mask-position: var(--wash-x, 50%) var(--wash-y, 50%);
-    opacity: var(--wash-alpha, 0.6);
-    transform: translate(var(--wash-tx, 0), var(--wash-ty, 0));
-    z-index: 0;
-    pointer-events: none;
-  }
   /* Coffee ring: a mug set down near the card's edge, drawn by
      scripts/draw-coffee-rings.mjs. The face clips whatever hangs over the edge. */
   .sc-card[data-ring]:not([data-ring='none']) .sc-face::before {
