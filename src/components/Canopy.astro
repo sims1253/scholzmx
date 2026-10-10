@@ -10,8 +10,10 @@
 ---
 
 <div class="canopy" aria-hidden="true">
-  <div class="canopy-leaves canopy-leaves--high"></div>
-  <div class="canopy-leaves canopy-leaves--low"></div>
+  <div class="canopy-sun">
+    <div class="canopy-leaves canopy-leaves--high"></div>
+    <div class="canopy-leaves canopy-leaves--low"></div>
+  </div>
 </div>
 
 <style>
@@ -34,9 +36,17 @@
     animation: var(--canopy-flicker);
   }
 
+  /* By day the shadows lean away from the sun and lengthen as it sinks. */
+  .canopy-sun {
+    position: absolute;
+    inset: 0;
+    transform: skewX(var(--canopy-skew)) scaleY(var(--canopy-stretch));
+    transform-origin: 50% 0;
+  }
+
   .canopy-leaves {
     position: absolute;
-    inset: -3rem -5rem 0;
+    inset: -3rem -7rem 0;
     background-color: var(--canopy-shade);
     mask: url('/grotto/canopy-high.svg') top center / cover no-repeat;
     transform-origin: 50% 0;
@@ -48,7 +58,9 @@
     animation: sway-high 23s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
   }
 
+  /* The crisp, near leaves are sharpest at noon and soften as the light gets low. */
   .canopy-leaves--low {
+    opacity: var(--canopy-crisp);
     mask-image: url('/grotto/canopy-low.svg');
     animation: sway-low 11s cubic-bezier(0.37, 0, 0.63, 1) infinite alternate;
   }

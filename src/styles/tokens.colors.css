@@ -55,13 +55,19 @@
   --print-dim: none;
 
   /* The canopy: leaf shadows by day, torchlight by night */
-  --canopy-shade: rgb(58 78 26 / 0.2);
-  --canopy-glow: none;
+  /* The canopy by day follows the sun (set by BaseLayout's head script) */
+  --canopy-shade: rgb(var(--sun-shade, 58 78 26) / 0.2);
+  --canopy-glow: var(--sun-glow, none);
   --canopy-flicker: none;
+  --canopy-skew: var(--sun-skew, 0deg);
+  --canopy-stretch: var(--sun-stretch, 1);
+  --canopy-crisp: var(--sun-crisp, 1);
 
   /* Dappled light down the page: a third of the canopy's shade; by night, the torch */
-  --dapple-shade: rgb(58 78 26 / 0.075);
+  --dapple-shade: rgb(var(--sun-shade, 58 78 26) / 0.075);
   --dapple-glow: none;
+  /* How much of the leaf shade shows through hands-off cells in a recipe table */
+  --leaf-shade-veil: 86%;
 
   /* The flame in the navigation: still by day, alive by torchlight */
   --torch-flame-base: #b5651d;
@@ -109,6 +115,10 @@
       transparent 75%
     );
     --canopy-flicker: torch-flicker 5.3s linear infinite;
+    --canopy-skew: 0deg;
+    --canopy-stretch: 1;
+    --canopy-crisp: 1;
+    --leaf-shade-veil: 58%;
     --dapple-shade: radial-gradient(
       ellipse 75% 65% at 92% 0%,
       rgb(10 7 4 / 0.5),
@@ -167,6 +177,10 @@
     transparent 75%
   );
   --canopy-flicker: torch-flicker 5.3s linear infinite;
+  --canopy-skew: 0deg;
+  --canopy-stretch: 1;
+  --canopy-crisp: 1;
+  --leaf-shade-veil: 58%;
   --dapple-shade: radial-gradient(
     ellipse 75% 65% at 92% 0%,
     rgb(10 7 4 / 0.5),
