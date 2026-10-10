@@ -4,7 +4,7 @@
 /* Unlayered: must override base.css unlayered html rules */
 html {
   color-scheme: light dark;
-  scrollbar-gutter: stable both-edges;
+  scrollbar-gutter: stable; /* One edge: a gutter on both would cut the canopy short */
   background-color: var(--color-background); /* Paints the scrollbar gutters too */
 }
 

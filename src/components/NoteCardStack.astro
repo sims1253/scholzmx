@@ -2,7 +2,6 @@
 import type { ImageMetadata } from 'astro';
 import StackedCard from './StackedCard.astro';
 import ImageFrame from './ImageFrame.astro';
-import GridLayout from './GridLayout.astro';
 
 interface CardItem {
   id: string;
@@ -38,7 +37,9 @@ interface Props {
   layers?: 1 | 2 | 3 | 4; // Allow forcing single-layer cards
   columns?: 1 | 'auto';
   itemMinWidth?: string;
-  aspectRatio?: string; // Aspect ratio for card images (e.g., "8/3", "3/2")
+  aspectRatio?: string; // Aspect ratio for strip images (e.g., "8/3", "3/2")
+  // "thumb" tapes a small photo to the card's corner; "strip" runs it across the top
+  media?: 'strip' | 'thumb';
   headingLevel?: 2 | 3 | 4; // Card title level, so cards nest under a section heading
   tagBase?: string; // Index page that filters by tag, e.g. "/recipes"
 }
@@ -50,12 +51,16 @@ const {
   columns = 'auto',
   itemMinWidth,
   aspectRatio = '8/3',
+  media = 'strip',
   headingLevel = 2,
   tagBase = '/blog',
 } = Astro.props;
 ---
 
-<GridLayout columns={columns} itemMinWidth={itemMinWidth ?? '22rem'} gap="xl" class={className}>
+<div
+  class:list={['nc-grid', className]}
+  style={columns === 'auto' ? `--nc-min: ${itemMinWidth ?? '22rem'}` : undefined}
+>
   {items.map((it) => <div class="nc-item" data-year={it.year} data-tags={it.tags?.join(',') || ''}>
     <StackedCard
       seed={`stack/${it.id}`}
@@ -65,31 +70,31 @@ const {
       layers={layers}
       headingLevel={headingLevel}
     >
-      {it.hero && <div class="sc-media" slot="media">
+      {it.hero && <div class:list={['sc-media', { 'nc-thumb': media === 'thumb' }]} slot="media">
         <ImageFrame
           src={it.hero.kind === 'url' ? it.hero.src : it.hero.src}
           alt=""
-          aspectRatio={aspectRatio}
+          aspectRatio={media === 'thumb' ? '4/3' : aspectRatio}
           style="simple"
           fillMode="cover"
           positionX={it.hero.posX !== undefined ? it.hero.posX * 100 : undefined}
           positionY={it.hero.posY !== undefined ? it.hero.posY * 100 : undefined}
           scale={it.hero.scale}
-          width={1200}
-          height={450}
+          width={media === 'thumb' ? 480 : 1200}
+          height={media === 'thumb' ? 360 : 450}
           containerClass="tw:w-full"
         />
       </div>}
       <div class="sc-meta">
         <div class="sc-dates">
           {it.writtenDate && <div class="sc-date-item">
-            <span class="sc-date-label">Written:</span>
+            <span class="sc-date-label">Written</span>
             <time class="sc-date" datetime={it.writtenDate}>
               {it.writtenDate}
             </time>
           </div>}
           {it.updatedDate && <div class="sc-date-item">
-            <span class="sc-date-label">Updated:</span>
+            <span class="sc-date-label">Updated</span>
             <time class="sc-date" datetime={it.updatedDate}>
               {it.updatedDate}
             </time>
@@ -106,22 +111,25 @@ const {
       </div>
     </StackedCard>
   </div>)}
-</GridLayout>
+</div>
 
 <style>
+  /* Auto columns fill rows of equal width, so a lone card keeps its size. */
+  .nc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--nc-min, 100%)), 1fr));
+    gap: var(--space-xl) var(--space-lg);
+  }
+
   .nc-item {
     width: 100%;
     max-width: var(--card-max-width);
-    margin: 0 auto var(--space-lg);
+    margin: 0 auto;
     padding-inline: var(--space-xs);
   }
 
   /* On index pages the cards hang from the same left edge as the heading. */
   :global(.index-page) .nc-item {
     margin-inline: 0;
-  }
-  /* Ensure row spacing even if utility gap classes are unavailable */
-  :global(.tw\:grid) {
-    row-gap: var(--space-xl);
   }
 </style>

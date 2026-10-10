@@ -10,6 +10,8 @@
   --font-body: var(--font-body-personal);
   --font-heading: 'Alegreya', 'EB Garamond', 'Times New Roman', georgia, serif;
   --font-ui: 'Alegreya', georgia, serif;
+  /* Small caps cut of the same face: wordmark, navigation and small labels */
+  --font-label: 'Alegreya SC', 'Alegreya', georgia, serif;
   --font-mono: 'Fira Code', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
 
   /* Font weights */

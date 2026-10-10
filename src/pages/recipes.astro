@@ -23,7 +23,7 @@ const tags = [...new Set(recipes.flatMap((recipe) => recipe.data.tags ?? []))].s
   title="Recipes"
   description="Personal kitchen notes and recipes."
   tone="personal"
-  layout="listing"
+  layout="cards"
 >
   <div class="index-page">
     <header class="page-header">
@@ -43,9 +43,10 @@ const tags = [...new Set(recipes.flatMap((recipe) => recipe.data.tags ?? []))].s
     >
       <p class="index-label" aria-hidden="true">{initial}</p>
       <NoteCardStack
-        columns={1}
+        columns="auto"
+        itemMinWidth="26rem"
+        media="thumb"
         headingLevel={2}
-        aspectRatio="3/2"
         tagBase="/recipes"
         items={entries.map((recipe) => ({
           id: recipe.id,

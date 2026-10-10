@@ -89,6 +89,8 @@ export interface DoodadProps {
   washBleed?: number;
   ringScale?: number;
   ringAlpha?: number;
+  ringX?: number;
+  ringY?: number;
 }
 
 export interface DoodadResults {
@@ -299,10 +301,18 @@ export const doodadCategories: DoodadCategory[] = [
         probability: 0.1,
         layerTypes: ['all'],
         kind: 'background',
-        generate: ({ map }) => ({
-          ringScale: map(0.8, 1.0),
-          ringAlpha: map(0.15, 0.3),
-        }),
+        // The mug was set down near an edge, so the ring rarely crosses the title.
+        generate: ({ map, betweenInt }) => {
+          const spot = betweenInt(0, 2);
+          return {
+            ringScale: map(0.8, 1.0),
+            ringAlpha: map(0.15, 0.3),
+            ringX: spot === 0 ? map(-6, 12) : spot === 1 ? map(86, 106) : map(96, 108),
+            ringY: spot === 2 ? map(35, 65) : map(78, 106),
+            rotation: map(0, 360),
+            variant: betweenInt(1, 3),
+          };
+        },
       },
     ],
   },

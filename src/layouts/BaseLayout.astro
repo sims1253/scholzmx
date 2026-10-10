@@ -31,7 +31,7 @@ export interface Props {
   image?: string;
   includeQuoteSection?: boolean;
   tone?: 'personal' | 'serious';
-  layout?: 'prose' | 'listing' | 'wide' | 'full';
+  layout?: 'prose' | 'listing' | 'cards' | 'wide' | 'full';
   prose?: boolean;
 }
 
@@ -65,6 +65,11 @@ const hasInitial = isHome || /^\/(blog|recipes|notes)\/.+/.test(currentPath);
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <!-- Fix the layer order before any stylesheet: Astro links shared component CSS first,
+         and the first stylesheet to name a layer would otherwise set the order. -->
+    <style is:inline>
+      @layer base, components, enhancements, utilities;
+    </style>
     <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -91,10 +96,17 @@ const hasInitial = isHome || /^\/(blog|recipes|notes)\/.+/.test(currentPath);
 
     <slot name="head" />
 
-    <!-- Alegreya sets navigation and headings on every page. -->
+    <!-- Alegreya sets headings and Alegreya SC the wordmark and navigation on every page. -->
     <link
       rel="preload"
       href="/fonts/Alegreya/alegreya-v38-latin-regular.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/Alegreya/alegreya-sc-v28-latin-regular.woff2"
       as="font"
       type="font/woff2"
       crossorigin
