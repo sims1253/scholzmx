@@ -1,0 +1,97 @@
+---
+/**
+ * Dappled light for the rest of the page. The canopy shades the top; this layer stays put
+ * while the page scrolls under it, so cards and photos pass through moving leaf shadows
+ * (by torchlight, through the torch's glow). It thins to almost nothing over the reading
+ * column and fades in as the canopy scrolls away. The leaves are a tile drawn by
+ * scripts/draw-canopy.mjs.
+ */
+interface Props {
+  /** Width of the reading column to keep nearly clear, e.g. "var(--measure-prose)". */
+  clear?: string;
+}
+
+const { clear = '0px' } = Astro.props;
+---
+
+<div class="dapple" aria-hidden="true" style={`--dapple-clear: ${clear}`}>
+  <div class="dapple-leaves"></div>
+</div>
+
+<style>
+  .dapple {
+    --dapple-edge: 4rem;
+
+    position: fixed;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    mask-image: linear-gradient(
+      to right,
+      #000 calc(50% - var(--dapple-clear) / 2 - var(--dapple-edge)),
+      rgb(0 0 0 / 0.1) calc(50% - var(--dapple-clear) / 2),
+      rgb(0 0 0 / 0.1) calc(50% + var(--dapple-clear) / 2),
+      #000 calc(50% + var(--dapple-clear) / 2 + var(--dapple-edge))
+    );
+
+    /* Where scroll-driven animation isn't supported this ends at full strength at once. */
+    animation: dapple-in linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 80vh;
+  }
+
+  /* The torch, by night: the same glow as the canopy's, fixed to the corner. */
+  .dapple::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--dapple-glow);
+    animation: var(--canopy-flicker);
+  }
+
+  .dapple-leaves {
+    position: absolute;
+    inset: -6rem;
+    background: var(--dapple-shade);
+    mask: url('/grotto/dapple.svg') 0 0 / 1200px 1200px repeat;
+    animation: dapple-sway 37s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+    will-change: transform;
+  }
+
+  @keyframes dapple-in {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes dapple-sway {
+    0% {
+      transform: translate3d(-1.2rem, 0, 0) rotate(-0.35deg);
+    }
+
+    55% {
+      transform: translate3d(0.6rem, 0.5rem, 0) rotate(0.15deg);
+    }
+
+    100% {
+      transform: translate3d(1.4rem, 0.2rem, 0) rotate(0.4deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dapple::before,
+    .dapple-leaves {
+      animation: none;
+    }
+  }
+
+  @media print {
+    .dapple {
+      display: none;
+    }
+  }
+</style>

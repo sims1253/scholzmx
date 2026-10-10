@@ -77,16 +77,6 @@ export interface DoodadProps {
   position?: Position;
   rotation?: number;
   scale?: number;
-  washX?: number;
-  washY?: number;
-  washAlpha?: number;
-  washTx?: number;
-  washTy?: number;
-  washR1?: number;
-  washR2?: number;
-  washX2?: number;
-  washY2?: number;
-  washBleed?: number;
   ringScale?: number;
   ringAlpha?: number;
   ringX?: number;
@@ -257,45 +247,10 @@ export const doodadCategories: DoodadCategory[] = [
   {
     id: 'backgroundEffects',
     enabled: true,
-    probability: 0.3, // 30% chance for background effects
+    // Leaf shadows come from the dappled light over the whole page; cards keep the rings.
+    probability: 0.1,
     exclusive: true, // Only one background effect per card
     items: [
-      {
-        id: 'washSubtle',
-        probability: 0.4,
-        layerTypes: ['all'],
-        kind: 'background',
-        generate: ({ map }) => ({
-          washX: map(35, 65),
-          washY: map(30, 60),
-          washAlpha: map(0.4, 0.6),
-          washTx: Math.round(map(-12, 12)),
-          washTy: Math.round(map(-10, 10)),
-          washR1: Math.round(map(70, 100)),
-          washR2: Math.round(map(50, 80)),
-          washX2: Math.round(Math.max(10, Math.min(90, map(35, 65) + map(-15, 15)))),
-          washY2: Math.round(Math.max(10, Math.min(90, map(30, 60) + map(-10, 10)))),
-          washBleed: Math.round(map(110, 140)),
-        }),
-      },
-      {
-        id: 'washBold',
-        probability: 0.3,
-        layerTypes: ['all'],
-        kind: 'background',
-        generate: ({ map }) => ({
-          washX: map(25, 75),
-          washY: map(20, 70),
-          washAlpha: map(0.7, 0.9),
-          washTx: Math.round(map(-18, 18)),
-          washTy: Math.round(map(-14, 14)),
-          washR1: Math.round(map(90, 130)),
-          washR2: Math.round(map(70, 110)),
-          washX2: Math.round(Math.max(10, Math.min(90, map(25, 75) + map(-20, 20)))),
-          washY2: Math.round(Math.max(10, Math.min(90, map(20, 70) + map(-15, 15)))),
-          washBleed: Math.round(map(130, 170)),
-        }),
-      },
       {
         id: 'ringEffect',
         probability: 0.1,
