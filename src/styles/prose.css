@@ -116,6 +116,64 @@
     left: 0;
   }
 
+  /* Pictures in running text are pasted in like prints: a sheet held by two paper
+     strips. Plots and photographs alike; captions sit on the print. */
+  .prose p:has(> img:only-child),
+  .prose figure:has(img) {
+    position: relative;
+    width: fit-content;
+    max-width: 100%;
+    margin: var(--space-xl) auto;
+    padding: 0.5rem;
+    background: var(--print-sheet);
+    box-shadow:
+      0 1px 2px color-mix(in srgb, var(--color-ink-dark) 14%, transparent),
+      0 14px 26px -16px color-mix(in srgb, var(--color-ink-dark) 40%, transparent);
+  }
+
+  .prose p:has(> img:only-child)::before,
+  .prose p:has(> img:only-child)::after,
+  .prose figure:has(img)::before,
+  .prose figure:has(img)::after {
+    content: '';
+    position: absolute;
+    top: -0.55rem;
+    z-index: 1;
+    width: 3.2rem;
+    height: 1.1rem;
+    background: var(--tape-strip);
+    opacity: 0.88;
+    box-shadow: 0 1px 1px color-mix(in srgb, var(--color-ink-dark) 12%, transparent);
+    pointer-events: none;
+  }
+
+  .prose p:has(> img:only-child)::before,
+  .prose figure:has(img)::before {
+    left: 0.9rem;
+    transform: rotate(-4deg);
+  }
+
+  .prose p:has(> img:only-child)::after,
+  .prose figure:has(img)::after {
+    right: 0.9rem;
+    transform: rotate(3deg);
+  }
+
+  .prose p:has(> img:only-child) img,
+  .prose figure:has(img) img {
+    display: block;
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+    filter: var(--print-dim);
+  }
+
+  .prose figure:has(img) figcaption {
+    max-width: 36rem;
+    margin: 0.5rem auto 0.1rem;
+    color: #3b4436;
+  }
+
   /* Optional: tighter excerpt variant for cards */
   .prose--excerpt {
     font-size: 0.95em;

@@ -1,4 +1,4 @@
-// Draws the vine canopy whose shadows fall across the top of every page.
+// Draws the grape and kiwi vine canopy whose shadows fall across the top of every page.
 // The output SVGs are masks: only their alpha matters, CSS supplies the colour.
 //
 //   node scripts/draw-canopy.mjs
@@ -45,32 +45,6 @@ function grapeLeaf(size) {
 function kiwiLeaf(size) {
   const r = size * 0.5;
   return `<path d="M0,0 C${f(r * 0.9)},${f(r * 0.25)} ${f(r * 1.25)},${f(-r * 0.9)} ${f(r * 0.45)},${f(-r * 1.55)} C${f(r * 0.2)},${f(-r * 1.75)} 0,${f(-r * 1.6)} 0,${f(-r * 1.5)} C0,${f(-r * 1.6)} ${f(-r * 0.2)},${f(-r * 1.75)} ${f(-r * 0.45)},${f(-r * 1.55)} C${f(-r * 1.25)},${f(-r * 0.9)} ${f(-r * 0.9)},${f(r * 0.25)} 0,0Z"/>`;
-}
-
-// Tansy frond: a midrib with paired leaflets, each cut into narrow teeth.
-function tansyFrond(size, rand) {
-  const parts = [
-    `<path d="M0,0 L0,${f(-size)}" fill="none" stroke="#000" stroke-width="${f(size * 0.022)}"/>`,
-  ];
-  const pairs = 7;
-  for (let i = 1; i <= pairs; i++) {
-    const y = -size * (0.08 + (0.84 * i) / pairs);
-    const l = size * (0.36 * Math.sin((Math.PI * (i + 0.6)) / (pairs + 1.4)) + 0.05);
-    const tilt = 38 + rand() * 12;
-    for (const side of [1, -1]) {
-      const teeth = [];
-      for (let k = 1; k <= 3; k++) {
-        teeth.push(
-          `<path transform="translate(0,${f(-l * (k / 4))}) rotate(${45 * side})" d="${lobe(l * 0.32, l * 0.06)}"/>`
-        );
-      }
-      parts.push(
-        `<g transform="translate(0,${f(y)}) rotate(${f(tilt * side)})"><path d="${lobe(l, l * 0.09)}"/>${teeth.join('')}</g>`
-      );
-    }
-  }
-  parts.push(`<path transform="translate(0,${f(-size)})" d="${lobe(size * 0.14, size * 0.025)}"/>`);
-  return parts.join('');
 }
 
 function tendril(x, y, rand) {
@@ -120,12 +94,7 @@ function vine(rand, opts) {
     parts.push(
       `<path d="M${f(x)},${f(y)} L${f(sx)},${f(sy)}" fill="none" stroke="#000" stroke-width="${f(size * 0.03)}"/>`
     );
-    const leaf =
-      kind === 'grape'
-        ? grapeLeaf(size)
-        : kind === 'kiwi'
-          ? kiwiLeaf(size)
-          : tansyFrond(size * 1.3, rand);
+    const leaf = kind === 'grape' ? grapeLeaf(size) : kiwiLeaf(size);
     parts.push(`<g transform="translate(${f(sx)},${f(sy)}) rotate(${f(angle)})">${leaf}</g>`);
     if (rand() < 0.35) parts.push(tendril(x, y, rand));
   }
@@ -167,22 +136,22 @@ const high = drawing({
   ],
 });
 
-// Low tendrils and tansy hang close to the page, so their shadows stay crisp.
+// Low tendrils hang close to the page, so their shadows stay crisp.
 const low = drawing({
   seed: 2318,
   blur: 1.8,
   opacity: 0.85,
   vines: [
-    { startX: -80, droop: 360, span: 520, leafCount: 6, leafSize: 92, kinds: ['grape', 'tansy'] },
+    { startX: -80, droop: 360, span: 520, leafCount: 6, leafSize: 92, kinds: ['grape', 'kiwi'] },
     {
       startX: 1180,
       droop: 420,
       span: 520,
       leafCount: 7,
       leafSize: 96,
-      kinds: ['tansy', 'grape', 'kiwi'],
+      kinds: ['kiwi', 'grape', 'kiwi'],
     },
-    { startX: 640, droop: 140, span: 380, leafCount: 4, leafSize: 72, kinds: ['grape', 'tansy'] },
+    { startX: 640, droop: 140, span: 380, leafCount: 4, leafSize: 72, kinds: ['grape', 'kiwi'] },
   ],
 });
 

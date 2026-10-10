@@ -3,6 +3,7 @@ import { getCollection, render, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ImageFrame from '../../components/ImageFrame.astro';
 import Series from '../../components/Series.astro';
+import NoteCardStack from '../../components/NoteCardStack.astro';
 
 export async function getStaticPaths() {
   const posts = (await getCollection('blog')).filter((post) => !post.data.draft);
@@ -53,6 +54,21 @@ const { Content } = await render(post);
 const relatedPosts = await getRelatedPosts(post);
 const { prev, next } = await getAdjacentPosts(post);
 
+const isoDay = (date: Date) => date.toISOString().slice(0, 10);
+const heroOf = (entry: CollectionEntry<'blog'>) => {
+  const { heroImage, heroImageScale, heroImagePositionX, heroImagePositionY } = entry.data;
+  const framing = {
+    scale: heroImageScale ?? 1,
+    posX: heroImagePositionX ?? 0,
+    posY: heroImagePositionY ?? 0,
+  };
+  // The collection schema validates the string/asset union before this point.
+  // oxlint-disable-next-line anti-slop/no-runtime-typeof
+  if (typeof heroImage === 'string') return { kind: 'url' as const, src: heroImage, ...framing };
+  if (heroImage) return { kind: 'asset' as const, src: heroImage, ...framing };
+  return undefined;
+};
+
 const formatDate = (date: Date) =>
   date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
@@ -101,7 +117,7 @@ const readingTime = getReadingTime(post.body || '');
       </p>
     </header>
 
-    {post.data.heroImage && <div class="post-hero">
+    {post.data.heroImage && <div class="post-hero pasted">
       <ImageFrame
         src={post.data.heroImage}
         alt=""
@@ -135,12 +151,21 @@ const readingTime = getReadingTime(post.body || '');
 
       {relatedPosts.length > 0 && <section class="related-posts" aria-labelledby="related-title">
         <h2 class="related-title" id="related-title">Related posts</h2>
-        <ul class="index-entries">
-          {relatedPosts.map((related) => <li class="index-entry">
-            <h3 class="entry-title"><a href={`/blog/${related.id}`}>{related.data.title}</a></h3>
-            <p class="entry-summary">{related.data.description}</p>
-          </li>)}
-        </ul>
+        <NoteCardStack
+          columns="auto"
+          itemMinWidth="16rem"
+          aspectRatio="8/3"
+          headingLevel={3}
+          items={relatedPosts.map((related) => ({
+            id: related.id,
+            title: related.data.title,
+            subtitle: related.data.description,
+            href: `/blog/${related.id}`,
+            writtenDate: isoDay(related.data.date),
+            tags: related.data.tags ?? [],
+            hero: heroOf(related),
+          }))}
+        />
       </section>}
 
       <p class="back-link"><a href="/blog">All posts</a></p>
@@ -274,10 +299,6 @@ const readingTime = getReadingTime(post.body || '');
   .related-title {
     margin: 0 0 var(--space-md);
     font-size: var(--text-xl);
-  }
-
-  .related-posts :global(.entry-title) {
-    font-size: var(--text-lg);
   }
 
   .back-link {

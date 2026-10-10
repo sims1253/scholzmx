@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Series from '../components/Series.astro';
+import StackedCard from '../components/StackedCard.astro';
 
 const publications = [
   {
@@ -100,29 +101,26 @@ const linkLabel = (kind: string) => (kind === 'pdf' || kind === 'doi' ? kind.toU
       aria-labelledby={`year-${year}`}
     >
       <h2 class="index-label" id={`year-${year}`}>{year}</h2>
-      <ol class="index-entries">
-        {publicationsByYear[Number(year)]!.map((pub) => {
-          const primaryLink = pub.links.pdf ?? pub.links.doi ?? pub.links.code;
-          const kind = describe(pub.type, pub.venue);
-          return <li class="index-entry">
-            <h3 class="entry-title">
-              {primaryLink ? <a href={primaryLink}>{pub.title}</a> : pub.title}
-            </h3>
-            <p class="entry-summary authors">
-              <Series items={pub.authors.map((text) => ({ text, strong: text === SELF }))} />
-            </p>
-            <p class="entry-meta">
-              {kind}.
-              <Series
-                items={Object.entries(pub.links).map(([kind, href]) => ({
-                  text: linkLabel(kind),
-                  href,
-                }))}
-              />
-            </p>
-          </li>;
-        })}
-      </ol>
+      <div class="pub-cards">
+        {publicationsByYear[Number(year)]!.map((pub, index) => <StackedCard
+          seed={`pub/${year}/${index}/${pub.title}`}
+          title={pub.title}
+          subtitle={describe(pub.type, pub.venue)}
+          href={pub.links.pdf ?? pub.links.doi ?? pub.links.code}
+          layers={1}
+          ornament={false}
+          headingLevel={3}
+        >
+          <p class="authors">
+            <Series items={pub.authors.map((text) => ({ text, strong: text === SELF }))} />
+          </p>
+          <div class="sc-tags">
+            {Object.entries(pub.links).map(([kind, url]) => <a class="sc-chip" href={url}>
+              {linkLabel(kind)}
+            </a>)}
+          </div>
+        </StackedCard>)}
+      </div>
     </section>)}
   </div>
 </BaseLayout>
@@ -134,8 +132,16 @@ const linkLabel = (kind: string) => (kind === 'pdf' || kind === 'doi' ? kind.toU
     color: var(--color-text-secondary);
   }
 
+  .pub-cards {
+    display: grid;
+    gap: var(--space-xl);
+    max-width: var(--card-max-width);
+  }
+
   .authors {
-    font-size: var(--text-md);
+    margin: var(--space-xs) 0 0;
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
   }
 
   .authors :global(strong) {

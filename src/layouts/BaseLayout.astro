@@ -2,7 +2,6 @@
 import { getImage } from 'astro:assets';
 import portrait from '../assets/images/homepage/portrait.jpg';
 import Canopy from '../components/Canopy.astro';
-import TansyMark from '../components/TansyMark.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import BackToTop from '../components/BackToTop.astro';
 
@@ -199,7 +198,6 @@ const hasInitial = isHome || /^\/(blog|recipes|notes)\/.+/.test(currentPath);
       <header class="site-header">
         <nav class="page-nav" aria-label="Main navigation" id="main-navigation">
           <a href="/" class="site-logo" aria-current={isHome ? 'page' : undefined}>
-            <TansyMark class="site-mark" />
             <span class="logo-text">Grotto</span>
           </a>
 
@@ -216,26 +214,32 @@ const hasInitial = isHome || /^\/(blog|recipes|notes)\/.+/.test(currentPath);
                 </a>
               </li>;
             })}
+            <li class="nav-torch">
+              <button
+                id="nav-theme-toggle"
+                class="torch-toggle"
+                aria-label="Torchlight"
+                aria-pressed="false"
+                title="Light the torch"
+                type="button"
+              >
+                <svg class="torch-icon" viewBox="14 6 36 50" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="torch-flame-gradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop class="torch-flame-tip" offset="0%"></stop>
+                      <stop class="torch-flame-base" offset="100%"></stop>
+                    </linearGradient>
+                  </defs>
+                  <path
+                    class="torch-flame"
+                    fill="url(#torch-flame-gradient)"
+                    d="M32 8c6 7 4 13-1 18 5-1 8-5 8-10 5 5 7 13 2 19-4 5-12 6-18 3-7-4-7-12-2-17 0 6 6 9 10 7-3-2-5-6-5-9 0-2 1-5 6-11z"
+                  ></path>
+                  <rect class="torch-holder" x="28" y="44" width="8" height="10" rx="2"></rect>
+                </svg>
+              </button>
+            </li>
           </ul>
-
-          <button
-            id="nav-theme-toggle"
-            class="torch-toggle"
-            aria-label="Torchlight"
-            aria-pressed="false"
-            title="Light the torch"
-            type="button"
-          >
-            <svg class="torch-icon" viewBox="0 0 32 32" width="24" height="24" aria-hidden="true">
-              <path class="torch-handle" d="M10.5 29.5 18.4 15.6"></path>
-              <path class="torch-head" d="M16.2 12.6l5.6 3.2-2.1 3.6-5.6-3.2Z"></path>
-              <path class="torch-wrap" d="M15.6 14.8l5 2.9"></path>
-              <path
-                class="torch-flame"
-                d="M20.4 2.4c.6 3.2 4.6 4.6 3.5 8.6-.6 2.2-2.6 3.4-4.6 3.2-2.5-.3-3.9-2.6-3.3-4.9.3-1.3 1.2-2.1 1.6-3.3.4 1.2.2 2.2.9 2.8.5-2.3 2.2-3.5 1.9-6.4Z"
-              ></path>
-            </svg>
-          </button>
         </nav>
       </header>
 

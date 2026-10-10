@@ -47,20 +47,20 @@
   --rule-ink: color-mix(in srgb, var(--color-ink-dark) 16%, var(--color-parchment));
   --wash-sage: color-mix(in srgb, var(--color-sage) 14%, var(--color-parchment));
   --btn-walnut-hover: color-mix(in srgb, var(--color-walnut) 88%, black);
-  --paper-sheet: color-mix(
-    in srgb,
-    var(--color-parchment) 75%,
-    white
-  ); /* Pasted photos and plates */
+
+  /* Pasted things: photo and card paper, the strips that hold them, prints in posts */
+  --paper-sheet: color-mix(in srgb, var(--color-parchment) 75%, white);
+  --tape-strip: color-mix(in srgb, var(--color-parchment) 72%, var(--color-sage));
+  --print-sheet: #fbfaf5; /* Prints stay paper-white, even by torchlight */
+  --print-dim: none;
 
   /* The canopy: leaf shadows by day, torchlight by night */
   --canopy-shade: rgb(58 78 26 / 0.2);
   --canopy-glow: none;
   --canopy-flicker: none;
 
-  /* The torch in the navigation: unlit by day */
-  --torch-flame: transparent;
-  --torch-flame-line: var(--color-ink-light);
+  /* The flame in the navigation: still by day, alive by torchlight */
+  --torch-flame-base: #b5651d;
   --torch-flame-glow: none;
   --torch-flame-dance: none;
 }
@@ -94,6 +94,8 @@
     --rule-ink: color-mix(in srgb, var(--color-ink-light) 22%, var(--color-parchment));
     --wash-sage: color-mix(in srgb, var(--color-sage) 18%, var(--color-parchment));
     --paper-sheet: var(--color-parchment-light);
+    --print-sheet: #e2dacb;
+    --print-dim: brightness(0.9);
 
     --canopy-shade: rgb(14 10 6 / 0.88);
     --canopy-glow: radial-gradient(
@@ -104,8 +106,7 @@
     );
     --canopy-flicker: torch-flicker 5.3s linear infinite;
 
-    --torch-flame: #f2a33a;
-    --torch-flame-line: transparent;
+    --torch-flame-base: #f07f2a;
     --torch-flame-glow: drop-shadow(0 0 4px rgb(255 150 60 / 0.7));
     --torch-flame-dance: flame-dance 1.7s ease-in-out infinite;
   }
@@ -139,6 +140,8 @@
   --rule-ink: color-mix(in srgb, var(--color-ink-light) 22%, var(--color-parchment));
   --wash-sage: color-mix(in srgb, var(--color-sage) 18%, var(--color-parchment));
   --paper-sheet: var(--color-parchment-light);
+  --print-sheet: #e2dacb;
+  --print-dim: brightness(0.9);
 
   --canopy-shade: rgb(14 10 6 / 0.88);
   --canopy-glow: radial-gradient(
@@ -149,8 +152,7 @@
   );
   --canopy-flicker: torch-flicker 5.3s linear infinite;
 
-  --torch-flame: #f2a33a;
-  --torch-flame-line: transparent;
+  --torch-flame-base: #f07f2a;
   --torch-flame-glow: drop-shadow(0 0 4px rgb(255 150 60 / 0.7));
   --torch-flame-dance: flame-dance 1.7s ease-in-out infinite;
 }

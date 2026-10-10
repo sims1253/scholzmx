@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Series from '../components/Series.astro';
+import StackedCard from '../components/StackedCard.astro';
 
 const projects = [
   {
@@ -78,7 +78,6 @@ const plateName = (title: string) => {
   const [name = title, common] = title.split(' — ');
   return { name, common };
 };
-const linkLabel = (type: string) => (type === 'GitHub' ? 'source' : 'documentation');
 ---
 
 <BaseLayout title="Projects" description="Selected projects" tone="serious" layout="listing">
@@ -90,11 +89,19 @@ const linkLabel = (type: string) => (type === 'GitHub' ? 'source' : 'documentati
       </p>
     </header>
 
-    <ol class="plates">
+    <div class="project-cards">
       {sortedProjects.map((project, index) => {
         const { name, common } = plateName(project.title);
-        return <li class="plate">
-          <a href={project.links[0]!.url} class="plate-art pasted" tabindex="-1" aria-hidden="true">
+        return <StackedCard
+          seed={`project/${project.title}`}
+          title={name}
+          subtitle={common}
+          href={project.links[0]!.url}
+          layers={3}
+          layout="side"
+          class="project-card"
+        >
+          <div slot="media" class="project-logo pasted">
             <img
               src={project.banner}
               alt=""
@@ -103,49 +110,53 @@ const linkLabel = (type: string) => (type === 'GitHub' ? 'source' : 'documentati
               loading={index < 2 ? 'eager' : 'lazy'}
               decoding="async"
             />
-          </a>
-          <h2 class="plate-name"><a href={project.links[0]!.url}>{name}</a></h2>
-          {common && <p class="plate-common">{common}</p>}
-          <p class="plate-description">{project.description}</p>
-          <p class="entry-meta">
-            {project.tech.join(', ')}, {project.year}. Read the
-            <Series
-              items={project.links.map((link) => ({ text: linkLabel(link.type), href: link.url }))}
-              last="or"
-            />.
-          </p>
-        </li>;
+          </div>
+          <p class="project-description">{project.description}</p>
+          <p class="project-meta">{project.tech.join(', ')}, {project.year}.</p>
+          <div class="sc-tags">
+            {project.links.map((link) => <a class="sc-chip" href={link.url}>{link.type}</a>)}
+          </div>
+        </StackedCard>;
       })}
-    </ol>
+    </div>
   </div>
 </BaseLayout>
 
 <style>
-  /* Each project is a specimen plate: the logo pasted in, the name set like a binomial. */
-  .plates {
+  .project-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
-    gap: var(--space-xxl) var(--space-xl);
-    margin: 0;
-    padding: 0;
-    list-style: none;
+    gap: var(--space-xxl);
+    max-width: 44rem;
   }
 
-  .plate {
-    margin: 0;
+  /* The name is set like a binomial, its plain-English description beneath. */
+  :global(.project-card .sc-title) {
+    font-size: var(--text-2xl);
+    font-style: italic;
+    font-weight: 400;
+    line-height: 1.1;
   }
 
-  .plate-art {
-    width: min(11rem, 60%);
-    margin: 0 0 var(--space-md);
+  :global(.project-card .sc-subtitle) {
+    margin-bottom: var(--space-sm);
+    font-family: var(--font-heading);
+    font-size: var(--text-lg);
+    color: var(--color-moss);
+  }
+
+  :global(.project-card .sc-row) {
+    grid-template-columns: minmax(0, 1fr) 11rem;
+  }
+
+  .project-logo {
+    margin-top: 0.4rem;
     background: var(--paper-sheet);
     box-shadow:
       0 1px 2px color-mix(in srgb, var(--color-ink-dark) 14%, transparent),
       0 12px 22px -14px color-mix(in srgb, var(--color-ink-dark) 38%, transparent);
-    text-decoration: none;
   }
 
-  .plate-art img {
+  .project-logo img {
     display: block;
     width: 100%;
     height: auto;
@@ -154,34 +165,30 @@ const linkLabel = (type: string) => (type === 'GitHub' ? 'source' : 'documentati
     border-radius: 0;
   }
 
-  .plate-name {
-    margin: 0;
-    font-size: var(--text-2xl);
-    font-style: italic;
-    font-weight: 400;
-    line-height: 1.1;
-  }
-
-  .plate-name a {
-    color: var(--color-text-primary);
-    text-decoration-color: transparent;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 0.15em;
-  }
-
-  .plate-name a:hover {
-    text-decoration-color: var(--color-tansy);
-  }
-
-  .plate-common {
-    margin: 0.2em 0 0.6em;
-    font-family: var(--font-heading);
-    font-size: var(--text-lg);
-    color: var(--color-moss);
-  }
-
-  .plate-description {
+  .project-description {
     margin: 0 0 0.4em;
     color: var(--color-text-secondary);
+  }
+
+  .project-meta {
+    margin: 0;
+    font-family: var(--font-body-personal);
+    font-size: var(--text-sm);
+    font-style: italic;
+    color: var(--color-text-muted);
+  }
+
+  @media (max-width: 640px) {
+    :global(.project-card .sc-row) {
+      grid-template-columns: 1fr;
+    }
+
+    :global(.project-card .sc-col.media) {
+      order: -1;
+    }
+
+    .project-logo {
+      width: 9rem;
+    }
   }
 </style>
