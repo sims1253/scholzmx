@@ -15,7 +15,7 @@ export interface RecipeIngredient {
   unit?: string;
   /** Done before cooking starts, e.g. "cut into small cubes". Feeds the "get ready" stage. */
   prep?: string;
-  /** Latitude rather than instruction, e.g. "or cilantro". */
+  /** Latitude rather than instruction, e.g. "or cilantro". Amounts in braces scale: "up to {180 ml}". */
   note?: string;
   /** Pinches and "to taste" stay put when the recipe is scaled. */
   scales?: boolean;
@@ -36,6 +36,12 @@ export interface RecipeStep {
   heat?: string;
   /** What the step produces, used when later steps refer to it, e.g. "squash purée". */
   result?: string;
+}
+
+export interface RecipeEquipment {
+  name: string;
+  /** What to set out when the recipe is doubled, e.g. "two 34 × 24 cm baking dishes". */
+  doubled?: string;
 }
 
 export interface RecipeMeanwhile {
@@ -119,7 +125,9 @@ interface Placement {
   col: number;
 }
 
-export type GridEntry = { kind: 'step'; cell: RecipeCell } | { kind: 'empty'; span: number };
+/** Blank runs know their first column, so the table can lead each ingredient to its step. */
+export type GridEntry =
+  { kind: 'step'; cell: RecipeCell } | { kind: 'empty'; col: number; span: number };
 
 /** Places every step in the table. Assumes checkRecipe found nothing. */
 export function layOut(ingredients: RecipeIngredient[], steps: RecipeStep[]): RecipeGrid {
@@ -181,8 +189,8 @@ export function rowEntries(grid: RecipeGrid, row: number): GridEntry[] {
     );
     if (covered) continue;
     const last = entries.at(-1);
-    if (last?.kind === 'empty') last.span += 1;
-    else entries.push({ kind: 'empty', span: 1 });
+    if (last?.kind === 'empty' && last.col + last.span === col) last.span += 1;
+    else entries.push({ kind: 'empty', col, span: 1 });
   }
   return entries;
 }
@@ -191,19 +199,56 @@ const longest = (minutes?: number | [number, number]) =>
   minutes === undefined ? 0 : Array.isArray(minutes) ? minutes[1] : minutes;
 
 /**
+ * When each step can start, in minutes from the moment you begin: after the prep, once
+ * everything it uses is done. Ranges count at their longest, so the plan holds.
+ */
+export function startTimes(steps: RecipeStep[], prepMinutes = 0): Map<string, number> {
+  const start = new Map<string, number>();
+  const finish = new Map<string, number>();
+  for (const step of steps) {
+    const at = Math.max(prepMinutes, ...step.uses.map((input) => finish.get(input) ?? 0));
+    start.set(step.id, at);
+    finish.set(step.id, at + longest(step.minutes));
+  }
+  return start;
+}
+
+/**
  * Hands-on time and time until it's ready, computed rather than estimated. Waiting steps
  * overlap with whatever else can happen; the total is the longest chain of steps.
  */
 export function timing(steps: RecipeStep[], prepMinutes = 0) {
-  const finish = new Map<string, number>();
+  const start = startTimes(steps, prepMinutes);
   let active = prepMinutes;
+  let chain = prepMinutes;
   for (const step of steps) {
     const own = longest(step.minutes);
     if (!step.wait) active += own;
-    finish.set(step.id, own + Math.max(0, ...step.uses.map((input) => finish.get(input) ?? 0)));
+    chain = Math.max(chain, (start.get(step.id) ?? 0) + own);
   }
-  const chain = prepMinutes + Math.max(0, ...finish.values());
   return { active, total: Math.max(chain, active) };
+}
+
+/** "0:10", "3:28": a kitchen clock started when you begin. */
+export function formatClock(minutes: number): string {
+  return `${Math.floor(minutes / 60)}:${String(minutes % 60).padStart(2, '0')}`;
+}
+
+/** Running text, or an amount written into it, e.g. the "{180 ml}" in "up to {180 ml}". */
+export type TextPart =
+  { kind: 'text'; text: string } | { kind: 'amount'; amount: number; unit?: string };
+
+/** Splits text around braced amounts, so notes scale with the recipe. */
+export function splitAmounts(text: string): TextPart[] {
+  const parts: TextPart[] = [];
+  let rest = 0;
+  for (const match of text.matchAll(/\{(\d+(?:\.\d+)?)\s*([^}\s]*)\}/g)) {
+    if (match.index > rest) parts.push({ kind: 'text', text: text.slice(rest, match.index) });
+    parts.push({ kind: 'amount', amount: Number(match[1]), unit: match[2] || undefined });
+    rest = match.index + match[0].length;
+  }
+  if (rest < text.length) parts.push({ kind: 'text', text: text.slice(rest) });
+  return parts;
 }
 
 /** "25 min", "8–10 min", "1 h", "1 h 30 min". */
@@ -270,5 +315,15 @@ export function formatAmount(amount: number, unit = ''): string {
   if (value === 1) whole += 1;
   const fraction = whole === 0 && !glyph && amount > 0 ? '¼' : glyph;
   const number = whole === 0 && fraction ? fraction : `${whole}${fraction}`;
-  return unit ? `${number} ${unit}` : number;
+  return unit
+    ? `${number} ${whole > 1 || (whole === 1 && fraction) ? plural(unit) : unit}`
+    : number;
+}
+
+const ABBREVIATED = new Set(['tsp', 'tbsp', 'oz', 'lb', 'fl oz']);
+
+/** "2 bags", "3 pinches"; abbreviations stay as they are. */
+function plural(unit: string): string {
+  if (ABBREVIATED.has(unit) || unit.endsWith('s')) return unit;
+  return /(ch|sh|x)$/.test(unit) ? `${unit}es` : `${unit}s`;
 }

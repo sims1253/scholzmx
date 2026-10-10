@@ -38,7 +38,15 @@ const recipes = defineCollection({
         makes: z.object({ amount: z.number().positive(), unit: z.string() }).optional(),
         /** Minutes of chopping and weighing before the first step. */
         prepMinutes: z.number().nonnegative().optional(),
-        equipment: z.array(z.string()).optional(),
+        /** Plain text, or { name, doubled } when doubling needs different gear. */
+        equipment: z
+          .array(
+            z.union([
+              z.string().transform((name) => ({ name })),
+              z.object({ name: z.string(), doubled: z.string().optional() }),
+            ])
+          )
+          .optional(),
         ingredients: z
           .array(
             z.object({

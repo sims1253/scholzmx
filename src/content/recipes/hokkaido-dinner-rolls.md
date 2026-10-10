@@ -8,7 +8,10 @@ heroImage: '../../assets/images/recipes/hokkaido-dinner-rolls/stack.jpg'
 draft: false
 makes: { amount: 15, unit: rolls }
 prepMinutes: 10
-equipment: [a baking sheet, a 34 × 24 cm baking dish, parchment paper]
+equipment:
+  - a baking sheet
+  - { name: a 34 × 24 cm baking dish, doubled: two 34 × 24 cm baking dishes }
+  - parchment paper
 ingredients:
   - id: squash
     amount: 350
@@ -19,7 +22,7 @@ ingredients:
     amount: 120
     unit: ml
     name: water
-    note: up to 180 ml makes fluffier rolls that are harder to shape
+    note: up to {180 ml} makes fluffier rolls that are harder to shape
   - id: flour
     amount: 400
     unit: g
@@ -28,7 +31,7 @@ ingredients:
     amount: 75
     unit: g
     name: brown sugar
-    note: 50 g is a snack, 100 g is dessert
+    note: '{50 g} is a snack, {100 g} is dessert'
   - id: butter
     amount: 60
     unit: g
@@ -39,7 +42,7 @@ ingredients:
     amount: 7
     unit: g
     name: instant yeast
-    note: 1 bag
+    note: '{1 bag}'
   - id: cinnamon
     amount: 1
     unit: tsp
