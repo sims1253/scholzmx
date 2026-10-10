@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Series from '../../components/Series.astro';
+import StackedCard from '../../components/StackedCard.astro';
 
 const notes = (await getCollection('notes', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.created.getTime() - a.data.created.getTime()
@@ -39,16 +40,20 @@ const article = (type: string) => (/^[aeiou]/.test(type) ? 'An' : 'A');
       aria-labelledby={`year-${year}`}
     >
       <h2 class="index-label" id={`year-${year}`}>{year}</h2>
-      <ol class="index-entries">
+      <div class="note-cards">
         {entries.map((note) => {
           const connections = (note.data.connections ?? []).flatMap((id) => {
             const text = titles.get(id);
             return text ? [{ text, href: `/notes/${id}` }] : [];
           });
-          return <li class="index-entry">
-            <h3 class="entry-title"><a href={`/notes/${note.id}`}>{note.data.title}</a></h3>
-            {note.data.description && <p class="entry-summary">{note.data.description}</p>}
-            <p class="entry-meta">
+          return <StackedCard
+            seed={`note/${note.id}`}
+            title={note.data.title}
+            subtitle={note.data.description}
+            href={`/notes/${note.id}`}
+            headingLevel={3}
+          >
+            <p class="note-meta">
               {article(note.data.type)}
               {note.data.type}, planted on
               <time datetime={note.data.created.toISOString()}
@@ -57,9 +62,24 @@ const article = (type: string) => (/^[aeiou]/.test(type) ? 'An' : 'A');
                 <>. Grows toward <Series items={connections} last="and" /></>
               )}.
             </p>
-          </li>;
+          </StackedCard>;
         })}
-      </ol>
+      </div>
     </section>)}
   </div>
 </BaseLayout>
+
+<style>
+  .note-cards {
+    display: grid;
+    gap: var(--space-xl);
+    max-width: var(--card-max-width);
+  }
+
+  .note-meta {
+    margin: var(--space-xs) 0 0;
+    font-size: var(--text-sm);
+    font-style: italic;
+    color: var(--color-text-muted);
+  }
+</style>

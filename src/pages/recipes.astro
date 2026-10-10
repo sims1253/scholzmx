@@ -2,8 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import IndexFinder from '../components/IndexFinder.astro';
-import ImageFrame from '../components/ImageFrame.astro';
-import Series from '../components/Series.astro';
+import NoteCardStack from '../components/NoteCardStack.astro';
 
 const recipes = (await getCollection('recipes', ({ data }) => !data.draft)).sort((a, b) =>
   a.data.title.localeCompare(b.data.title)
@@ -43,65 +42,28 @@ const tags = [...new Set(recipes.flatMap((recipe) => recipe.data.tags ?? []))].s
       aria-label={`Recipes starting with ${initial}`}
     >
       <p class="index-label" aria-hidden="true">{initial}</p>
-      <ul class="index-entries">
-        {entries.map((recipe) => {
-          const recipeTags = recipe.data.tags ?? [];
-          return <li class="index-entry recipe-entry nc-item" data-tags={recipeTags.join(',')}>
-            {recipe.data.heroImage && <a
-              href={`/recipes/${recipe.id}`}
-              class="recipe-photo pasted"
-              tabindex="-1"
-              aria-hidden="true"
-            >
-              <ImageFrame
-                src={recipe.data.heroImage}
-                alt=""
-                aspectRatio="3/2"
-                style="simple"
-                fillMode="cover"
-                positionX={(recipe.data.heroImagePositionX ?? 0) * 100}
-                positionY={(recipe.data.heroImagePositionY ?? 0) * 100}
-                scale={recipe.data.heroImageScale ?? 1}
-                width={900}
-                height={600}
-              />
-            </a>}
-            <h2 class="entry-title"><a href={`/recipes/${recipe.id}`}>{recipe.data.title}</a></h2>
-            <p class="entry-summary">{recipe.data.description}</p>
-            <p class="entry-meta">
-              Makes {recipe.data.servings}, takes
-              {recipe.data.time}{recipeTags.length > 0 && (
-                <>. Filed under
-                  <Series
-                    items={recipeTags.map((text) => ({
-                      text,
-                      href: `/recipes?tag=${encodeURIComponent(text)}`,
-                    }))}
-                  /></>
-              )}.
-            </p>
-          </li>;
-        })}
-      </ul>
+      <NoteCardStack
+        columns={1}
+        headingLevel={2}
+        aspectRatio="3/2"
+        tagBase="/recipes"
+        items={entries.map((recipe) => ({
+          id: recipe.id,
+          title: recipe.data.title,
+          subtitle: recipe.data.description,
+          href: `/recipes/${recipe.id}`,
+          tags: recipe.data.tags ?? [],
+          hero: recipe.data.heroImage
+            ? {
+                kind: 'asset' as const,
+                src: recipe.data.heroImage,
+                scale: recipe.data.heroImageScale ?? 1,
+                posX: recipe.data.heroImagePositionX ?? 0,
+                posY: recipe.data.heroImagePositionY ?? 0,
+              }
+            : undefined,
+        }))}
+      />
     </section>)}
   </div>
 </BaseLayout>
-
-<style>
-  .recipe-entry {
-    margin-bottom: var(--space-xl);
-  }
-
-  .recipe-photo {
-    max-width: 30rem;
-    margin: var(--space-sm) 0 var(--space-md);
-    text-decoration: none;
-  }
-
-  .recipe-photo :global(.image-frame) {
-    border-radius: 2px;
-    box-shadow:
-      0 1px 2px color-mix(in srgb, var(--color-ink-dark) 16%, transparent),
-      0 12px 24px -14px color-mix(in srgb, var(--color-ink-dark) 40%, transparent);
-  }
-</style>

@@ -1,5 +1,5 @@
-/* Index pages read like the index of an herbal: entries in a single column of text,
- with the year hanging in the margin beside them. Shared by blog, recipes, research. */
+/* Index pages: the year or initial hangs in the margin beside a column of note cards.
+   Shared by blog, recipes, research and notes. */
 
 /* ===== Page header ===== */
 
@@ -100,71 +100,6 @@
   }
 }
 
-/* ===== Entries ===== */
-
-.index-entries {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.index-entry {
-  margin: 0 0 var(--space-lg);
-  padding: 0;
-}
-
-.index-entry:last-child {
-  margin-bottom: 0;
-}
-
-.entry-title {
-  margin: 0 0 0.2em;
-  font-family: var(--font-heading);
-  font-size: var(--text-xl);
-  font-style: normal;
-  font-weight: 400;
-  line-height: 1.25;
-  text-wrap: balance;
-}
-
-.entry-title a {
-  color: var(--color-text-primary);
-  text-decoration-line: underline;
-  text-decoration-color: transparent;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 0.18em;
-}
-
-.entry-title a:hover {
-  color: var(--color-text-primary);
-  text-decoration-color: var(--color-tansy);
-}
-
-.entry-summary {
-  margin: 0 0 0.3em;
-  max-width: 36rem;
-  color: var(--color-text-secondary);
-}
-
-.entry-meta {
-  margin: 0;
-  font-family: var(--font-body-personal);
-  font-size: var(--text-sm);
-  font-style: italic;
-  color: var(--color-text-muted);
-  font-variant-numeric: oldstyle-nums;
-}
-
-.entry-meta a {
-  color: inherit;
-  text-decoration-color: color-mix(in srgb, currentcolor 35%, transparent);
-}
-
-.entry-meta a:hover {
-  color: var(--color-link-hover);
-  text-decoration-color: var(--color-tansy);
-}
-
 /* ===== Photographs pasted into the notebook with two paper strips ===== */
 
 .pasted {
@@ -180,7 +115,7 @@
   z-index: 1;
   width: 3.2rem;
   height: 1.1rem;
-  background: color-mix(in srgb, var(--color-parchment) 72%, var(--color-sage));
+  background: var(--tape-strip);
   opacity: 0.88;
   box-shadow: 0 1px 1px color-mix(in srgb, var(--color-ink-dark) 12%, transparent);
   pointer-events: none;
