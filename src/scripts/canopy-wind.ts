@@ -56,13 +56,15 @@ void main() {
   float drift = texture2D(u_noise, p * 0.29 + u_drift).r * 2.0 - 1.0;
   float flutter = texture2D(u_noise, p * 0.8 + u_flutter).g * 2.0 - 1.0;
   // The CSS wind's cycle: a soft and a strong gust every 26 seconds, crossing the canopy
-  // from left to right in about a second.
+  // from left to right in about a second. A gust only leans the leaves downwind, and they
+  // settle back without swinging past where they hang. Leaning, they drop a little too,
+  // as if turning on their stems rather than sliding sideways.
   float c = mod(u_cycle - uv.x * 1.1, 26.0);
-  float g = swing(c - 4.2, 0.5) + swing(c - 15.6, 1.0);
+  vec2 lean = vec2(1.0, 0.12) * max(0.0, swing(c - 4.2, 0.5) + swing(c - 15.6, 1.0));
   float sway = sin(u_sway.x + uv.x * 1.3) * 0.5 + u_sway.y;
   // The far canopy is heavy and moves least; the near vines catch every gust.
-  vec2 far = vec2(0.003 * sway + 0.006 * drift + 0.008 * g, 0.003 * flutter) * hang;
-  vec2 near = vec2(0.005 * sway + 0.01 * drift + 0.004 * flutter + 0.02 * g, 0.005 * flutter) * hang;
+  vec2 far = (vec2(0.003 * sway + 0.006 * drift, 0.003 * flutter) + 0.011 * lean) * hang;
+  vec2 near = (vec2(0.005 * sway + 0.01 * drift + 0.004 * flutter, 0.005 * flutter) + 0.025 * lean) * hang;
   float a1 = texture2D(u_far, uv - far).a * u_shade.a;
   float a2 = texture2D(u_near, uv - near).a * u_shade.a * u_crisp;
   float a = 1.0 - (1.0 - a1) * (1.0 - a2);
