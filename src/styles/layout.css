@@ -101,23 +101,62 @@
   transform: translateX(-50%);
 }
 
-/* The button is exactly as wide as the flame, so its gap matches the links'. */
+/* The torch sits in a sconce: a stone plate set into the wall with a brass ring that
+   holds the handle. Pressing it pushes the plate in; while the torch burns it stays in,
+   and the brass catches the flame. */
 .torch-toggle {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.1em;
-  height: 44px;
+  width: 2em;
+  height: 2.4em;
   padding: 0;
   border: 0;
-  background: transparent;
+  border-radius: 0.3em 0.3em 0.55em 0.55em / 0.3em 0.3em 0.7em 0.7em;
+  background: var(--tex-stone), var(--mat-stone);
+  box-shadow: var(--bevel-up);
   font: inherit;
   cursor: pointer;
+}
+
+.torch-toggle::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0.4em;
+  width: 0.7em;
+  height: 0.42em;
+  margin-left: -0.35em;
+  border: 2px solid var(--mat-brass);
+  border-radius: 50%;
+  box-shadow:
+    inset 0 1px 0 var(--mat-brass-hi),
+    0 1px 0 var(--mat-brass-deep),
+    var(--brass-glow);
+  pointer-events: none;
+}
+
+.torch-toggle:hover {
+  background: var(--tex-stone), color-mix(in srgb, var(--mat-stone) 92%, var(--mat-brass-hi));
+}
+
+.torch-toggle:active,
+.torch-toggle[aria-pressed='true'] {
+  background: var(--tex-stone), var(--mat-stone-deep);
+  box-shadow: var(--bevel-down);
+  transform: translateY(1px);
+}
+
+.torch-toggle:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-walnut) 90%, var(--color-ochre));
+  outline-offset: 3px;
 }
 
 /* Cropped to the flame, so the icon is the height of the link text's capitals and
    descenders and its edges line up with the gap. */
 .torch-icon {
+  position: relative;
   width: 1.1em;
   height: 1.5em;
   overflow: visible;

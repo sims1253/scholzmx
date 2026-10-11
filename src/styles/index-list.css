@@ -170,9 +170,10 @@
 .finder-tags ul {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.15rem 1rem;
-  margin: 0.6rem 0 0;
-  padding: 0;
+  align-items: flex-end;
+  gap: 0.5rem 0.45rem;
+  margin: 0.7rem 0 0;
+  padding: 0 0.2rem;
   list-style: none;
 }
 
@@ -180,36 +181,72 @@
   margin: 0;
 }
 
-/* Tags read like a book's index; a chosen one is marked with a tansy highlighter. */
+/* Tags are the index tabs stuck along a field guide's edge: slips of paper, each with
+   a coloured lip, sitting a little askew. The chosen one is pulled forward, tansy-lipped. */
 .finder-tags button {
-  padding: 0 0.15em;
-  border: 0;
-  background: transparent;
-  color: var(--color-link);
+  position: relative;
+  padding: 0.28em 0.75em 0.12em;
+  border: 1px solid color-mix(in srgb, var(--color-ink-dark) 22%, transparent);
+  border-bottom-width: 0;
+  border-radius: 0.3em 0.3em 0 0;
+  background: var(--paper-sheet);
+  box-shadow:
+    inset 0 0.2em 0 var(--color-lichen),
+    var(--bevel-up);
+  color: var(--color-text-secondary);
   font: inherit;
-  text-decoration: underline;
-  text-decoration-color: color-mix(in srgb, currentcolor 35%, transparent);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.18em;
+  line-height: 1.2;
   cursor: pointer;
+  transform: rotate(var(--tab-tilt, 0deg)) translateY(var(--tab-rise, 0));
+  transform-origin: 50% 100%;
+  transition:
+    transform 120ms ease-out,
+    box-shadow 120ms ease-out,
+    color 120ms ease-out;
 }
 
-.finder-tags button::before {
-  content: '#';
+/* Hand-stuck, not machine-set: a few tilt one way or the other. */
+.finder-tags li:nth-child(3n + 1) button {
+  --tab-tilt: -1.4deg;
+}
+
+.finder-tags li:nth-child(4n + 2) button {
+  --tab-tilt: 1.1deg;
+}
+
+.finder-tags li:nth-child(5n + 3) button {
+  --tab-tilt: 0.6deg;
 }
 
 .finder-tags button:hover {
+  --tab-rise: -1px;
+
   color: var(--color-link-hover);
-  text-decoration-color: currentcolor;
+}
+
+.finder-tags button:active {
+  --tab-rise: 1px;
+
+  box-shadow:
+    inset 0 0.2em 0 var(--color-lichen),
+    var(--bevel-down);
 }
 
 .finder-tags button[aria-pressed='true'] {
-  background: linear-gradient(
-    transparent 45%,
-    color-mix(in srgb, var(--color-tansy) 45%, transparent) 45% 90%,
-    transparent 90%
-  );
+  --tab-tilt: 0deg;
+  --tab-rise: -3px;
+
+  z-index: 1;
+  box-shadow:
+    inset 0 0.2em 0 var(--color-tansy),
+    inset var(--lit-hi-x) var(--lit-hi-y) 0 var(--edge-hi),
+    calc(var(--lit-sh-x) * 2) calc(var(--lit-sh-y) * 2) 6px -2px var(--cast);
   color: var(--color-text-primary);
+}
+
+.finder-tags button:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-walnut) 90%, var(--color-ochre));
+  outline-offset: 2px;
 }
 
 .finder-status {

@@ -73,6 +73,32 @@
   --torch-flame-base: #b5651d;
   --torch-flame-glow: none;
   --torch-flame-dance: none;
+
+  /* Things you can touch: the controls are objects in the grotto, lit by one light.
+     By day it falls from above; the highlight sits on an object's top edge and its
+     shadow drops straight down. Every bevel reads these offsets (src/styles/tactile.css). */
+  --lit-hi-x: 0px;
+  --lit-hi-y: 1px;
+  --lit-sh-x: 0px;
+  --lit-sh-y: 2px;
+  --edge-hi: rgb(255 255 255 / 0.6);
+  --edge-sh: rgb(34 41 30 / 0.3);
+  --cast: rgb(34 41 30 / 0.35);
+
+  /* Materials: the stone of the wall, weathered wood, brass, slate and chalk */
+  --mat-stone: #dad8ca;
+  --mat-stone-deep: #c2c2b2;
+  --mat-wood: #cbb08a;
+  --mat-wood-deep: #b2966c;
+  --mat-brass: #b8923f;
+  --mat-brass-hi: #ead08a;
+  --mat-brass-deep: #7a5d1c;
+  --mat-slate: #30373a;
+  --mat-slate-deep: #22282b;
+  --mat-chalk: #ece6d6;
+  --mat-chalk-dim: #bfb8a6;
+  --mat-chalk-gold: #e9c45c;
+  --brass-glow: none;
 }
 
 /* Torchlight: the grotto after dark, lit from one corner */
@@ -135,6 +161,30 @@
     --torch-flame-base: #f07f2a;
     --torch-flame-glow: drop-shadow(0 0 4px rgb(255 150 60 / 0.7));
     --torch-flame-dance: flame-dance 1.7s ease-in-out infinite;
+
+    /* By torchlight the light comes from the top right: highlights on the top and
+       right edges, shadows thrown down and to the left. */
+    --lit-hi-x: -1px;
+    --lit-hi-y: 1px;
+    --lit-sh-x: -2px;
+    --lit-sh-y: 2px;
+    --edge-hi: rgb(255 196 120 / 0.3);
+    --edge-sh: rgb(0 0 0 / 0.55);
+    --cast: rgb(0 0 0 / 0.6);
+
+    --mat-stone: #2b261f;
+    --mat-stone-deep: #1d1a14;
+    --mat-wood: #5c4733;
+    --mat-wood-deep: #3d2f21;
+    --mat-brass: #a98430;
+    --mat-brass-hi: #e6bf62;
+    --mat-brass-deep: #4d3a12;
+    --mat-slate: #23282a;
+    --mat-slate-deep: #181c1d;
+    --mat-chalk: #e8e0cc;
+    --mat-chalk-dim: #aaa38f;
+    --mat-chalk-gold: #e9c45c;
+    --brass-glow: 0 0 10px rgb(255 160 70 / 0.35);
   }
 }
 
@@ -197,4 +247,26 @@
   --torch-flame-base: #f07f2a;
   --torch-flame-glow: drop-shadow(0 0 4px rgb(255 150 60 / 0.7));
   --torch-flame-dance: flame-dance 1.7s ease-in-out infinite;
+
+  --lit-hi-x: -1px;
+  --lit-hi-y: 1px;
+  --lit-sh-x: -2px;
+  --lit-sh-y: 2px;
+  --edge-hi: rgb(255 196 120 / 0.3);
+  --edge-sh: rgb(0 0 0 / 0.55);
+  --cast: rgb(0 0 0 / 0.6);
+
+  --mat-stone: #2b261f;
+  --mat-stone-deep: #1d1a14;
+  --mat-wood: #5c4733;
+  --mat-wood-deep: #3d2f21;
+  --mat-brass: #a98430;
+  --mat-brass-hi: #e6bf62;
+  --mat-brass-deep: #4d3a12;
+  --mat-slate: #23282a;
+  --mat-slate-deep: #181c1d;
+  --mat-chalk: #e8e0cc;
+  --mat-chalk-dim: #aaa38f;
+  --mat-chalk-gold: #e9c45c;
+  --brass-glow: 0 0 10px rgb(255 160 70 / 0.35);
 }

@@ -1,0 +1,42 @@
+/* Things you can touch: the grotto's controls are objects set into its wall, not flat
+   web widgets. The light and material colours live in tokens.colors.css; this file
+   holds the textures and the two bevels every object is built from.
+
+   One light for everything: by day it falls from above, by torchlight from the top
+   right. --lit-hi-* is where a raised edge catches it, --lit-sh-* where a shadow lands.
+   Textures are tiny SVG noise, drawn once per element and cached by the browser. */
+@layer components {
+  :root {
+    /* Weathered wood: long grain, stitched so it tiles */
+    --tex-wood: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='90'><filter id='w' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='0.009 0.16' numOctaves='3' seed='5' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.16 0 0 0 0 0.1 0 0 0 0 0.04 0.9 0 0 0 -0.28'/></filter><rect width='100%' height='100%' filter='url(%23w)'/></svg>");
+
+    /* Stone and slate: fine, even speckle */
+    --tex-stone: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='s' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='2' seed='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.45 0 0 0 -0.12'/></filter><rect width='100%' height='100%' filter='url(%23s)'/></svg>");
+
+    /* A raised object: the edge towards the light is bright, the far edge dark, and
+       it throws a short shadow on the wall. */
+    --bevel-up:
+      inset var(--lit-hi-x) var(--lit-hi-y) 0 var(--edge-hi),
+      inset calc(-1 * var(--lit-hi-x)) calc(-1 * var(--lit-hi-y)) 0 var(--edge-sh),
+      var(--lit-sh-x) var(--lit-sh-y) 3px -1px var(--cast);
+
+    /* Pressed into the wall: the lit edge now shades the recess and the shadow is gone. */
+    --bevel-down:
+      inset var(--lit-hi-x) var(--lit-hi-y) 2px var(--edge-sh),
+      inset calc(-1 * var(--lit-hi-x)) calc(-1 * var(--lit-hi-y)) 0 var(--edge-hi);
+
+    /* Brass fittings: a ring with a bright lip, and by torchlight a warm glow */
+    --brass-ring: 0 0 0 2px var(--mat-brass), 0 0 0 3px var(--mat-brass-deep), var(--brass-glow);
+  }
+
+  /* Letters cut into the surface: the carved stroke's far edge catches the light. */
+  .carved {
+    text-shadow: var(--lit-hi-x) var(--lit-hi-y) 0 var(--edge-hi);
+  }
+
+  @media (prefers-contrast: high) {
+    .carved {
+      text-shadow: none;
+    }
+  }
+}

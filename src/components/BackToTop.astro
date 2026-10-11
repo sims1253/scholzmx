@@ -57,14 +57,15 @@ const { className = '' } = Astro.props;
     /* Size and shape */
     width: 48px;
     height: 48px;
-    border-radius: 50%;
+    border-radius: 7px 9px 8px 7px / 8px 7px 9px 8px;
 
-    /* A quiet paper disc, so it never competes with the reading */
+    /* A rune hewn from the wall's stone: raised until you push it in */
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: var(--color-background);
-    border: 1px solid var(--rule-ink);
+    background: var(--tex-stone), var(--mat-stone);
+    border: 0;
+    box-shadow: var(--bevel-up);
     color: var(--color-ink-medium);
 
     /* Interactions */
@@ -89,13 +90,18 @@ const { className = '' } = Astro.props;
 
   .back-to-top:hover,
   .back-to-top:focus-visible {
-    border-color: var(--color-moss);
     color: var(--color-link-hover);
+  }
+
+  .back-to-top.visible:active {
+    background: var(--tex-stone), var(--mat-stone-deep);
+    box-shadow: var(--bevel-down);
+    transform: translateY(1px);
   }
 
   .back-to-top:focus-visible {
     outline: 2px solid var(--color-walnut);
-    outline-offset: 2px;
+    outline-offset: 3px;
   }
 
   .back-to-top-icon {
@@ -121,7 +127,7 @@ const { className = '' } = Astro.props;
   /* High contrast mode support */
   @media (prefers-contrast: high) {
     .back-to-top {
-      border-width: 2px;
+      border: 2px solid currentcolor;
     }
   }
 
