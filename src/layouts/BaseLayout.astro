@@ -25,6 +25,7 @@ import '../styles/tailwind.css'; // Utilities only - preserves existing design
 import '../styles/tailwind-utilities.css'; // Force utility generation
 import '../styles/margin-notes.css';
 import '../styles/index-list.css';
+import '../styles/tactile.css';
 
 export interface Props {
   title: string;
@@ -257,7 +258,7 @@ const hasInitial = isHome || /^\/(blog|recipes|notes)\/.+/.test(currentPath);
 
       <header class="site-header">
         <nav class="page-nav" aria-label="Main navigation" id="main-navigation">
-          <a href="/" class="site-logo" aria-current={isHome ? 'page' : undefined}>
+          <a href="/" class="site-logo carved" aria-current={isHome ? 'page' : undefined}>
             <span class="logo-text">Grotto</span>
           </a>
 
@@ -267,7 +268,7 @@ const hasInitial = isHome || /^\/(blog|recipes|notes)\/.+/.test(currentPath);
               return <li>
                 <a
                   href={href}
-                  class:list={['nav-link', { active }]}
+                  class:list={['nav-link', 'carved', { active }]}
                   aria-current={active ? 'page' : undefined}
                 >
                   {label}
