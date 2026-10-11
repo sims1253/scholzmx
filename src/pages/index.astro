@@ -56,24 +56,499 @@ const formatDate = (date: Date) =>
       </span>
     </h1>
 
-    <div class="portrait pasted">
-      <ImageFrame
-        src={portraitImage}
-        alt="Professional portrait of me"
-        alternateSrc={selfImage}
-        alternateAlt="More cool portrait of me"
-        style="watercolor"
-        fillMode="contain"
-        size="large"
-        loading="eager"
-        positionX={0}
-        positionY={2}
-        scale={1.4}
-        alternatePositionX={-5}
-        alternatePositionY={15}
-        alternateScale={1.5}
-      />
-    </div>
+    {/*
+      The grotto, cut open like a plate in an old book: the pergola's beam above, the wall below
+      with four niches, each keeping the thing a section of the site is made at. The wall's cut
+      edges are hatched the way a cutaway shows where the section was taken.
+    */}
+    <section class="grotto" aria-label="The grotto">
+      <div class="wall">
+        <div class="wall-cut wall-cut--left" aria-hidden="true"></div>
+        <div class="wall-cut wall-cut--right" aria-hidden="true"></div>
+
+        {/* The pergola: one beam, a vine along it, a few leaves hanging over the wall. */}
+        <svg
+          class="pergola plane plane--front"
+          viewBox="0 0 1600 150"
+          preserveAspectRatio="xMidYMin slice"
+          aria-hidden="true"
+        >
+          <defs>
+            {/* A grape leaf hanging from its stalk: five lobes and the veins that run to them. */}
+            <g id="grape-leaf" stroke-linejoin="round" stroke-linecap="round">
+              <path
+                d="M0 0 C-4 -3 -9 -4 -14 -2 C-22 -1 -29 3 -28 9 C-27 13 -22 15 -17 14 C-22 20 -25 29 -19 33 C-15 36 -10 32 -7 27 C-6 36 -4 44 0 48 C4 44 6 36 7 27 C10 32 15 36 19 33 C25 29 22 20 17 14 C22 15 27 13 28 9 C29 3 22 -1 14 -2 C9 -4 4 -3 0 0 Z"
+              />
+              <path
+                fill="none"
+                stroke-width="0.9"
+                opacity="0.7"
+                d="M0 2 L0 42 M0 2 L-24 8 M0 2 L24 8 M0 2 L-16 29 M0 2 L16 29"
+              />
+            </g>
+          </defs>
+          <g class="ink" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M0 22 C300 20 700 25 1600 21" stroke-width="2.2" />
+            <path d="M0 46 C400 48 900 43 1600 47" stroke-width="2.2" />
+            <path
+              d="M60 27 C300 35 700 32 1300 38 1480 39 1600 35"
+              stroke-width="0.8"
+              opacity="0.5"
+            />
+            <g stroke-width="1.6">
+              <path d="M180 22 v24" />
+              <path d="M520 21 v25" />
+              <path d="M860 23 v23" />
+              <path d="M1200 21 v25" />
+              <path d="M1500 22 v24" />
+            </g>
+            <g stroke-width="1.4">
+              <path d="M90 47 C120 56 150 54 176 70 196 82 200 96 214 108" />
+              <path d="M176 70 c8 -10 20 -8 22 2 c2 8 -8 10 -10 4" stroke-width="1.1" />
+              <path d="M586 46 C610 60 600 84 622 96 636 104 646 104 656 110" />
+              <path d="M622 96 c-10 2 -12 14 -4 16 c6 2 8 -6 4 -8" stroke-width="1.1" />
+              <path d="M800 47 C830 54 822 80 850 92 870 100 872 110 876 118" />
+              <path d="M850 92 c10 -8 22 -2 18 8 c-3 6 -10 4 -10 0" stroke-width="1.1" />
+              <path d="M1440 46 C1420 62 1448 78 1438 96 1432 106 1436 110 1440 114" />
+            </g>
+          </g>
+          <g class="leaf" stroke-width="1.3">
+            <use href="#grape-leaf" transform="translate(214 108) rotate(-18) scale(1.05)" />
+            <use href="#grape-leaf" transform="translate(656 110) rotate(12) scale(0.88)" />
+            <use href="#grape-leaf" transform="translate(876 118) rotate(-6)" />
+            <use href="#grape-leaf" transform="translate(1440 114) rotate(22) scale(0.72)" />
+          </g>
+        </svg>
+
+        <div class="wall-glow" aria-hidden="true"></div>
+
+        <nav class="niches plane plane--mid" aria-label="Sections of the site">
+          {/* The light that fills a niche when it is looked at: sun by day, torch by night. */}
+          <svg class="niche-defs" width="0" height="0" aria-hidden="true" focusable="false">
+            <defs>
+              <radialGradient id="niche-light" cx="50%" cy="30%" r="70%">
+                <stop offset="0" class="light-stop" stop-opacity="1"></stop>
+                <stop offset="1" class="light-stop" stop-opacity="0"></stop>
+              </radialGradient>
+              <clipPath id="clip-desk">
+                <path d="M36 222 V96 C36 66 60 52 100 52 c40 0 64 14 64 44 V222 Z" />
+              </clipPath>
+              <clipPath id="clip-pantry">
+                <path d="M36 222 V64 H164 V222 Z" />
+              </clipPath>
+              <clipPath id="clip-bench">
+                <path d="M36 222 V82 C60 58 140 58 164 82 V222 Z" />
+              </clipPath>
+              <clipPath id="clip-folio">
+                <path d="M36 222 V102 C36 72 70 62 100 48 c30 14 64 24 64 54 V222 Z" />
+              </clipPath>
+            </defs>
+          </svg>
+
+          {/* Blog: the writing desk */}
+          <a class="niche niche--desk" href="/blog">
+            <svg viewBox="0 0 200 240" aria-hidden="true">
+              <path class="recess" d="M36 222 V96 C36 66 60 52 100 52 c40 0 64 14 64 44 V222 Z" />
+              <rect
+                class="light"
+                x="36"
+                y="52"
+                width="128"
+                height="170"
+                clip-path="url(#clip-desk)"
+              />
+              <g class="ink" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path
+                  class="stone"
+                  d="M22 234 C23 190 21 140 22 92 22 50 56 35 100 36 c45 -1 78 14 78 56 1 48 -1 98 0 142"
+                />
+                <path
+                  d="M36 222 V96 C36 66 60 52 100 52 c40 0 64 14 64 44 V222"
+                  stroke-width="1.6"
+                />
+                <path d="M44 222 V100 C44 74 66 61 100 61" stroke-width="0.8" opacity="0.5" />
+                <path
+                  d="M164 108 l-10 6 M164 128 l-10 6 M164 148 l-10 6 M164 168 l-10 6 M164 188 l-10 6 M164 208 l-10 6"
+                  stroke-width="0.8"
+                  opacity="0.5"
+                />
+              </g>
+              <ellipse class="cast" cx="100" cy="221" rx="54" ry="5" />
+              <g class="thing" stroke-linecap="round" stroke-linejoin="round">
+                <g class="ink" fill="none" stroke-width="1.6">
+                  <path d="M52 164 L148 162 L152 172 L48 173 Z" />
+                  <path d="M58 173 V216 M142 172 V216 M58 198 H142" />
+                  <path d="M64 216 h-12 M148 216 h-12" stroke-width="1.2" />
+                </g>
+                <path class="sheet" d="M70 134 L118 129 L122 160 L74 165 Z" />
+                <g class="ink" fill="none" stroke-width="1.1">
+                  <path d="M70 134 L118 129 L122 160 L74 165 Z" stroke-width="1.3" />
+                  <path
+                    d="M78 141 c8 -2 16 0 24 -2 M79 148 c10 -1 18 -2 26 -3 M80 155 c6 0 12 -2 18 -2"
+                    opacity="0.85"
+                  />
+                </g>
+                <path class="wash wash--ink" d="M127 142 h14 v16 c0 3 -14 3 -14 0z" />
+                <g class="ink" fill="none" stroke-width="1.4">
+                  <path d="M127 142 h14 v16 c0 3 -14 3 -14 0z M130 142 v-4 h8 v4" />
+                  <path d="M135 140 C140 122 150 108 162 96" />
+                  <path
+                    d="M140 128 c6 -2 10 -6 16 -14 M144 120 c-6 -2 -8 -6 -8 -10 M150 110 c-4 -2 -6 -6 -6 -10 M153 106 c6 -2 8 -4 10 -8"
+                    stroke-width="1"
+                  />
+                </g>
+              </g>
+              <g class="ink" fill="none" stroke-width="1.6" stroke-linejoin="round">
+                <path d="M26 222 H174 l2 12 H24 Z" />
+                <path d="M30 228 h140" stroke-width="0.8" opacity="0.5" />
+              </g>
+            </svg>
+            <span class="niche-name">Blog</span>
+            <span class="niche-caption">the writing desk</span>
+          </a>
+
+          {/* Recipes: the pantry shelf */}
+          <a class="niche niche--pantry" href="/recipes">
+            <svg viewBox="0 0 200 240" aria-hidden="true">
+              <path class="recess" d="M36 222 V64 H164 V222 Z" />
+              <rect
+                class="light"
+                x="36"
+                y="64"
+                width="128"
+                height="158"
+                clip-path="url(#clip-pantry)"
+              />
+              <g class="ink" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path
+                  class="stone"
+                  d="M22 234 C23 180 21 120 22 50 c0 -4 2 -6 6 -6 h144 c4 0 6 2 6 6 1 62 -1 122 0 184"
+                />
+                <path d="M36 222 V64 H164 V222" stroke-width="1.6" />
+                <path d="M44 222 V72 H158" stroke-width="0.8" opacity="0.5" />
+                <path
+                  d="M164 84 l-10 6 M164 104 l-10 6 M164 124 l-10 6 M164 170 l-10 6 M164 190 l-10 6 M164 210 l-10 6"
+                  stroke-width="0.8"
+                  opacity="0.5"
+                />
+              </g>
+              <g class="thing" stroke-linecap="round" stroke-linejoin="round">
+                <g class="ink" fill="none" stroke-width="1.6">
+                  <path d="M36 138 H164 v8 H36 Z" />
+                  <path d="M40 142 h120" stroke-width="0.8" opacity="0.5" />
+                </g>
+                <ellipse class="cast" cx="100" cy="137" rx="50" ry="3" />
+                <path class="wash wash--moss" d="M52 100 c0 -4 24 -4 24 0 v34 c0 4 -24 4 -24 0z" />
+                <path class="wash wash--grape" d="M88 110 c0 -4 30 -4 30 0 v24 c0 4 -30 4 -30 0z" />
+                <path
+                  class="wash wash--tansy"
+                  d="M130 104 c0 -3 20 -3 20 0 v30 c0 4 -20 4 -20 0z"
+                />
+                <g class="ink" fill="none" stroke-width="1.4">
+                  <path d="M52 100 c0 -4 24 -4 24 0 v34 c0 4 -24 4 -24 0z M52 100 c0 4 24 4 24 0" />
+                  <path
+                    d="M50 96 c4 -6 24 -6 28 0 c-2 3 -4 3 -6 1 c-3 3 -6 3 -8 1 c-3 3 -6 3 -8 1 c-2 2 -4 1 -6 -3z"
+                    stroke-width="1.2"
+                  />
+                  <path
+                    d="M58 112 c4 2 6 6 4 10 M66 108 c-4 4 -2 10 2 14"
+                    stroke-width="1"
+                    opacity="0.8"
+                  />
+                  <path d="M88 110 c0 -4 30 -4 30 0 v24 c0 4 -30 4 -30 0z M88 110 c0 4 30 4 30 0" />
+                  <path d="M90 104 h26 v6 h-26z" stroke-width="1.2" />
+                  <path d="M96 118 h14 v10 h-14z" stroke-width="1" />
+                  <path d="M99 123 h8" stroke-width="0.9" opacity="0.7" />
+                  <path
+                    d="M130 104 c0 -3 20 -3 20 0 v30 c0 4 -20 4 -20 0z M130 104 c0 3 20 3 20 0 M132 100 h16"
+                  />
+                  <path d="M136 112 c2 4 2 10 0 16" stroke-width="1" opacity="0.7" />
+                </g>
+                <ellipse class="cast" cx="100" cy="221" rx="46" ry="5" />
+                <path
+                  class="wash wash--squash"
+                  d="M66 196 c0 -22 16 -34 34 -34 s34 12 34 34 c0 14 -16 22 -34 22 s-34 -8 -34 -22z"
+                />
+                <g class="ink" fill="none" stroke-width="1.5">
+                  <path
+                    d="M66 196 c0 -22 16 -34 34 -34 s34 12 34 34 c0 14 -16 22 -34 22 s-34 -8 -34 -22z"
+                  />
+                  <path
+                    d="M84 166 c-6 10 -6 36 -2 50 M100 162 c-2 14 -2 42 0 56 M116 166 c6 10 6 36 2 50"
+                    stroke-width="1.1"
+                    opacity="0.8"
+                  />
+                  <path d="M96 162 c-2 -6 0 -12 4 -14 c4 2 6 8 4 14" stroke-width="1.4" />
+                </g>
+                <path
+                  class="wash wash--tansy"
+                  d="M80 176 c4 -6 10 -8 16 -8 c-4 4 -8 8 -16 8z"
+                  opacity="0.7"
+                />
+              </g>
+              <g class="ink" fill="none" stroke-width="1.6" stroke-linejoin="round">
+                <path d="M26 222 H174 l2 12 H24 Z" />
+                <path d="M30 228 h140" stroke-width="0.8" opacity="0.5" />
+              </g>
+            </svg>
+            <span class="niche-name">Recipes</span>
+            <span class="niche-caption">the pantry shelf</span>
+          </a>
+
+          {/* Projects: the workbench, with a starling on it */}
+          <a class="niche niche--bench" href="/projects">
+            <svg viewBox="0 0 200 240" aria-hidden="true">
+              <path class="recess" d="M36 222 V82 C60 58 140 58 164 82 V222 Z" />
+              <rect
+                class="light"
+                x="36"
+                y="60"
+                width="128"
+                height="162"
+                clip-path="url(#clip-bench)"
+              />
+              <g class="ink" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path
+                  class="stone"
+                  d="M22 234 C23 186 21 128 22 74 50 42 150 42 178 74 c1 54 -1 112 0 160"
+                />
+                <path d="M36 222 V82 C60 58 140 58 164 82 V222" stroke-width="1.6" />
+                <path d="M44 222 V86 C66 66 134 66 156 86" stroke-width="0.8" opacity="0.5" />
+                <path
+                  d="M164 108 l-10 6 M164 128 l-10 6 M164 148 l-10 6 M164 168 l-10 6 M164 188 l-10 6 M164 208 l-10 6"
+                  stroke-width="0.8"
+                  opacity="0.5"
+                />
+              </g>
+              <ellipse class="cast" cx="100" cy="221" rx="56" ry="5" />
+              <g class="thing" stroke-linecap="round" stroke-linejoin="round">
+                <g class="ink" fill="none" stroke-width="1.6">
+                  <path d="M44 162 H156 v10 H44 Z" />
+                  <path
+                    d="M50 167 c20 1 40 -1 60 0 c12 0 24 0 40 0"
+                    stroke-width="0.8"
+                    opacity="0.5"
+                  />
+                  <path d="M58 172 L50 216 M68 172 L76 216 M52 204 H74" />
+                  <path d="M132 172 L124 216 M142 172 L150 216 M126 204 H148" />
+                </g>
+                <g class="ink" fill="none" stroke-width="1.5">
+                  <path d="M76 152 L110 157" stroke-width="2.2" />
+                  <path d="M108 148 h18 v14 h-18 z M112 148 v14" />
+                </g>
+                <g class="ink" fill="none" stroke-width="1.4">
+                  <circle cx="136" cy="138" r="13" />
+                  <circle cx="136" cy="138" r="4" />
+                  <path
+                    d="M136 121 v-4 M136 155 v4 M119 138 h-4 M153 138 h4 M124 126 l-3 -3 M148 150 l3 3 M148 126 l3 -3 M124 150 l-3 3"
+                    stroke-width="2.4"
+                  />
+                  <circle cx="136" cy="138" r="8.5" stroke-width="0.9" opacity="0.6" />
+                </g>
+                <g class="bird">
+                  <path
+                    class="wash wash--ink"
+                    d="M44 150 c4 -6 10 -6 16 -4 c6 -16 22 -18 30 -10 c6 6 8 14 4 20 c-6 8 -18 10 -30 6 c-6 -2 -12 -6 -20 -12z"
+                  />
+                  <g class="ink" fill="none" stroke-width="1.4">
+                    <path
+                      d="M44 150 c4 -6 10 -6 16 -4 c6 -16 22 -18 30 -10 c6 6 8 14 4 20 c-6 8 -18 10 -30 6 c-6 -2 -12 -6 -20 -12z"
+                    />
+                    <path d="M90 136 l10 2 l-9 4" stroke-width="1.3" />
+                    <path d="M74 162 l-2 8 M80 162 l2 8 M70 170 h6 M78 170 h6" stroke-width="1.2" />
+                  </g>
+                  <g class="speckle">
+                    <circle cx="64" cy="146" r="1.1" />
+                    <circle cx="72" cy="140" r="1.1" />
+                    <circle cx="80" cy="146" r="1.1" />
+                    <circle cx="70" cy="152" r="1.1" />
+                    <circle cx="78" cy="154" r="1.1" />
+                    <circle cx="58" cy="152" r="1" />
+                    <circle cx="86" cy="150" r="1" />
+                    <circle cx="76" cy="134" r="1" />
+                    <circle cx="92" cy="131" r="1.3" class="eye" />
+                  </g>
+                </g>
+              </g>
+              <g class="ink" fill="none" stroke-width="1.6" stroke-linejoin="round">
+                <path d="M26 222 H174 l2 12 H24 Z" />
+                <path d="M30 228 h140" stroke-width="0.8" opacity="0.5" />
+              </g>
+            </svg>
+            <span class="niche-name">Projects</span>
+            <span class="niche-caption">the workbench</span>
+          </a>
+
+          {/* Research: the folio, a pressed sprig taped to its page */}
+          <a class="niche niche--folio" href="/research">
+            <svg viewBox="0 0 200 240" aria-hidden="true">
+              <path class="recess" d="M36 222 V102 C36 72 70 62 100 48 c30 14 64 24 64 54 V222 Z" />
+              <rect
+                class="light"
+                x="36"
+                y="48"
+                width="128"
+                height="174"
+                clip-path="url(#clip-folio)"
+              />
+              <g class="ink" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path
+                  class="stone"
+                  d="M22 234 C23 190 21 140 22 94 22 56 66 44 100 30 c34 14 78 26 78 64 1 46 -1 96 0 140"
+                />
+                <path
+                  d="M36 222 V102 C36 72 70 62 100 48 c30 14 64 24 64 54 V222"
+                  stroke-width="1.6"
+                />
+                <path d="M44 222 V106 C44 80 72 70 100 58" stroke-width="0.8" opacity="0.5" />
+                <path
+                  d="M164 118 l-10 6 M164 138 l-10 6 M164 158 l-10 6 M164 178 l-10 6 M164 198 l-10 6"
+                  stroke-width="0.8"
+                  opacity="0.5"
+                />
+              </g>
+              <ellipse class="cast" cx="100" cy="221" rx="50" ry="5" />
+              <g class="thing" stroke-linecap="round" stroke-linejoin="round">
+                <g class="ink" fill="none" stroke-width="1.6">
+                  <path d="M54 172 L146 172 L138 150 L62 150 Z" />
+                  <path d="M100 172 V214 M80 216 H120" />
+                  <path
+                    d="M96 180 c-6 2 -8 8 -10 14 M104 180 c6 2 8 8 10 14"
+                    stroke-width="1"
+                    opacity="0.6"
+                  />
+                </g>
+                <path
+                  class="sheet"
+                  d="M56 146 C70 138 86 139 99 146 L99 166 C86 160 70 160 58 168 Z"
+                />
+                <path
+                  class="sheet"
+                  d="M144 146 C130 138 114 139 101 146 L101 166 C114 160 130 160 142 168 Z"
+                />
+                <g class="ink" fill="none" stroke-width="1.3">
+                  <path d="M56 146 C70 138 86 139 99 146 L99 166 C86 160 70 160 58 168 Z" />
+                  <path d="M144 146 C130 138 114 139 101 146 L101 166 C114 160 130 160 142 168 Z" />
+                  <path
+                    d="M58 168 c-2 3 0 6 2 6 M142 168 c2 3 0 6 -2 6 M60 174 c14 -6 28 -5 40 1 c12 -6 26 -7 40 -1"
+                    stroke-width="1.1"
+                  />
+                  <path
+                    d="M64 150 c8 -2 16 -2 26 0 M64 155 c8 -2 16 -2 26 0 M65 160 c6 -2 12 -2 20 0"
+                    stroke-width="0.9"
+                    opacity="0.7"
+                  />
+                </g>
+                <g class="sprig">
+                  <path
+                    class="wash wash--moss"
+                    d="M118 146 c-3 -2 -6 -1 -7 2 c3 1 6 0 7 -2z M124 143 c3 -2 6 -1 7 2 c-3 1 -6 0 -7 -2z M114 152 c-3 -2 -6 -1 -7 2 c3 1 6 0 7 -2z M128 149 c3 -2 6 -1 7 2 c-3 1 -6 0 -7 -2z M112 158 c-3 -2 -6 -1 -7 2 c3 1 6 0 7 -2z M130 155 c3 -2 6 -1 7 2 c-3 1 -6 0 -7 -2z"
+                  />
+                  <g class="ink" fill="none" stroke-width="1">
+                    <path d="M121 140 L120 164" />
+                    <path
+                      d="M118 146 c-3 -2 -6 -1 -7 2 c3 1 6 0 7 -2z M124 143 c3 -2 6 -1 7 2 c-3 1 -6 0 -7 -2z M114 152 c-3 -2 -6 -1 -7 2 c3 1 6 0 7 -2z M128 149 c3 -2 6 -1 7 2 c-3 1 -6 0 -7 -2z M112 158 c-3 -2 -6 -1 -7 2 c3 1 6 0 7 -2z M130 155 c3 -2 6 -1 7 2 c-3 1 -6 0 -7 -2z"
+                    />
+                  </g>
+                  <path class="tape" d="M116 141 l9 1 l-1 4 l-9 -1z" />
+                  <path class="tape" d="M115 159 l9 1 l-1 4 l-9 -1z" />
+                </g>
+                <g class="ink" fill="none" stroke-width="1.4">
+                  <circle cx="136" cy="118" r="10" />
+                  <circle cx="136" cy="118" r="7" stroke-width="0.8" opacity="0.5" />
+                  <path d="M143 125 L154 136" stroke-width="2.4" />
+                  <path d="M131 114 c2 -3 5 -4 8 -3" stroke-width="1" opacity="0.7" />
+                </g>
+              </g>
+              <g class="ink" fill="none" stroke-width="1.6" stroke-linejoin="round">
+                <path d="M26 222 H174 l2 12 H24 Z" />
+                <path d="M30 228 h140" stroke-width="0.8" opacity="0.5" />
+              </g>
+            </svg>
+            <span class="niche-name">Research</span>
+            <span class="niche-caption">the folio</span>
+          </a>
+        </nav>
+
+        <div class="hung plane plane--mid">
+          {/* The torch in its bracket. By day it waits; after dark it lights the wall. */}
+          <svg class="torch" viewBox="0 0 70 160" aria-hidden="true">
+            <defs>
+              <linearGradient id="grotto-flame" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" class="flame-tip"></stop>
+                <stop offset="1" class="flame-base"></stop>
+              </linearGradient>
+              <radialGradient id="grotto-halo">
+                <stop offset="0" stop-color="rgb(255 170 70)" stop-opacity="0.55"></stop>
+                <stop offset="1" stop-color="rgb(255 140 50)" stop-opacity="0"></stop>
+              </radialGradient>
+            </defs>
+            <g class="flame-glow"><circle cx="35" cy="54" r="46" fill="url(#grotto-halo)" /></g>
+            <g class="flame">
+              <path
+                fill="url(#grotto-flame)"
+                transform="translate(13 20) scale(0.72)"
+                d="M32 8c6 7 4 13-1 18 5-1 8-5 8-10 5 5 7 13 2 19-4 5-12 6-18 3-7-4-7-12-2-17 0 6 6 9 10 7-3-2-5-6-5-9 0-2 1-5 6-11z"
+              ></path>
+            </g>
+            <g
+              class="ink"
+              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="1.6"
+            >
+              <path d="M29 62 l-3 68 M41 62 l3 68" />
+              <path d="M27 62 c-2 -8 18 -8 16 0 c0 8 -16 8 -16 0z" stroke-width="1.4" />
+              <path d="M28 66 l14 6 M28 74 l14 6 M28 82 l14 6" stroke-width="1" />
+              <path
+                d="M24 60 c2 24 2 32 2 30 M46 60 c-2 24 -2 32 -2 30"
+                stroke-width="1"
+                opacity="0.6"
+              />
+              <path d="M22 104 c4 -8 22 -8 26 0 c-4 8 -22 8 -26 0z" />
+              <path d="M48 104 l16 -2 M62 96 v12" />
+              <path d="M26 130 c0 6 18 6 18 0 l-1 -10 h-16z" />
+            </g>
+          </svg>
+
+          <div class="portrait pasted">
+            <ImageFrame
+              src={portraitImage}
+              alt="Professional portrait of me"
+              alternateSrc={selfImage}
+              alternateAlt="More cool portrait of me"
+              style="watercolor"
+              fillMode="contain"
+              size="large"
+              loading="eager"
+              positionX={0}
+              positionY={2}
+              scale={1.4}
+              alternatePositionX={-5}
+              alternatePositionY={15}
+              alternateScale={1.5}
+            />
+          </div>
+
+          {newestPost && <aside class="latest pasted" aria-label="Newest post">
+            <p>
+              The newest post, from
+              <time datetime={newestPost.date.toISOString()}>{formatDate(newestPost.date)}</time>,
+              is
+              <a
+                href={
+                  newestPost.type === 'blog'
+                    ? `/blog/${newestPost.post.id}`
+                    : `/recipes/${newestPost.post.id}`
+                }
+                >{newestPost.post.data.title}</a
+              >{/[.!?]$/.test(newestPost.post.data.title) ? '' : '.'}
+            </p>
+          </aside>}
+        </div>
+      </div>
+    </section>
 
     <div class="about prose">
       <p>
@@ -100,48 +575,92 @@ const formatDate = (date: Date) =>
         :)
       </p>
     </div>
-
-    {newestPost && <aside class="latest" aria-label="Newest post">
-      <p>
-        The newest post, from
-        <time datetime={newestPost.date.toISOString()}>{formatDate(newestPost.date)}</time>, is
-        <a
-          href={
-            newestPost.type === 'blog'
-              ? `/blog/${newestPost.post.id}`
-              : `/recipes/${newestPost.post.id}`
-          }
-          >{newestPost.post.data.title}</a
-        >{/[.!?]$/.test(newestPost.post.data.title) ? '' : '.'}
-      </p>
-    </aside>}
   </div>
 </BaseLayout>
 
-<style>
-  /*
-   * Desktop:  [portrait] [about, the reading column] [newest post]
-   * The greeting starts on the reading column's left edge, so one axis runs down the page.
-   */
-  .home {
-    --portrait-col: 200px;
-    --aside-col: 12rem;
-    --gap: clamp(1.5rem, 3vw, 3rem);
+<script>
+  // Gentle depth: the planes of the wall shift a few pixels with the pointer and with scrolling.
+  // Everything is a transform set through two custom properties; nothing runs on its own.
+  const wall = document.querySelector<HTMLElement>('.wall');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
 
+  if (wall && !reduced) {
+    let inView = false;
+    let queued = false;
+    let px = 0;
+    let py = 0;
+    let sy = 0;
+
+    const paint = () => {
+      queued = false;
+      wall.style.setProperty('--px', px.toFixed(3));
+      wall.style.setProperty('--py', py.toFixed(3));
+      wall.style.setProperty('--sy', sy.toFixed(3));
+    };
+    const queue = () => {
+      if (!queued) {
+        queued = true;
+        requestAnimationFrame(paint);
+      }
+    };
+
+    const onScroll = () => {
+      if (!inView || document.hidden) return;
+      const box = wall.getBoundingClientRect();
+      // -1 when the wall has scrolled to the top of the window, 0 when it sits mid-screen
+      sy = Math.max(-1, Math.min(1, (box.top + box.height / 2 - innerHeight / 2) / innerHeight));
+      queue();
+    };
+
+    const rest = () => {
+      wall.classList.toggle('is-resting', !inView || document.hidden);
+    };
+
+    new IntersectionObserver(
+      ([entry]) => {
+        inView = entry?.isIntersecting ?? false;
+        rest();
+        if (inView) onScroll();
+      },
+      { rootMargin: '10% 0px' }
+    ).observe(wall);
+    document.addEventListener('visibilitychange', rest);
+    addEventListener('scroll', onScroll, { passive: true });
+
+    if (fine) {
+      wall.addEventListener('pointermove', (event) => {
+        if (!inView) return;
+        const box = wall.getBoundingClientRect();
+        px = (event.clientX - box.left) / box.width - 0.5;
+        py = (event.clientY - box.top) / box.height - 0.5;
+        queue();
+      });
+      wall.addEventListener('pointerleave', () => {
+        px = 0;
+        py = 0;
+        queue();
+      });
+    }
+  }
+</script>
+
+<style>
+  /* The plate and the greeting share one width, so the greeting starts on the wall's edge. */
+  .home {
     display: grid;
-    grid-template-columns:
-      [portrait] var(--portrait-col)
-      [text] minmax(0, var(--measure-prose))
-      [aside] var(--aside-col);
-    column-gap: var(--gap);
-    justify-content: center;
-    align-items: start;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    width: min(100%, 1240px);
+    margin-inline: auto;
   }
 
   .welcome {
-    grid-column: text / -1;
+    width: 100%;
     max-width: 21em;
-    margin: clamp(2rem, 7vw, 5.5rem) 0 clamp(2.5rem, 6vw, 4.5rem);
+    justify-self: start;
+    margin: clamp(2rem, 6vw, 4.5rem) 0 clamp(2rem, 5vw, 3rem);
+    padding-inline: 0.25rem;
     font-family: var(--font-heading);
     font-size: var(--text-display);
     font-weight: 400;
@@ -163,11 +682,361 @@ const formatDate = (date: Date) =>
     color: var(--color-text-secondary);
   }
 
+  /* ===== The grotto plate ===== */
+
+  .grotto {
+    /* By day the niches hold the canopy's shade, and it leans with the sun. */
+    --wall-sheet: var(--paper-sheet);
+    --wall-line: color-mix(in srgb, var(--color-ink-dark) 70%, var(--color-parchment));
+    --niche-shade: rgb(var(--sun-shade, 58 78 26) / 0.26);
+    --niche-light: rgb(255 226 150 / 0.55);
+    --cast-shade: rgb(var(--sun-shade, 58 78 26) / 0.42);
+    --cast-skew: var(--sun-skew, 0deg);
+    --cast-stretch: var(--sun-stretch, 1);
+    --wall-glow: var(--sun-glow, none);
+    --flame-show: 0;
+    --flame-flicker: none;
+    --px: 0;
+    --py: 0;
+    --sy: 0;
+
+    width: 100%;
+    margin-bottom: clamp(2.5rem, 6vw, 4.5rem);
+  }
+
+  /* Torchlight: the wall goes dark, the niches darker, and the torch does the lighting. */
+  :global(:root[data-theme='dark']) .grotto {
+    --wall-sheet: color-mix(in srgb, var(--color-parchment-light) 80%, var(--color-parchment));
+    --wall-line: color-mix(in srgb, var(--color-ink-dark) 55%, var(--color-parchment));
+    --niche-shade: rgb(8 6 3 / 0.7);
+    --niche-light: rgb(255 158 64 / 0.5);
+    --cast-shade: rgb(8 6 3 / 0.55);
+    --cast-skew: -14deg;
+    --cast-stretch: 1.2;
+    --wall-glow: radial-gradient(
+      ellipse 60% 80% at 75% 12%,
+      rgb(255 158 64 / 0.3),
+      rgb(255 128 48 / 0.1) 45%,
+      transparent 72%
+    );
+    --flame-show: 1;
+    --flame-flicker: torch-flicker 5.3s linear infinite;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .grotto {
+      --wall-sheet: color-mix(in srgb, var(--color-parchment-light) 80%, var(--color-parchment));
+      --wall-line: color-mix(in srgb, var(--color-ink-dark) 55%, var(--color-parchment));
+      --niche-shade: rgb(8 6 3 / 0.7);
+      --niche-light: rgb(255 158 64 / 0.5);
+      --cast-shade: rgb(8 6 3 / 0.55);
+      --cast-skew: -14deg;
+      --cast-stretch: 1.2;
+      --wall-glow: radial-gradient(
+        ellipse 60% 80% at 75% 12%,
+        rgb(255 158 64 / 0.3),
+        rgb(255 128 48 / 0.1) 45%,
+        transparent 72%
+      );
+      --flame-show: 1;
+      --flame-flicker: torch-flicker 5.3s linear infinite;
+    }
+  }
+
+  .wall {
+    position: relative;
+    display: grid;
+    grid-template-columns: [niches] 1fr [hung] auto;
+    column-gap: clamp(1.5rem, 3vw, 2.5rem);
+    align-items: end;
+    padding: 4.75rem clamp(2rem, 4vw, 3rem) 2.5rem;
+    overflow: hidden;
+    background: var(--wall-sheet);
+    border: 1.5px solid var(--wall-line);
+    border-radius: 3px 2px 4px 2px;
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--wall-sheet) 60%, transparent),
+      0 1px 2px color-mix(in srgb, var(--color-ink-dark) 14%, transparent),
+      0 18px 36px -24px color-mix(in srgb, var(--color-ink-dark) 40%, transparent);
+  }
+
+  /* The light on the wall: the sun's evening glow by day, the torch after dark. */
+  .wall-glow {
+    position: absolute;
+    inset: 0;
+    background: var(--wall-glow);
+    animation: var(--flame-flicker);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Where the plate cuts through the wall, the section is hatched. */
+  .wall-cut {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 1.1rem;
+    background: repeating-linear-gradient(-55deg, var(--wall-line) 0 1px, transparent 1px 6px);
+    border-right: 1px solid var(--wall-line);
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  .wall-cut--right {
+    inset: 0 0 0 auto;
+    border-right: 0;
+    border-left: 1px solid var(--wall-line);
+  }
+
+  .plane {
+    will-change: transform;
+    transition: transform 0.7s cubic-bezier(0.2, 0.6, 0.2, 1);
+  }
+
+  .plane--mid {
+    transform: translate3d(calc(var(--px) * -6px), calc(var(--py) * -4px + var(--sy) * 4px), 0);
+  }
+
+  .plane--front {
+    transform: translate3d(calc(var(--px) * -14px), calc(var(--py) * -8px + var(--sy) * 12px), 0);
+  }
+
+  /* Ink and washes: everything drawn takes its colour from the page's ink and botanicals. */
+  .ink {
+    stroke: var(--color-ink-dark);
+  }
+
+  .leaf {
+    fill: color-mix(in srgb, var(--color-moss) 55%, var(--wall-sheet));
+    stroke: var(--color-ink-dark);
+  }
+
+  .pergola {
+    position: absolute;
+    top: -0.25rem;
+    left: 0;
+    width: 100%;
+    height: 8rem;
+    overflow: visible;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* The torch */
+
+  /* The torch hangs beside the portrait, so it keeps its place at every width. */
+  .torch {
+    position: absolute;
+    top: -3.5rem;
+    left: -4.5rem;
+    width: 3.4rem;
+    height: 7.8rem;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .flame,
+  .flame-glow {
+    opacity: var(--flame-show);
+    transition: opacity var(--transition-medium);
+  }
+
+  .flame path {
+    stroke: var(--color-ochre);
+    stroke-width: 1;
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    animation: flame-dance 1.7s ease-in-out infinite;
+    animation-play-state: paused;
+  }
+
+  .flame-glow {
+    animation: var(--flame-flicker);
+  }
+
+  .flame-tip {
+    stop-color: var(--color-tansy);
+  }
+
+  .flame-base {
+    stop-color: var(--torch-flame-base);
+  }
+
+  :global(:root[data-theme='dark']) .flame path {
+    animation-play-state: running;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .flame path {
+      animation-play-state: running;
+    }
+  }
+
+  /* Offscreen or in a hidden tab, the flame holds still. */
+  .is-resting .flame path,
+  .is-resting .flame-glow,
+  .is-resting .wall-glow {
+    animation-play-state: paused;
+  }
+
+  /* ===== The niches ===== */
+
+  .niches {
+    grid-column: niches;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 12.5rem));
+    gap: clamp(0.75rem, 2vw, 1.25rem);
+    align-items: end;
+    position: relative;
+    z-index: 1;
+  }
+
+  .niche {
+    display: grid;
+    justify-items: center;
+    row-gap: 0.1rem;
+    text-decoration: none;
+    color: var(--color-text-primary);
+    border-radius: 4px;
+  }
+
+  .niche:focus-visible {
+    outline: 2px solid var(--color-moss);
+    outline-offset: 4px;
+  }
+
+  .niche svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .niche-name {
+    margin-top: 0.35rem;
+    font-family: var(--font-label);
+    font-size: var(--text-lg);
+    letter-spacing: 0.04em;
+    line-height: 1.1;
+  }
+
+  .niche-caption {
+    font-family: var(--font-heading);
+    font-style: italic;
+    font-size: var(--text-sm);
+    line-height: 1.2;
+    color: var(--color-text-muted);
+  }
+
+  .niche:hover .niche-name,
+  .niche:focus-visible .niche-name {
+    color: var(--color-link-hover);
+  }
+
+  .recess {
+    fill: var(--niche-shade);
+  }
+
+  .stone {
+    stroke-width: 1.1;
+    opacity: 0.8;
+  }
+
+  .niche-defs {
+    position: absolute;
+  }
+
+  .light-stop {
+    stop-color: var(--niche-light);
+  }
+
+  .light {
+    fill: url('#niche-light');
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+
+  /* The shadow a thing throws on its sill leans with the sun, or away from the torch. */
+  .cast {
+    fill: var(--cast-shade);
+    transform: translateY(-4px) skewX(var(--cast-skew)) scaleX(var(--cast-stretch));
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+  }
+
+  .thing {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .niche:hover .light,
+  .niche:focus-visible .light {
+    opacity: 1;
+  }
+
+  .niche:hover .thing,
+  .niche:focus-visible .thing {
+    transform: translateY(-3px);
+  }
+
+  .sheet {
+    fill: var(--print-sheet);
+  }
+
+  .tape {
+    fill: var(--tape-strip);
+    stroke: var(--color-ink-dark);
+    stroke-width: 0.6;
+    opacity: 0.95;
+  }
+
+  .wash {
+    stroke: none;
+  }
+
+  .wash--ink {
+    fill: var(--color-ink-dark);
+  }
+
+  .wash--moss {
+    fill: color-mix(in srgb, var(--color-moss) 60%, var(--wall-sheet));
+  }
+
+  .wash--grape {
+    fill: color-mix(in srgb, var(--color-clay) 70%, var(--wall-sheet));
+  }
+
+  .wash--tansy {
+    fill: color-mix(in srgb, var(--color-tansy) 60%, var(--wall-sheet));
+  }
+
+  .wash--squash {
+    fill: color-mix(in srgb, var(--color-ochre) 75%, var(--color-tansy));
+  }
+
+  .speckle {
+    fill: var(--wall-sheet);
+  }
+
+  .speckle .eye {
+    fill: var(--color-tansy);
+  }
+
+  /* ===== Hung on the wall: the portrait and the newest post ===== */
+
+  .hung {
+    grid-column: hung;
+    display: grid;
+    justify-items: center;
+    row-gap: 1.25rem;
+    align-self: center;
+    position: relative;
+    z-index: 1;
+    width: 210px; /* The portrait's own width; the frame is sized in pixels. */
+  }
+
+  /* Kept square: the smoke test measures the photograph against its frame. */
   .portrait {
-    grid-column: portrait;
     width: fit-content;
-    margin-top: 0.4rem;
-    justify-self: end;
   }
 
   /* A photograph pasted in, not a cut-out blob. The frame's geometry stays untouched. */
@@ -183,23 +1052,30 @@ const formatDate = (date: Date) =>
     border-radius: 0;
   }
 
-  .about {
-    grid-column: text;
-  }
-
-  .about p {
-    margin-bottom: 1em;
-  }
-
   .latest {
-    grid-column: aside;
-    margin-top: 0.4rem;
-    padding-top: 0.6rem;
-    border-top: 2px solid var(--color-tansy);
+    width: 100%;
+    margin: 0;
+    padding: 0.9rem 0.9rem 0.8rem;
+    background: var(--print-sheet);
+    transform: rotate(1.4deg);
+    box-shadow:
+      0 1px 2px color-mix(in srgb, var(--color-ink-dark) 16%, transparent),
+      0 8px 18px -12px color-mix(in srgb, var(--color-ink-dark) 35%, transparent);
     font-size: var(--text-sm);
     font-style: italic;
     line-height: 1.45;
     color: var(--color-text-muted);
+  }
+
+  /* The slip is paper even by torchlight, so its ink stays dark. */
+  :global(:root[data-theme='dark']) .latest {
+    color: color-mix(in srgb, var(--color-parchment) 85%, black);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .latest {
+      color: color-mix(in srgb, var(--color-parchment) 85%, black);
+    }
   }
 
   .latest p {
@@ -211,42 +1087,96 @@ const formatDate = (date: Date) =>
     color: var(--color-link);
   }
 
+  :global(:root[data-theme='dark']) .latest a {
+    color: #6b4a00;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .latest a {
+      color: #6b4a00;
+    }
+  }
+
   .latest time {
     font-variant-numeric: oldstyle-nums;
   }
 
-  /* Medium screens: the newest post moves under the text. */
-  @media (max-width: 72rem) {
-    .home {
-      grid-template-columns: [portrait] var(--portrait-col) [text aside] minmax(
-          0,
-          var(--measure-prose)
-        );
-    }
+  .about {
+    width: min(100%, var(--measure-prose));
+  }
 
-    .latest {
-      grid-column: aside;
-      max-width: 22rem;
-      margin-top: var(--space-md);
+  .about p {
+    margin-bottom: 1em;
+  }
+
+  /* Medium screens: the portrait and note keep their column, the niches tighten. */
+  @media (max-width: 72rem) {
+    .niches {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
     }
   }
 
-  /* Narrow screens: one column, portrait between greeting and text. */
+  /* Phones: the portrait hangs under the beam, the niches sit two by two beneath it. */
   @media (max-width: 48rem) {
-    .home {
+    .welcome {
+      padding-inline: 0;
+    }
+
+    .wall {
       grid-template-columns: minmax(0, 1fr);
+      row-gap: 1.5rem;
+      padding: 6rem 1.5rem 2rem;
     }
 
-    .welcome,
-    .portrait,
-    .about,
-    .latest {
+    .pergola {
+      height: 6rem;
+    }
+
+    .torch {
+      top: -4.5rem;
+      left: auto;
+      right: 0.25rem;
+      width: 2.6rem;
+      height: 6rem;
+    }
+
+    .hung {
       grid-column: 1;
+      grid-row: 1;
+      width: 100%;
+      row-gap: 1.5rem;
     }
 
-    .portrait {
-      justify-self: center;
-      margin: 0 0 var(--space-lg);
+    .niches {
+      grid-column: 1;
+      grid-row: 2;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem 1.25rem;
+    }
+
+    .latest {
+      max-width: 18rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .plane,
+    .thing,
+    .light {
+      transition: none;
+    }
+
+    .flame path,
+    .flame-glow,
+    .wall-glow {
+      animation: none;
+    }
+  }
+
+  @media print {
+    .wall-glow,
+    .torch {
+      display: none;
     }
   }
 </style>
