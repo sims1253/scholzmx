@@ -39,6 +39,7 @@ export interface Props {
   alternateScale?: number; // Scale for second image
   alternateFillMode?: 'cover' | 'contain' | 'fill'; // Fill mode for second image
   clickable?: boolean; // Whether the frame should be clickable (auto-enabled if alternateSrc provided)
+  film?: boolean; // Print the photograph on film: lifted shadows and grain (plates.css)
 }
 
 const {
@@ -66,6 +67,7 @@ const {
   alternateScale,
   alternateFillMode,
   clickable,
+  film = false,
 } = Astro.props;
 
 // Smart defaults: if no positioning/scaling is provided, use simple fill mode
@@ -230,7 +232,7 @@ const captionId = hasCaption
         isClickable
           ? 'clickable tw:cursor-pointer tw:transition-transform tw:duration-200 tw:ease-in-out'
           : ''
-      } ${containerClass} ${
+      } ${film ? 'film' : ''} ${containerClass} ${
         style === 'hero'
           ? 'tw:w-full tw:max-w-5xl tw:mx-auto tw:px-8 tw:-mt-lg tw:mb-lg tw:aspect-[3/2] tw:md:aspect-[3/2] tw:sm:aspect-[4/3]'
           : ''
@@ -368,6 +370,7 @@ const captionId = hasCaption
             )}
           </div>
         ))}
+      {film && <i class="film-emulsion" aria-hidden="true" />}
     </div>
     <figcaption class="image-caption" id={captionId}>
       {caption}
@@ -378,7 +381,7 @@ const captionId = hasCaption
   <div
     class={`image-frame image-frame-${style} tw:relative tw:overflow-hidden tw:block tw:mx-auto ${className} ${
       isClickable ? 'clickable tw:cursor-pointer' : ''
-    } ${containerClass} ${
+    } ${film ? 'film' : ''} ${containerClass} ${
       style === 'hero'
         ? 'tw:w-full tw:max-w-5xl tw:mx-auto tw:px-8 tw:-mt-lg tw:mb-lg tw:aspect-[3/2] tw:md:aspect-[3/2] tw:sm:aspect-[4/3]'
         : ''
@@ -515,6 +518,7 @@ const captionId = hasCaption
           )}
         </div>
       ))}
+    {film && <i class="film-emulsion" aria-hidden="true" />}
   </div>
 )}
 

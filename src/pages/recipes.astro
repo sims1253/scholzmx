@@ -46,6 +46,7 @@ const tags = [...new Set(recipes.flatMap((recipe) => recipe.data.tags ?? []))].s
         columns="auto"
         itemMinWidth="26rem"
         media="thumb"
+        film
         headingLevel={2}
         tagBase="/recipes"
         items={entries.map((recipe) => ({

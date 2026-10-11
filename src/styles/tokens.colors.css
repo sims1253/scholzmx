@@ -54,6 +54,19 @@
   --print-sheet: #fbfaf5; /* Prints stay paper-white, even by torchlight */
   --print-dim: none;
 
+  /* Prints as plates: the ink printed on the sheet, the keyline round the image, the
+     pressed plate mark an engraving leaves (lit from the top left by day), and film:
+     shadows lifted to the colour of the canopy's shade at this hour, graded gently. */
+  --print-ink: #3b4436;
+  --print-ink-soft: #525c4b;
+  --plate-keyline: rgb(34 41 30 / 0.32);
+  --plate-mark:
+    inset 0 0 0 1px rgb(34 41 30 / 0.04), inset 1px 1px 2px rgb(34 41 30 / 0.12),
+    inset -1px -1px 1px rgb(255 255 255 / 0.6);
+  --film-lift: rgb(var(--sun-shade, 58 78 26));
+  --film-strength: 0.45;
+  --film-grade: saturate(0.86) contrast(0.96);
+
   /* The canopy: leaf shadows by day, torchlight by night */
   /* The canopy by day follows the sun (set by BaseLayout's head script) */
   --canopy-shade: rgb(var(--sun-shade, 58 78 26) / 0.2);
@@ -106,6 +119,17 @@
     --paper-sheet: var(--color-parchment-light);
     --print-sheet: #e2dacb;
     --print-dim: brightness(0.8) sepia(0.15); /* Warm and dim, like the paper around it */
+
+    /* Plates by torchlight: lit from the torch's corner, shadows lifted ember-brown */
+    --print-ink: #3a3024;
+    --print-ink-soft: #5a4d3b;
+    --plate-keyline: rgb(58 48 36 / 0.45);
+    --plate-mark:
+      inset 0 0 0 1px rgb(40 28 14 / 0.06), inset -1px 1px 2px rgb(40 28 14 / 0.22),
+      inset 1px -1px 1px rgb(255 240 214 / 0.35);
+    --film-lift: #6a3d18;
+    --film-strength: 0.5;
+    --film-grade: brightness(0.82) sepia(0.18) saturate(0.82) contrast(0.95);
 
     --canopy-shade: rgb(14 10 6 / 0.88);
     --canopy-glow: radial-gradient(
@@ -168,6 +192,17 @@
   --paper-sheet: var(--color-parchment-light);
   --print-sheet: #e2dacb;
   --print-dim: brightness(0.8) sepia(0.15);
+
+  /* Plates by torchlight: lit from the torch's corner, shadows lifted ember-brown */
+  --print-ink: #3a3024;
+  --print-ink-soft: #5a4d3b;
+  --plate-keyline: rgb(58 48 36 / 0.45);
+  --plate-mark:
+    inset 0 0 0 1px rgb(40 28 14 / 0.06), inset -1px 1px 2px rgb(40 28 14 / 0.22),
+    inset 1px -1px 1px rgb(255 240 214 / 0.35);
+  --film-lift: #6a3d18;
+  --film-strength: 0.5;
+  --film-grade: brightness(0.82) sepia(0.18) saturate(0.82) contrast(0.95);
 
   --canopy-shade: rgb(14 10 6 / 0.88);
   --canopy-glow: radial-gradient(

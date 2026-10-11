@@ -3,6 +3,7 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+import rehypePlates from './src/lib/rehype-plates.mjs';
 import { unified } from '@astrojs/markdown-remark';
 import purgecss from 'astro-purgecss';
 import pagefind from 'astro-pagefind';
@@ -68,6 +69,9 @@ export default defineConfig({
         /^border/,
         /^vine/,
         /^portrait/,
+        // Plates and film: the plate wrapper comes from src/lib/rehype-plates.mjs
+        /^plate/,
+        /^film/,
         // Keep math/code elements
         'astro-code',
         'copy-button',
@@ -125,7 +129,7 @@ export default defineConfig({
 
   // Use Astro's native markdown processing with math support and Gruvbox themes
   markdown: {
-    processor: unified({ remarkPlugins: [remarkMath], rehypePlugins: [rehypeKatex] }),
+    processor: unified({ remarkPlugins: [remarkMath], rehypePlugins: [rehypeKatex, rehypePlates] }),
     shikiConfig: {
       themes: {
         light: 'kanagawa-lotus',

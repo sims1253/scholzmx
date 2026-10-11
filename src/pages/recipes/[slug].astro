@@ -68,19 +68,22 @@ const tagLinks = tags.map((text) => ({ text, href: `/recipes?tag=${encodeURIComp
       )}
     </header>
 
-    {recipe.data.heroImage && <div class="recipe-hero pasted">
-      <ImageFrame
-        src={recipe.data.heroImage}
-        alt={recipe.data.title}
-        style="hero"
-        aspectRatio="3/2"
-        scale={recipe.data.heroImageScale}
-        positionX={recipe.data.heroImagePositionX ? recipe.data.heroImagePositionX * 100 : 0}
-        positionY={recipe.data.heroImagePositionY ? recipe.data.heroImagePositionY * 100 : 0}
-        loading="eager"
-        width={800}
-        height={400}
-      />
+    {recipe.data.heroImage && <div class="recipe-hero pasted plate-sheet">
+      <div class="plate">
+        <ImageFrame
+          src={recipe.data.heroImage}
+          alt={recipe.data.title}
+          style="hero"
+          aspectRatio="3/2"
+          scale={recipe.data.heroImageScale}
+          positionX={recipe.data.heroImagePositionX ? recipe.data.heroImagePositionX * 100 : 0}
+          positionY={recipe.data.heroImagePositionY ? recipe.data.heroImagePositionY * 100 : 0}
+          loading="eager"
+          width={800}
+          height={400}
+          film
+        />
+      </div>
     </div>}
 
     {recipe.data.steps && (
@@ -154,21 +157,12 @@ const tagLinks = tags.map((text) => ({ text, href: `/recipes?tag=${encodeURIComp
   .recipe-hero :global(.image-frame) {
     margin: 0;
     padding: 0;
-    border-radius: 2px;
-    box-shadow:
-      0 1px 2px color-mix(in srgb, var(--color-ink-dark) 16%, transparent),
-      0 14px 28px -16px color-mix(in srgb, var(--color-ink-dark) 40%, transparent);
+    border-radius: 0;
   }
 
   .recipe-body :global(strong) {
     font-weight: 700;
     color: var(--color-text-primary);
-  }
-
-  .recipe-body :global(hr) {
-    margin: var(--space-xl) 0;
-    border: 0;
-    border-top: 1px solid var(--rule-ink);
   }
 
   .recipe-footer {
