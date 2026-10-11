@@ -2,19 +2,32 @@
 /**
  * The vine canopy over the top of every page.
  *
- * By day it casts leaf shadows that sway with the wind; after dark the same leaves
- * stand in front of a torch. The leaves are SVG masks drawn by scripts/draw-canopy.mjs,
- * so their colour comes from --canopy-shade and the effect costs two cached images and
- * compositor-only animation.
+ * By day it casts leaf shadows that move in the wind; after dark the same leaves stand
+ * in front of a torch. The leaves are SVG masks drawn by scripts/draw-canopy.mjs, so
+ * their colour comes from --canopy-shade and the effect costs a few cached images and
+ * compositor-only animation: transform, translate and rotate, nothing that repaints.
  */
 ---
 
-<div class="canopy" aria-hidden="true">
+<div class="canopy" aria-hidden="true" data-canopy>
   <div class="canopy-sun">
     <div class="canopy-leaves canopy-leaves--high"></div>
     <div class="canopy-leaves canopy-leaves--low"></div>
+    <div class="canopy-leaves canopy-vine canopy-vine--1"></div>
+    <div class="canopy-leaves canopy-vine canopy-vine--2"></div>
+    <div class="canopy-leaves canopy-vine canopy-vine--3"></div>
   </div>
 </div>
+
+<script>
+  // Nothing sways while the canopy is scrolled out of view.
+  const canopy = document.querySelector('[data-canopy]');
+  if (canopy && 'IntersectionObserver' in window) {
+    new IntersectionObserver(([entry]) => {
+      canopy.toggleAttribute('data-still', !entry?.isIntersecting);
+    }).observe(canopy);
+  }
+</script>
 
 <style>
   .canopy {
@@ -44,6 +57,9 @@
     transform-origin: 50% 0;
   }
 
+  /* Wind has two parts. A slow sway (translate, rotate) keeps the leaves alive, and gusts
+     (transform) pass through now and then: a push, then a few damped swings back. Leaves
+     hang from the top, so a skew moves the lower ones furthest, as on a real vine. */
   .canopy-leaves {
     position: absolute;
     inset: -3rem -7rem 0;
@@ -53,42 +69,168 @@
     will-change: transform;
   }
 
-  /* The high canopy moves slowly; the low tendrils catch every gust. */
+  /* The high canopy is far away and heavy: it moves least. */
   .canopy-leaves--high {
-    animation: sway-high 23s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+    animation:
+      sway-high 23s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate,
+      gust-far 26s ease-in-out infinite;
   }
 
   /* The crisp, near leaves are sharpest at noon and soften as the light gets low. */
-  .canopy-leaves--low {
+  .canopy-leaves--low,
+  .canopy-vine {
     opacity: var(--canopy-crisp);
+  }
+
+  .canopy-leaves--low {
     mask-image: url('/grotto/canopy-low.svg');
-    animation: sway-low 11s cubic-bezier(0.37, 0, 0.63, 1) infinite alternate;
+    animation:
+      sway-low 11s cubic-bezier(0.37, 0, 0.63, 1) infinite alternate,
+      gust-near 26s ease-in-out 0.5s infinite;
+  }
+
+  /* On wide screens each near vine swings on its own, from where it hangs, and a gust
+     reaches them one after another from left to right. Phones keep the single layer. */
+  .canopy-vine {
+    display: none;
+  }
+
+  .canopy-vine--1 {
+    mask-image: url('/grotto/canopy-low-1.svg');
+    transform-origin: 13% 0;
+    animation:
+      sway-low 9s cubic-bezier(0.37, 0, 0.63, 1) -2s infinite alternate,
+      gust-near 26s ease-in-out 0.35s infinite;
+  }
+
+  .canopy-vine--3 {
+    mask-image: url('/grotto/canopy-low-3.svg');
+    transform-origin: 52% 0;
+    animation:
+      sway-low 11.5s cubic-bezier(0.37, 0, 0.63, 1) -7s infinite alternate-reverse,
+      gust-near 26s ease-in-out 0.7s infinite;
+  }
+
+  .canopy-vine--2 {
+    mask-image: url('/grotto/canopy-low-2.svg');
+    transform-origin: 88% 0;
+    animation:
+      sway-low 13s cubic-bezier(0.37, 0, 0.63, 1) -4s infinite alternate,
+      gust-near 26s ease-in-out 1.05s infinite;
+  }
+
+  @media (min-width: 769px) {
+    .canopy-leaves--low {
+      display: none;
+    }
+
+    .canopy-vine {
+      display: block;
+    }
+  }
+
+  /* Out of view, the wind stops (see the script above). */
+  .canopy[data-still]::before,
+  .canopy[data-still] .canopy-leaves {
+    animation-play-state: paused;
   }
 
   @keyframes sway-high {
     0% {
-      transform: translate3d(-0.5%, 0, 0) rotate(-0.25deg);
+      translate: -0.5% 0;
+      rotate: -0.25deg;
     }
     60% {
-      transform: translate3d(0.3%, 0.3%, 0) rotate(0.15deg);
+      translate: 0.3% 0.3%;
+      rotate: 0.15deg;
     }
     100% {
-      transform: translate3d(0.6%, 0.1%, 0) rotate(0.3deg);
+      translate: 0.6% 0.1%;
+      rotate: 0.3deg;
     }
   }
 
   @keyframes sway-low {
     0% {
-      transform: translate3d(0.7%, -0.2%, 0) rotate(0.5deg);
+      translate: 0.7% -0.2%;
+      rotate: 0.5deg;
     }
     35% {
-      transform: translate3d(-0.4%, 0.4%, 0) rotate(-0.2deg);
+      translate: -0.4% 0.4%;
+      rotate: -0.2deg;
     }
     55% {
-      transform: translate3d(-0.2%, 0.3%, 0) rotate(-0.1deg);
+      translate: -0.2% 0.3%;
+      rotate: -0.1deg;
     }
     100% {
-      transform: translate3d(-0.9%, 0.5%, 0) rotate(-0.55deg);
+      translate: -0.9% 0.5%;
+      rotate: -0.55deg;
+    }
+  }
+
+  /* Two gusts in each cycle, a soft one and a strong one, each followed by swings back. */
+  @keyframes gust-far {
+    0%,
+    14%,
+    26%,
+    58%,
+    80%,
+    100% {
+      transform: skewX(0deg);
+    }
+    18% {
+      transform: skewX(0.5deg);
+    }
+    22% {
+      transform: skewX(-0.2deg);
+    }
+    62% {
+      transform: skewX(1deg);
+    }
+    66.5% {
+      transform: skewX(-0.55deg);
+    }
+    71% {
+      transform: skewX(0.3deg);
+    }
+    75.5% {
+      transform: skewX(-0.12deg);
+    }
+  }
+
+  @keyframes gust-near {
+    0%,
+    14%,
+    27%,
+    58%,
+    82%,
+    100% {
+      transform: skewX(0deg);
+    }
+    17.5% {
+      transform: skewX(1.3deg);
+    }
+    21% {
+      transform: skewX(-0.6deg);
+    }
+    24% {
+      transform: skewX(0.25deg);
+    }
+    61.5% {
+      transform: skewX(2.6deg);
+    }
+    65.5% {
+      transform: skewX(-1.5deg);
+    }
+    69.5% {
+      transform: skewX(0.8deg);
+    }
+    73.5% {
+      transform: skewX(-0.4deg);
+    }
+    77.5% {
+      transform: skewX(0.15deg);
     }
   }
 
