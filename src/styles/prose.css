@@ -62,8 +62,10 @@
   }
 
   /* Pictures in running text are pasted in like prints: a sheet held by two paper
-     strips. Plots and photographs alike; captions sit on the print. */
+     strips. Plots and photographs alike; captions sit on the print. On the sheet each
+     picture is mounted as a plate (plates.css). */
   .prose p:has(> img:only-child),
+  .prose p:has(> .plate:only-child),
   .prose figure:has(img) {
     position: relative;
     width: fit-content;
@@ -78,6 +80,8 @@
 
   .prose p:has(> img:only-child)::before,
   .prose p:has(> img:only-child)::after,
+  .prose p:has(> .plate:only-child)::before,
+  .prose p:has(> .plate:only-child)::after,
   .prose figure:has(img)::before,
   .prose figure:has(img)::after {
     content: '';
@@ -93,18 +97,21 @@
   }
 
   .prose p:has(> img:only-child)::before,
+  .prose p:has(> .plate:only-child)::before,
   .prose figure:has(img)::before {
     left: 0.9rem;
     transform: rotate(-4deg);
   }
 
   .prose p:has(> img:only-child)::after,
+  .prose p:has(> .plate:only-child)::after,
   .prose figure:has(img)::after {
     right: 0.9rem;
     transform: rotate(3deg);
   }
 
   .prose p:has(> img:only-child) img,
+  .prose p:has(> .plate:only-child) img,
   .prose figure:has(img) img {
     display: block;
     margin: 0;
@@ -116,7 +123,7 @@
   .prose figure:has(img) figcaption {
     max-width: 36rem;
     margin: 0.5rem auto 0.1rem;
-    color: #3b4436;
+    color: var(--print-ink);
   }
 
   /* Optional: tighter excerpt variant for cards */

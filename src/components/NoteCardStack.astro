@@ -42,6 +42,7 @@ interface Props {
   media?: 'strip' | 'thumb';
   headingLevel?: 2 | 3 | 4; // Card title level, so cards nest under a section heading
   tagBase?: string; // Index page that filters by tag, e.g. "/recipes"
+  film?: boolean; // The pictures are photographs: print them on film (plates.css)
 }
 
 const {
@@ -54,6 +55,7 @@ const {
   media = 'strip',
   headingLevel = 2,
   tagBase = '/blog',
+  film = false,
 } = Astro.props;
 ---
 
@@ -83,6 +85,7 @@ const {
           width={media === 'thumb' ? 480 : 1200}
           height={media === 'thumb' ? 360 : 450}
           containerClass="tw:w-full"
+          film={film}
         />
       </div>}
       <div class="sc-meta">

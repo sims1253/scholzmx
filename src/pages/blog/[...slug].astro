@@ -117,19 +117,21 @@ const readingTime = getReadingTime(post.body || '');
       </p>
     </header>
 
-    {post.data.heroImage && <div class="post-hero pasted">
-      <ImageFrame
-        src={post.data.heroImage}
-        alt=""
-        style="hero"
-        aspectRatio="8/3"
-        scale={post.data.heroImageScale}
-        positionX={post.data.heroImagePositionX ? post.data.heroImagePositionX * 100 : 0}
-        positionY={post.data.heroImagePositionY ? post.data.heroImagePositionY * 100 : 0}
-        loading="eager"
-        width={800}
-        height={400}
-      />
+    {post.data.heroImage && <div class="post-hero pasted plate-sheet">
+      <div class="plate">
+        <ImageFrame
+          src={post.data.heroImage}
+          alt=""
+          style="hero"
+          aspectRatio="8/3"
+          scale={post.data.heroImageScale}
+          positionX={post.data.heroImagePositionX ? post.data.heroImagePositionX * 100 : 0}
+          positionY={post.data.heroImagePositionY ? post.data.heroImagePositionY * 100 : 0}
+          loading="eager"
+          width={800}
+          height={400}
+        />
+      </div>
     </div>}
 
     <section
@@ -239,7 +241,7 @@ const readingTime = getReadingTime(post.body || '');
   .post-hero :global(.image-frame) {
     margin: 0;
     padding: 0;
-    border-radius: 2px;
+    border-radius: 0;
   }
 
   .post-body :global(figure) {
