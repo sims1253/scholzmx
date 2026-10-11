@@ -1,5 +1,6 @@
 ---
 import QuoteOfTheDay from './QuoteOfTheDay.astro';
+import FooterLedge from './FooterLedge.astro';
 
 interface Props {
   includeQuoteSection?: boolean;
@@ -10,6 +11,8 @@ const { includeQuoteSection = false } = Astro.props;
 
 <footer class="site-footer">
   {includeQuoteSection && <QuoteOfTheDay />}
+
+  <FooterLedge />
 
   <div class="colophon">
     <ul class="footer-links">
