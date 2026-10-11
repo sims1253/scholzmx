@@ -180,10 +180,13 @@ function vine(rand, opts) {
   return parts.join('');
 }
 
+// Returns the whole layer, and each vine on its own so it can sway on its own.
 function drawing({ seed, blur, vines, opacity, crisp = false }) {
   const rand = rng(seed);
-  const body = vines.map((v) => vine(rand, { ...v, crisp })).join('');
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMin slice"><filter id="b" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="${blur}"/></filter><g filter="url(#b)" opacity="${opacity}">${body}</g></svg>\n`;
+  const bodies = vines.map((v) => vine(rand, { ...v, crisp }));
+  const svg = (body) =>
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMin slice"><filter id="b" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="${blur}"/></filter><g filter="url(#b)" opacity="${opacity}">${body}</g></svg>\n`;
+  return { whole: svg(bodies.join('')), each: bodies.map(svg) };
 }
 
 // The high canopy sits far from the page, so its shadows are broad and soft.
@@ -311,9 +314,11 @@ function dappleTile({ seed, size, vines, blur }) {
 const dapple = dappleTile({ seed: 913, size: 1200, vines: 8, blur: 13 });
 
 mkdirSync('public/grotto', { recursive: true });
-writeFileSync('public/grotto/canopy-high.svg', high);
-writeFileSync('public/grotto/canopy-low.svg', low);
+writeFileSync('public/grotto/canopy-high.svg', high.whole);
+writeFileSync('public/grotto/canopy-low.svg', low.whole);
+// The near vines hang apart from each other, so on wide screens each sways on its own.
+low.each.forEach((svg, index) => writeFileSync(`public/grotto/canopy-low-${index + 1}.svg`, svg));
 writeFileSync('public/grotto/dapple.svg', dapple);
 console.log(
-  `canopy-high.svg ${high.length} B, canopy-low.svg ${low.length} B, dapple.svg ${dapple.length} B`
+  `canopy-high.svg ${high.whole.length} B, canopy-low.svg ${low.whole.length} B, dapple.svg ${dapple.length} B`
 );
