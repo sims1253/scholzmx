@@ -6,6 +6,10 @@
  * in front of a torch. The leaves are SVG masks drawn by scripts/draw-canopy.mjs, so
  * their colour comes from --canopy-shade and the effect costs a few cached images and
  * compositor-only animation: transform, translate and rotate, nothing that repaints.
+ *
+ * Where WebGL is available, src/scripts/canopy-wind.ts takes over and draws the same
+ * leaves bent by noise, so every patch of the canopy moves on its own. The CSS layers
+ * stay underneath as the fallback.
  */
 ---
 
@@ -16,6 +20,7 @@
     <div class="canopy-leaves canopy-vine canopy-vine--1"></div>
     <div class="canopy-leaves canopy-vine canopy-vine--2"></div>
     <div class="canopy-leaves canopy-vine canopy-vine--3"></div>
+    <canvas class="canopy-wind" data-canopy-wind></canvas>
   </div>
 </div>
 
@@ -27,6 +32,10 @@
       canopy.toggleAttribute('data-still', !entry?.isIntersecting);
     }).observe(canopy);
   }
+</script>
+
+<script>
+  import '../scripts/canopy-wind';
 </script>
 
 <style>
@@ -127,6 +136,25 @@
     .canopy-vine {
       display: block;
     }
+  }
+
+  /* The shader's canvas covers the same box as the leaves. Once it has drawn a frame it
+     replaces the CSS layers, which stop animating while they're hidden. */
+  .canopy-wind {
+    position: absolute;
+    top: -3rem;
+    left: -7rem;
+    display: none;
+    width: calc(100% + 14rem);
+    height: calc(100% + 3rem);
+  }
+
+  .canopy[data-webgl] .canopy-wind {
+    display: block;
+  }
+
+  .canopy[data-webgl] .canopy-leaves {
+    display: none;
   }
 
   /* Out of view, the wind stops (see the script above). */
