@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import GridLayout from '../components/GridLayout.astro';
+import Series from '../components/Series.astro';
 import StackedCard from '../components/StackedCard.astro';
 
 const publications = [
@@ -68,323 +68,84 @@ const publicationsByYear = publications.reduce<Record<number, (typeof publicatio
   {}
 );
 const years = Object.keys(publicationsByYear).sort((a, b) => Number(b) - Number(a));
+
+const SELF = 'Maximilian Scholz';
+const describe = (type: string, venue: string) =>
+  type === 'Thesis' ? venue : `${type === 'Journal' ? 'Journal article' : type}, ${venue}`;
+const linkLabel = (kind: string) => (kind === 'pdf' || kind === 'doi' ? kind.toUpperCase() : kind);
 ---
 
 <BaseLayout
   title="Research"
   description="Research by Maximilian Scholz"
-  footerVariant="writing"
   tone="serious"
   layout="listing"
 >
-  <div class="research-page">
-    <header class="research-header">
+  <div class="index-page">
+    <header class="page-header">
       <h1 class="page-title">Research</h1>
-      <p class="page-description">
+      <p class="page-lede">
         I come from more of a software engineering background, but have taken a detour through the
         world of bayesian statistics recently. Let's hope I won't continue adding new fields...
       </p>
+      <p class="profiles">
+        My work is also listed on
+        <a href="https://scholar.google.com/citations?user=JhwHgX4AAAAJ">Google Scholar</a> and
+        <a href="https://orcid.org/0000-0002-4486-1393">ORCID</a>.
+      </p>
     </header>
 
-    <div class="research-container">
-      <aside class="research-sidebar">
-        <section class="sidebar-section">
-          <h2>Profiles</h2>
-          <a
-            class="chip-link"
-            href="https://scholar.google.com/citations?user=JhwHgX4AAAAJ"
-            target="_blank"
-            rel="noopener"
-            >Google Scholar</a
-          >
-          <a
-            class="chip-link"
-            href="https://orcid.org/0000-0002-4486-1393"
-            target="_blank"
-            rel="noopener"
-            >ORCID</a
-          >
-        </section>
-      </aside>
-
-      <main class="research-content">
-        <section class="cards-grid" aria-label="Publications">
-          {years.map((year) => <div class="year-group" data-year-group={year}>
-            <h2 class="year-heading" id={`year-${year}`}>
-              <>
-                <span class="vine" />
-                <span class="year-text">{year}</span>
-                <span class="vine" />
-              </>
-            </h2>
-            <GridLayout columns={1} gap="xl" class="cards">
-              {publicationsByYear[Number(year)].map((pub, idx) => {
-                const primaryLink = pub.links?.pdf || pub.links?.doi || undefined;
-                return <div class="pub-item">
-                  <StackedCard
-                    seed={`pub/${year}/${idx}/${pub.title}`}
-                    title={pub.title}
-                    subtitle={pub.venue}
-                    href={primaryLink}
-                    layers={1}
-                    ornament={false}
-                  >
-                    <div class="sc-meta">
-                      <div class="sc-dates">
-                        <div class="sc-date-item">
-                          <span class="sc-date-label">Type:</span>
-                          <span class="sc-date">{pub.type}</span>
-                        </div>
-                        <div class="sc-date-item">
-                          <span class="sc-date-label">Authors:</span>
-                          <span class="sc-date">{pub.authors.join(', ')}</span>
-                        </div>
-                      </div>
-                      <div class="sc-tags">
-                        {Object.entries(pub.links || {}).map(([k, url]) => <a
-                          class="sc-chip"
-                          href={url}
-                          target="_blank"
-                          rel="noopener"
-                        >
-                          {k}
-                        </a>)}
-                      </div>
-                    </div>
-                  </StackedCard>
-                </div>;
-              })}
-            </GridLayout>
-          </div>)}
-        </section>
-      </main>
-    </div>
+    {years.map((year) => <section
+      class="index-group"
+      data-index-group
+      aria-labelledby={`year-${year}`}
+    >
+      <h2 class="index-label" id={`year-${year}`}>{year}</h2>
+      <div class="pub-cards">
+        {publicationsByYear[Number(year)]!.map((pub, index) => <StackedCard
+          seed={`pub/${year}/${index}/${pub.title}`}
+          title={pub.title}
+          subtitle={describe(pub.type, pub.venue)}
+          href={pub.links.pdf ?? pub.links.doi ?? pub.links.code}
+          layers={1}
+          ornament={false}
+          headingLevel={3}
+        >
+          <p class="authors">
+            <Series items={pub.authors.map((text) => ({ text, strong: text === SELF }))} />
+          </p>
+          <div class="sc-tags">
+            {Object.entries(pub.links).map(([kind, url]) => <a class="sc-chip" href={url}>
+              {linkLabel(kind)}
+            </a>)}
+          </div>
+        </StackedCard>)}
+      </div>
+    </section>)}
   </div>
 </BaseLayout>
 
 <style>
-  .research-page {
-    max-width: 100%;
-  }
-
-  .research-header {
-    text-align: center;
-    max-width: var(--measure-listing);
-    margin: 0 auto var(--space-xs);
-  }
-
-  .page-title {
-    font-size: clamp(var(--text-2xl), 5vw, var(--text-3xl));
-    margin-bottom: var(--space-xs);
-    color: var(--color-ink-dark);
-  }
-
-  .page-description {
-    font-size: var(--text-lg);
-    line-height: 1.6;
-    color: var(--color-ink-medium);
-    font-style: italic;
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .research-container {
-    position: relative;
-    max-width: var(--measure-listing);
-    margin: 0 auto;
-  }
-  .research-content {
-    position: relative;
-  }
-  .research-sidebar {
-    position: absolute;
-    /* Anchor to the centered card column: center (50%) + half card width + small gap */
-    left: calc(50% + (var(--card-max-width) / 2) + var(--sidebar-gap));
-    top: calc(var(--space-xl) + 4px);
-    width: var(--sidebar-width);
-  }
-  .sidebar-section {
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-lichen);
-    border-radius: var(--border-radius);
-    padding: 0 var(--space-sm) var(--space-xs);
-    margin-bottom: var(--space-sm);
-  }
-  .sidebar-section h3 {
+  .profiles {
+    margin: 0.75em 0 0;
     font-size: var(--text-md);
-    margin: var(--space-xs) 0 var(--space-xs) 0;
-    color: var(--color-text-primary);
-    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-secondary);
   }
 
-  .chip-link {
-    display: inline-block;
-    font-size: var(--text-xs);
-    color: var(--color-text-primary);
-    text-decoration: none;
-    padding: 0.2rem 0.5rem;
-    border-radius: 999px;
-    border: 1px solid var(--color-lichen);
-    background: var(--color-surface);
-    margin-right: var(--space-xs);
-    margin-bottom: var(--space-xxs);
-  }
-  .chip-link:hover {
-    color: var(--color-link-hover);
-    background: var(--wash-sage);
-    border-color: var(--color-sage);
-  }
-
-  .cards-grid {
+  .pub-cards {
     display: grid;
-    gap: var(--space-xs);
-  }
-  .year-heading {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center;
-    gap: var(--space-sm);
-    margin: var(--space-xs) 0 var(--space-sm);
-    color: var(--color-walnut);
-    font-family: var(--font-heading);
-    font-weight: 600;
-    font-size: var(--text-lg);
-  }
-  .year-heading .vine {
-    height: 1px;
-    background: linear-gradient(
-      to right,
-      transparent,
-      color-mix(in srgb, var(--color-lichen) 60%, transparent),
-      transparent
-    );
-  }
-  .year-heading .year-text {
-    font-variant-caps: small-caps;
-    letter-spacing: 0.06em;
-  }
-  .cards {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-lg);
-    margin-bottom: var(--space-md);
-  }
-  .pub-item {
-    margin-bottom: var(--space-lg);
-    width: 100%;
+    gap: var(--space-xl);
     max-width: var(--card-max-width);
-    margin-left: auto;
-    margin-right: auto;
   }
 
-  .pub-card {
-    position: relative;
-    background: var(--color-surface);
-    border: 1px solid var(--color-lichen);
-    border-radius: var(--border-radius);
-    overflow: hidden;
-    transition:
-      transform var(--transition-medium),
-      box-shadow var(--transition-medium),
-      border-color var(--transition-medium);
-    box-shadow: 0 4px 10px color-mix(in srgb, var(--color-walnut) 5%, transparent);
-  }
-  .pub-card:hover {
-    transform: translateY(-1px);
-    border-color: var(--color-sage);
-    box-shadow: 0 6px 16px color-mix(in srgb, var(--color-walnut) 7%, transparent);
-  }
-  .card-body {
-    padding: var(--space-xs) var(--space-sm);
-  }
-  .card-meta-top {
-    margin-bottom: var(--space-xs);
-  }
-  .type-badge {
-    font-size: var(--text-xs);
-    letter-spacing: 0.05em;
-    padding: 0.1rem 0.4rem;
-    border-radius: 999px;
-    border: 1px solid var(--color-lichen);
-    background: var(--wash-sage);
-    color: var(--color-accent-secondary);
-    white-space: nowrap;
-  }
-  .card-title {
-    margin: 0 0 var(--space-xs);
-    font-size: var(--text-md);
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-text-primary);
-    line-height: 1.3;
-  }
-  .title-link {
-    color: inherit;
-    text-decoration: none;
-    transition: color var(--transition-medium);
-  }
-  .title-link:hover {
-    color: var(--color-link-hover);
-    text-decoration: underline;
-  }
-  .title-text {
-    color: inherit;
-  }
-  .card-authors {
-    margin: 0 0 var(--space-xxs);
+  .authors {
+    margin: var(--space-xs) 0 0;
     font-size: var(--text-sm);
     color: var(--color-text-secondary);
   }
-  .author-self {
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-text-primary);
-  }
-  .author {
-    color: var(--color-text-secondary);
-  }
-  .card-venue {
-    margin: 0 0 var(--space-xs);
-    font-size: var(--text-sm);
-    color: var(--color-text-muted);
-    font-style: italic;
-  }
 
-  .pub-links {
-    display: flex;
-    gap: var(--space-sm);
-    flex-wrap: wrap;
-  }
-  .link-chip {
-    font-size: var(--text-xs);
+  .authors :global(strong) {
+    font-weight: 600;
     color: var(--color-text-primary);
-    text-decoration: none;
-    padding: 0.15rem 0.45rem;
-    border-radius: 6px;
-    border: 1px solid var(--color-lichen);
-    background: var(--color-surface);
-  }
-  .link-chip:hover {
-    color: var(--color-link-hover);
-    background: var(--wash-sage);
-    border-color: var(--color-sage);
-  }
-
-  @media (max-width: 90rem) {
-    .research-content {
-      position: static;
-    }
-    .research-sidebar {
-      position: static;
-      width: auto;
-      margin-top: var(--space-lg);
-    }
-  }
-  @media (max-width: 480px) {
-    .card-title {
-      font-size: var(--text-md);
-    }
-    .cards {
-      grid-template-columns: 1fr;
-    }
   }
 </style>

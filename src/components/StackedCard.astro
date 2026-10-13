@@ -35,7 +35,7 @@ const {
   title,
   subtitle,
   href,
-  allowBookmark = true,
+  allowBookmark = false, // A random ribbon reads as "pinned"; opt in where it means something
   allowTape = true,
   layers: layersProp,
   tilt = 'light',
@@ -135,6 +135,10 @@ const washBleed = washEffect?.props.washBleed || 120;
 // Ring variables
 const ringScale = ringEffect?.props.ringScale || layoutRng.between(0.6, 0.9);
 const ringAlpha = ringEffect?.props.ringAlpha || 0;
+const ringX = ringEffect?.props.ringX ?? 90;
+const ringY = ringEffect?.props.ringY ?? 90;
+const ringTurn = ringEffect?.props.rotation ?? 0;
+const ringVariant = ringEffect?.props.variant ?? 1;
 
 // Data attributes kept for future hooks; not used by visuals now
 const dataBookmark = hasBookmark ? (bookmarkSide === 'right' ? 'right' : 'left') : 'none';
@@ -152,6 +156,10 @@ const styleVars = {
   '--rot-c': `${rotC}deg`,
   '--ring-scale': `${ringScale}`,
   '--ring-alpha': `${ringAlpha}`,
+  '--ring-x': `${ringX}%`,
+  '--ring-y': `${ringY}%`,
+  '--ring-turn': `${ringTurn}deg`,
+  '--ring-src': `url(/grotto/coffee-ring-${ringVariant}.svg)`,
   '--wash-x': `${washX}%`,
   '--wash-y': `${washY}%`,
   '--wash-alpha': `${washAlpha}`,

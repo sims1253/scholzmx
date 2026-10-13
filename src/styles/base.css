@@ -246,20 +246,20 @@
   }
 
   h1 {
-    font-size: clamp(var(--text-2xl), 5vw, var(--text-3xl)); /* Fluid heading size */
+    font-size: clamp(var(--text-2xl), 1.4rem + 2vw, var(--text-3xl));
     font-weight: var(--heading-weight-strong);
-    margin-block-end: var(--space-lg);
-    letter-spacing: 0.005em;
+    line-height: 1.12;
+    margin-block-end: var(--space-md);
   }
 
   h2 {
-    font-size: clamp(var(--text-xl), 4vw, var(--text-2xl));
+    font-size: clamp(var(--text-xl), 1.1rem + 0.8vw, 1.667rem);
     margin-block-start: var(--space-xl);
-    letter-spacing: 0.002em;
   }
 
   h3 {
-    font-size: clamp(var(--text-lg), 3.5vw, var(--text-xl));
+    font-size: var(--text-lg);
+    font-style: italic;
     margin-block-start: var(--space-lg);
   }
 
@@ -280,8 +280,6 @@
     color: var(--color-link-hover);
     text-decoration-color: var(--color-underline-hover);
     text-decoration-thickness: 2px;
-    background-color: color-mix(in srgb, var(--color-walnut) 6%, transparent);
-    border-radius: 2px;
   }
 
   /* Baseline for default links (classless) for clearer affordance */
@@ -300,7 +298,8 @@
   }
 
   /* External link indicator - adds ↗ arrow after off-site links */
-  a[href^='http']:not([href*='scholzmx.com']):not([href*='localhost']):not(
+  .prose
+    a[href^='http']:not([href*='scholzmx.com']):not([href*='localhost']):not(
       .no-external-indicator
     )::after {
     content: ' ↗';
@@ -313,7 +312,8 @@
   }
 
   /* Ensure external indicator doesn't get underline styling */
-  a[href^='http']:not([href*='scholzmx.com']):not([href*='localhost']):not(
+  .prose
+    a[href^='http']:not([href*='scholzmx.com']):not([href*='localhost']):not(
       .no-external-indicator
     ):hover::after {
     text-decoration: none;
@@ -340,12 +340,9 @@
 
   /* Images */
   img {
-    border-radius: var(--border-radius);
+    border-radius: 2px;
     max-width: 100%;
     height: auto;
-    box-shadow:
-      0 8px 24px color-mix(in srgb, var(--color-walnut) 6%, transparent),
-      0 2px 6px color-mix(in srgb, var(--color-sage) 10%, transparent);
   }
 
   /* Blockquotes with logical properties */
@@ -354,13 +351,8 @@
     margin-inline: 0;
     padding-block: var(--space-md);
     padding-inline: var(--space-lg);
-    border-inline-start: 4px solid var(--color-tansy);
-    background: linear-gradient(
-      0deg,
-      var(--color-parchment-light) 0%,
-      var(--color-parchment-light) 65%,
-      var(--wash-sage) 100%
-    );
+    border-inline-start: 2px solid var(--color-moss);
+    color: var(--color-text-secondary);
     max-inline-size: var(--content-width);
     font-style: italic;
     position: relative;
@@ -435,8 +427,7 @@
 
   /* Utility classes */
   .logo-text {
-    letter-spacing: 0.03em;
-    font-variant-caps: small-caps;
+    letter-spacing: 0.01em;
   }
 
   .container {
@@ -460,19 +451,18 @@
   .astro-code {
     font-family: var(--font-mono) !important;
     padding: var(--space-sm) !important;
-    border-radius: 10px !important;
-    margin: var(--space-sm) 0 !important;
+    border-radius: 4px !important;
+    margin: var(--space-md) 0 !important;
     position: relative;
 
     /* Manuscript-inspired frame - override Shiki inline styles */
-    border: 1px solid color-mix(in srgb, var(--color-lichen) 30%, transparent) !important;
-    box-shadow:
-      0 8px 22px color-mix(in srgb, var(--color-walnut) 5%, transparent),
-      0 2px 6px color-mix(in srgb, var(--color-sage) 12%, transparent),
-      inset 0 1px 0 color-mix(in srgb, var(--color-parchment-light) 70%, white) !important;
+    border: 1px solid var(--rule-ink) !important;
+    box-shadow: none !important;
+    /* Code sits on the paper's inset tone in both themes; Shiki only supplies the ink. */
+    background-color: var(--color-surface) !important;
 
-    font-size: 18px !important;
-    line-height: 1.25 !important;
+    font-size: 0.8rem !important;
+    line-height: 1.45 !important;
     overflow-x: auto;
 
     /* Fix first-line visual indentation issue - normalize text alignment */

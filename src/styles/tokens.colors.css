@@ -1,30 +1,30 @@
 :root {
-  /* ===== Color Tokens — Final Proposed Palette ===== */
+  /* ===== Color Tokens: noon under the vines ===== */
 
-  /* Papers */
-  --color-parchment: #fdfbf6; /* Primary background - eggshell parchment */
-  --color-parchment-light: #fbf7f0; /* Panel background for quotes/cards */
+  /* Papers: rag paper in green shade */
+  --color-parchment: #f2f1e8; /* Page */
+  --color-parchment-light: #e9eadf; /* Inset surfaces: code, search, labels */
 
-  /* Inks */
-  --color-ink-dark: #2a2318; /* Primary text ink (warm) */
-  --color-ink-medium: #3a3022; /* Secondary text / rules */
-  --color-ink-light: #5d5444; /* Tertiary text - darkened for better contrast */
-  --color-ink-plate: #1f1912; /* Deep plate for initials/rare contrast */
+  /* Inks: iron-gall, slightly green */
+  --color-ink-dark: #22291e; /* Body text */
+  --color-ink-medium: #3b4436; /* Secondary text */
+  --color-ink-light: #525c4b; /* Muted text, still AA in the deepest shade */
+  --color-ink-plate: #161b13; /* Rare maximum contrast */
 
-  /* Warms */
-  --color-walnut: #5b4639; /* Primary warm accent */
-  --color-ochre: #b06e49; /* Hover/active warm */
-  --color-clay: #9a5748; /* Selective warm highlight */
+  /* Vine and tansy carry the identity. The old names stay so components keep working. */
+  --color-walnut: #3e5a2b; /* Vine green: links, section heads */
+  --color-ochre: #855a00; /* Tansy ink: hover, active */
+  --color-clay: #7b3b4b; /* Grape skin: sparing highlight */
 
   /* Botanicals */
-  --color-moss: #586a51; /* Structural green (frames/secondary) */
-  --color-sage: #aeb7a8; /* Quiet substrate */
-  --color-lichen: #cfd7cb; /* Underlines/keylines */
+  --color-moss: #5e7350; /* Structural green */
+  --color-sage: #afb9a2; /* Quiet substrate */
+  --color-lichen: #d3d8c8; /* Keylines */
 
   /* Cool/meta */
-  --color-iron: #424a56; /* Sparse cool anchor */
-  --color-tansy: #b0922c; /* Antique metallic accent */
-  --color-verdigris: #6b8c7a; /* Patina for SVG/borders */
+  --color-iron: #44505a;
+  --color-tansy: #d9a21b; /* Tansy flower: decoration only, never text */
+  --color-verdigris: #5f8a78;
 
   /* Semantic mappings */
   --color-text-primary: var(--color-ink-dark);
@@ -33,8 +33,8 @@
 
   --color-link: var(--color-walnut);
   --color-link-hover: var(--color-ochre);
-  --color-underline: var(--color-lichen);
-  --color-underline-hover: var(--color-ochre);
+  --color-underline: color-mix(in srgb, var(--color-walnut) 35%, transparent);
+  --color-underline-hover: var(--color-tansy);
 
   --color-accent-primary: var(--color-walnut);
   --color-accent-secondary: var(--color-moss);
@@ -44,93 +44,115 @@
   --color-surface: var(--color-parchment-light);
 
   /* Derived utility mixes */
-  --rule-ink: color-mix(in srgb, var(--color-ink-dark) 18%, var(--color-parchment));
-  --wash-sage: color-mix(in srgb, var(--color-sage) 6%, var(--color-parchment-light));
+  --rule-ink: color-mix(in srgb, var(--color-ink-dark) 16%, var(--color-parchment));
+  --wash-sage: color-mix(in srgb, var(--color-sage) 14%, var(--color-parchment));
   --btn-walnut-hover: color-mix(in srgb, var(--color-walnut) 88%, black);
+
+  /* Pasted things: photo and card paper, the strips that hold them, prints in posts */
+  --paper-sheet: color-mix(in srgb, var(--color-parchment) 75%, white);
+  --tape-strip: color-mix(in srgb, var(--color-parchment) 72%, var(--color-sage));
+  --print-sheet: #fbfaf5; /* Prints stay paper-white, even by torchlight */
+  --print-dim: none;
+
+  /* The canopy: leaf shadows by day, torchlight by night */
+  --canopy-shade: rgb(58 78 26 / 0.2);
+  --canopy-glow: none;
+  --canopy-flicker: none;
+
+  /* The flame in the navigation: still by day, alive by torchlight */
+  --torch-flame-base: #b5651d;
+  --torch-flame-glow: none;
+  --torch-flame-dance: none;
 }
 
-/* Torchlight Night Theme — same vibe, dusk parchment, ember inks, moss shadows */
+/* Torchlight: the grotto after dark, lit from one corner */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --color-parchment: #120f0d;
-    --color-parchment-light: #171310;
+    --color-parchment: #18140f;
+    --color-parchment-light: #221d16;
 
-    --color-ink-dark: #f2ebdf;
-    --color-ink-medium: #ded3c4;
-    --color-ink-light: #b6aa98;
-    --color-ink-plate: #fff6e6;
+    --color-ink-dark: #eee5d2;
+    --color-ink-medium: #d6cab3;
+    --color-ink-light: #aba08a;
+    --color-ink-plate: #fff4e0;
 
-    --color-walnut: #caa27f; /* torch-warmed walnut */
-    --color-ochre: #d99746; /* ember/amber hover (softer) */
-    --color-clay: #c7846a;
+    --color-walnut: #e3b456; /* Tansy by torchlight */
+    --color-ochre: #f59a45; /* Ember */
+    --color-clay: #d08a92;
 
-    --color-moss: #7c916f; /* moonlit moss (slight lift) */
-    --color-sage: #747866; /* warmer sage */
-    --color-lichen: #586055; /* lighter keylines to avoid muddiness */
+    --color-moss: #93a67f;
+    --color-sage: #5f664f;
+    --color-lichen: #3b3a2c;
 
-    --color-iron: #8da0b6;
-    --color-tansy: #cfad54; /* brass by torchlight */
-    --color-verdigris: #7aa695;
+    --color-iron: #93a3b5;
+    --color-tansy: #e8b83a;
+    --color-verdigris: #7ea899;
 
-    --color-text-primary: var(--color-ink-dark);
-    --color-text-secondary: var(--color-ink-medium);
-    --color-text-muted: var(--color-ink-light);
-
-    --color-link: var(--color-walnut);
-    --color-link-hover: var(--color-ochre);
-    --color-underline: color-mix(in srgb, var(--color-lichen) 65%, var(--color-ink-dark));
+    --color-underline: color-mix(in srgb, var(--color-walnut) 40%, transparent);
     --color-underline-hover: var(--color-ochre);
 
-    --color-accent-primary: var(--color-walnut);
-    --color-accent-secondary: var(--color-moss);
-    --color-decorative: var(--color-tansy);
+    --rule-ink: color-mix(in srgb, var(--color-ink-light) 22%, var(--color-parchment));
+    --wash-sage: color-mix(in srgb, var(--color-sage) 18%, var(--color-parchment));
+    --paper-sheet: var(--color-parchment-light);
+    --print-sheet: #e2dacb;
+    --print-dim: brightness(0.8) sepia(0.15); /* Warm and dim, like the paper around it */
 
-    --color-background: var(--color-parchment);
-    --color-surface: var(--color-parchment-light);
+    --canopy-shade: rgb(14 10 6 / 0.88);
+    --canopy-glow: radial-gradient(
+      ellipse 75% 65% at 90% 0%,
+      rgb(255 158 64 / 0.3),
+      rgb(255 128 48 / 0.1) 45%,
+      transparent 75%
+    );
+    --canopy-flicker: torch-flicker 5.3s linear infinite;
 
-    --rule-ink: color-mix(in srgb, var(--color-ink-light) 20%, var(--color-parchment));
-    --wash-sage: color-mix(in srgb, var(--color-sage) 10%, var(--color-parchment-light));
+    --torch-flame-base: #f07f2a;
+    --torch-flame-glow: drop-shadow(0 0 4px rgb(255 150 60 / 0.7));
+    --torch-flame-dance: flame-dance 1.7s ease-in-out infinite;
   }
 }
 
-/* Explicit opt-in/override via data-theme on <html> */
+/* Explicit choice via data-theme on <html> */
 :root[data-theme='dark'] {
-  --color-parchment: #120f0d;
-  --color-parchment-light: #171310;
+  --color-parchment: #18140f;
+  --color-parchment-light: #221d16;
 
-  --color-ink-dark: #f2ebdf;
-  --color-ink-medium: #ded3c4;
-  --color-ink-light: #b6aa98;
-  --color-ink-plate: #fff6e6;
+  --color-ink-dark: #eee5d2;
+  --color-ink-medium: #d6cab3;
+  --color-ink-light: #aba08a;
+  --color-ink-plate: #fff4e0;
 
-  --color-walnut: #caa27f;
-  --color-ochre: #d99746;
-  --color-clay: #c7846a;
+  --color-walnut: #e3b456;
+  --color-ochre: #f59a45;
+  --color-clay: #d08a92;
 
-  --color-moss: #7c916f;
-  --color-sage: #747866;
-  --color-lichen: #586055;
+  --color-moss: #93a67f;
+  --color-sage: #5f664f;
+  --color-lichen: #3b3a2c;
 
-  --color-iron: #8da0b6;
-  --color-tansy: #cfad54;
-  --color-verdigris: #7aa695;
+  --color-iron: #93a3b5;
+  --color-tansy: #e8b83a;
+  --color-verdigris: #7ea899;
 
-  --color-text-primary: var(--color-ink-dark);
-  --color-text-secondary: var(--color-ink-medium);
-  --color-text-muted: var(--color-ink-light);
-
-  --color-link: var(--color-walnut);
-  --color-link-hover: var(--color-ochre);
-  --color-underline: color-mix(in srgb, var(--color-lichen) 65%, var(--color-ink-dark));
+  --color-underline: color-mix(in srgb, var(--color-walnut) 40%, transparent);
   --color-underline-hover: var(--color-ochre);
 
-  --color-accent-primary: var(--color-walnut);
-  --color-accent-secondary: var(--color-moss);
-  --color-decorative: var(--color-tansy);
+  --rule-ink: color-mix(in srgb, var(--color-ink-light) 22%, var(--color-parchment));
+  --wash-sage: color-mix(in srgb, var(--color-sage) 18%, var(--color-parchment));
+  --paper-sheet: var(--color-parchment-light);
+  --print-sheet: #e2dacb;
+  --print-dim: brightness(0.8) sepia(0.15);
 
-  --color-background: var(--color-parchment);
-  --color-surface: var(--color-parchment-light);
+  --canopy-shade: rgb(14 10 6 / 0.88);
+  --canopy-glow: radial-gradient(
+    ellipse 75% 65% at 90% 0%,
+    rgb(255 158 64 / 0.3),
+    rgb(255 128 48 / 0.1) 45%,
+    transparent 75%
+  );
+  --canopy-flicker: torch-flicker 5.3s linear infinite;
 
-  --rule-ink: color-mix(in srgb, var(--color-ink-light) 20%, var(--color-parchment));
-  --wash-sage: color-mix(in srgb, var(--color-sage) 10%, var(--color-parchment-light));
+  --torch-flame-base: #f07f2a;
+  --torch-flame-glow: drop-shadow(0 0 4px rgb(255 150 60 / 0.7));
+  --torch-flame-dance: flame-dance 1.7s ease-in-out infinite;
 }

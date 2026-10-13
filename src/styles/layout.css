@@ -1,78 +1,215 @@
-@layer components {
-  /* Layout and navigation styles for BaseLayout */
+/* Page frame: canopy behind, header and content above it */
 
-  /* Modern flexible navigation with mobile-optimized padding */
-  .nav-content {
-    display: flex;
-    align-items: center;
-    padding-block: clamp(0.5rem, 2vw, var(--space-lg)); /* Dramatically less on mobile */
-    padding-inline: var(--space-md);
-    position: relative;
-    max-width: min(var(--site-width, 1280px), calc(100vw - 2 * var(--space-md)));
-    margin-inline: auto;
-    width: 100%;
-    gap: clamp(
-      0.4rem,
-      2.5vw,
-      2rem
-    ); /* Balanced gap to prevent overlap while keeping nav on one line */
+::selection {
+  background: color-mix(in srgb, var(--color-tansy) 38%, transparent);
+  color: var(--color-ink-plate);
+}
+
+.page-wrapper {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+.site-header {
+  position: relative;
+  z-index: 2;
+}
+
+.main-content {
+  position: relative; /* Also anchors the margin-notes container */
+  z-index: 1;
+  flex: 1 1 auto;
+  padding-block: clamp(0.5rem, 2vw, var(--space-md)) 0;
+  overflow: visible;
+}
+
+/* ===== Navigation ===== */
+
+.page-nav {
+  --nav-gap: clamp(0.9rem, 2.4vw, 2rem);
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem var(--nav-gap);
+  max-width: var(--site-width);
+  margin-inline: auto;
+  padding: clamp(0.75rem, 2.4vw, 1.75rem) var(--space-md);
+}
+
+.site-logo {
+  font-family: var(--font-label);
+  font-size: clamp(1.3rem, 1rem + 1vw, 1.667rem);
+  letter-spacing: 0.06em;
+  line-height: 1;
+  color: var(--color-ink-dark);
+  text-decoration: none;
+}
+
+.site-logo:hover {
+  color: var(--color-ink-dark);
+}
+
+/* Links and the torch share one row and one gap. */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: var(--nav-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-label);
+  font-size: clamp(1rem, 0.9rem + 0.4vw, 1.167rem);
+  letter-spacing: 0.04em;
+}
+
+.nav-links li {
+  display: flex;
+  margin: 0;
+}
+
+.nav-link {
+  position: relative;
+  display: inline-block;
+  padding-block: 0.45rem;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  color: var(--color-link-hover);
+}
+
+/* The current section carries a tansy bud. */
+.nav-link.active {
+  color: var(--color-text-primary);
+}
+
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: var(--color-tansy);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-ochre) 60%, transparent);
+  transform: translateX(-50%);
+}
+
+/* The button is exactly as wide as the flame, so its gap matches the links'. */
+.torch-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.1em;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+/* Cropped to the flame, so the icon is the height of the link text's capitals and
+   descenders and its edges line up with the gap. */
+.torch-icon {
+  width: 1.1em;
+  height: 1.5em;
+  overflow: visible;
+}
+
+.torch-flame {
+  stroke: var(--color-ink-medium);
+  stroke-width: 1;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  filter: var(--torch-flame-glow);
+  animation: var(--torch-flame-dance);
+}
+
+.torch-flame-tip {
+  stop-color: var(--color-tansy);
+}
+
+.torch-flame-base {
+  stop-color: var(--torch-flame-base);
+}
+
+.torch-holder {
+  fill: var(--color-ink-medium);
+}
+
+.torch-toggle:hover .torch-flame {
+  stroke: var(--color-ochre);
+}
+
+@keyframes flame-dance {
+  0%,
+  100% {
+    transform: scale(1, 1) skewX(0deg);
+  }
+  30% {
+    transform: scale(0.94, 1.06) skewX(-3deg);
+  }
+  60% {
+    transform: scale(1.04, 0.95) skewX(2deg);
   }
 }
 
-/* Modern CSS Grid layouts with logical properties */
-.layout-prose {
-  display: grid;
-  grid-template-columns:
-    minmax(var(--space-md), 1fr)
-    min(var(--measure-prose), 100% - 2 * var(--space-md))
-    minmax(var(--space-md), 1fr);
-  padding-inline: 0; /* Grid handles spacing */
-  width: 100%;
-  container-type: inline-size; /* Enable container queries */
+/* Phones: the name gets its own row, sections and torch spread across the second. */
+@media (max-width: 34rem) {
+  .nav-links {
+    width: 100%;
+    justify-content: space-between;
+  }
 }
 
-.layout-prose > * {
-  grid-column: 2; /* Center content in middle column */
-}
+/* ===== Page grids ===== */
 
-.layout-listing {
-  display: grid;
-  grid-template-columns:
-    minmax(var(--space-md), 1fr)
-    min(var(--measure-listing), 100% - 2 * var(--space-md))
-    minmax(var(--space-md), 1fr);
-  padding-inline: 0;
-  width: 100%;
-}
-
-.layout-listing > * {
-  grid-column: 2;
-}
-
-.layout-wide {
-  display: grid;
-  grid-template-columns:
-    minmax(var(--space-md), 1fr)
-    min(var(--measure-wide), 100% - 2 * var(--space-md))
-    minmax(var(--space-md), 1fr);
-  padding-inline: 0;
-  width: 100%;
-}
-
-.layout-wide > * {
-  grid-column: 2;
-}
-
+.layout-prose,
+.layout-listing,
+.layout-cards,
+.layout-wide,
 .layout-full {
   display: grid;
   grid-template-columns:
-    minmax(var(--space-sm), 1fr)
-    min(var(--measure-full), 100% - 2 * var(--space-sm))
-    minmax(var(--space-sm), 1fr);
-  padding-inline: 0;
+    minmax(var(--space-md), 1fr)
+    min(var(--layout-measure), 100% - 2 * var(--space-md))
+    minmax(var(--space-md), 1fr);
   width: 100%;
 }
 
+.layout-prose {
+  --layout-measure: var(--measure-prose);
+
+  container-type: inline-size;
+}
+
+.layout-listing {
+  --layout-measure: var(--measure-listing);
+}
+
+.layout-cards {
+  --layout-measure: var(--measure-cards);
+}
+
+.layout-wide {
+  --layout-measure: var(--measure-wide);
+}
+
+.layout-full {
+  --layout-measure: var(--measure-full);
+}
+
+.layout-prose > *,
+.layout-listing > *,
+.layout-cards > *,
+.layout-wide > *,
 .layout-full > * {
   grid-column: 2;
 }
@@ -80,248 +217,15 @@
 /* Breakout utility for full-width elements */
 .layout-prose .breakout,
 .layout-listing .breakout,
+.layout-cards .breakout,
 .layout-wide .breakout,
 .layout-full .breakout {
-  grid-column: 1 / -1; /* Span all columns */
+  grid-column: 1 / -1;
 }
 
-.nav-brand .site-logo {
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-  text-decoration: none;
-  font-family: var(--font-heading);
-  font-size: clamp(0.9rem, 3vw, var(--text-xl)); /* Extra compact on mobile */
-  font-weight: 600;
-  color: var(--color-ink-dark);
-  margin-left: 0;
-}
-
-.nav-brand .site-logo:hover {
-  color: var(--color-walnut);
-  transform: translateY(-1px);
-}
-
-.logo-flourish {
-  color: var(--color-tansy);
-  font-size: 1.2em;
-}
-
-.site-logo:hover .logo-flourish {
-  transform: rotate(20deg) scale(1.1);
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: clamp(0.15rem, 1vw, 1rem); /* Ultra tight gap on mobile */
-  font-size: clamp(0.8rem, 2.2vw, var(--text-lg)); /* Even more aggressive mobile scaling */
-  font-family: var(--font-heading);
-  margin-inline-start: auto;
-  min-width: 0;
-  flex: 1 1 auto;
-  justify-content: flex-end;
-  flex-wrap: nowrap; /* Keep everything on one line */
-}
-
-/* Simplified responsive adjustments - most handled by fluid design */
-
-.torch-toggle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: clamp(28px, 6vw, 40px); /* More compact on mobile */
-  height: clamp(28px, 6vw, 40px);
-  min-width: 40px; /* Reduced minimum for space efficiency */
-  min-height: 40px;
-  border: 1px solid color-mix(in srgb, var(--color-lichen) 50%, transparent);
-  background: color-mix(in srgb, var(--color-surface) 40%, transparent);
-  padding: clamp(2px, 0.5vw, 6px); /* Tighter padding */
-  border-radius: 50%;
-  color: var(--color-walnut);
-}
-
-.torch-toggle:hover {
-  background: color-mix(in srgb, var(--color-surface) 70%, var(--color-walnut));
-}
-
-.torch-toggle .torch-icon {
-  width: clamp(16px, 4vw, 22px); /* Fluid icon size */
-  height: clamp(16px, 4vw, 22px);
-}
-
-.torch-toggle:focus {
-  outline: 2px solid var(--color-tansy);
-  outline-offset: 2px;
-}
-
-/* Torch toggle now uses fluid sizing - no breakpoint needed */
-
-.nav-link {
-  text-decoration: none;
-  color: var(--color-ink-light);
-  padding-block: clamp(4px, 1vw, 8px); /* More compact mobile padding */
-  padding-inline: clamp(6px, 1.5vw, 12px);
-  font-weight: 400;
-  letter-spacing: 0.01em;
-  position: relative;
-  border-radius: 4px;
-  min-height: clamp(36px, 8vw, 44px); /* Reduced min-height on mobile */
-  display: flex;
-  align-items: center;
-}
-
-.nav-link:focus {
-  outline: 2px solid var(--color-tansy);
-  outline-offset: 2px;
-}
-
-.nav-link:hover {
-  color: var(--color-walnut);
-  transform: translateY(-1px);
-}
-
-.nav-link.active {
-  color: var(--color-walnut);
-  font-weight: 500;
-}
-
-.nav-link.active::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60%;
-  height: 1px;
-  background-color: var(--color-tansy);
-}
-
-.nav-separator {
-  color: var(--color-text-primary);
-  opacity: 1;
-  margin-inline: clamp(0px, 1vw, 4px); /* Minimal margin on mobile */
-  font-weight: 300;
-  font-size: clamp(0.7rem, 2vw, 1rem); /* Smaller on mobile */
-}
-
-/* Page layout structure */
-.page-wrapper {
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  overflow: visible;
-}
-
-.page-nav {
-  margin-bottom: var(--space-sm);
-}
-
-.nav-and-content-area {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-}
-
-.main-content {
-  padding: var(--space-sm) 0;
-  flex: 1 1 auto;
-  display: block; /* Prevent flex from shrinking inner layout wrappers */
-  position: relative; /* required for margin-notes absolute container */
-  overflow: visible; /* Allow margin cards to extend into margins */
-}
-
-.main-content .container {
-  width: 100%;
-}
-
-/* Explicit wide/full containers to ensure centering and width */
-.main-content .container-wide,
-.main-content .container-full {
-  width: 100%;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: var(--space-md);
-  padding-right: var(--space-md);
-}
 .main-content .container-wide {
-  max-width: 80rem; /* ~1280px */
-}
-.main-content .container-full {
-  max-width: 90rem; /* very wide */
-}
-
-/* Ensure main-content child wrapper (when not using .container) still fills and centers */
-/* Centering handled by BaseLayout container classes */
-
-.footer-area {
-  margin-top: auto;
-  background: var(--color-background);
-  /* ModernCSS: avoid offscreen work until needed */
-  content-visibility: auto;
-  contain-intrinsic-size: 400px 600px;
-}
-
-/* Modern responsive layout using logical properties */
-.main-content {
-  padding-block: clamp(0.25rem, 1vw, var(--space-sm)) 0; /* Minimal top padding on mobile */
-  flex: 1 1 auto;
-  display: block;
-  position: relative;
-}
-
-/* Smart separator visibility using modern CSS */
-@container (max-width: 30rem) {
-  .nav-separator {
-    display: none;
-  }
-}
-
-/* Fallback for browsers without container query support */
-@media (max-width: 480px) {
-  .nav-separator {
-    display: none;
-  }
-}
-
-/* Extra optimizations for very narrow screens like Pixel 5 */
-@media (max-width: 400px) {
-  .nav-content {
-    gap: 0.3rem; /* Fixed small gap */
-    padding-inline: var(--space-sm) 0.5rem; /* Reduce right padding significantly */
-  }
-
-  .nav-brand .site-logo {
-    font-size: 0.9rem; /* Slightly larger title */
-  }
-
-  .nav-links {
-    font-size: 0.8rem; /* Slightly larger nav links */
-    gap: 0.12rem; /* Minimal gap between nav items */
-  }
-
-  .torch-toggle {
-    margin-right: 0; /* Remove any right margin from toggle */
-  }
-}
-
-/* Ultra-narrow screens - allow nav to wrap if needed */
-@media (max-width: 360px) {
-  .nav-content {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.25rem 0.5rem;
-  }
-
-  .nav-brand {
-    flex-basis: 100%;
-    text-align: center;
-  }
-
-  .nav-links {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.2rem 0.4rem;
-  }
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: var(--space-md);
 }
