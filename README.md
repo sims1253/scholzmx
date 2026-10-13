@@ -111,8 +111,28 @@ upstream commit and license recorded there. Three local `no-runtime-typeof`
 exceptions cover already-typed image unions; unnecessary casts were removed.
 
 The `qs`, `tmp`, and `uuid` overrides address advisories in audit-tool dependencies.
-`bun audit` still reports an unpatched `extract-zip@2.0.1` advisory in Puppeteer's
-Chrome downloader. This tooling is not shipped in the static site.
+The October 13 dependency review also patched eight transitive packages within
+their supported ranges. Six audit findings remain in five packages; see
+[the pipeline guide](QUARTO-TO-ASTRO-PIPELINE.md#dependency-updates-and-checks)
+for the affected dependencies and upstream blockers.
+
+The October updates add a few useful options for future work:
+
+- Oxlint's [`typescript/no-generated-empty-object-type`](https://oxc.rs/docs/guide/usage/linter/rules/typescript/no-generated-empty-object-type.html)
+  can catch utility types that accidentally accept any non-nullish value. Consider
+  enabling it alongside the existing type-aware checks; it passes on this codebase.
+- Puppeteer 25.13's [`ConsoleMessage.page()`](https://pptr.dev/api/puppeteer.consolemessage.page),
+  `frame()`, and `worker()` can identify where browser console errors originate.
+  Use them when extending smoke-test diagnostics. Its
+  [`asFetchRequest()`](https://pptr.dev/api/puppeteer.httprequest.asfetchrequest)
+  and [`asFetchResponse()`](https://pptr.dev/api/puppeteer.httpresponse.asfetchresponse)
+  helpers also simplify future request and response assertions.
+- [Markdown Remark 7.3.2](https://github.com/withastro/astro/releases/tag/@astrojs%2Fmarkdown-remark@7.3.2)
+  supports YAML timestamps and merge keys and fixes highlighting for `c++`, `c#`,
+  and `f#` fences. Existing content benefits automatically.
+- [Setup Node 7.1](https://github.com/actions/setup-node/releases/tag/v7.1.0)
+  supports `mise.toml` and absolute version-file paths. Keep `.node-version` for
+  now; the new input support is useful if tool versions move to mise later.
 
 ### Performance Philosophy
 - Inline styles are disabled (separate CSS files for better caching)

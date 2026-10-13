@@ -38,7 +38,33 @@ To bypass the CI content cache, manually run **Code Quality CI** with **force-re
 
 Dependabot checks Bun packages and GitHub Actions weekly. Minor and patch updates are grouped; major updates remain separate. Updates require review and CI; there is no automatic merge workflow. Action references use commit SHAs with version comments, except the separately managed Pullfrog workflow and the versioned actionlint container.
 
-`bun audit` currently reports [GHSA-jmr9-qjv8-65gv](https://github.com/advisories/GHSA-jmr9-qjv8-65gv) in the browser tooling's transitive `extract-zip` dependency. As of September 7, 2026, the advisory lists no patched release. CI disables Puppeteer's browser downloads and supplies Chrome separately. Keep the alert open until upstream replaces or fixes the dependency; this mitigation does not make the dependency audit clean.
+The October 13, 2026 review updated `brace-expansion`, `compression`, `fast-uri`,
+`http-cache-semantics`, `ip-address`, `proxy-addr`, `smol-toml`, and `source-map-js`
+within their dependents' supported ranges, removing 11 audit findings. Dependabot's
+Sharp and Astro updates also removed the baseline Sharp and devalue findings.
+
+`bun audit` still reports six findings in five transitive packages:
+
+- `basic-ftp@5.3.1`: [directory-listing denial of service](https://github.com/advisories/GHSA-c475-qrg2-pj4r).
+  The fix is 6.2.1, but the browser audit tools' `get-uri@6.0.5` requires `^5.0.2`.
+- `katex@0.16.47`: [prototype pollution can bypass trust restrictions](https://github.com/advisories/GHSA-238p-pmpm-9mq7).
+  The fix is 0.18.2, but `rehype-katex` and `micromark-extension-math` require `^0.16.0`.
+  Math renders from authored content at build time with the default trust settings.
+- `braces@3.0.3`: [nested-pattern denial of service](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm).
+  No patched version is published; this comes through the CSS build and lint tools.
+- `extract-zip@2.0.1`: [symlink path traversal](https://github.com/advisories/GHSA-jmr9-qjv8-65gv)
+  and [arbitrary file writes](https://github.com/advisories/GHSA-7pqw-9j4j-h8q3).
+  No patched version is published. CI disables Puppeteer's browser downloads and
+  supplies Chrome separately.
+- `sprintf-js@1.0.3`: [precision-specifier denial of service](https://github.com/advisories/GHSA-hp3w-g68c-fv3c).
+  No patched version is published; Lighthouse CI pulls it through `js-yaml` and `argparse`.
+
+These findings already affected main before the update. Keep them open until
+upstream publishes fixes or supports the patched dependency versions. The browser
+and build tooling is not shipped as server code in the static site; these usage
+constraints do not make the dependency audit clean. With Bun 1.4.2 or newer, use
+`bun audit fix --dry-run` to check compatible fixes before applying them and
+rerunning the quality and site tests.
 
 Use `CI passed` as the required branch status check. It remains a single stable check while individual jobs change. Pages write and OIDC permissions are granted only to the deployment job. Other CI jobs use a read-only token and do not retain checkout credentials.
 
