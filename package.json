@@ -55,7 +55,7 @@
     "oxlint": "1.88.0",
     "oxlint-tsgolint": "^7.0.2004",
     "pa11y": "^10.0.0",
-    "pa11y-ci": "^4.1.1",
+    "pa11y-ci": "^5.0.0",
     "postcss": "^8.5.30",
     "prettier": "3.9.10",
     "prettier-plugin-astro": "1.1.1",
