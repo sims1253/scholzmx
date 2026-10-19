@@ -131,6 +131,12 @@ class MarginNotes {
     };
     window.addEventListener('resize', onResize);
     window.addEventListener('load', () => this.refresh());
+    // Content above a note can grow after load (images, the recipe card's step list),
+    // so follow the page's height as well as the window's width.
+    const wrapper = document.querySelector('.main-content');
+    if (wrapper && 'ResizeObserver' in window) {
+      new ResizeObserver(() => this.refresh()).observe(wrapper);
+    }
   }
 
   public refresh(): void {

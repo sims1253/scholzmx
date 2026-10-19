@@ -2,23 +2,6 @@
 
 /* === CRITICAL FONTS (preloaded) === */
 
-/* Cormorant Garamond - Primary heading font */
-@font-face {
-  font-family: 'Cormorant Garamond';
-  src: url('/fonts/cormorant-garamond-400.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Cormorant Garamond';
-  src: url('/fonts/cormorant-garamond-600.woff2') format('woff2');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-
 /* Alegreya - Personal content body font (regular weight most used) */
 @font-face {
   font-family: 'Alegreya';
@@ -33,6 +16,23 @@
   src: url('/fonts/Alegreya/alegreya-v38-latin-italic.woff2') format('woff2');
   font-weight: 400;
   font-style: italic;
+  font-display: swap;
+}
+
+/* Alegreya SC - Wordmark, navigation and small labels */
+@font-face {
+  font-family: 'Alegreya SC';
+  src: url('/fonts/Alegreya/alegreya-sc-v28-latin-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Alegreya SC';
+  src: url('/fonts/Alegreya/alegreya-sc-v28-latin-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
   font-display: swap;
 }
 

@@ -5,3 +5,35 @@
   --transition-fast: 0.15s ease; /* Quick state changes */
   --transition-medium: 0.3s ease; /* Standard UI transitions */
 }
+
+/* Torchlight flicker; tokens.colors.css enables it through --canopy-flicker after dark. */
+@keyframes torch-flicker {
+  0%,
+  100% {
+    opacity: 0.92;
+  }
+  8% {
+    opacity: 1;
+  }
+  13% {
+    opacity: 0.84;
+  }
+  21% {
+    opacity: 0.97;
+  }
+  34% {
+    opacity: 0.88;
+  }
+  46% {
+    opacity: 1;
+  }
+  53% {
+    opacity: 0.86;
+  }
+  71% {
+    opacity: 0.98;
+  }
+  86% {
+    opacity: 0.9;
+  }
+}

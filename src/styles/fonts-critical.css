@@ -1,14 +1,5 @@
 /* Critical fonts only - for preloading the most essential fonts */
 
-/* Cormorant Garamond 600 - Primary heading font weight */
-@font-face {
-  font-family: 'Cormorant Garamond';
-  src: url('/fonts/cormorant-garamond-600.woff2') format('woff2');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-
 /* Alegreya Regular - Most used body font on personal pages */
 @font-face {
   font-family: 'Alegreya';
