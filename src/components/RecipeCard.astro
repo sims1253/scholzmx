@@ -97,7 +97,14 @@ const columnStarts = Array.from({ length: grid.columns }, (_, index) =>
 const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0;
 ---
 
-<section class="recipe-card" data-recipe-card aria-labelledby="recipe-card-title">
+<!-- Search indexes the card once, through the step list; the table repeats it and the
+     controls and cooking bar are not content. -->
+<section
+  class="recipe-card"
+  data-recipe-card
+  aria-labelledby="recipe-card-title"
+  data-pagefind-body
+>
   <div class="rc-sheet pasted">
     <header class="rc-header">
       <h2 class="rc-title" id="recipe-card-title">The recipe</h2>
@@ -116,7 +123,7 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
         </span>}
       </p>
 
-      <div class="rc-controls" data-rc-controls hidden>
+      <div class="rc-controls" data-rc-controls hidden data-pagefind-ignore>
         <fieldset class="rc-choice">
           <legend>Amount</legend>
           <label><input type="radio" name="rc-scale" value="0.5" />Half</label>
@@ -132,7 +139,7 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
       </div>
     </header>
 
-    <div class="rc-table-frame" data-rc-frame>
+    <div class="rc-table-frame" data-rc-frame data-pagefind-ignore>
       <p class="rc-more" aria-hidden="true">More to the right</p>
       <div class="rc-table-wrap" role="region" aria-labelledby="rc-caption" tabindex="0">
         <table class="rc-table">
@@ -295,7 +302,7 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     </div>
   </div>
 
-  <div class="rc-cook" data-rc-cook hidden>
+  <div class="rc-cook" data-rc-cook hidden data-pagefind-ignore>
     <div class="rc-cook-inner" data-rc-cook-inner>
       <div class="rc-cook-step">
         <p class="rc-cook-head">

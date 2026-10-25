@@ -11,6 +11,14 @@ interface Timer {
 }
 
 const pad = (n: number) => String(n).padStart(2, '0');
+// Saving the step is a convenience: with storage blocked, cooking carries on unsaved.
+const remember = <T>(use: () => T): T | undefined => {
+  try {
+    return use();
+  } catch {
+    return undefined;
+  }
+};
 const clock = (ms: number) => {
   const seconds = Math.max(0, Math.ceil(ms / 1000));
   const hours = Math.floor(seconds / 3600);
@@ -234,7 +242,7 @@ function initRecipeCard(card: HTMLElement): void {
 
   const show = (stage: number) => {
     current = Math.max(0, Math.min(stages.length - 1, stage));
-    sessionStorage.setItem(storageKey, String(current));
+    remember(() => sessionStorage.setItem(storageKey, String(current)));
 
     for (const item of [...stages, ...cells]) {
       const at = Number(item.dataset.stage);
@@ -295,7 +303,7 @@ function initRecipeCard(card: HTMLElement): void {
     document.documentElement.style.removeProperty('--rc-bar');
     bar.hidden = true;
     current = -1;
-    sessionStorage.removeItem(storageKey);
+    remember(() => sessionStorage.removeItem(storageKey));
     for (const item of [...stages, ...cells, ...rows]) {
       item.classList.remove('is-current', 'is-done', 'is-used');
     }
@@ -336,7 +344,7 @@ function initRecipeCard(card: HTMLElement): void {
     if (current >= 0 && document.visibilityState === 'visible') void keepAwake();
   });
 
-  const saved = sessionStorage.getItem(storageKey);
+  const saved = remember(() => sessionStorage.getItem(storageKey)) ?? null;
   if (saved !== null) start(Number(saved));
 }
 

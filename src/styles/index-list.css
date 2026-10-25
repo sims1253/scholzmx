@@ -75,7 +75,7 @@
     grid-column: 2;
   }
 
-  .index-page > .index-group {
+  .index-page > .index-group:not([hidden]) {
     grid-column: 1 / -1;
     display: grid;
     grid-template-columns: subgrid;
