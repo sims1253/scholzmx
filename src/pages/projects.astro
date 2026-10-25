@@ -1,4 +1,10 @@
 ---
+import { Image } from 'astro:assets';
+import ryLogo from '../assets/images/projects/ry-logo.webp';
+import starlingLogo from '../assets/images/projects/starling-logo.webp';
+import janusLogo from '../assets/images/projects/janus-logo.webp';
+import huerdLogo from '../assets/images/projects/huerd-logo.png';
+import hrvesterLogo from '../assets/images/projects/hrvester-logo.png';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import StackedCard from '../components/StackedCard.astro';
 
@@ -9,7 +15,7 @@ const projects = [
       'Catch type errors, missing data frame columns, and scope issues before running R code.',
     year: 2026,
     status: 'Active',
-    banner: 'https://raw.githubusercontent.com/sims1253/ry/main/assets/branding/ry-logo.webp',
+    banner: ryLogo,
     tech: ['Rust', 'R'],
     links: [
       { type: 'GitHub', url: 'https://github.com/sims1253/ry' },
@@ -22,8 +28,7 @@ const projects = [
       'Transcribe speech locally with a native inference engine and apps for desktop and phone.',
     year: 2026,
     status: 'Active',
-    banner:
-      'https://raw.githubusercontent.com/sims1253/starling/master/assets/branding/starling-logo.webp',
+    banner: starlingLogo,
     tech: ['C++', 'ggml', 'TypeScript'],
     links: [
       { type: 'GitHub', url: 'https://github.com/sims1253/starling' },
@@ -36,8 +41,7 @@ const projects = [
       'Extract data from PDF text and layout locally, inspect source locations, and compare with reference data.',
     year: 2026,
     status: 'Active',
-    banner:
-      'https://raw.githubusercontent.com/sims1253/nebu/main/janus/assets/branding/janus-logo.webp',
+    banner: janusLogo,
     tech: ['Python', 'PDF'],
     links: [
       { type: 'GitHub', url: 'https://github.com/sims1253/nebu/tree/main/janus' },
@@ -49,7 +53,7 @@ const projects = [
     description: 'Perceptually distinct color palettes optimized for accessibility in OKLAB (R).',
     year: 2024,
     status: 'Active',
-    banner: 'https://sims1253.github.io/huerd/reference/figures/logo.png',
+    banner: huerdLogo,
     tech: ['R', 'OKLAB', 'nloptr'],
     links: [
       { type: 'GitHub', url: 'https://github.com/sims1253/huerd' },
@@ -61,7 +65,7 @@ const projects = [
     description: 'Analyze HRV data with robust preprocessing and recovery scoring.',
     year: 2024,
     status: 'Active',
-    banner: 'https://sims1253.github.io/hrvester/reference/figures/logo.png',
+    banner: hrvesterLogo,
     tech: ['R', 'Signal Processing'],
     links: [
       { type: 'GitHub', url: 'https://github.com/sims1253/hrvester' },
@@ -102,11 +106,11 @@ const plateName = (title: string) => {
           class="project-card"
         >
           <div slot="media" class="project-logo pasted">
-            <img
+            <Image
               src={project.banner}
               alt=""
-              width="240"
-              height="240"
+              width={176}
+              densities={[1, 2]}
               loading={index < 2 ? 'eager' : 'lazy'}
               decoding="async"
             />
