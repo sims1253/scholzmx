@@ -99,3 +99,6 @@ lighthouse-report.html
 # CI render staging and Python bytecode
 .rendered-content/
 __pycache__/
+
+# Wrangler state (PR previews, wrangler.jsonc)
+.wrangler/

@@ -101,18 +101,20 @@ for cache behavior, pinned R/Quarto versions, and manual rebuilds.
 
 #### PR previews
 
-Each PR's tested build is published to Cloudflare Pages at
-`https://pr-<number>.scholzmx.pages.dev`, with the link and a Lighthouse run against
-it in a PR comment (`.github/workflows/preview.yml`). Production stays on GitHub
-Pages. Preview URLs are not indexed by search engines. PRs from forks get no
-preview, because they cannot read the secrets.
+Each PR's tested build is published as a Cloudflare Worker Preview named `pr-<number>`
+(`wrangler.jsonc`, `.github/workflows/preview.yml`), with the link and a Lighthouse
+run against it in a PR comment. The preview is deleted when the PR closes
+(`preview-cleanup.yml`). Production stays on GitHub Pages, and the Worker itself is
+never deployed to production. Previews send `X-Robots-Tag: noindex`. PRs from forks
+get no preview, because they cannot read the secrets. Worker Previews are in open
+beta (since September 2026).
 
 One-time setup:
 
-1. In Cloudflare, create a Pages project named `scholzmx` for direct upload:
-   `bunx wrangler pages project create scholzmx --production-branch=main`
-   (or Workers & Pages → Create → Pages → Upload assets).
-2. Create an API token with the **Account → Cloudflare Pages → Edit** permission.
+1. In the Cloudflare dashboard, open Workers & Pages once so the account has a
+   `workers.dev` subdomain. No Worker or project needs to be created first.
+2. Create an API token (My Profile → API Tokens → Custom token) with the
+   **Account → Workers Scripts → Edit** permission.
 3. Add `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as Actions secrets. To get
    previews on Dependabot PRs too, add them as Dependabot secrets as well.
 
