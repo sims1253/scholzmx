@@ -113,8 +113,9 @@ One-time setup:
 
 1. In the Cloudflare dashboard, open Workers & Pages once so the account has a
    `workers.dev` subdomain. No Worker or project needs to be created first.
-2. Create an API token (My Profile → API Tokens → Custom token) with the
-   **Account → Workers Scripts → Edit** permission.
+2. Create an account API token with the **Workers Admin** role for all Workers. The
+   first preview creates the `scholzmx` Worker, and only Admin may create Workers
+   (Editor, which replaces the legacy "Workers Scripts Edit", cannot).
 3. Add `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as Actions secrets. To get
    previews on Dependabot PRs too, add them as Dependabot secrets as well.
 

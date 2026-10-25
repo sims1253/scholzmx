@@ -22,6 +22,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
+    # Shared with preview-cleanup.yml, so closing the PR cancels a deploy in progress.
     concurrency:
       group: preview-${{ github.event.pull_request.number }}
       cancel-in-progress: true
@@ -30,16 +31,22 @@ jobs:
       WRANGLER_VERSION: 4.152.0
       WRANGLER_SEND_METRICS: 'false'
     steps:
-      - name: Check for Cloudflare credentials
+      - name: Check for Cloudflare credentials and an open PR
         id: credentials
         env:
           TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          if [ -n "$TOKEN" ] && [ -n "$ACCOUNT" ]; then
-            echo "ready=true" >> "$GITHUB_OUTPUT"
-          else
+          if [ -z "$TOKEN" ] || [ -z "$ACCOUNT" ]; then
             echo "::notice title=No preview::Cloudflare secrets are not available to this run (a fork, Dependabot without Dependabot secrets, or not set up yet)."
+          # A run that reaches this point after the PR closed must not bring back the
+          # preview preview-cleanup.yml deleted.
+          elif [ "$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json state --jq .state)" != OPEN ]; then
+            echo "::notice title=No preview::The pull request is no longer open."
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
           fi
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
