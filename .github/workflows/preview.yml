@@ -22,10 +22,11 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    # Shared with preview-cleanup.yml, so closing the PR cancels a deploy in progress.
+    # Shared with preview-cleanup.yml and never cancelled, so a deploy and the cleanup
+    # run one after the other; a deploy queued behind the cleanup sees the PR closed.
     concurrency:
       group: preview-${{ github.event.pull_request.number }}
-      cancel-in-progress: true
+      cancel-in-progress: false
     env:
       PREVIEW_NAME: pr-${{ github.event.pull_request.number }}
       WRANGLER_VERSION: 4.152.0

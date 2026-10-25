@@ -17,10 +17,10 @@ jobs:
     if: github.event.pull_request.head.repo.full_name == github.repository
     permissions:
       contents: read
-    # Shared with preview.yml: cancels a deploy still running for this PR.
+    # Shared with preview.yml: waits for a deploy still running for this PR.
     concurrency:
       group: preview-${{ github.event.pull_request.number }}
-      cancel-in-progress: true
+      cancel-in-progress: false
     env:
       PREVIEW_NAME: pr-${{ github.event.pull_request.number }}
       WRANGLER_VERSION: 4.152.0
