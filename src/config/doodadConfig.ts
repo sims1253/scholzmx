@@ -141,6 +141,8 @@ export const doodadCategories: DoodadCategory[] = [
     enabled: true,
     probability: 0.7, // Increased to 70% for better visual consistency
     exclusive: true, // Only one SVG doodle per card for cleaner visuals
+    // Doodles keep to the right-hand corners, where no title, excerpt or tag starts.
+    // The unused rolls stay so every card's other doodads keep their seeded draw.
     items: [
       {
         id: 'berries',
@@ -149,9 +151,9 @@ export const doodadCategories: DoodadCategory[] = [
         kind: 'svg',
         src: '/doodles/doodle-berries.svg',
         defaultSize: '1.8rem',
-        positions: ['topRight', 'topLeft'],
+        positions: ['topRight', 'bottomRight'],
         generate: ({ pick, map }) => ({
-          position: pick(0.5) ? 'topRight' : 'topLeft',
+          position: pick(0.5) ? 'topRight' : 'bottomRight',
           rotation: Math.round(map(-15, 15)),
         }),
       },
@@ -162,11 +164,11 @@ export const doodadCategories: DoodadCategory[] = [
         kind: 'svg',
         src: '/doodles/doodle-fern.svg',
         defaultSize: '2.2rem',
-        positions: ['bottomLeft', 'bottomRight'],
-        generate: ({ pick, map }) => ({
-          position: pick(0.5) ? 'bottomLeft' : 'bottomRight',
-          rotation: Math.round(map(-20, 20)),
-        }),
+        positions: ['bottomRight'],
+        generate: ({ pick, map }) => {
+          pick(0.5); // The draw that used to choose a side.
+          return { position: 'bottomRight', rotation: Math.round(map(-20, 20)) };
+        },
       },
       {
         id: 'lavender',
@@ -175,9 +177,9 @@ export const doodadCategories: DoodadCategory[] = [
         kind: 'svg',
         src: '/doodles/doodle-flower-lavender.svg',
         defaultSize: '1.6rem',
-        positions: ['center', 'topLeft', 'topRight'],
+        positions: ['bottomRight', 'topRight'],
         generate: ({ pick, map }) => ({
-          position: pick(0.3) ? 'center' : pick(0.5) ? 'topLeft' : 'topRight',
+          position: pick(0.3) || pick(0.5) ? 'bottomRight' : 'topRight',
           rotation: Math.round(map(-12, 12)),
         }),
       },
@@ -188,9 +190,9 @@ export const doodadCategories: DoodadCategory[] = [
         kind: 'svg',
         src: '/doodles/doodle-old-key.svg',
         defaultSize: '2.5rem',
-        positions: ['center'],
+        positions: ['bottomRight'],
         generate: ({ map }) => ({
-          position: 'center',
+          position: 'bottomRight',
           rotation: Math.round(map(-25, 25)),
           scale: map(0.8, 1.1),
         }),
@@ -202,11 +204,11 @@ export const doodadCategories: DoodadCategory[] = [
         kind: 'svg',
         src: '/doodles/doodle-seed-pod.svg',
         defaultSize: '1.9rem',
-        positions: ['bottomLeft', 'bottomRight'],
-        generate: ({ pick, map }) => ({
-          position: pick(0.5) ? 'bottomLeft' : 'bottomRight',
-          rotation: Math.round(map(-18, 18)),
-        }),
+        positions: ['bottomRight'],
+        generate: ({ pick, map }) => {
+          pick(0.5); // The draw that used to choose a side.
+          return { position: 'bottomRight', rotation: Math.round(map(-18, 18)) };
+        },
       },
     ],
   },
@@ -248,7 +250,8 @@ export const doodadCategories: DoodadCategory[] = [
     id: 'backgroundEffects',
     enabled: true,
     // Leaf shadows come from the dappled light over the whole page; cards keep the rings.
-    probability: 0.1,
+    // The ring is the only item left, so this is its rate: about 4% of cards, as before.
+    probability: 0.04,
     exclusive: true, // Only one background effect per card
     items: [
       {

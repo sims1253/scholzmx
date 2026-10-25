@@ -1,9 +1,11 @@
 ---
 /**
  * Dappled light for the rest of the page. The canopy shades the top; this layer stays put
- * while the page scrolls under it, so cards and photos pass through moving leaf shadows
- * (by torchlight, through the torch's glow). It thins to almost nothing over the reading
- * column and fades in as the canopy scrolls away. The leaves are a tile drawn by
+ * while the page scrolls over it, so the ground between cards and photos passes through
+ * moving leaf shadows (by torchlight, through the torch's glow). Like the canopy it lies
+ * under the header, the content and the footer, so nothing moves across words or cards.
+ * It thins to almost nothing behind the reading column and fades in as the canopy
+ * scrolls away. The leaves are a tile drawn by
  * scripts/draw-canopy.mjs.
  */
 interface Props {
@@ -24,7 +26,8 @@ const { clear = '0px' } = Astro.props;
 
     position: fixed;
     inset: 0;
-    z-index: 3;
+    /* Above the canopy, below .site-header, .main-content and .site-footer. */
+    z-index: 0;
     pointer-events: none;
     mask-image: linear-gradient(
       to right,

@@ -553,8 +553,13 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     vertical-align: -0.05em;
   }
 
+  /* The key is a small window, so it shows the leaves at a scale it can hold. */
   .rc-swatch--wait {
     background: var(--rc-shade), var(--wash-sage);
+    background-size:
+      auto,
+      3em 3em,
+      auto;
   }
 
   .rc-swatch--slip {
@@ -635,7 +640,8 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     font-family: var(--font-heading);
     font-size: var(--text-xs);
     line-height: 1.2;
-    color: var(--color-moss);
+    /* Deepened towards the ink so the small figures keep 4.5:1 in both lights. */
+    color: color-mix(in srgb, var(--color-moss) 70%, var(--color-ink-dark));
     font-variant-numeric: oldstyle-nums;
   }
 
@@ -800,8 +806,37 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     cursor: pointer;
   }
 
+  /* Tick boxes drawn in the card's ink, so they belong to the page in both lights. */
   .rc-gather-list input {
-    accent-color: var(--color-walnut);
+    display: grid;
+    place-content: center;
+    width: 1em;
+    height: 1em;
+    margin: 0;
+    border: 1px solid color-mix(in srgb, var(--color-ink-dark) 45%, transparent);
+    border-radius: 2px;
+    background: var(--paper-sheet);
+    appearance: none;
+    cursor: pointer;
+  }
+
+  .rc-gather-list input:checked {
+    border-color: var(--color-walnut);
+    background: var(--color-walnut);
+  }
+
+  .rc-gather-list input:checked::before {
+    content: '';
+    width: 0.55em;
+    height: 0.3em;
+    border: solid var(--paper-sheet);
+    border-width: 0 0 2px 2px;
+    transform: translateY(-0.05em) rotate(-45deg);
+  }
+
+  .rc-gather-list input:focus-visible {
+    outline: 2px solid var(--color-walnut);
+    outline-offset: 2px;
   }
 
   .rc-gather-qty {
@@ -906,6 +941,10 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     margin-right: 0.4em;
     border: 1px solid var(--rc-rule);
     background: var(--rc-shade), var(--wash-sage);
+    background-size:
+      auto,
+      3em 3em,
+      auto;
     vertical-align: -0.05em;
   }
 

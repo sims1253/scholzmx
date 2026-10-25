@@ -279,7 +279,8 @@
     height: 2rem;
     isolation: isolate;
     opacity: 0.4;
-    z-index: 1;
+    /* Under the card's words: a doodle in the corner must never sit on a title. */
+    z-index: 0;
     pointer-events: none;
     /* Fallback for browsers without mask support */
     background-color: var(--doodle-color, var(--color-moss));
@@ -432,16 +433,16 @@
     z-index: 1;
   }
 
-  /* Vertical tab accent */
+  /* Vertical tab accent: it peeks over the top edge and stops above the title. */
   .sc-tab {
     position: absolute;
-    top: -0.5rem;
+    top: -1.25rem;
     right: 3rem;
-    width: 1.5rem; /* increased from 1rem */
-    height: 4rem; /* increased from 3rem */
+    width: 1.5rem;
+    height: 2rem;
     background: color-mix(in srgb, var(--color-tansy) 35%, transparent);
     transform: rotate(-3deg);
-    z-index: 2;
+    z-index: 0;
   }
   .sc-link {
     display: block;

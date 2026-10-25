@@ -106,8 +106,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.1em;
+  /* 44px to press, while the flame still takes only its own 1.1em in the row. */
+  width: 44px;
   height: 44px;
+  margin-inline: calc((1.1em - 44px) / 2);
   padding: 0;
   border: 0;
   background: transparent;

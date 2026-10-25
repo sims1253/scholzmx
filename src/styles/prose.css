@@ -22,22 +22,26 @@
     line-height: inherit;
   }
 
+  /* Section heads step clearly off the text (about 1.5 and 1.25 times it), with
+     more room above than below so each one belongs to what follows. */
   .prose h2 {
-    font-size: var(--text-xl);
-    margin-top: 1.6em;
-    margin-bottom: 0.6em;
+    font-size: 1.5em;
+    margin-top: 1.5em;
+    margin-bottom: 0.45em;
     color: var(--color-walnut);
     font-weight: var(--heading-weight-strong);
-    line-height: 1.3;
+    line-height: 1.2;
+    text-wrap: balance;
   }
 
   .prose h3 {
-    font-size: var(--text-lg);
+    font-size: 1.25em;
     margin-top: 1.4em;
-    margin-bottom: 0.5em;
+    margin-bottom: 0.4em;
     color: var(--color-text-primary);
     font-weight: var(--heading-weight-strong);
-    line-height: 1.4;
+    line-height: 1.3;
+    text-wrap: balance;
   }
 
   .prose blockquote {

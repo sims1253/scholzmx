@@ -91,7 +91,8 @@ const hasInitial = isHome || /^\/(blog|recipes|notes)\/.+/.test(currentPath);
 
         const torch = () => {
           try {
-            const saved = JSON.parse(localStorage.getItem('torch') ?? 'null');
+            // The button keeps its choice in memory too, for when storage is blocked.
+            const saved = window.grottoTorch ?? JSON.parse(localStorage.getItem('torch') ?? 'null');
             if (
               saved &&
               saved.until > Date.now() &&
@@ -315,7 +316,13 @@ const hasInitial = isHome || /^\/(blog|recipes|notes)\/.+/.test(currentPath);
 
     <BackToTop />
     <Dapple
-      clear={layout === 'prose' ? 'var(--measure-prose)' : layout === 'wide' ? '40rem' : '0px'}
+      clear={
+        layout === 'prose'
+          ? 'calc(var(--measure-prose) + 2 * (var(--margin-note-width, 240px) + var(--margin-note-gap, 28px)))'
+          : layout === 'wide'
+            ? '40rem'
+            : '0px'
+      }
     />
 
     <style is:global>

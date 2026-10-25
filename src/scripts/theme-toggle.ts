@@ -8,6 +8,7 @@ const DUSK = 21;
 declare global {
   interface Window {
     grottoSky?: () => void;
+    grottoTorch?: { theme: 'dark' | 'light'; until: number };
   }
 }
 
@@ -24,8 +25,10 @@ function nextTurn(now: Date): number {
 }
 
 function remember(theme: 'dark' | 'light'): void {
+  const choice = { theme, until: nextTurn(new Date()) };
+  window.grottoTorch = choice;
   try {
-    localStorage.setItem(KEY, JSON.stringify({ theme, until: nextTurn(new Date()) }));
+    localStorage.setItem(KEY, JSON.stringify(choice));
     localStorage.removeItem('theme-preference');
   } catch {
     // Ignore storage errors (e.g., private browsing mode)

@@ -65,7 +65,8 @@
 }
 
 /* Modern responsive behavior using container queries */
-@container main-content (max-width: 60rem) {
+/* 68rem is where src/scripts/margin-notes.ts stops placing notes in the margin. */
+@container main-content (width < 68rem) {
   .notes-container {
     display: none;
   }
