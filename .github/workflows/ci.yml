@@ -88,7 +88,7 @@ jobs:
       - name: Check internal links and anchors
         uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
         with:
-          # Links between the site's own pages only; links-weekly.yml checks external ones.
+          # Links between the site's own pages only; links.yml checks external ones weekly.
           # --no-ignore: dist/ is git-ignored, and lychee would otherwise skip most of it.
           args: --offline --no-ignore --root-dir ${{ github.workspace }}/dist --include-fragments --no-progress dist
       - name: Keep the tested site for the preview
