@@ -107,7 +107,9 @@ run against it in a PR comment. The preview is deleted when the PR closes
 (`preview-cleanup.yml`). Production stays on GitHub Pages, and the Worker itself is
 never deployed to production. Previews send `X-Robots-Tag: noindex`. PRs from forks
 get no preview, because they cannot read the secrets. Worker Previews are in open
-beta (since September 2026).
+beta (since September 2026); one known beta bug is that a deleted preview's URL can
+keep serving its last build
+([cloudflare/developer-platform#73](https://github.com/cloudflare/developer-platform/issues/73)).
 
 One-time setup:
 
