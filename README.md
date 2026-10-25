@@ -85,14 +85,38 @@ bun run test:site    # Build + browser smoke tests + accessibility checks (isola
 
 ### CI/CD Pipeline
 
-Every PR and main/master push runs workflow linting, renderer regression tests,
-code quality checks, and a build with all Quarto posts included. Rendering uses an
-exact-input cache of generated files. CI tests the complete site, then deploys
-that same build on main/master after the `CI passed` check succeeds.
+Every PR and main/master push runs workflow linting and a zizmor security audit
+(`.github/zizmor.yml`), renderer regression tests, code quality checks, and a build
+with all Quarto posts included. Rendering uses an exact-input cache of generated
+files. CI tests the complete site, checks every link and anchor between its own
+pages, then deploys that same build on main/master after the `CI passed` check
+succeeds.
 
-Lighthouse and Pa11y monitor production after deployment. Dependabot opens weekly
-updates for Bun packages and GitHub Actions. See [the pipeline guide](QUARTO-TO-ASTRO-PIPELINE.md)
+Lighthouse and Pa11y monitor production after deployment. A weekly job checks every
+link on the published pages, external ones included, and keeps a "Broken links on
+the published site" issue up to date. Dependabot opens weekly updates for Bun
+packages and GitHub Actions, after a cooldown (7 days, 14 for major versions) so a
+bad release is usually caught before it gets here. See [the pipeline guide](QUARTO-TO-ASTRO-PIPELINE.md)
 for cache behavior, pinned R/Quarto versions, and manual rebuilds.
+
+#### PR previews
+
+Each PR's tested build is published to Cloudflare Pages at
+`https://pr-<number>.scholzmx.pages.dev`, with the link and a Lighthouse run against
+it in a PR comment (`.github/workflows/preview.yml`). Production stays on GitHub
+Pages. Preview URLs are not indexed by search engines. PRs from forks get no
+preview, because they cannot read the secrets.
+
+One-time setup:
+
+1. In Cloudflare, create a Pages project named `scholzmx` for direct upload:
+   `bunx wrangler pages project create scholzmx --production-branch=main`
+   (or Workers & Pages → Create → Pages → Upload assets).
+2. Create an API token with the **Account → Cloudflare Pages → Edit** permission.
+3. Add `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as Actions secrets. To get
+   previews on Dependabot PRs too, add them as Dependabot secrets as well.
+
+Without the secrets the preview job skips with a notice and CI stays green.
 
 ## Architecture Notes
 
