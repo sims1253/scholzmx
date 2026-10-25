@@ -95,7 +95,7 @@ succeeds.
 Lighthouse and Pa11y monitor production after deployment. A weekly job checks every
 link on the published pages, external ones included, and keeps a "Broken links on
 the published site" issue up to date. Dependabot opens weekly updates for Bun
-packages and GitHub Actions, after a cooldown (7 days, 14 for major versions) so a
+packages and GitHub Actions, after a cooldown (7 days, 14 for Bun major updates) so a
 bad release is usually caught before it gets here. See [the pipeline guide](QUARTO-TO-ASTRO-PIPELINE.md)
 for cache behavior, pinned R/Quarto versions, and manual rebuilds.
 
