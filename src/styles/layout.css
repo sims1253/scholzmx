@@ -181,6 +181,13 @@
     font-size: 0.875rem;
     letter-spacing: 0.02em;
   }
+
+  /* The closer gaps leave no room for a 44px-wide target beside "Research"; 24px
+     (the WCAG minimum) keeps it clear of the link. */
+  .torch-toggle {
+    width: 24px;
+    margin-inline: calc((1.1em - 24px) / 2);
+  }
 }
 
 /* ===== Page grids ===== */
