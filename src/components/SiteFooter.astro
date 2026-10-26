@@ -1,0 +1,96 @@
+---
+import QuoteOfTheDay from './QuoteOfTheDay.astro';
+import FooterLedge from './FooterLedge.astro';
+
+interface Props {
+  includeQuoteSection?: boolean;
+}
+
+const { includeQuoteSection = false } = Astro.props;
+---
+
+<footer class="site-footer">
+  {includeQuoteSection && <QuoteOfTheDay />}
+
+  <FooterLedge />
+
+  <div class="colophon">
+    <ul class="footer-links">
+      <li>
+        <a href="https://github.com/sims1253" rel="noopener me" class="no-external-indicator">
+          GitHub
+        </a>
+      </li>
+      <li>
+        <a
+          href="https://bsky.app/profile/scholzmx.bsky.social"
+          rel="noopener me"
+          class="no-external-indicator"
+        >
+          Bluesky
+        </a>
+      </li>
+      <li><a href="/rss.xml">RSS feed</a></li>
+    </ul>
+    <p>
+      Grotto is tended by Maximilian Scholz, without trackers or cookies. It is set in Alegreya and
+      ET Book.
+    </p>
+    <p>
+      Writing and pictures are shared under
+      <a
+        href="https://creativecommons.org/licenses/by-sa/4.0/"
+        rel="license"
+        class="no-external-indicator"
+        >CC BY-SA 4.0</a
+      >, the code under the MIT license.
+    </p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    position: relative;
+    z-index: 1;
+    margin-top: var(--space-xxl);
+    padding: 0 var(--space-md) var(--space-xl);
+  }
+
+  .colophon {
+    max-width: 34rem;
+    margin: 0 auto;
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--rule-ink);
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    color: var(--color-text-muted);
+    text-align: center;
+  }
+
+  .colophon p {
+    margin: 0 0 0.4em;
+    text-wrap: balance;
+    hyphens: manual;
+  }
+
+  .footer-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.5rem;
+    margin: 0 0 var(--space-sm);
+    padding: 0;
+    list-style: none;
+    font-size: var(--text-md);
+  }
+
+  .footer-links li {
+    margin: 0;
+  }
+
+  .footer-links a {
+    display: inline-block;
+    padding-block: 0.35rem;
+  }
+</style>

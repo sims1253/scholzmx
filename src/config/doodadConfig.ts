@@ -77,18 +77,10 @@ export interface DoodadProps {
   position?: Position;
   rotation?: number;
   scale?: number;
-  washX?: number;
-  washY?: number;
-  washAlpha?: number;
-  washTx?: number;
-  washTy?: number;
-  washR1?: number;
-  washR2?: number;
-  washX2?: number;
-  washY2?: number;
-  washBleed?: number;
   ringScale?: number;
   ringAlpha?: number;
+  ringX?: number;
+  ringY?: number;
 }
 
 export interface DoodadResults {
@@ -149,6 +141,8 @@ export const doodadCategories: DoodadCategory[] = [
     enabled: true,
     probability: 0.7, // Increased to 70% for better visual consistency
     exclusive: true, // Only one SVG doodle per card for cleaner visuals
+    // Doodles keep to the right-hand corners, where no title, excerpt or tag starts.
+    // The unused rolls stay so every card's other doodads keep their seeded draw.
     items: [
       {
         id: 'berries',
@@ -157,9 +151,9 @@ export const doodadCategories: DoodadCategory[] = [
         kind: 'svg',
         src: '/doodles/doodle-berries.svg',
         defaultSize: '1.8rem',
-        positions: ['topRight', 'topLeft'],
+        positions: ['topRight', 'bottomRight'],
         generate: ({ pick, map }) => ({
-          position: pick(0.5) ? 'topRight' : 'topLeft',
+          position: pick(0.5) ? 'topRight' : 'bottomRight',
           rotation: Math.round(map(-15, 15)),
         }),
       },
@@ -170,11 +164,11 @@ export const doodadCategories: DoodadCategory[] = [
         kind: 'svg',
         src: '/doodles/doodle-fern.svg',
         defaultSize: '2.2rem',
-        positions: ['bottomLeft', 'bottomRight'],
-        generate: ({ pick, map }) => ({
-          position: pick(0.5) ? 'bottomLeft' : 'bottomRight',
-          rotation: Math.round(map(-20, 20)),
-        }),
+        positions: ['bottomRight'],
+        generate: ({ pick, map }) => {
+          pick(0.5); // The draw that used to choose a side.
+          return { position: 'bottomRight', rotation: Math.round(map(-20, 20)) };
+        },
       },
       {
         id: 'lavender',
@@ -183,9 +177,9 @@ export const doodadCategories: DoodadCategory[] = [
         kind: 'svg',
         src: '/doodles/doodle-flower-lavender.svg',
         defaultSize: '1.6rem',
-        positions: ['center', 'topLeft', 'topRight'],
+        positions: ['bottomRight', 'topRight'],
         generate: ({ pick, map }) => ({
-          position: pick(0.3) ? 'center' : pick(0.5) ? 'topLeft' : 'topRight',
+          position: pick(0.3) || pick(0.5) ? 'bottomRight' : 'topRight',
           rotation: Math.round(map(-12, 12)),
         }),
       },
@@ -196,9 +190,9 @@ export const doodadCategories: DoodadCategory[] = [
         kind: 'svg',
         src: '/doodles/doodle-old-key.svg',
         defaultSize: '2.5rem',
-        positions: ['center'],
+        positions: ['bottomRight'],
         generate: ({ map }) => ({
-          position: 'center',
+          position: 'bottomRight',
           rotation: Math.round(map(-25, 25)),
           scale: map(0.8, 1.1),
         }),
@@ -210,11 +204,11 @@ export const doodadCategories: DoodadCategory[] = [
         kind: 'svg',
         src: '/doodles/doodle-seed-pod.svg',
         defaultSize: '1.9rem',
-        positions: ['bottomLeft', 'bottomRight'],
-        generate: ({ pick, map }) => ({
-          position: pick(0.5) ? 'bottomLeft' : 'bottomRight',
-          rotation: Math.round(map(-18, 18)),
-        }),
+        positions: ['bottomRight'],
+        generate: ({ pick, map }) => {
+          pick(0.5); // The draw that used to choose a side.
+          return { position: 'bottomRight', rotation: Math.round(map(-18, 18)) };
+        },
       },
     ],
   },
@@ -255,54 +249,28 @@ export const doodadCategories: DoodadCategory[] = [
   {
     id: 'backgroundEffects',
     enabled: true,
-    probability: 0.3, // 30% chance for background effects
+    // Cards keep only the coffee rings as a background effect.
+    // The ring is the only item left, so this is its rate: about 4% of cards, as before.
+    probability: 0.04,
     exclusive: true, // Only one background effect per card
     items: [
-      {
-        id: 'washSubtle',
-        probability: 0.4,
-        layerTypes: ['all'],
-        kind: 'background',
-        generate: ({ map }) => ({
-          washX: map(35, 65),
-          washY: map(30, 60),
-          washAlpha: map(0.4, 0.6),
-          washTx: Math.round(map(-12, 12)),
-          washTy: Math.round(map(-10, 10)),
-          washR1: Math.round(map(70, 100)),
-          washR2: Math.round(map(50, 80)),
-          washX2: Math.round(Math.max(10, Math.min(90, map(35, 65) + map(-15, 15)))),
-          washY2: Math.round(Math.max(10, Math.min(90, map(30, 60) + map(-10, 10)))),
-          washBleed: Math.round(map(110, 140)),
-        }),
-      },
-      {
-        id: 'washBold',
-        probability: 0.3,
-        layerTypes: ['all'],
-        kind: 'background',
-        generate: ({ map }) => ({
-          washX: map(25, 75),
-          washY: map(20, 70),
-          washAlpha: map(0.7, 0.9),
-          washTx: Math.round(map(-18, 18)),
-          washTy: Math.round(map(-14, 14)),
-          washR1: Math.round(map(90, 130)),
-          washR2: Math.round(map(70, 110)),
-          washX2: Math.round(Math.max(10, Math.min(90, map(25, 75) + map(-20, 20)))),
-          washY2: Math.round(Math.max(10, Math.min(90, map(20, 70) + map(-15, 15)))),
-          washBleed: Math.round(map(130, 170)),
-        }),
-      },
       {
         id: 'ringEffect',
         probability: 0.1,
         layerTypes: ['all'],
         kind: 'background',
-        generate: ({ map }) => ({
-          ringScale: map(0.8, 1.0),
-          ringAlpha: map(0.15, 0.3),
-        }),
+        // The mug was set down near an edge, so the ring rarely crosses the title.
+        generate: ({ map, betweenInt }) => {
+          const spot = betweenInt(0, 2);
+          return {
+            ringScale: map(0.8, 1.0),
+            ringAlpha: map(0.15, 0.3),
+            ringX: spot === 0 ? map(-6, 12) : spot === 1 ? map(86, 106) : map(96, 108),
+            ringY: spot === 2 ? map(35, 65) : map(78, 106),
+            rotation: map(0, 360),
+            variant: betweenInt(1, 3),
+          };
+        },
       },
     ],
   },

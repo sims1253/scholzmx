@@ -131,6 +131,12 @@ class MarginNotes {
     };
     window.addEventListener('resize', onResize);
     window.addEventListener('load', () => this.refresh());
+    // Content above a note can grow after load (images, the recipe card's step list),
+    // so follow the page's height as well as the window's width.
+    const wrapper = document.querySelector('.main-content');
+    if (wrapper && 'ResizeObserver' in window) {
+      new ResizeObserver(() => this.refresh()).observe(wrapper);
+    }
   }
 
   public refresh(): void {
@@ -147,12 +153,13 @@ declare global {
 
 export function initMarginNotes(): void {
   const tryInit = () => {
+    // Convert Quarto-style margin notes at every width: narrow layouts show them inline
+    // (margin-notes.css), so the "margin:" blockquote must never reach the reader.
+    convertMarginBlockquotesToAnchors();
     const mainContent = document.querySelector<HTMLElement>('.main-content');
-    if (mainContent && mainContent.offsetWidth < 1088) return; // ~68rem
+    if (mainContent && mainContent.offsetWidth < 1088) return; // 68rem, as in margin-notes.css
     if (window.__mnotes_inited) return;
 
-    // Ensure anchors exist by converting any Quarto-style margin notes first
-    convertMarginBlockquotesToAnchors();
     const anchors = document.querySelectorAll('.note-anchor');
     const container = document.getElementById('notesContainer');
     if (!anchors.length || !container) return;

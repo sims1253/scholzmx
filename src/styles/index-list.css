@@ -1,0 +1,310 @@
+/* Index pages: the year or initial hangs in the margin beside a column of note cards.
+   Shared by blog, recipes, research and notes. */
+
+/* ===== Page header ===== */
+
+.page-header {
+  max-width: 38rem;
+  margin: var(--page-top) 0 var(--space-lg);
+}
+
+.page-title {
+  margin: 0 0 0.3em;
+  font-size: var(--text-display);
+  font-weight: 400;
+  line-height: 1.05;
+}
+
+.page-lede {
+  margin: 0;
+  font-family: var(--font-body-personal);
+  font-size: var(--text-lg);
+  font-style: italic;
+  line-height: 1.45;
+  color: var(--color-text-secondary);
+  hyphens: manual;
+}
+
+.page-lede + .page-lede {
+  margin-top: 0.6em;
+}
+
+/* ===== Index grid: margin column for years, text column for entries ===== */
+
+.index-page {
+  --index-margin: 6rem;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.index-group {
+  margin: 0 0 var(--space-xl);
+}
+
+.index-group[hidden] {
+  display: none;
+}
+
+.index-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin: 0 0 var(--space-md);
+  font-family: var(--font-heading);
+  font-size: var(--text-xl);
+  font-weight: 400;
+  line-height: 1;
+  color: var(--color-moss);
+  font-variant-numeric: oldstyle-nums;
+}
+
+.index-label::after {
+  content: '';
+  flex: 1;
+  border-top: 1px solid var(--rule-ink);
+}
+
+@media (min-width: 52rem) {
+  /* The year hangs in the left margin; an equal empty margin on the right keeps the
+     entries, not entries-plus-year, centred on the page. */
+  .index-page {
+    grid-template-columns: var(--index-margin) minmax(0, var(--index-content, 1fr)) var(
+        --index-margin
+      );
+    justify-content: center;
+    column-gap: var(--space-lg);
+  }
+
+  .index-page > * {
+    grid-column: 2;
+  }
+
+  .index-page > .index-group:not([hidden]) {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+  }
+
+  .index-label {
+    grid-column: 1;
+    position: sticky;
+    top: 1.5rem;
+    align-self: start;
+    justify-content: flex-end;
+    margin: -0.12em 0 0; /* Share a baseline with the first entry's title */
+    font-size: var(--text-2xl);
+  }
+
+  .index-label::after {
+    display: none;
+  }
+
+  .index-group > :not(.index-label) {
+    grid-column: 2;
+  }
+}
+
+/* ===== Photographs pasted into the notebook with two paper strips ===== */
+
+.pasted {
+  position: relative;
+  display: block;
+}
+
+.pasted::before,
+.pasted::after {
+  content: '';
+  position: absolute;
+  top: -0.55rem;
+  z-index: 1;
+  width: 3.2rem;
+  height: 1.1rem;
+  background: var(--tape-strip);
+  opacity: 0.88;
+  box-shadow: 0 1px 1px color-mix(in srgb, var(--color-ink-dark) 12%, transparent);
+  pointer-events: none;
+}
+
+.pasted::before {
+  left: 0.9rem;
+  transform: rotate(-4deg);
+}
+
+.pasted::after {
+  right: 0.9rem;
+  transform: rotate(3deg);
+}
+
+/* ===== Finder: search, year jumps, tags ===== */
+
+.index-finder {
+  margin: 0 0 var(--space-xl);
+  font-family: var(--font-ui);
+}
+
+.finder-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 2rem;
+  margin-top: 0.75rem;
+  font-size: var(--text-sm);
+}
+
+.finder-jumps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  font-variant-numeric: oldstyle-nums;
+}
+
+.finder-jumps a {
+  color: var(--color-text-secondary);
+}
+
+.finder-tags summary {
+  color: var(--color-link);
+  cursor: pointer;
+}
+
+.finder-tags summary::marker {
+  color: var(--color-moss);
+}
+
+.finder-tags ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 1rem;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.finder-tags li {
+  margin: 0;
+}
+
+/* Tags read like a book's index; a chosen one is marked with a tansy highlighter. */
+.finder-tags button {
+  padding: 0 0.15em;
+  border: 0;
+  background: transparent;
+  color: var(--color-link);
+  font: inherit;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, currentcolor 35%, transparent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  cursor: pointer;
+}
+
+.finder-tags button::before {
+  content: '#';
+}
+
+.finder-tags button:hover {
+  color: var(--color-link-hover);
+  text-decoration-color: currentcolor;
+}
+
+.finder-tags button[aria-pressed='true'] {
+  background: linear-gradient(
+    transparent 45%,
+    color-mix(in srgb, var(--color-tansy) 45%, transparent) 45% 90%,
+    transparent 90%
+  );
+  color: var(--color-text-primary);
+}
+
+.finder-status {
+  margin: 0.5rem 0 0;
+  font-size: var(--text-sm);
+  font-style: italic;
+  color: var(--color-text-muted);
+}
+
+.finder-status:empty {
+  display: none;
+}
+
+/* Pagefind's default UI, dressed for the page: a line to write on, not a form field */
+.index-finder .pagefind-ui {
+  --pagefind-ui-scale: 0.78;
+  --pagefind-ui-primary: var(--color-walnut);
+  --pagefind-ui-text: var(--color-text-primary);
+  --pagefind-ui-background: var(--color-background);
+  --pagefind-ui-border: var(--rule-ink);
+  --pagefind-ui-tag: var(--color-surface);
+  --pagefind-ui-border-width: 1px;
+  --pagefind-ui-border-radius: 0;
+  --pagefind-ui-font: var(--font-body-personal);
+
+  max-width: 30rem;
+}
+
+.index-finder .pagefind-ui .pagefind-ui__search-input {
+  padding-inline-start: 2.1em;
+  border-width: 0 0 1px;
+  border-color: var(--rule-ink);
+  background-color: transparent;
+  font-family: var(--font-body-personal);
+  font-size: var(--text-md);
+  font-weight: 400;
+}
+
+.index-finder .pagefind-ui .pagefind-ui__search-input:focus {
+  border-color: var(--color-moss);
+  outline: none;
+  box-shadow: 0 1px 0 var(--color-moss);
+}
+
+.index-finder .pagefind-ui .pagefind-ui__search-input::placeholder {
+  color: var(--color-text-muted);
+  font-style: italic;
+  opacity: 1;
+}
+
+.index-finder .pagefind-ui .pagefind-ui__form::before {
+  left: 0.35em;
+  opacity: 0.45;
+}
+
+.index-finder .pagefind-ui .pagefind-ui__search-clear {
+  background: transparent;
+  color: var(--color-text-muted);
+  font-family: var(--font-body-personal);
+  font-style: italic;
+}
+
+/* Each index page already fixes the type filter, so Pagefind's filter box can only
+   offer the one checkbox; the results take the full width instead. */
+.index-finder .pagefind-ui .pagefind-ui__filter-panel {
+  display: none;
+}
+
+.pagefind-ui .pagefind-ui__result {
+  padding-block: 0.9rem;
+  border-top-color: var(--rule-ink);
+}
+
+.pagefind-ui .pagefind-ui__result-link {
+  color: var(--color-text-primary);
+  font-family: var(--font-heading);
+  font-weight: 400;
+}
+
+.pagefind-ui .pagefind-ui__result-excerpt {
+  color: var(--color-text-secondary);
+}
+
+.pagefind-ui mark {
+  background: color-mix(in srgb, var(--color-tansy) 35%, transparent);
+  color: inherit;
+}
+
+.pagefind-ui .pagefind-ui__message {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--color-text-muted);
+}

@@ -1,8 +1,12 @@
 ---
+import { Image } from 'astro:assets';
+import ryLogo from '../assets/images/projects/ry-logo.webp';
+import starlingLogo from '../assets/images/projects/starling-logo.webp';
+import janusLogo from '../assets/images/projects/janus-logo.webp';
+import huerdLogo from '../assets/images/projects/huerd-logo.png';
+import hrvesterLogo from '../assets/images/projects/hrvester-logo.png';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import GridLayout from '../components/GridLayout.astro';
 import StackedCard from '../components/StackedCard.astro';
-import ImageFrame from '../components/ImageFrame.astro';
 
 const projects = [
   {
@@ -11,7 +15,7 @@ const projects = [
       'Catch type errors, missing data frame columns, and scope issues before running R code.',
     year: 2026,
     status: 'Active',
-    banner: 'https://raw.githubusercontent.com/sims1253/ry/main/assets/branding/ry-logo.webp',
+    banner: ryLogo,
     tech: ['Rust', 'R'],
     links: [
       { type: 'GitHub', url: 'https://github.com/sims1253/ry' },
@@ -24,8 +28,7 @@ const projects = [
       'Transcribe speech locally with a native inference engine and apps for desktop and phone.',
     year: 2026,
     status: 'Active',
-    banner:
-      'https://raw.githubusercontent.com/sims1253/starling/master/assets/branding/starling-logo.webp',
+    banner: starlingLogo,
     tech: ['C++', 'ggml', 'TypeScript'],
     links: [
       { type: 'GitHub', url: 'https://github.com/sims1253/starling' },
@@ -38,8 +41,7 @@ const projects = [
       'Extract data from PDF text and layout locally, inspect source locations, and compare with reference data.',
     year: 2026,
     status: 'Active',
-    banner:
-      'https://raw.githubusercontent.com/sims1253/nebu/main/janus/assets/branding/janus-logo.webp',
+    banner: janusLogo,
     tech: ['Python', 'PDF'],
     links: [
       { type: 'GitHub', url: 'https://github.com/sims1253/nebu/tree/main/janus' },
@@ -51,8 +53,7 @@ const projects = [
     description: 'Perceptually distinct color palettes optimized for accessibility in OKLAB (R).',
     year: 2024,
     status: 'Active',
-    banner: 'https://sims1253.github.io/huerd/reference/figures/logo.png',
-    isLocal: false, // Mark external images
+    banner: huerdLogo,
     tech: ['R', 'OKLAB', 'nloptr'],
     links: [
       { type: 'GitHub', url: 'https://github.com/sims1253/huerd' },
@@ -64,7 +65,7 @@ const projects = [
     description: 'Analyze HRV data with robust preprocessing and recovery scoring.',
     year: 2024,
     status: 'Active',
-    banner: 'https://sims1253.github.io/hrvester/reference/figures/logo.png',
+    banner: hrvesterLogo,
     tech: ['R', 'Signal Processing'],
     links: [
       { type: 'GitHub', url: 'https://github.com/sims1253/hrvester' },
@@ -76,168 +77,127 @@ const projects = [
 // Sort projects by year (most recent first)
 const sortedProjects = projects.sort((a, b) => b.year - a.year);
 
-// Helper function for external image optimization
-const optimizeExternalImage = (url: string) => {
-  // Simple URL-based image optimization service (you could replace with ImageKit, Cloudinary, etc.)
-  // For now, we'll use original URL but with proper loading attributes
-  return url;
+// "ry — Static Checker for R" becomes a plate name and its common name.
+const plateName = (title: string) => {
+  const [name = title, common] = title.split(' — ');
+  return { name, common };
 };
 ---
 
-<BaseLayout
-  title="Projects"
-  description="Selected projects"
-  footerVariant="projects"
-  tone="serious"
-  layout="wide"
->
+<BaseLayout title="Projects" description="Selected projects" tone="serious" layout="listing">
   <div class="projects-page">
-    <header class="projects-header">
+    <header class="page-header">
       <h1 class="page-title">Projects & Software</h1>
-      <p class="page-description">
+      <p class="page-lede">
         I tend to build stuff to procrastinate. This is where I feel good about it.
       </p>
     </header>
 
-    <div class="projects-container">
-      <main class="projects-content">
-        <div class="projects-inner container-wide">
-          <section aria-label="Projects">
-            <GridLayout columns={1} gap="xl" class="projects-grid">
-              {sortedProjects.map((project, index) => {
-                const primaryLink = project.links?.[0]?.url;
-                const isFirst = index === 0;
-                return <div class="nc-item project-item">
-                  <StackedCard
-                    seed={`project/${project.title}`}
-                    title={project.title}
-                    subtitle={project.description}
-                    href={primaryLink}
-                    layers={3}
-                    layout="side"
-                  >
-                    {project.banner && <div slot="media" class="project-logo">
-                      <ImageFrame
-                        src={optimizeExternalImage(project.banner)}
-                        alt={project.title}
-                        style="simple"
-                        fillMode="contain"
-                        loading={isFirst ? 'eager' : 'lazy'}
-                      />
-                    </div>}
-                    {project.links?.length && <div class="project-links sc-tags">
-                      {project.links.map((l) => <a
-                        class="sc-chip"
-                        href={l.url}
-                        target="_blank"
-                        rel="noopener"
-                      >
-                        {l.type}
-                      </a>)}
-                    </div>}
-                  </StackedCard>
-                </div>;
-              })}
-            </GridLayout>
-          </section>
-        </div>
-      </main>
+    <div class="project-cards">
+      {sortedProjects.map((project, index) => {
+        const { name, common } = plateName(project.title);
+        return <StackedCard
+          seed={`project/${project.title}`}
+          title={name}
+          subtitle={common}
+          href={project.links[0]!.url}
+          layers={3}
+          layout="side"
+          class="project-card"
+        >
+          <div slot="media" class="project-logo pasted">
+            <Image
+              src={project.banner}
+              alt=""
+              width={176}
+              densities={[1, 2]}
+              loading={index < 2 ? 'eager' : 'lazy'}
+              decoding="async"
+            />
+          </div>
+          <p class="project-description">{project.description}</p>
+          <p class="project-meta">{project.tech.join(', ')}, {project.year}.</p>
+          <div class="sc-tags">
+            {project.links.map((link) => <a class="sc-chip" href={link.url}>{link.type}</a>)}
+          </div>
+        </StackedCard>;
+      })}
     </div>
   </div>
 </BaseLayout>
 
 <style>
+  /* The header and cards share one centred 44rem column. */
   .projects-page {
-    max-width: 100%;
+    max-width: 44rem;
+    margin-inline: auto;
   }
 
-  .projects-header {
-    text-align: center;
-    max-width: var(--measure-listing);
-    margin: 0 auto var(--space-xs);
+  .project-cards {
+    display: grid;
+    gap: var(--space-xxl);
   }
 
-  .page-title {
-    font-size: clamp(var(--text-2xl), 5vw, var(--text-3xl));
-    margin-bottom: var(--space-xs);
-    color: var(--color-ink-dark);
-  }
-
-  .page-description {
-    font-size: var(--text-lg);
-    line-height: 1.6;
-    color: var(--color-ink-medium);
+  /* The name is set like a binomial, its plain-English description beneath. */
+  :global(.project-card .sc-title) {
+    font-size: var(--text-2xl);
     font-style: italic;
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
+    font-weight: 400;
+    line-height: 1.1;
   }
 
-  /* Centering handled by BaseLayout container (contentWidth) */
+  :global(.project-card .sc-subtitle) {
+    margin-bottom: var(--space-sm);
+    font-family: var(--font-heading);
+    font-size: var(--text-lg);
+    color: var(--color-moss);
+  }
 
-  /* Legacy card styles removed in favor of StackedCard */
-  /* Width/centering handled via .container-wide */
-  .projects-grid {
-    margin-bottom: var(--space-xl);
+  :global(.project-card .sc-row) {
+    grid-template-columns: minmax(0, 1fr) 11rem;
   }
-  .project-item {
-    width: 40rem;
-    max-width: 100%;
-    margin-left: auto;
-    margin-right: auto;
+
+  .project-logo {
+    margin-top: 0.4rem;
+    background: var(--paper-sheet);
+    box-shadow:
+      0 1px 2px color-mix(in srgb, var(--color-ink-dark) 14%, transparent),
+      0 12px 22px -14px color-mix(in srgb, var(--color-ink-dark) 38%, transparent);
   }
-  .project-logo .image-frame {
-    width: 240px;
-    max-width: 100%;
-  }
-  .project-item {
-    margin-bottom: var(--space-lg);
-  }
-  /* Remove any default frames/shadows around logo images */
-  .project-logo .image-frame {
-    box-shadow: none;
-    border: 0;
-    background: transparent;
+
+  .project-logo img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: contain;
     border-radius: 0;
   }
-  .project-logo .frame-image {
-    box-shadow: none;
-    background: transparent;
-  }
-  .project-logo img {
-    box-shadow: none !important;
-    border-radius: 0 !important;
+
+  .project-description {
+    margin: 0 0 0.4em;
+    color: var(--color-text-secondary);
   }
 
-  /* Keep side layout, but make content column flex so links can sit at bottom */
-  .projects-page .sc-row {
-    align-items: stretch;
-  }
-  .projects-page .sc-col.content {
-    display: flex;
-    flex-direction: column;
-  }
-  .projects-page .project-links {
-    margin-top: auto;
-    padding-top: var(--space-xs);
+  .project-meta {
+    margin: 0;
+    font-family: var(--font-body-personal);
+    font-size: var(--text-sm);
+    font-style: italic;
+    color: var(--color-text-muted);
   }
 
-  @media (max-width: 768px) {
-    .project-card {
+  @media (max-width: 640px) {
+    :global(.project-card .sc-row) {
       grid-template-columns: 1fr;
-      gap: var(--space-md);
     }
-    .thumb {
-      min-height: 120px;
-      order: -1; /* Move image above content on mobile */
+
+    :global(.project-card .sc-col.media) {
+      order: -1;
     }
-  }
-  @media (max-width: 480px) {
-    .card-title {
-      font-size: var(--text-lg);
-    }
-    .project-card {
-      padding: var(--space-md);
+
+    .project-logo {
+      width: 9rem;
     }
   }
 </style>

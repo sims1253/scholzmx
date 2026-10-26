@@ -1,0 +1,86 @@
+---
+/**
+ * The contents of a long post, folded away like the index slip at the front of a
+ * herbal. Only shown when a post has three or more sections; links are built from the
+ * rendered headings, so it works without JavaScript.
+ */
+interface Props {
+  headings: { depth: number; slug: string; text: string }[];
+}
+
+const sections = Astro.props.headings.filter((heading) => heading.depth === 2);
+---
+
+{sections.length >= 3 && <details class="post-contents" data-pagefind-ignore>
+  <summary>Contents <span class="post-contents-count">{sections.length} sections</span></summary>
+  <nav aria-label="Sections of this post">
+    <ol>
+      {sections.map((section) => <li>
+        <a href={`#${section.slug}`}>{section.text}</a>
+      </li>)}
+    </ol>
+  </nav>
+</details>}
+
+<style>
+  .post-contents {
+    margin-block: 0 var(--space-lg);
+    font-family: var(--font-ui);
+    line-height: 1.4;
+  }
+
+  .post-contents summary {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.6em;
+    min-height: 44px;
+    align-content: center;
+    padding-block: 0.6rem;
+    font-family: var(--font-label);
+    font-size: var(--text-md);
+    letter-spacing: 0.04em;
+    color: var(--color-walnut);
+    cursor: pointer;
+  }
+
+  .post-contents-count {
+    font-family: var(--font-ui);
+    font-size: var(--text-sm);
+    font-style: italic;
+    letter-spacing: 0;
+    color: var(--color-text-muted);
+  }
+
+  .post-contents ol {
+    margin: 0 0 0 1.4em;
+    padding: 0.2rem 0 0;
+    font-variant-numeric: oldstyle-nums;
+  }
+
+  .post-contents li {
+    margin: 0;
+    padding-left: 0.3em;
+  }
+
+  .post-contents li::marker {
+    font-family: var(--font-label);
+    color: var(--color-text-muted);
+  }
+
+  .post-contents a {
+    display: inline-block;
+    padding-block: 0.3rem;
+    font-style: italic;
+    color: var(--color-text-secondary);
+  }
+
+  .post-contents a:hover {
+    color: var(--color-walnut);
+  }
+
+  @media print {
+    .post-contents {
+      display: none;
+    }
+  }
+</style>

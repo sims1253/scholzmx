@@ -1,8 +1,8 @@
 ---
 import { getImage } from 'astro:assets';
 import portrait from '../assets/images/homepage/portrait.jpg';
-import BotanicalBorder from '../components/BotanicalBorder.astro';
-import IllustratedFooter from '../components/IllustratedFooter.astro';
+import Canopy from '../components/Canopy.astro';
+import SiteFooter from '../components/SiteFooter.astro';
 import BackToTop from '../components/BackToTop.astro';
 
 // Import CSS files
@@ -23,77 +23,122 @@ import '../styles/dropcap.css';
 import '../styles/tailwind.css'; // Utilities only - preserves existing design
 import '../styles/tailwind-utilities.css'; // Force utility generation
 import '../styles/margin-notes.css';
-import '../styles/stacked-card.css';
+import '../styles/index-list.css';
 
 export interface Props {
   title: string;
   description?: string;
   image?: string;
-  addBorders?: boolean;
-  footerVariant?: 'garden' | 'kitchen' | 'craft' | 'writing' | 'projects' | 'research' | 'default';
   includeQuoteSection?: boolean;
-  /* Legacy props (for backward-compat) */
-  longform?: boolean;
-  personal?: boolean;
-  contentWidth?: 'default' | 'wide' | 'full';
-  /* New props */
   tone?: 'personal' | 'serious';
-  layout?: 'prose' | 'listing' | 'wide' | 'full';
+  layout?: 'prose' | 'listing' | 'cards' | 'wide' | 'full';
   prose?: boolean;
-  leading?: 'default' | 'relaxed' | 'tight';
+  /** The page may contain KaTeX maths, so it loads KaTeX's stylesheet and font. */
+  math?: boolean;
 }
 
 const {
   title,
   description = 'A digital garden and personal website - thoughtful, slow web principles with a warm, botanical aesthetic.',
   image,
-  addBorders = true,
-  footerVariant = 'default',
   includeQuoteSection = false,
-  /* legacy */
-  longform = false,
-  personal = true,
-  contentWidth = 'default',
-  /* new */
-  tone,
-  layout,
-  prose,
-  leading,
+  tone = 'personal',
+  layout = 'prose',
+  math = false,
+  prose = false,
 } = Astro.props;
-
-/* Backward-compatible mapping */
-const resolvedTone = tone ?? (personal ? 'personal' : 'serious');
-const isProseLayoutLegacy = longform || contentWidth === 'default';
-const resolvedLayout =
-  layout ??
-  (isProseLayoutLegacy
-    ? 'prose'
-    : contentWidth === 'wide'
-      ? 'wide'
-      : contentWidth === 'full'
-        ? 'full'
-        : 'prose');
-const resolvedProse = prose ?? longform ?? false;
-const resolvedLeading = leading ?? 'default';
 
 const currentPath = Astro.url.pathname;
 const socialImage = image ?? (await getImage({ src: portrait, width: 1200, format: 'webp' })).src;
 const socialImageURL = new URL(socialImage, Astro.site).href;
+
+const sections = [
+  { href: '/blog', label: 'Blog' },
+  { href: '/projects', label: 'Projects' },
+  { href: '/recipes', label: 'Recipes' },
+  { href: '/research', label: 'Research' },
+];
+
+const isHome = currentPath === '/';
+// Only posts and notes show code; the index pages under /blog/ and /notes/ do not.
+const hasCode = /^\/(blog|notes)\/.+/.test(currentPath);
+const hasInitial = isHome || /^\/(blog|recipes|notes)\/.+/.test(currentPath);
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <!-- Fix the layer order before any stylesheet: Astro links shared component CSS first,
+         and the first stylesheet to name a layer would otherwise set the order. -->
+    <style is:inline>
+      @layer base, components, enhancements, utilities;
+    </style>
     <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
 
-    <!-- Canonical URL -->
-    <link rel="canonical" href={`https://www.scholzmx.com${Astro.url.pathname}`} />
+    <!-- The light follows the visitor's clock, set before first paint so it never flashes.
+         By day the canopy's shadows lean away from the sun, long and cool in the morning,
+         short and sharp at noon, long and gold towards evening. At night the torch lights
+         itself; the torch button overrides that until the next dawn or dusk.
+         src/scripts/theme-toggle.ts calls window.grottoSky again as the day moves on. -->
+    <script is:inline>
+      (() => {
+        const mix = (from, to, t) =>
+          from.map((value, index) => Math.round(value + (to[index] - value) * t));
+        const COOL = [52, 72, 80];
+        const GREEN = [58, 78, 26];
+        const GOLD = [100, 72, 16];
 
-    <!-- RSS Feed autodiscovery -->
+        const torch = () => {
+          try {
+            // The button keeps its choice in memory too, for when storage is blocked.
+            const saved = window.grottoTorch ?? JSON.parse(localStorage.getItem('torch') ?? 'null');
+            if (
+              saved &&
+              saved.until > Date.now() &&
+              (saved.theme === 'dark' || saved.theme === 'light')
+            ) {
+              return saved.theme;
+            }
+          } catch {
+            // Storage can be unavailable in private modes; the clock decides.
+          }
+          return null;
+        };
+
+        window.grottoSky = () => {
+          const now = new Date();
+          const hour = now.getHours() + now.getMinutes() / 60;
+          const night = hour < 6 || hour >= 21;
+          // -1 at sunrise, 0 at noon, 1 at sunset, from the sun's side of the sky
+          const sun = Math.max(-1, Math.min(1, (hour - 13.5) / 7));
+          const low = Math.abs(sun);
+          const shade = sun < 0 ? mix(GREEN, COOL, -sun) : mix(GREEN, GOLD, sun);
+          const glow =
+            sun > 0.35
+              ? `radial-gradient(ellipse 80% 70% at 100% 0%, rgb(255 186 80 / ${(0.32 * (sun - 0.35)) / 0.65}), transparent 70%)`
+              : sun < -0.35
+                ? `radial-gradient(ellipse 80% 70% at 0% 0%, rgb(214 232 255 / ${(0.28 * (-sun - 0.35)) / 0.65}), transparent 70%)`
+                : 'none';
+          const root = document.documentElement;
+          root.style.setProperty('--sun-skew', `${(-sun * 8).toFixed(2)}deg`);
+          root.style.setProperty('--sun-stretch', (1 + 0.3 * low ** 1.5).toFixed(3));
+          root.style.setProperty('--sun-crisp', (1 - 0.45 * low).toFixed(3));
+          root.style.setProperty('--sun-shade', shade.join(' '));
+          root.style.setProperty('--sun-glow', glow);
+
+          const theme = torch() ?? (night ? 'dark' : null);
+          if (theme) root.dataset.theme = theme;
+          else delete root.dataset.theme;
+        };
+
+        window.grottoSky();
+      })();
+    </script>
+    <link rel="canonical" href={`https://www.scholzmx.com${Astro.url.pathname}`} />
     <link
       rel="alternate"
       type="application/rss+xml"
@@ -101,30 +146,33 @@ const socialImageURL = new URL(socialImage, Astro.site).href;
       href={new URL('rss.xml', Astro.site)}
     />
 
-    <!-- Critical resource hints for performance -->
-
     <slot name="head" />
 
-    <!-- Preload fonts based on page type for optimal performance -->
-    <!-- Always preload heading font (used on all pages) -->
+    <!-- Alegreya sets headings and Alegreya SC the wordmark and navigation on every page. -->
     <link
       rel="preload"
-      href="/fonts/cormorant-garamond-600.woff2"
+      href="/fonts/Alegreya/alegreya-v38-latin-regular.woff2"
       as="font"
       type="font/woff2"
       crossorigin
     />
-
-    {/* Conditional preloading based on tone */}
-    {resolvedTone === 'personal' ? (
-      <link
-        rel="preload"
-        href="/fonts/Alegreya/alegreya-v38-latin-regular.woff2"
-        as="font"
-        type="font/woff2"
-        crossorigin
-      />
-    ) : (
+    <link
+      rel="preload"
+      href="/fonts/Alegreya/alegreya-sc-v28-latin-regular.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    {/* Every page sets italic above the fold (the welcome, ledes, a post's meta line). Arriving
+        late, it rewraps those lines and moves the page under them. */}
+    <link
+      rel="preload"
+      href="/fonts/Alegreya/alegreya-v38-latin-italic.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    {tone === 'serious' && (
       <link
         rel="preload"
         href="/fonts/et-book-roman-old-style-figures.woff2"
@@ -133,33 +181,27 @@ const socialImageURL = new URL(socialImage, Astro.site).href;
         crossorigin
       />
     )}
-
-    {/* Only preload code fonts for content that likely has code blocks */}
-    {(currentPath.includes('/blog/') ||
-      currentPath.includes('/notes/') ||
-      currentPath.includes('/projects')) && (
-      <>
-        <link
-          rel="preload"
-          href="/fonts/FiraCode-Regular.woff2"
-          as="font"
-          type="font/woff2"
-          crossorigin
-        />
-        <link
-          rel="preload"
-          href="/fonts/FiraCode-Medium.woff2"
-          as="font"
-          type="font/woff2"
-          crossorigin
-        />
-      </>
+    {tone === 'serious' && hasCode && (
+      <link
+        rel="preload"
+        href="/fonts/et-book-semi-bold-old-style-figures.woff2"
+        as="font"
+        type="font/woff2"
+        crossorigin
+      />
     )}
 
-    {/* Only preload math fonts for content that likely has equations */}
-    {(currentPath.includes('/blog/') ||
-      currentPath.includes('/notes/') ||
-      currentPath.includes('/research')) && (
+    {hasCode && (
+      <link
+        rel="preload"
+        href="/fonts/FiraCode-Regular.woff2"
+        as="font"
+        type="font/woff2"
+        crossorigin
+      />
+    )}
+
+    {math && (
       <>
         <link
           rel="preload"
@@ -181,43 +223,27 @@ const socialImageURL = new URL(socialImage, Astro.site).href;
     )}
 
     {/* Load the decorative initial before it can change the first paragraph's wrapping. */}
-    {(currentPath === '/' || /^\/(blog|recipes|notes)\/.+/.test(currentPath)) && (
-      <>
-        <link
-          rel="preload"
-          href="/fonts/EBGaramond-InitialsF1.woff2"
-          as="font"
-          type="font/woff2"
-          crossorigin
-        />
-        <link
-          rel="preload"
-          href="/fonts/EBGaramond-InitialsF2.woff2"
-          as="font"
-          type="font/woff2"
-          crossorigin
-        />
-      </>
+    {hasInitial && (
+      <link
+        rel="preload"
+        href="/fonts/EBGaramond-InitialsF2.woff2"
+        as="font"
+        type="font/woff2"
+        crossorigin
+      />
     )}
 
-    <!-- Only preload fonts critical for initial render -->
+    {/* The canopy's far leaves are the largest thing painted on every page. CSS masks
+        are fetched in CORS mode, so the preload is too, or it would download twice. */}
     <link
       rel="preload"
-      href="/fonts/et-book-roman-old-style-figures.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      href="/fonts/cormorant-garamond-400.woff2"
-      as="font"
-      type="font/woff2"
+      href="/grotto/canopy-high.svg"
+      as="image"
+      fetchpriority="high"
       crossorigin
     />
 
-    <!-- Performance hints - will be updated by theme toggle -->
-    <meta name="theme-color" content="#f9f6f2" />
+    <meta name="theme-color" content="#f2f1e8" />
     <meta name="color-scheme" content="light dark" />
 
     <!-- Open Graph / Facebook -->
@@ -240,152 +266,96 @@ const socialImageURL = new URL(socialImage, Astro.site).href;
     <title>{title}</title>
   </head>
 
-  <body class={resolvedTone === 'personal' ? 'personal-content' : 'serious-content'}>
-    <!-- Skip Links for Keyboard Navigation -->
-    <a href="#main-content" class="skip-link"
-      >Skip to main content (blog posts, articles, and page content)</a
-    >
-    <a href="#main-navigation" class="skip-link"
-      >Skip to site navigation (Blog, Projects, Research links)</a
-    >
+  <body class={tone === 'personal' ? 'personal-content' : 'serious-content'}>
+    <a href="#main-content" class="skip-link">Skip to content</a>
 
     <div class="page-wrapper">
-      <!-- Organic botanical borders -->
-      {addBorders && <div>
-        <BotanicalBorder position="top" variant="vine" intensity="light" />
-        <BotanicalBorder position="left" variant="vine" intensity="light" />
-        <BotanicalBorder position="right" variant="vine" intensity="light" />
-      </div>}
+      <Canopy />
 
-      <!-- Navigation and Content in scrollable area -->
-      <div class="nav-and-content-area">
-        <nav
-          class="page-nav tw:w-full"
-          role="navigation"
-          aria-label="Main navigation"
-          id="main-navigation"
-        >
-          <div class="nav-content nav-wide tw:mx-auto">
-            <div class="nav-brand">
-              <a href="/" class="site-logo">
-                <span class="logo-text">Grotto</span>
-              </a>
-            </div>
+      <header class="site-header">
+        <nav class="page-nav" aria-label="Main navigation" id="main-navigation">
+          <a href="/" class="site-logo" aria-current={isHome ? 'page' : undefined}>
+            <span class="logo-text">Grotto</span>
+          </a>
 
-            <div class="nav-links">
-              <a
-                href="/blog"
-                class={currentPath.startsWith('/blog') ? 'nav-link active' : 'nav-link'}
-                aria-current={currentPath.startsWith('/blog') ? 'page' : undefined}
-                >Blog</a
-              >
-              <span class="nav-separator" aria-hidden="true">·</span>
-              <a
-                href="/projects"
-                class={currentPath.startsWith('/projects') ? 'nav-link active' : 'nav-link'}
-                aria-current={currentPath.startsWith('/projects') ? 'page' : undefined}
-                >Projects</a
-              >
-              <span class="nav-separator" aria-hidden="true">·</span>
-              <a
-                href="/recipes"
-                class={currentPath.startsWith('/recipes') ? 'nav-link active' : 'nav-link'}
-                aria-current={currentPath.startsWith('/recipes') ? 'page' : undefined}
-                >Recipes</a
-              >
-              <span class="nav-separator" aria-hidden="true">·</span>
-              <a
-                href="/research"
-                class={currentPath.startsWith('/research') ? 'nav-link active' : 'nav-link'}
-                aria-current={currentPath.startsWith('/research') ? 'page' : undefined}
-                >Research</a
-              >
+          <ul class="nav-links">
+            {sections.map(({ href, label }) => {
+              const active = currentPath.startsWith(href);
+              return <li>
+                <a
+                  href={href}
+                  class:list={['nav-link', { active }]}
+                  aria-current={active ? 'page' : undefined}
+                >
+                  {label}
+                </a>
+              </li>;
+            })}
+            <li class="nav-torch">
               <button
                 id="nav-theme-toggle"
                 class="torch-toggle"
-                aria-label="Toggle theme"
+                aria-label="Torchlight"
                 aria-pressed="false"
-                title="Toggle day/night"
+                title="Light the torch"
                 type="button"
               >
-                <svg
-                  class="torch-icon"
-                  viewBox="0 0 64 64"
-                  width="22"
-                  height="22"
-                  aria-hidden="true"
-                >
+                <svg class="torch-icon" viewBox="14 6 36 50" aria-hidden="true">
                   <defs>
-                    <linearGradient id="flame" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stop-color="var(--color-ochre)"></stop>
-                      <stop offset="60%" stop-color="var(--color-walnut)"></stop>
-                      <stop offset="100%" stop-color="var(--color-tansy)"></stop>
+                    <linearGradient id="torch-flame-gradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop class="torch-flame-tip" offset="0%"></stop>
+                      <stop class="torch-flame-base" offset="100%"></stop>
                     </linearGradient>
                   </defs>
                   <path
+                    class="torch-flame"
+                    fill="url(#torch-flame-gradient)"
                     d="M32 8c6 7 4 13-1 18 5-1 8-5 8-10 5 5 7 13 2 19-4 5-12 6-18 3-7-4-7-12-2-17 0 6 6 9 10 7-3-2-5-6-5-9 0-2 1-5 6-11z"
-                    fill="url(#flame)"
-                    stroke="var(--color-ink-medium)"
-                    stroke-width="1"
                   ></path>
-                  <rect
-                    x="28"
-                    y="44"
-                    width="8"
-                    height="10"
-                    rx="2"
-                    fill="var(--color-ink-medium)"
-                  ></rect>
+                  <rect class="torch-holder" x="28" y="44" width="8" height="10" rx="2"></rect>
                 </svg>
               </button>
-            </div>
-          </div>
+            </li>
+          </ul>
         </nav>
+      </header>
 
-        <!-- Main content area -->
-        <main class="main-content" id="main-content">
-          <div
-            class={`layout-${resolvedLayout} ${resolvedProse ? 'prose' : ''} ${resolvedLeading !== 'default' ? `leading-${resolvedLeading}` : ''}`}
-          >
-            <slot />
-          </div>
-          <div class="notes-container" id="notesContainer"></div>
-        </main>
-
-        <!-- Illustrated Footer -->
-        <div class="footer-area">
-          <IllustratedFooter variant={footerVariant} includeQuoteSection={includeQuoteSection} />
+      <main class="main-content" id="main-content">
+        <div class:list={[`layout-${layout}`, { prose }]}>
+          <slot />
         </div>
-      </div>
+        <div class="notes-container" id="notesContainer"></div>
+      </main>
 
-      <!-- Back to Top Button -->
-      <BackToTop />
+      <SiteFooter includeQuoteSection={includeQuoteSection} />
+    </div>
 
-      <style is:global>
-        /* Shiki dual theme switching - use only dark variables that Astro generates */
+    <BackToTop />
 
-        /* Dark theme styles - when explicitly set */
-        [data-theme='dark'] .astro-code,
-        [data-theme='dark'] .astro-code span {
+    <style is:global>
+      /* Shiki dual theme switching - use only dark variables that Astro generates */
+
+      /* Dark theme styles - when explicitly set */
+      [data-theme='dark'] .astro-code,
+      [data-theme='dark'] .astro-code span {
+        color: var(--shiki-dark) !important;
+        background-color: var(--shiki-dark-bg) !important;
+      }
+
+      /* Dark theme styles - when system prefers dark and no explicit theme */
+      @media (prefers-color-scheme: dark) {
+        :not([data-theme]) .astro-code,
+        :not([data-theme]) .astro-code span {
           color: var(--shiki-dark) !important;
           background-color: var(--shiki-dark-bg) !important;
         }
+      }
+    </style>
 
-        /* Dark theme styles - when system prefers dark and no explicit theme */
-        @media (prefers-color-scheme: dark) {
-          :not([data-theme]) .astro-code,
-          :not([data-theme]) .astro-code span {
-            color: var(--shiki-dark) !important;
-            background-color: var(--shiki-dark-bg) !important;
-          }
-        }
-      </style>
-
-      <script>
-        import '../scripts/theme-toggle';
-        import '../scripts/copy-button';
-        import '../scripts/margin-notes';
-      </script>
-    </div>
+    <script>
+      import '../scripts/theme-toggle';
+      import '../scripts/copy-button';
+      import '../scripts/margin-notes';
+    </script>
   </body>
 </html>

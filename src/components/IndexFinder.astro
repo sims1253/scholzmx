@@ -1,0 +1,72 @@
+---
+import Search from './Search.astro';
+
+interface Jump {
+  href: string;
+  label: string;
+}
+
+interface Props {
+  /** Pagefind filter value set on the indexed pages (data-pagefind-filter="type:…"). */
+  type: 'blog' | 'recipe';
+  /** Plural noun for messages, e.g. "posts". */
+  noun: string;
+  tags: string[];
+  jumps?: Jump[];
+}
+
+const { type, noun, tags, jumps } = Astro.props;
+---
+
+<div class="index-finder" data-index-finder data-noun={noun}>
+  <div class="finder-search" role="search">
+    <Search
+      id={`${type}-search`}
+      className="pagefind-ui"
+      uiOptions={{
+        showImages: false,
+        debounceTimeoutMs: 100,
+        pageSize: 5,
+        excerptLength: 22,
+        showResultsCount: true,
+        showEmptyFilters: false,
+        filters: { type },
+        translations: {
+          placeholder: `Search ${noun}`,
+          clear_search: 'Clear',
+          load_more: 'Show more results',
+          search_label: `Search ${noun}`,
+          filters_label: 'Filters',
+          zero_results: 'Nothing here mentions [SEARCH_TERM].',
+          many_results: '[COUNT] matches for [SEARCH_TERM]',
+          one_result: 'One match for [SEARCH_TERM]',
+          alt_search: 'Nothing for [SEARCH_TERM]. Showing [DIFFERENT_TERM] instead.',
+          search_suggestion: 'Try a broader word.',
+        },
+      }}
+    />
+  </div>
+
+  <div class="finder-row">
+    {jumps && jumps.length > 1 && <nav class="finder-jumps" aria-label="Jump to year">
+      {jumps.map((jump) => <a href={jump.href}>{jump.label}</a>)}
+    </nav>}
+
+    {tags.length > 0 && <details class="finder-tags">
+      <summary>Browse by tag</summary>
+      <ul>
+        {tags.map((tag) => <li>
+          <button type="button" data-filter-tag={tag} aria-pressed="false">
+            {tag}
+          </button>
+        </li>)}
+      </ul>
+    </details>}
+  </div>
+
+  <p class="finder-status" data-filter-status aria-live="polite"></p>
+</div>
+
+<script>
+  import '../scripts/index-finder';
+</script>

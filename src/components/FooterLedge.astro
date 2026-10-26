@@ -1,0 +1,819 @@
+---
+/**
+ * The ledge at the foot of every page: the colophon's rule, inhabited.
+ *
+ * Everything is drawn in one doodle hand, iron-gall strokes with sparse hatching, and
+ * sits on the rule like things left on a garden wall. From left to right: a stone with a
+ * beetle under it (a button lifts it), a contraption that waters a tansy when you set it
+ * going (a button), and a lantern that is lit by torchlight, when a moth comes to it.
+ * A snail crawls along the rule a little further every time the footer comes into view,
+ * and remembers where it got to for the rest of the visit. Wide screens get a few
+ * marginal scribbles outside the column.
+ *
+ * Every animation is finite and starts on a click or on scrolling into view. Only
+ * transform and opacity move. Under reduced motion (base.css stops all animation) each
+ * sequence shows a still of its end state instead. src/scripts/footer-ledge.ts holds the
+ * clicks, the observer and the snail's memory.
+ */
+---
+
+<div class="ledge" id="footer-ledge">
+  <svg class="scribble scribble-left" viewBox="0 0 112 60" aria-hidden="true">
+    <path
+      class="ink"
+      d="M8 58c1-7 0-13 2-20M13 58c2-6 6-10 9-17M17 58c0-5-1-9 1-13M22 58c3-4 7-6 12-7M4 58c-1-4-2-7-5-10"
+    ></path>
+    <path class="ink" d="M62 56C58 44 60 30 72 20c-2 12-5 24-10 36Z"></path>
+    <path class="ink-thin" d="M64 50l6-6M63 44l7-7M63 38l7-9M66 32l5-6"></path>
+    <path class="ink" d="M61 56c-1 1-2 2-2 3"></path>
+    <path class="ink" d="M86 58c-2-3-1-7 3-8 5-1 9 2 8 6 0 1-1 2-2 2Z"></path>
+    <path class="hatch" d="M90 56l2-3M93 57l2-3"></path>
+    <path class="ink" d="M100 58c-1-2 1-4 3-4 3 0 4 2 3 4Z"></path>
+    <path class="ink-thin" d="M40 52l3 3M43 52l-3 3M48 56l2 2M50 56l-2 2"></path>
+  </svg>
+  <svg class="scribble scribble-right" viewBox="0 0 112 60" aria-hidden="true">
+    <path class="ink" d="M18 58c0-6 0-12 1-16M24 58c0-6 0-12-1-16"></path>
+    <path class="ink" d="M8 43c0-9 8-15 14-15s13 6 13 15c-8-1-19-1-27 0Z"></path>
+    <path class="hatch" d="M11 39l3-2M28 36l3 2M19 31l1 3"></path>
+    <path class="ink-thin" d="M12 43c6 1 12 1 20 0"></path>
+    <path class="ink" d="M44 58c2-5 1-9 3-14M49 58c3-4 4-8 8-11M53 58c-1-4 0-8 2-11"></path>
+    <path class="ink" d="M70 58c-3-5 1-11 8-12 7-1 14 3 14 9 0 1-1 2-2 3Z"></path>
+    <path class="hatch" d="M82 55l3-4M86 56l3-4M78 56l2-3"></path>
+    <path class="moss" d="M98 58c0-7 4-12 10-14-1 6-4 11-10 14Z"></path>
+    <path class="ink-thin" d="M99 57c3-4 5-7 8-11"></path>
+  </svg>
+
+  <button class="ledge-button stone-button" type="button" aria-label="Lift the stone">
+    <svg viewBox="0 0 64 48" aria-hidden="true">
+      <g class="beetle">
+        <path
+          class="ink"
+          d="M28 38c-3 1-5 3-6 5M30 44c-3 1-5 2-6 4M34 44c0 2 1 3 1 4M38 44c1 2 2 3 3 4M40 38c3 1 5 3 7 4M24 40c-2 0-3 0-4 1"
+        ></path>
+        <path class="ink-fill" d="M26 41c0-4 3-6 7-6s7 2 7 6-3 6-7 6-7-2-7-6Z"></path>
+        <path class="ink-thin paper-line" d="M33 36v10"></path>
+        <circle class="ink-fill" cx="41" cy="40" r="2.2"></circle>
+        <path class="ink" d="M42 38c1-2 3-3 5-3M43 39c2-1 4-1 6 0"></path>
+      </g>
+      <g class="stone">
+        <path
+          class="ink"
+          d="M10 44c-4-8 0-20 12-24 12-4 28 0 32 10 4 8-2 15-10 16-10 1-24 2-34-2Z"
+        ></path>
+        <path
+          class="paper-fill"
+          d="M11 43c-3-8 1-18 12-22 12-4 27 0 30 10 3 8-2 14-10 15-10 1-23 2-32-3Z"
+        ></path>
+        <path class="hatch" d="M40 42l5-5M45 42l5-6M35 43l4-5M50 40l3-4M30 43l3-4"></path>
+        <path class="ink-thin" d="M18 28c4-3 9-5 14-5"></path>
+      </g>
+    </svg>
+  </button>
+
+  <button
+    class="ledge-button contraption-button"
+    type="button"
+    aria-label="Set the contraption going"
+  >
+    <svg viewBox="0 0 340 120" aria-hidden="true">
+      <path class="ink" d="M22 118c-.5-24 .5-48 0-74"></path>
+      <path class="ink" d="M14 40c26 12 66 30 104 48"></path>
+      <path class="ink-thin" d="M22 62l24 6M22 78l40 10"></path>
+      <path class="hatch" d="M18 112l3 2M18 108l4 2"></path>
+      <path class="ink peg" d="M38 50l4-7"></path>
+      <g class="marble">
+        <circle class="ink" cx="30" cy="41" r="5.5"></circle>
+        <path class="ink-thin" d="M27 39c1-1 2-2 4-2"></path>
+        <circle class="ink-fill" cx="31.5" cy="42.5" r="1"></circle>
+      </g>
+      <path class="ink" d="M138 118l10-16 10 16"></path>
+      <path class="hatch" d="M146 114l-2 3M150 112l-2 5"></path>
+      <g class="seesaw">
+        <path class="ink" d="M118 101c20 .5 40 .5 60 0"></path>
+        <path class="ink-thin" d="M120 103c18 0 36 0 56-.5"></path>
+        <g class="cork">
+          <path class="ink" d="M170 101v-8c0-1 1-1.5 3-1.5s3 .5 3 1.5v8"></path>
+          <path class="hatch" d="M172 93v6M174 93v6"></path>
+        </g>
+      </g>
+      <path class="ink" d="M214 118c.5-28-.5-62 0-100"></path>
+      <path class="ink" d="M214 18c-14-1-28 0-42 0"></path>
+      <path class="ink-thin" d="M214 30l-12-12"></path>
+      <g class="bell">
+        <path class="ink" d="M174 18v8"></path>
+        <path class="ink" d="M164 44c0-10 4-16 10-18 6 2 10 8 10 18Z"></path>
+        <path class="ink" d="M162 44h24"></path>
+        <path class="hatch" d="M168 40l-1 3M180 40l1 3"></path>
+        <path class="ink" d="M174 40v6"></path>
+        <circle class="ink-fill" cx="174" cy="47" r="2"></circle>
+      </g>
+      <path
+        class="ink-thin ding"
+        d="M156 30c-2 2-3 5-3 8M153 26c-3 2-5 6-5 10M192 30c2 2 3 5 3 8M195 26c3 2 5 6 5 10"
+      ></path>
+      <circle class="ink" cx="236" cy="14" r="3"></circle>
+      <path class="ink" d="M236 118c.5-30-.5-60 0-100"></path>
+      <path class="ink-thin rope-slack" d="M184 40c21 10 41-4 50-23M239 15c11 25 6 50 29 63"></path>
+      <path class="ink-thin rope-taut" d="M184 40c16-8 34-16 50-24M239 15c14 22 30 42 53 62"></path>
+      <g class="can">
+        <path class="ink" d="M258 88c-2 10-2 20 0 30h26c2-10 2-20 0-30Z"></path>
+        <path class="ink" d="M256 88h30"></path>
+        <path class="ink" d="M262 88c0-10 18-10 18 0"></path>
+        <path class="ink" d="M284 100c6-6 10-12 16-20"></path>
+        <path class="ink" d="M298 78c3 0 5 2 4 4-1 1-3 1-5 0"></path>
+        <circle class="ink-fill" cx="300" cy="79" r=".7"></circle>
+        <circle class="ink-fill" cx="302" cy="81" r=".7"></circle>
+        <path class="hatch" d="M276 108l4-4M278 114l5-5M272 112l3-3"></path>
+        <path class="ink-thin" d="M262 96c0 6 0 12 1 18"></path>
+      </g>
+      <path
+        class="ink-fill drop drop-1"
+        d="M318 94c-1 2-2 3-2 4 0 1 1 2 2 2s2-1 2-2c0-1-1-2-2-4Z"
+      ></path>
+      <path
+        class="ink-fill drop drop-2"
+        d="M320 95c-1 2-2 3-2 4 0 1 1 2 2 2s2-1 2-2c0-1-1-2-2-4Z"
+      ></path>
+      <path
+        class="ink-fill drop drop-3"
+        d="M316 96c-1 2-2 3-2 4 0 1 1 2 2 2s2-1 2-2c0-1-1-2-2-4Z"
+      ></path>
+      <path class="hatch" d="M308 118l-2-3M322 118l2-3"></path>
+      <path
+        class="ink tansy-stem"
+        d="M314 118c-1-10 1-20 0-32M314 100c-4-2-7-6-9-10M314 94c3-3 6-6 8-10"
+      ></path>
+      <path class="moss tansy-leaf" d="M314 108c-6-1-10-5-11-11 5 1 9 5 11 11Z"></path>
+      <path class="moss tansy-leaf" d="M314 104c6-2 9-7 10-13-5 2-8 7-10 13Z"></path>
+      <circle class="tansy tansy-head tansy-head-1" cx="305" cy="89" r="3.6"></circle>
+      <circle class="tansy tansy-head tansy-head-2" cx="314" cy="83" r="3.8"></circle>
+      <circle class="tansy tansy-head tansy-head-3" cx="322" cy="85" r="3.4"></circle>
+    </svg>
+  </button>
+
+  <div class="lantern-spot" aria-hidden="true">
+    <svg viewBox="0 0 56 72">
+      <defs>
+        <radialGradient id="ledge-lantern-glow">
+          <stop offset="0" stop-color="#ffb347"></stop>
+          <stop offset="1" stop-color="#ffb347" stop-opacity="0"></stop>
+        </radialGradient>
+      </defs>
+      <circle class="flame-glow" cx="28" cy="48" r="22" fill="url(#ledge-lantern-glow)"></circle>
+      <path class="ink" d="M16 70h24"></path>
+      <path class="ink" d="M18 70V40c0-4 2-6 4-6h12c2 0 4 2 4 6v30"></path>
+      <path class="ink" d="M20 34l4-10h8l4 10"></path>
+      <path class="ink" d="M24 24c1-7 7-7 8 0"></path>
+      <path class="ink-thin" d="M28 40v26"></path>
+      <path class="hatch" d="M20 66l2-2M20 62l2-2M36 66l2-2"></path>
+      <path class="ink" d="M28 66V54"></path>
+      <path class="flame" d="M28 54c-3-5-1-8 0-11 1 3 3 6 0 11Z"></path>
+      <g class="moth">
+        <path class="ink-fill moth-wing moth-wing-l" d="M0 0c-5-4-9 0-7 4 2 2 5 1 7 0Z"></path>
+        <path class="ink-fill moth-wing moth-wing-r" d="M0 0c5-4 9 0 7 4-2 2-5 1-7 0Z"></path>
+        <path class="ink" d="M0-2v5"></path>
+        <path class="ink-thin" d="M0-2l-2-3M0-2l2-3"></path>
+      </g>
+    </svg>
+  </div>
+
+  <svg class="snail" viewBox="0 0 40 24" aria-hidden="true">
+    <path class="ink" d="M4 21c3 1 9 1 16 1h12c3 0 5-2 4-5"></path>
+    <path class="ink" d="M35 17c0-3 2-5 3-9M36 17c2-2 4-4 6-5"></path>
+    <circle class="ink-fill" cx="38" cy="8" r=".9"></circle>
+    <circle class="ink-fill" cx="42" cy="12" r=".9"></circle>
+    <path
+      class="ink"
+      d="M22 21c-8 0-12-5-11-10 1-6 8-8 13-5 4 3 4 9-1 11-4 2-8-1-7-5 1-3 4-3 5-1 1 1 0 3-1 3"
+    ></path>
+    <path class="hatch" d="M13 15l2-2M14 18l3-2"></path>
+    <path class="ink-thin" d="M4 21c-1 0-2 1-3 1"></path>
+  </svg>
+</div>
+
+<script>
+  import '../scripts/footer-ledge';
+</script>
+
+<style>
+  .ledge {
+    --night: 0;
+
+    position: relative;
+    max-width: 34rem;
+    height: 7.5rem;
+    margin: 0 auto;
+    color: var(--color-ink-medium);
+  }
+
+  :global(:root[data-theme='dark']) .ledge {
+    --night: 1;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .ledge {
+      --night: 1;
+    }
+  }
+
+  .ledge svg {
+    display: block;
+    overflow: visible;
+  }
+
+  /* One hand for everything on the ledge */
+  .ink {
+    fill: none;
+    stroke: currentcolor;
+    stroke-width: 1.3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .ink-thin {
+    fill: none;
+    stroke: currentcolor;
+    stroke-width: 0.9;
+    stroke-linecap: round;
+    opacity: 0.55;
+  }
+
+  .ink-fill {
+    fill: currentcolor;
+    stroke: none;
+  }
+
+  .hatch {
+    fill: none;
+    stroke: currentcolor;
+    stroke-width: 0.8;
+    stroke-linecap: round;
+    opacity: 0.45;
+  }
+
+  .paper-fill {
+    fill: var(--color-parchment);
+    stroke: none;
+  }
+
+  .paper-line {
+    stroke: var(--color-parchment);
+    opacity: 0.9;
+  }
+
+  .tansy {
+    fill: var(--color-tansy);
+    stroke: color-mix(in srgb, var(--color-ochre) 70%, var(--color-ink-dark));
+    stroke-width: 0.8;
+  }
+
+  .moss {
+    fill: color-mix(in srgb, var(--color-moss) 55%, transparent);
+    stroke: var(--color-moss);
+    stroke-width: 0.9;
+    stroke-linejoin: round;
+  }
+
+  .tansy-stem {
+    stroke: var(--color-moss);
+  }
+
+  .ledge-button {
+    position: absolute;
+    bottom: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 6px;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .ledge-button svg {
+    width: 100%;
+  }
+
+  .ledge-button:hover {
+    color: var(--color-ink-dark);
+  }
+
+  .ledge-button:focus-visible {
+    outline: 2px solid var(--color-walnut);
+    outline-offset: 4px;
+  }
+
+  /* The stone, and the beetle that was under it */
+  .stone-button {
+    left: 0;
+    width: 4rem;
+  }
+
+  .stone {
+    transform-box: view-box;
+    transform-origin: 10px 44px;
+  }
+
+  .is-lifted .stone {
+    animation: stone-lift 2.6s cubic-bezier(0.3, 0.8, 0.4, 1) both;
+  }
+
+  .is-lifted .beetle {
+    animation: beetle-run 2.6s ease-in both;
+  }
+
+  @keyframes stone-lift {
+    0% {
+      transform: rotate(0);
+    }
+    18% {
+      transform: rotate(-26deg);
+    }
+    70% {
+      transform: rotate(-24deg);
+    }
+    100% {
+      transform: rotate(0);
+    }
+  }
+
+  @keyframes beetle-run {
+    0%,
+    22% {
+      transform: translate(0, 0);
+      opacity: 1;
+    }
+    30% {
+      transform: translate(6px, -1px);
+    }
+    40% {
+      transform: translate(10px, 0);
+    }
+    48% {
+      transform: translate(16px, -1px);
+    }
+    56% {
+      transform: translate(22px, 0);
+    }
+    64% {
+      transform: translate(30px, -1px);
+    }
+    72% {
+      transform: translate(40px, 0);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(66px, 0);
+      opacity: 0;
+    }
+  }
+
+  /* The contraption: peg, marble, seesaw, cork, bell, rope, can, drops, tansy */
+  .contraption-button {
+    left: 50%;
+    width: min(100%, 22rem);
+    transform: translateX(-50%);
+  }
+
+  .peg,
+  .marble,
+  .seesaw,
+  .cork,
+  .bell,
+  .can,
+  .tansy-stem,
+  .tansy-leaf {
+    transform-box: view-box;
+  }
+
+  .peg {
+    transform-origin: 38px 50px;
+  }
+
+  .marble {
+    transform-origin: 30px 41px;
+  }
+
+  .seesaw {
+    transform-origin: 148px 101px;
+    transform: rotate(8deg);
+  }
+
+  .cork {
+    transform-origin: 173px 101px;
+  }
+
+  .bell {
+    transform-origin: 174px 18px;
+  }
+
+  .ding,
+  .rope-taut,
+  .drop {
+    opacity: 0;
+  }
+
+  .can {
+    transform-origin: 284px 118px;
+  }
+
+  .tansy-stem {
+    transform-origin: 314px 118px;
+    transform: scaleY(0.18);
+  }
+
+  .tansy-leaf {
+    transform-origin: 314px 108px;
+    transform: scale(0);
+  }
+
+  .tansy-head {
+    transform-box: fill-box;
+    transform-origin: center;
+    transform: scale(0);
+  }
+
+  .is-going .peg {
+    animation: peg-flip 0.35s ease-in 0.1s forwards;
+  }
+
+  .is-going .marble {
+    animation: marble-roll 1.9s cubic-bezier(0.4, 0, 0.8, 0.6) forwards;
+  }
+
+  .is-going .seesaw {
+    animation: seesaw-tip 0.5s cubic-bezier(0.5, 0, 0.3, 1.4) 1.75s forwards;
+  }
+
+  .is-going .cork {
+    animation: cork-fly 1.1s cubic-bezier(0.2, 0.9, 0.5, 1) 1.85s forwards;
+  }
+
+  .is-going .bell {
+    animation: bell-swing 2.4s ease-in-out 2.3s;
+  }
+
+  .is-going .ding {
+    animation: ding 1.2s ease-out 2.35s;
+  }
+
+  .is-going .rope-slack {
+    animation: fade-out 0.3s ease 2.5s forwards;
+  }
+
+  .is-going .rope-taut {
+    animation: fade-in 0.3s ease 2.5s forwards;
+  }
+
+  .is-going .can {
+    animation: can-tip 1s cubic-bezier(0.5, 0, 0.4, 1) 2.55s forwards;
+  }
+
+  .is-going .drop-1 {
+    animation: drip 0.7s ease-in 3.1s;
+  }
+
+  .is-going .drop-2 {
+    animation: drip 0.7s ease-in 3.4s;
+  }
+
+  .is-going .drop-3 {
+    animation: drip 0.7s ease-in 3.75s;
+  }
+
+  .is-going .tansy-stem {
+    animation: sprout 1.4s cubic-bezier(0.3, 0.7, 0.3, 1) 3.5s forwards;
+  }
+
+  .is-going .tansy-leaf {
+    animation: unfold 0.9s cubic-bezier(0.22, 1, 0.36, 1) 4.2s forwards;
+  }
+
+  .is-going .tansy-head-1 {
+    animation: unfold 0.7s cubic-bezier(0.22, 1, 0.36, 1) 4.9s forwards;
+  }
+
+  .is-going .tansy-head-2 {
+    animation: unfold 0.7s cubic-bezier(0.22, 1, 0.36, 1) 5.15s forwards;
+  }
+
+  .is-going .tansy-head-3 {
+    animation: unfold 0.7s cubic-bezier(0.22, 1, 0.36, 1) 5.4s forwards;
+  }
+
+  @keyframes peg-flip {
+    to {
+      transform: rotate(80deg);
+    }
+  }
+
+  @keyframes marble-roll {
+    0%,
+    20% {
+      transform: translate(0, 0) rotate(0);
+    }
+    72% {
+      transform: translate(80px, 38px) rotate(720deg);
+    }
+    84% {
+      transform: translate(92px, 52px) rotate(800deg);
+    }
+    92% {
+      transform: translate(94px, 55px) rotate(820deg);
+    }
+    100% {
+      transform: translate(95px, 58px) rotate(830deg);
+    }
+  }
+
+  @keyframes seesaw-tip {
+    to {
+      transform: rotate(-8deg);
+    }
+  }
+
+  @keyframes cork-fly {
+    0% {
+      transform: translate(0, 0) rotate(0);
+    }
+    45% {
+      transform: translate(1px, -54px) rotate(10deg);
+    }
+    100% {
+      transform: translate(2px, -2px) rotate(70deg);
+    }
+  }
+
+  @keyframes bell-swing {
+    0% {
+      transform: rotate(0);
+    }
+    12% {
+      transform: rotate(13deg);
+    }
+    32% {
+      transform: rotate(-10deg);
+    }
+    52% {
+      transform: rotate(7deg);
+    }
+    72% {
+      transform: rotate(-4deg);
+    }
+    88% {
+      transform: rotate(2deg);
+    }
+    100% {
+      transform: rotate(0);
+    }
+  }
+
+  @keyframes ding {
+    0% {
+      opacity: 0;
+    }
+    15% {
+      opacity: 0.9;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes fade-in {
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes can-tip {
+    to {
+      transform: rotate(30deg);
+    }
+  }
+
+  @keyframes drip {
+    0% {
+      transform: translate(0, 0);
+      opacity: 0;
+    }
+    15% {
+      opacity: 0.9;
+    }
+    100% {
+      transform: translate(-3px, 24px);
+      opacity: 0;
+    }
+  }
+
+  @keyframes sprout {
+    to {
+      transform: scaleY(1);
+    }
+  }
+
+  @keyframes unfold {
+    to {
+      transform: scale(1);
+    }
+  }
+
+  /* The lantern, lit by torchlight, and the moth that comes to it */
+  .lantern-spot {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 3.5rem;
+  }
+
+  .lantern-spot svg {
+    width: 100%;
+  }
+
+  .flame {
+    fill: var(--color-ochre);
+    stroke: none;
+    opacity: var(--night);
+    transition: opacity var(--transition-medium);
+  }
+
+  .flame-glow {
+    opacity: calc(var(--night) * 0.55);
+    transition: opacity var(--transition-medium);
+  }
+
+  .moth {
+    transform-box: view-box;
+    transform-origin: 0 0;
+    transform: translate(31px, 14px) rotate(25deg);
+    opacity: calc(var(--night) * 0.9);
+  }
+
+  .moth-wing {
+    transform-box: fill-box;
+    transform-origin: center;
+    opacity: 0.8;
+  }
+
+  .is-fluttering .moth {
+    animation: moth-flight 4.5s ease-in-out both;
+  }
+
+  .is-fluttering .moth-wing {
+    animation: flap 0.16s ease-in-out 22 alternate;
+  }
+
+  @keyframes moth-flight {
+    0% {
+      transform: translate(-40px, -30px) rotate(-30deg);
+      opacity: 0;
+    }
+    10% {
+      opacity: calc(var(--night) * 0.9);
+    }
+    25% {
+      transform: translate(8px, -18px) rotate(20deg);
+    }
+    40% {
+      transform: translate(44px, 2px) rotate(-10deg);
+    }
+    55% {
+      transform: translate(14px, 12px) rotate(30deg);
+    }
+    70% {
+      transform: translate(40px, -14px) rotate(-20deg);
+    }
+    85% {
+      transform: translate(24px, 10px) rotate(15deg);
+    }
+    100% {
+      transform: translate(31px, 14px) rotate(25deg);
+      opacity: calc(var(--night) * 0.9);
+    }
+  }
+
+  @keyframes flap {
+    from {
+      transform: scaleX(1);
+    }
+    to {
+      transform: scaleX(0.25);
+    }
+  }
+
+  /* The snail: a few steps along the rule each time the footer comes into view */
+  .snail {
+    position: absolute;
+    left: 4.5rem;
+    bottom: -1px;
+    width: 2.4rem;
+    transform: translateX(var(--snail-x, 0px));
+  }
+
+  .snail.is-crawling {
+    transition: transform 9s linear;
+  }
+
+  /* Marginal scribbles, outside the column on wide screens */
+  .scribble {
+    position: absolute;
+    bottom: 0;
+    width: 7rem;
+  }
+
+  .scribble-left {
+    right: calc(100% + 2.5rem);
+  }
+
+  .scribble-right {
+    left: calc(100% + 2.5rem);
+  }
+
+  /* .ledge .scribble, so this outranks the display: block on .ledge svg above */
+  @media (max-width: 64rem) {
+    .ledge .scribble {
+      display: none;
+    }
+  }
+
+  @media (max-width: 30rem) {
+    .contraption-button {
+      width: calc(100% - 6.5rem);
+    }
+
+    .stone-button {
+      width: 3.25rem;
+    }
+
+    .lantern-spot {
+      width: 3rem;
+    }
+
+    .snail {
+      left: 3.5rem;
+      width: 2rem;
+    }
+  }
+
+  /* Without motion (base.css stops every animation) each sequence is a still of its end:
+     the stone held up with the beetle beside it, the contraption run and the tansy in
+     flower, the moth resting on the lantern. */
+  @media (prefers-reduced-motion: reduce) {
+    .is-lifted .stone {
+      transform: rotate(-24deg);
+    }
+
+    .is-lifted .beetle {
+      transform: translate(30px, 0);
+    }
+
+    .is-going .peg {
+      transform: rotate(80deg);
+    }
+
+    .is-going .marble {
+      transform: translate(95px, 58px);
+    }
+
+    .is-going .seesaw {
+      transform: rotate(-8deg);
+    }
+
+    .is-going .cork {
+      transform: translate(2px, -2px) rotate(70deg);
+    }
+
+    .is-going .rope-slack {
+      opacity: 0;
+    }
+
+    .is-going .rope-taut {
+      opacity: 1;
+    }
+
+    .is-going .can {
+      transform: rotate(30deg);
+    }
+
+    .is-going .tansy-stem {
+      transform: scaleY(1);
+    }
+
+    .is-going .tansy-leaf,
+    .is-going .tansy-head {
+      transform: scale(1);
+    }
+  }
+
+  @media print {
+    .ledge {
+      display: none;
+    }
+  }
+</style>

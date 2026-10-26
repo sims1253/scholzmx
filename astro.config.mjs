@@ -3,6 +3,7 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
+import { lightCodeTheme, darkCodeTheme } from './src/lib/shiki-themes.mjs';
 import { unified } from '@astrojs/markdown-remark';
 import purgecss from 'astro-purgecss';
 import pagefind from 'astro-pagefind';
@@ -101,13 +102,9 @@ export default defineConfig({
         // Responsive variants for grid
         'md:tw-grid-cols-2',
         'lg:tw-grid-cols-3',
-        // StackedCard dynamic doodle classes
-        /^sc-/,
-        /^topLeft$/,
-        /^topRight$/,
-        /^bottomLeft$/,
-        /^bottomRight$/,
-        /^center$/,
+        // Theme-toggle and quote states set from scripts
+        'is-turning',
+        'open',
       ],
       keyframes: true,
       // Keep all @font-face declarations so production keeps heading/body/dropcap fonts
@@ -131,9 +128,10 @@ export default defineConfig({
   markdown: {
     processor: unified({ remarkPlugins: [remarkMath], rehypePlugins: [rehypeKatex] }),
     shikiConfig: {
+      // Kanagawa Lotus and Dragon, with any token below 4.5:1 deepened (src/lib/shiki-themes.mjs)
       themes: {
-        light: 'kanagawa-lotus',
-        dark: 'kanagawa-dragon',
+        light: lightCodeTheme,
+        dark: darkCodeTheme,
       },
       wrap: false,
     },

@@ -36,28 +36,27 @@ const newestPost =
         ? { type: 'recipe' as const, post: latestRecipe, date: recipeDate }
         : null;
 
-const formatDate = (date: Date) => date.toISOString().split('T')[0];
+const formatDate = (date: Date) =>
+  date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 ---
 
 <BaseLayout
   title="Grotto - Personal Website of Maximilian Scholz"
   description="Welcome to my Grotto, a place where I try to cultivate the feeling of watching the shadows dance through vines, while insects are humming and tansy is making everything smell like summer."
-  footerVariant="default"
   includeQuoteSection={true}
-  addBorders={true}
   tone="personal"
-  layout="prose"
-  prose={true}
+  layout="wide"
 >
-  <div class="welcome-section">
-    <div class="welcome-header">
-      <div class="manuscript-text">
-        <h1 class="site-title">Welcome to my Grotto</h1>
-        <p class="site-description constrained-text prose">
-          a place where I try to cultivate the feeling of watching the shadows dance through vines,
-          while insects are humming and tansy is making everything smell like summer.
-        </p>
-      </div>
+  <div class="home">
+    <h1 class="welcome">
+      <span class="welcome-greeting">Welcome to my Grotto,</span>
+      <span class="welcome-line">
+        a place where I try to cultivate the feeling of watching the shadows dance through vines,
+        while insects are humming and tansy is making everything smell like summer.
+      </span>
+    </h1>
+
+    <div class="portrait pasted">
       <ImageFrame
         src={portraitImage}
         alt="Professional portrait of me"
@@ -76,230 +75,170 @@ const formatDate = (date: Date) => date.toISOString().split('T')[0];
       />
     </div>
 
-    <div class="about-preview breakout">
-      <div class="prose-wrapper">
-        <div class="prose content">
-          <p class="prose">
-            <DropCap letter="I" variant="personal" />'m Maximilian. My best friend once painted me a
-            t-shirt that read <em>verspielt und liebenswürdig</em> (playful and endearing) and I've
-            yet to find a better description. The best feedback I've ever gotten described me as a
-            <em>herder of cat herders</em> and my music taste has been characterized as being
-            <em>an atmospheric futurist with a nostalgic heart</em>.<br /><br />
-
-            I tend to make things. Software infrastructure that hopefully helps others, harsh vocals
-            and guitar covers, a concept Call of Cthulhu campaign for a deathcore album (much to my
-            players' confusion), and kitchen experiments where I try something new each month. I'm
-            easy to nerdsnipe, if you couldn't tell. When I'm not building something, you'll find me
-            on the mats failing triangle escapes, or somewhere between a barbell and a book.<br />
-            Somewhere along the way I collected a B.Sc. in <em>Computer Science in Engineering</em>,
-            a M.Sc. in <em>Software Engineering and Technology</em>, and, if the gods of bureaucracy
-            ever look kindly upon me, a PhD in <em>Bayesian statistics</em> will follow.
-          </p>
-          <p class="prose">
-            I've hidden a growing number of easter eggs around the site. Let me know when you find
-            them :)
-          </p>
-        </div>
-        {newestPost && <aside class="latest-scribble">
-          <span class="scribble-label">Newest post</span>
-          <a
-            href={
-              newestPost.type === 'blog'
-                ? `/blog/${newestPost.post.id}`
-                : `/recipes/${newestPost.post.id}`
-            }
-            class="scribble-title"
-          >
-            {newestPost.post.data.title}
-          </a>
-          <time class="scribble-date" datetime={newestPost.date.toISOString()}>
-            {formatDate(newestPost.date)}
-          </time>
-        </aside>}
-      </div>
+    <div class="about prose">
+      <p>
+        <DropCap letter="I" variant="personal" color="moss" />'m Maximilian. My best friend once
+        painted me a t-shirt that read <em>verspielt und liebenswürdig</em> (playful and endearing)
+        and I've yet to find a better description. The best feedback I've ever gotten described me
+        as a <em>herder of cat herders</em> and my music taste has been characterized as being
+        <em>an atmospheric futurist with a nostalgic heart</em>.
+      </p>
+      <p>
+        I tend to make things. Software infrastructure that hopefully helps others, harsh vocals and
+        guitar covers, a concept Call of Cthulhu campaign for a deathcore album (much to my players'
+        confusion), and kitchen experiments where I try something new each month. I'm easy to
+        nerdsnipe, if you couldn't tell. When I'm not building something, you'll find me on the mats
+        failing triangle escapes, or somewhere between a barbell and a book.
+      </p>
+      <p>
+        Somewhere along the way I collected a B.Sc. in <em>Computer Science in Engineering</em>, a
+        M.Sc. in <em>Software Engineering and Technology</em>, and, if the gods of bureaucracy ever
+        look kindly upon me, a PhD in <em>Bayesian statistics</em> will follow.
+      </p>
+      <p>
+        I've hidden a growing number of easter eggs around the site. Let me know when you find them
+        :)
+      </p>
     </div>
+
+    {newestPost && <aside class="latest" aria-label="Newest post">
+      <p>
+        The newest post, from
+        <time datetime={newestPost.date.toISOString()}>{formatDate(newestPost.date)}</time>, is
+        <a
+          href={
+            newestPost.type === 'blog'
+              ? `/blog/${newestPost.post.id}`
+              : `/recipes/${newestPost.post.id}`
+          }
+          >{newestPost.post.data.title}</a
+        >{/[.!?]$/.test(newestPost.post.data.title) ? '' : '.'}
+      </p>
+    </aside>}
   </div>
 </BaseLayout>
 
 <style>
-  /* Simplified welcome page - let BaseLayout grid control overall structure */
+  /*
+   * Desktop:  [portrait] [about, the reading column] [newest post]
+   * The greeting starts on the reading column's left edge, so one axis runs down the page.
+   */
+  /* The two side columns are equally wide, so the reading column is centred. */
+  .home {
+    --side-col: 12rem;
+    --gap: clamp(1.5rem, 3vw, 3rem);
 
-  .welcome-section {
-    position: relative;
-    width: 100%;
-    max-width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns:
+      [portrait] var(--side-col)
+      [text] minmax(0, var(--measure-prose))
+      [aside] var(--side-col);
+    column-gap: var(--gap);
+    justify-content: center;
+    align-items: start;
   }
 
-  .welcome-header {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--space-xl);
-    margin: 0 auto var(--space-xs);
+  /* The welcome is a lede, not a poster: the bio starts in the first screen. */
+  .welcome {
+    grid-column: text / -1;
+    max-width: 32em;
+    margin: var(--page-top) 0 clamp(1.25rem, 3vw, 2.25rem);
+    font-family: var(--font-heading);
+    font-size: var(--text-2xl);
+    font-weight: 400;
+    line-height: 1.15;
+    text-wrap: balance;
+    hyphens: manual;
   }
 
-  .manuscript-text {
-    flex: 1;
-    margin-bottom: var(--space-md);
+  .welcome-greeting {
+    display: block;
+    margin-bottom: 0.15em;
   }
 
-  .site-title {
-    font-size: clamp(var(--text-xl), 3.5vw, var(--text-2xl));
-    line-height: 1.4;
-    margin-bottom: 0;
-    color: var(--color-ink-dark);
-    font-weight: 600;
+  .welcome-line {
+    display: block;
+    margin-top: 0.2em;
+    font-style: italic;
+    font-size: 0.6em;
+    line-height: 1.35;
+    color: var(--color-text-secondary);
   }
 
-  .site-description {
-    margin-top: var(--space-xs);
-    margin-bottom: 0;
+  .portrait {
+    grid-column: portrait;
+    width: fit-content;
+    margin-top: 0.4rem;
+    justify-self: end;
   }
 
-  .constrained-text {
-    max-width: 100%;
-    overflow: hidden;
-    box-sizing: border-box;
+  /* A photograph pasted in, not a cut-out blob. The frame's geometry stays untouched. */
+  .portrait :global(.image-frame-watercolor) {
+    border-radius: 2px;
+    background: var(--paper-sheet);
+    box-shadow:
+      0 1px 2px color-mix(in srgb, var(--color-ink-dark) 18%, transparent),
+      0 10px 22px -12px color-mix(in srgb, var(--color-ink-dark) 35%, transparent);
   }
 
-  .about-preview {
-    position: relative;
-    margin-bottom: var(--space-xs);
-    margin-top: var(--space-xs);
+  .portrait :global(.image-frame-watercolor img) {
+    border-radius: 0;
   }
 
-  /* On wide screens, break out of the layout-prose grid to allow margin note */
-  @media (min-width: 1100px) {
-    .about-preview {
-      display: flex;
-      justify-content: center;
+  .about {
+    grid-column: text;
+  }
+
+  .about p {
+    margin-bottom: 1em;
+  }
+
+  .latest {
+    grid-column: aside;
+    margin-top: 0.4rem;
+    padding-top: 0.6rem;
+    border-top: 2px solid var(--color-tansy);
+    font-size: var(--text-sm);
+    font-style: italic;
+    line-height: 1.45;
+    color: var(--color-text-muted);
+  }
+
+  .latest p {
+    margin: 0;
+  }
+
+  .latest a {
+    font-style: normal;
+    color: var(--color-link);
+  }
+
+  .latest time {
+    font-variant-numeric: oldstyle-nums;
+  }
+
+  /* Below the width where portrait, text and newest post fit side by side: one centred
+     reading column, the portrait between greeting and text, the newest post after it. */
+  @media (max-width: 72rem) {
+    .home {
+      grid-template-columns: minmax(0, var(--measure-prose));
     }
-  }
 
-  /* Prose wrapper - mobile first: simple block layout */
-  .prose-wrapper {
-    position: relative;
-    max-width: var(--measure-prose);
-    width: 100%;
-  }
-
-  /* On wide screens (>1100px), use grid to position margin note beside content */
-  @media (min-width: 1100px) {
-    .prose-wrapper {
-      --latest-scribble-width: 220px;
-
-      display: grid;
-      grid-template-columns: var(--measure-prose) var(--latest-scribble-width);
-      gap: var(--space-lg);
-      max-width: none;
-      width: auto;
-    }
-
-    .prose-wrapper .prose.content {
+    .welcome,
+    .portrait,
+    .about,
+    .latest {
       grid-column: 1;
     }
 
-    .prose-wrapper .latest-scribble {
-      grid-column: 2;
-      grid-row: 1;
-      align-self: start;
-    }
-  }
-
-  /* Mobile Responsiveness */
-  @media (max-width: 768px) {
-    .welcome-header {
-      flex-direction: column;
-      align-items: center;
-      gap: var(--space-md);
+    .portrait {
+      justify-self: center;
+      margin: 0 0 var(--space-lg);
     }
 
-    .manuscript-text {
-      text-align: center;
+    .latest {
+      max-width: 22rem;
+      margin-top: var(--space-md);
     }
-
-    .portrait-frame {
-      order: -1;
-    }
-  }
-
-  @media (max-width: 640px) {
-    .about-preview {
-      flex-direction: column;
-      text-align: center;
-      gap: var(--space-sm);
-    }
-
-    .about-preview .prose p {
-      text-align: left;
-    }
-
-    .portrait-frame {
-      width: 100px;
-      height: 100px;
-      margin: 0 auto;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .site-title {
-      font-size: var(--text-lg);
-    }
-  }
-
-  /* Latest Scribble - card styling */
-  .latest-scribble {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-xxs);
-    margin-bottom: var(--space-md);
-    background: var(--color-surface);
-    border-left: 3px solid color-mix(in srgb, var(--color-lichen) 60%, transparent);
-    padding: var(--space-sm) var(--space-md);
-    border-radius: 6px;
-    box-shadow:
-      0 1px 3px color-mix(in srgb, var(--color-walnut) 12%, transparent),
-      0 0 0 1px color-mix(in srgb, var(--color-lichen) 22%, transparent);
-  }
-
-  /* On wide screens, card is positioned by grid */
-  @media (min-width: 1100px) {
-    .latest-scribble {
-      margin-bottom: 0;
-      width: var(--latest-scribble-width);
-    }
-  }
-
-  .scribble-label {
-    font-size: var(--text-xs);
-    color: var(--color-text-muted);
-    font-weight: 600;
-  }
-
-  .scribble-title {
-    font-size: var(--text-sm);
-    color: var(--color-walnut);
-    text-decoration: none;
-    font-weight: 500;
-    line-height: 1.3;
-    transition: color var(--transition-fast);
-  }
-
-  .scribble-title:hover {
-    color: var(--color-moss);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .scribble-title {
-      transition: none;
-    }
-  }
-
-  .scribble-date {
-    font-size: var(--text-xs);
-    color: var(--color-ink-light);
-    font-style: italic;
   }
 </style>

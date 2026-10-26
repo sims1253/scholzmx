@@ -7,13 +7,16 @@
   --measure-prose: var(--measure-prose-personal); /* Default, set dynamically by tone */
 
   /* Page layout measures */
-  --measure-listing: 960px; /* px for consistent grid layouts */
+  --measure-listing: 50rem; /* Index pages: entries plus a hanging margin for years */
+  --measure-cards: 50rem; /* The blog's card index: two cards to a row on wide screens */
   --measure-wide: 80rem; /* rem for responsive wide layouts */
   --measure-full: 90rem; /* rem for maximum content width */
 
   /* Site-level chrome (px for consistent structural elements) */
   --site-width: 1280px; /* Controls nav inner wrapper max-width */
   --nav-brand-left-offset: 24px; /* Subtle brand shift left of center content */
+  /* Space above a page's title: enough to clear the nav, no more. */
+  --page-top: clamp(0.75rem, 2.5vw, 1.75rem);
   --card-max-width: 640px; /* Consistent card width regardless of rem scaling */
 
   /* Sidebar layout */
@@ -27,4 +30,10 @@
   /* Border radius tokens */
   --border-radius: 0.25rem;
   --border-radius-lg: 1rem;
+}
+
+@media (min-width: 68.75rem) {
+  :root {
+    --measure-cards: 72rem;
+  }
 }

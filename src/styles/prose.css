@@ -22,32 +22,35 @@
     line-height: inherit;
   }
 
+  /* Section heads step clearly off the text (about 1.5 and 1.25 times it), with
+     more room above than below so each one belongs to what follows. */
   .prose h2 {
-    font-size: var(--text-xl);
-    margin-top: 1.6em;
-    margin-bottom: 0.6em;
+    font-size: 1.5em;
+    margin-top: 1.5em;
+    margin-bottom: 0.45em;
     color: var(--color-walnut);
     font-weight: var(--heading-weight-strong);
-    line-height: 1.3;
+    line-height: 1.2;
+    text-wrap: balance;
   }
 
   .prose h3 {
-    font-size: var(--text-lg);
+    font-size: 1.25em;
     margin-top: 1.4em;
-    margin-bottom: 0.5em;
+    margin-bottom: 0.4em;
     color: var(--color-text-primary);
     font-weight: var(--heading-weight-strong);
-    line-height: 1.4;
+    line-height: 1.3;
+    text-wrap: balance;
   }
 
   .prose blockquote {
-    border-left: 3px solid var(--color-sage);
-    padding-left: var(--space-md);
+    border-left: 2px solid var(--color-moss);
+    padding: 0.1em 0 0.1em var(--space-md);
     margin: var(--space-lg) 0;
     font-style: italic;
     color: var(--color-text-secondary);
-    background: rgba(168, 181, 160, 0.08);
-    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+    background: none;
     max-width: 100%;
   }
 
@@ -62,59 +65,62 @@
     line-height: inherit;
   }
 
-  /* Recipe specs styling */
-  .prose .recipe-specs {
-    background: var(--color-surface);
-    border: 1px solid var(--color-lichen);
-    border-radius: var(--border-radius);
-    padding: var(--space-sm);
-    margin: var(--space-xs) 0;
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 0.1rem var(--space-md);
-    max-width: 100%;
-  }
-
-  .prose .recipe-specs dt {
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-walnut);
-    margin: 0;
-    align-self: baseline;
-  }
-
-  .prose .recipe-specs dd {
-    margin: 0;
-    color: var(--color-text-primary);
-    align-self: baseline;
-  }
-
-  /* Equipment list styling */
-  .prose .equipment-list {
-    background: var(--wash-sage);
-    border: 1px solid var(--color-sage);
-    border-radius: var(--border-radius);
-    padding: var(--space-sm);
-    margin: var(--space-xs) 0;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.1rem var(--space-sm);
-    max-width: 100%;
-    list-style: none;
-  }
-
-  .prose .equipment-list li {
-    margin-bottom: 0;
-    color: var(--color-text-primary);
+  /* Pictures in running text are pasted in like prints: a sheet held by two paper
+     strips. Plots and photographs alike; captions sit on the print. */
+  .prose p:has(> img:only-child),
+  .prose figure:has(img) {
     position: relative;
-    padding-left: 1rem;
+    width: fit-content;
+    max-width: 100%;
+    margin: var(--space-xl) auto;
+    padding: 0.5rem;
+    background: var(--print-sheet);
+    box-shadow:
+      0 1px 2px color-mix(in srgb, var(--color-ink-dark) 14%, transparent),
+      0 14px 26px -16px color-mix(in srgb, var(--color-ink-dark) 40%, transparent);
   }
 
-  .prose .equipment-list li::before {
-    content: '•';
-    color: var(--color-sage-dark);
-    font-weight: bold;
+  .prose p:has(> img:only-child)::before,
+  .prose p:has(> img:only-child)::after,
+  .prose figure:has(img)::before,
+  .prose figure:has(img)::after {
+    content: '';
     position: absolute;
-    left: 0;
+    top: -0.55rem;
+    z-index: 1;
+    width: 3.2rem;
+    height: 1.1rem;
+    background: var(--tape-strip);
+    opacity: 0.88;
+    box-shadow: 0 1px 1px color-mix(in srgb, var(--color-ink-dark) 12%, transparent);
+    pointer-events: none;
+  }
+
+  .prose p:has(> img:only-child)::before,
+  .prose figure:has(img)::before {
+    left: 0.9rem;
+    transform: rotate(-4deg);
+  }
+
+  .prose p:has(> img:only-child)::after,
+  .prose figure:has(img)::after {
+    right: 0.9rem;
+    transform: rotate(3deg);
+  }
+
+  .prose p:has(> img:only-child) img,
+  .prose figure:has(img) img {
+    display: block;
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+    filter: var(--print-dim);
+  }
+
+  .prose figure:has(img) figcaption {
+    max-width: 36rem;
+    margin: 0.5rem auto 0.1rem;
+    color: #3b4436;
   }
 
   /* Optional: tighter excerpt variant for cards */

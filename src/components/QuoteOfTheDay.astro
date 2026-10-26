@@ -5,24 +5,62 @@ import { personalQuotes } from '../data/quotes.js';
 // Get random quote for initial display
 const getRandomQuote = () => personalQuotes[Math.floor(Math.random() * personalQuotes.length)];
 const initialQuote = getRandomQuote();
+
+// Flower heads on the sprig; the first two are open, the rest bloom one per new quote.
+const heads = [
+  [30, 12, true],
+  [21, 19, true],
+  [39, 20, false],
+  [14, 29, false],
+  [45, 31, false],
+  [26, 27, false],
+  [35, 36, false],
+] as const;
 ---
 
-<div class="quote-container" id="quote-container" aria-live="polite" aria-label="Quote of the day">
-  <button
-    class="quote-interactive-wrapper"
-    type="button"
-    aria-labelledby="quote-text quote-author"
-    aria-description="Activate to display another quote."
-    id="quote-wrapper-button"
+<figure class="quote-of-the-day">
+  <svg class="quote-sprig" viewBox="0 0 60 84" aria-hidden="true">
+    <path
+      class="sprig-stem"
+      d="M30 83C29 66 31 52 30 40M30 40 30 12M30 40 21 19M30 40 39 20M30 44 14 29M31 47 45 31M30 34 26 27M31 42 35 36"
+    ></path>
+    <path class="sprig-leaf" d="M30 66c-7-2-13-7-15-14 6 1 12 5 15 14Z"></path>
+    <path class="sprig-leaf" d="M30 58c7-3 12-9 13-16-6 2-11 7-13 16Z"></path>
+    {heads.map(([cx, cy, open]) => (
+      <circle class:list={['sprig-head', { open }]} cx={cx} cy={cy} r="4.2" />
+    ))}
+  </svg>
+  <!-- A bee comes to whichever flower has just opened. -->
+  <svg class="quote-bee" viewBox="-12 -10 24 20" aria-hidden="true">
+    <path class="bee-wing bee-wing-l" d="M-1-3c-4-6-10-5-9-1 1 3 6 3 9 1Z"></path>
+    <path class="bee-wing bee-wing-r" d="M1-3c4-6 10-5 9-1-1 3-6 3-9 1Z"></path>
+    <path class="bee-body" d="M-6 0c0-3 3-5 6-5s6 2 6 5-3 5-6 5-6-2-6-5Z"></path>
+    <path class="bee-stripe" d="M-2-4.5v9M2-4.5v9"></path>
+    <circle class="bee-head" cx="7" cy="-0.5" r="2"></circle>
+    <path class="bee-line" d="M8-2c1-1 2-2 3-2M8.5-1.5c1 0 2 0 3 .5"></path>
+  </svg>
+  <div
+    class="quote-container"
+    id="quote-container"
+    aria-live="polite"
+    aria-label="Quote of the day"
   >
-    <blockquote class="daily-quote">
-      <p class="quote-text" id="quote-text">{initialQuote!.text}</p>
-      <footer class="quote-attribution">
-        <cite class="quote-author" id="quote-author">— {initialQuote!.author}</cite>
-      </footer>
-    </blockquote>
-  </button>
-</div>
+    <button
+      class="quote-interactive-wrapper"
+      type="button"
+      aria-labelledby="quote-text quote-author"
+      aria-description="Activate to display another quote."
+      id="quote-wrapper-button"
+    >
+      <blockquote class="daily-quote">
+        <p class="quote-text" id="quote-text">{initialQuote!.text}</p>
+        <footer class="quote-attribution">
+          <cite class="quote-author" id="quote-author">— {initialQuote!.author}</cite>
+        </footer>
+      </blockquote>
+    </button>
+  </div>
+</figure>
 
 <script>
   // Import shared quotes data to ensure consistency with server-side rendering
@@ -39,17 +77,12 @@ const initialQuote = getRandomQuote();
     const container = document.getElementById('quote-container');
 
     if (quoteText && quoteAuthor && container) {
-      // Add fade out class
-      container.style.opacity = '0.5';
-      container.style.transform = 'translateY(5px)';
+      container.classList.add('is-turning');
 
       setTimeout(() => {
         quoteText.textContent = newQuote!.text;
         quoteAuthor.textContent = `— ${newQuote!.author}`;
-
-        // Fade back in
-        container.style.opacity = '1';
-        container.style.transform = 'translateY(0)';
+        container.classList.remove('is-turning');
 
         // Create accessible announcement for screen readers
         const announcement = `New quote: ${newQuote!.text} by ${newQuote!.author}`;
@@ -65,33 +98,95 @@ const initialQuote = getRandomQuote();
     }
   }
 
-  // Add click handler when DOM is loaded
-  document.addEventListener('DOMContentLoaded', () => {
-    const quoteWrapperButton = document.getElementById('quote-wrapper-button');
+  // Every quote read opens one more tansy flower on the sprig.
+  function bloom(): Element | null {
+    const head = document.querySelector('.quote-sprig .sprig-head:not(.open)');
+    head?.classList.add('open');
+    return head;
+  }
 
-    // Add click handler to the quote wrapper button
-    if (quoteWrapperButton) {
-      quoteWrapperButton.addEventListener('click', () => {
-        updateQuote();
-
-        // Make blossoms stay visible after first click
-        const vineFrame = quoteWrapperButton.closest('.smooth-vine-frame');
-        if (vineFrame) {
-          vineFrame.classList.add('blossoms-activated');
-        }
-      });
+  // A bee flies in to the flower that has just opened (or any open one), sits, and leaves.
+  function visit(head: Element | null) {
+    const figure = document.querySelector<HTMLElement>('.quote-of-the-day');
+    const bee = figure?.querySelector<HTMLElement>('.quote-bee');
+    const open = figure?.querySelectorAll('.sprig-head.open') ?? [];
+    const target = head ?? open[Math.floor(Math.random() * open.length)];
+    if (!figure || !bee || !target) return;
+    const box = figure.getBoundingClientRect();
+    const flower = target.getBoundingClientRect();
+    bee.style.setProperty('--bee-x', `${flower.left + flower.width / 2 - box.left}px`);
+    bee.style.setProperty('--bee-y', `${flower.top + flower.height / 2 - box.top - 3}px`);
+    bee.classList.remove('is-visiting');
+    // Flush styles between removing and adding the class, so the flight starts over.
+    void bee.getBoundingClientRect();
+    bee.classList.add('is-visiting');
+    // Without motion the bee just sits on the flower, so see it off by hand.
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setTimeout(() => bee.classList.remove('is-visiting'), 3500);
     }
+  }
+
+  document.getElementById('quote-wrapper-button')?.addEventListener('click', () => {
+    updateQuote();
+    visit(bloom());
   });
 </script>
 
 <style>
-  .quote-container {
+  .quote-of-the-day {
     position: relative;
-    margin: 0;
-    padding: 0;
-    background: transparent;
-    border: none;
-    box-shadow: none;
+    display: grid;
+    grid-template-columns: 3rem minmax(0, 1fr);
+    align-items: end;
+    gap: var(--space-sm);
+    max-width: 30rem;
+    margin: 0 auto var(--space-xl);
+  }
+
+  .quote-sprig {
+    width: 3rem;
+    height: auto;
+    overflow: visible;
+  }
+
+  .sprig-stem {
+    fill: none;
+    stroke: var(--color-moss);
+    stroke-width: 1.3;
+    stroke-linecap: round;
+  }
+
+  .sprig-leaf {
+    fill: color-mix(in srgb, var(--color-moss) 55%, transparent);
+  }
+
+  .sprig-head {
+    fill: var(--color-moss);
+    stroke: transparent;
+    stroke-width: 1;
+    transform: scale(0.38);
+    transform-box: fill-box;
+    transform-origin: center;
+    transition:
+      transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+      fill 0.6s ease;
+  }
+
+  .sprig-head.open {
+    fill: var(--color-tansy);
+    stroke: color-mix(in srgb, var(--color-ochre) 70%, var(--color-ink-dark));
+    transform: scale(1);
+  }
+
+  .quote-container {
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .quote-container.is-turning {
+    opacity: 0.4;
+    transform: translateY(4px);
   }
 
   .quote-interactive-wrapper {
@@ -99,21 +194,22 @@ const initialQuote = getRandomQuote();
     width: 100%;
     background: none;
     border: none;
-    padding: 0;
+    padding: var(--space-xs) var(--space-sm);
     margin: 0;
     cursor: pointer;
-    text-align: inherit;
+    text-align: start;
     font: inherit;
     color: inherit;
-    text-decoration: none;
     border-radius: var(--border-radius);
   }
 
-  /* Apply consistent focus styling using the same approach as global button styles */
+  .quote-interactive-wrapper:hover .quote-text {
+    color: var(--color-text-primary);
+  }
+
   .quote-interactive-wrapper:focus-visible {
-    outline: 2px solid color-mix(in srgb, var(--color-walnut) 90%, var(--color-ochre));
+    outline: 2px solid var(--color-walnut);
     outline-offset: 2px;
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-walnut) 20%, transparent);
   }
 
   .daily-quote {
@@ -121,7 +217,6 @@ const initialQuote = getRandomQuote();
     padding: 0;
     border: none;
     background: none;
-    position: relative;
   }
 
   /* Override global blockquote quotation mark */
@@ -130,46 +225,132 @@ const initialQuote = getRandomQuote();
   }
 
   .quote-text {
-    font-size: var(--text-sm);
-    font-style: italic;
-    line-height: var(--spacing-line-height);
-    color: var(--color-ink-dark);
     margin: 0;
-    padding: var(--space-sm) 0 0 var(--space-xs);
-    font-family: var(--font-body-personal); /* Ensure consistent Alegreya usage */
+    font-family: var(--font-body-personal);
+    font-size: var(--text-lg);
+    font-style: italic;
+    line-height: 1.4;
+    color: var(--color-text-secondary);
     white-space: pre-line;
+    text-wrap: balance;
+    hyphens: manual;
   }
 
   .quote-attribution {
-    text-align: right;
-    margin: 0;
-    padding: 0 0 var(--space-sm) 0;
+    margin: 0.35em 0 0;
   }
 
   .quote-author {
-    font-size: var(--text-xs);
+    font-family: var(--font-body-personal);
+    font-size: var(--text-sm);
     font-style: normal;
-    font-weight: 500;
+    color: var(--color-text-muted);
+  }
+
+  /* The bee: drawn in the same hand as the footer's ledge, parked off-page until a visit */
+  .quote-bee {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 24px;
+    height: 20px;
+    margin: -10px 0 0 -12px;
+    overflow: visible;
     color: var(--color-ink-medium);
-    font-family: var(--font-body-personal); /* Alegreya for footer vibes */
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(var(--bee-x, 0px), var(--bee-y, 0px));
   }
 
-  /* Hover effect for subtle interactivity - works with botanical frame */
-  .quote-interactive-wrapper:hover {
-    /* No visual effect here - let the parent SmoothVineFrame handle the hover */
-    transition: all var(--transition-medium);
+  .bee-body {
+    fill: var(--color-tansy);
+    stroke: currentcolor;
+    stroke-width: 0.9;
   }
 
-  /* Mobile adjustments */
-  @media (max-width: 768px) {
+  .bee-stripe,
+  .bee-line {
+    fill: none;
+    stroke: currentcolor;
+    stroke-width: 0.9;
+    stroke-linecap: round;
+  }
+
+  .bee-head {
+    fill: currentcolor;
+  }
+
+  .bee-wing {
+    fill: color-mix(in srgb, var(--color-parchment) 60%, transparent);
+    stroke: currentcolor;
+    stroke-width: 0.8;
+    transform-box: fill-box;
+    transform-origin: bottom center;
+  }
+
+  .bee-wing-l {
+    transform-origin: bottom right;
+  }
+
+  .bee-wing-r {
+    transform-origin: bottom left;
+  }
+
+  .quote-bee.is-visiting {
+    animation: bee-visit 5.5s cubic-bezier(0.4, 0, 0.4, 1) both;
+  }
+
+  .quote-bee.is-visiting .bee-wing {
+    animation: bee-flap 0.12s linear 28 alternate;
+  }
+
+  @keyframes bee-visit {
+    0% {
+      transform: translate(calc(var(--bee-x) + 140px), calc(var(--bee-y) - 70px)) rotate(-20deg);
+      opacity: 0;
+    }
+    8% {
+      opacity: 1;
+    }
+    30% {
+      transform: translate(calc(var(--bee-x) + 40px), calc(var(--bee-y) - 36px)) rotate(12deg);
+    }
+    48% {
+      transform: translate(calc(var(--bee-x) + 6px), calc(var(--bee-y) - 10px)) rotate(-6deg);
+    }
+    58%,
+    82% {
+      transform: translate(var(--bee-x), var(--bee-y)) rotate(0deg);
+      opacity: 1;
+    }
+    90% {
+      transform: translate(calc(var(--bee-x) + 24px), calc(var(--bee-y) - 30px)) rotate(10deg);
+    }
+    100% {
+      transform: translate(calc(var(--bee-x) + 160px), calc(var(--bee-y) - 100px)) rotate(-15deg);
+      opacity: 0;
+    }
+  }
+
+  @keyframes bee-flap {
+    from {
+      transform: scaleY(1);
+    }
+    to {
+      transform: scaleY(0.25);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sprig-head,
     .quote-container {
-      margin: var(--space-lg) 0;
-      padding: var(--space-md);
+      transition: none;
     }
 
-    .quote-text {
-      font-size: var(--text-md);
-      padding-left: var(--space-sm);
+    /* The bee simply sits on the flower for a moment (base.css stops all animation;
+       the script takes the class away again). */
+    .quote-bee.is-visiting {
+      opacity: 1;
     }
   }
 </style>
