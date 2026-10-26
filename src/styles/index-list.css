@@ -5,7 +5,7 @@
 
 .page-header {
   max-width: 38rem;
-  margin: clamp(1.25rem, 5vw, 3.5rem) 0 var(--space-xl);
+  margin: var(--page-top) 0 var(--space-lg);
 }
 
 .page-title {
@@ -66,8 +66,10 @@
 }
 
 @media (min-width: 52rem) {
+  /* The year hangs in the left margin; an equal empty margin on the right keeps the
+     entries, not entries-plus-year, centred on the page. */
   .index-page {
-    grid-template-columns: var(--index-margin) minmax(0, 1fr);
+    grid-template-columns: var(--index-margin) minmax(0, 1fr) var(--index-margin);
     column-gap: var(--space-lg);
   }
 

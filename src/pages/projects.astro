@@ -127,10 +127,15 @@ const plateName = (title: string) => {
 </BaseLayout>
 
 <style>
+  /* The header and cards share one centred 44rem column. */
+  .projects-page {
+    max-width: 44rem;
+    margin-inline: auto;
+  }
+
   .project-cards {
     display: grid;
     gap: var(--space-xxl);
-    max-width: 44rem;
   }
 
   /* The name is set like a binomial, its plain-English description beneath. */
