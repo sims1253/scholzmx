@@ -2,7 +2,6 @@
 import { getImage } from 'astro:assets';
 import portrait from '../assets/images/homepage/portrait.jpg';
 import Canopy from '../components/Canopy.astro';
-import Dapple from '../components/Dapple.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import BackToTop from '../components/BackToTop.astro';
 
@@ -315,15 +314,6 @@ const hasInitial = isHome || /^\/(blog|recipes|notes)\/.+/.test(currentPath);
     </div>
 
     <BackToTop />
-    <Dapple
-      clear={
-        layout === 'prose'
-          ? 'calc(var(--measure-prose) + 2 * (var(--margin-note-width, 240px) + var(--margin-note-gap, 28px)))'
-          : layout === 'wide'
-            ? '40rem'
-            : '0px'
-      }
-    />
 
     <style is:global>
       /* Shiki dual theme switching - use only dark variables that Astro generates */

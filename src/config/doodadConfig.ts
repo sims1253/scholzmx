@@ -249,7 +249,7 @@ export const doodadCategories: DoodadCategory[] = [
   {
     id: 'backgroundEffects',
     enabled: true,
-    // Leaf shadows come from the dappled light over the whole page; cards keep the rings.
+    // Cards keep only the coffee rings as a background effect.
     // The ring is the only item left, so this is its rate: about 4% of cards, as before.
     probability: 0.04,
     exclusive: true, // Only one background effect per card
