@@ -91,6 +91,7 @@ const readingTime = getReadingTime(post.body || '');
   tone="serious"
   layout="prose"
   prose={true}
+  math={post.body?.includes('$') ?? false}
 >
   <article class="post-content" itemscope itemtype="https://schema.org/Article">
     <header class="post-header">

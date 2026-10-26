@@ -33,6 +33,8 @@ export interface Props {
   tone?: 'personal' | 'serious';
   layout?: 'prose' | 'listing' | 'cards' | 'wide' | 'full';
   prose?: boolean;
+  /** The page may contain KaTeX maths, so it loads KaTeX's stylesheet and font. */
+  math?: boolean;
 }
 
 const {
@@ -42,6 +44,7 @@ const {
   includeQuoteSection = false,
   tone = 'personal',
   layout = 'prose',
+  math = false,
   prose = false,
 } = Astro.props;
 
@@ -57,7 +60,8 @@ const sections = [
 ];
 
 const isHome = currentPath === '/';
-const hasCode = currentPath.startsWith('/blog/') || currentPath.startsWith('/notes/');
+// Only posts and notes show code; the index pages under /blog/ and /notes/ do not.
+const hasCode = /^\/(blog|notes)\/.+/.test(currentPath);
 const hasInitial = isHome || /^\/(blog|recipes|notes)\/.+/.test(currentPath);
 ---
 
@@ -159,15 +163,15 @@ const hasInitial = isHome || /^\/(blog|recipes|notes)\/.+/.test(currentPath);
       type="font/woff2"
       crossorigin
     />
-    {isHome && (
-      <link
-        rel="preload"
-        href="/fonts/Alegreya/alegreya-v38-latin-italic.woff2"
-        as="font"
-        type="font/woff2"
-        crossorigin
-      />
-    )}
+    {/* Every page sets italic above the fold (the welcome, ledes, a post's meta line). Arriving
+        late, it rewraps those lines and moves the page under them. */}
+    <link
+      rel="preload"
+      href="/fonts/Alegreya/alegreya-v38-latin-italic.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     {tone === 'serious' && (
       <link
         rel="preload"
@@ -177,16 +181,28 @@ const hasInitial = isHome || /^\/(blog|recipes|notes)\/.+/.test(currentPath);
         crossorigin
       />
     )}
+    {tone === 'serious' && hasCode && (
+      <link
+        rel="preload"
+        href="/fonts/et-book-semi-bold-old-style-figures.woff2"
+        as="font"
+        type="font/woff2"
+        crossorigin
+      />
+    )}
 
     {hasCode && (
+      <link
+        rel="preload"
+        href="/fonts/FiraCode-Regular.woff2"
+        as="font"
+        type="font/woff2"
+        crossorigin
+      />
+    )}
+
+    {math && (
       <>
-        <link
-          rel="preload"
-          href="/fonts/FiraCode-Regular.woff2"
-          as="font"
-          type="font/woff2"
-          crossorigin
-        />
         <link
           rel="preload"
           href="/katex/fonts/KaTeX_Main-Regular.woff2"
@@ -208,23 +224,24 @@ const hasInitial = isHome || /^\/(blog|recipes|notes)\/.+/.test(currentPath);
 
     {/* Load the decorative initial before it can change the first paragraph's wrapping. */}
     {hasInitial && (
-      <>
-        <link
-          rel="preload"
-          href="/fonts/EBGaramond-InitialsF1.woff2"
-          as="font"
-          type="font/woff2"
-          crossorigin
-        />
-        <link
-          rel="preload"
-          href="/fonts/EBGaramond-InitialsF2.woff2"
-          as="font"
-          type="font/woff2"
-          crossorigin
-        />
-      </>
+      <link
+        rel="preload"
+        href="/fonts/EBGaramond-InitialsF2.woff2"
+        as="font"
+        type="font/woff2"
+        crossorigin
+      />
     )}
+
+    {/* The canopy's far leaves are the largest thing painted on every page. CSS masks
+        are fetched in CORS mode, so the preload is too, or it would download twice. */}
+    <link
+      rel="preload"
+      href="/grotto/canopy-high.svg"
+      as="image"
+      fetchpriority="high"
+      crossorigin
+    />
 
     <meta name="theme-color" content="#f2f1e8" />
     <meta name="color-scheme" content="light dark" />

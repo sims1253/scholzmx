@@ -171,13 +171,14 @@
   }
 }
 
-/* The smallest phones (320px): a little smaller and closer, so the row still fits;
-   if it ever cannot, it wraps rather than scrolling sideways. */
+/* The smallest phones (320px): a little smaller and closer, so the row fits (with about
+   12px to spare in Alegreya SC). It never wraps: the wider fallback font, shown until
+   Alegreya SC arrives, would wrap it and the page would jump back up when it did. */
 @media (max-width: 24rem) {
   .nav-links {
     --nav-gap: 0.4rem;
 
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     font-size: 0.875rem;
     letter-spacing: 0.02em;
   }

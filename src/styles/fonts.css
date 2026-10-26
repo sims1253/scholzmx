@@ -65,12 +65,240 @@
 /* === SPECIALTY FONTS (load on demand) === */
 
 /* Dropcap fonts - only loaded when needed */
+/* One file per letter: a page downloads only the initial it uses (unicode-range). */
+
 @font-face {
   font-family: 'EBGaramond-InitialsF1';
-  src: url('/fonts/EBGaramond-InitialsF1.woff2') format('woff2');
+  src: url('/fonts/initials/F1-A.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+0041;
+}
+
+@font-face {
+  font-family: 'EBGaramond-InitialsF1';
+  src: url('/fonts/initials/F1-B.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0042;
+}
+
+@font-face {
+  font-family: 'EBGaramond-InitialsF1';
+  src: url('/fonts/initials/F1-C.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0043;
+}
+
+@font-face {
+  font-family: 'EBGaramond-InitialsF1';
+  src: url('/fonts/initials/F1-D.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0044;
+}
+
+@font-face {
+  font-family: 'EBGaramond-InitialsF1';
+  src: url('/fonts/initials/F1-E.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0045;
+}
+
+@font-face {
+  font-family: 'EBGaramond-InitialsF1';
+  src: url('/fonts/initials/F1-F.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0046;
+}
+
+@font-face {
+  font-family: 'EBGaramond-InitialsF1';
+  src: url('/fonts/initials/F1-G.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0047;
+}
+
+@font-face {
+  font-family: 'EBGaramond-InitialsF1';
+  src: url('/fonts/initials/F1-H.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0048;
+}
+
+@font-face {
+  font-family: 'EBGaramond-InitialsF1';
+  src: url('/fonts/initials/F1-I.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0049;
+}
+
+@font-face {
+  font-family: 'EBGaramond-InitialsF1';
+  src: url('/fonts/initials/F1-J.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+004A;
+}
+
+@font-face {
+  font-family: 'EBGaramond-InitialsF1';
+  src: url('/fonts/initials/F1-K.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+004B;
+}
+
+@font-face {
+  font-family: 'EBGaramond-InitialsF1';
+  src: url('/fonts/initials/F1-L.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+004C;
+}
+
+@font-face {
+  font-family: 'EBGaramond-InitialsF1';
+  src: url('/fonts/initials/F1-M.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+004D;
+}
+
+@font-face {
+  font-family: 'EBGaramond-InitialsF1';
+  src: url('/fonts/initials/F1-N.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+004E;
+}
+
+@font-face {
+  font-family: 'EBGaramond-InitialsF1';
+  src: url('/fonts/initials/F1-O.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+004F;
+}
+
+@font-face {
+  font-family: 'EBGaramond-InitialsF1';
+  src: url('/fonts/initials/F1-P.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0050;
+}
+
+@font-face {
+  font-family: 'EBGaramond-InitialsF1';
+  src: url('/fonts/initials/F1-Q.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0051;
+}
+
+@font-face {
+  font-family: 'EBGaramond-InitialsF1';
+  src: url('/fonts/initials/F1-R.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0052;
+}
+
+@font-face {
+  font-family: 'EBGaramond-InitialsF1';
+  src: url('/fonts/initials/F1-S.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0053;
+}
+
+@font-face {
+  font-family: 'EBGaramond-InitialsF1';
+  src: url('/fonts/initials/F1-T.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0054;
+}
+
+@font-face {
+  font-family: 'EBGaramond-InitialsF1';
+  src: url('/fonts/initials/F1-U.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0055;
+}
+
+@font-face {
+  font-family: 'EBGaramond-InitialsF1';
+  src: url('/fonts/initials/F1-V.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0056;
+}
+
+@font-face {
+  font-family: 'EBGaramond-InitialsF1';
+  src: url('/fonts/initials/F1-W.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0057;
+}
+
+@font-face {
+  font-family: 'EBGaramond-InitialsF1';
+  src: url('/fonts/initials/F1-X.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0058;
+}
+
+@font-face {
+  font-family: 'EBGaramond-InitialsF1';
+  src: url('/fonts/initials/F1-Y.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0059;
+}
+
+@font-face {
+  font-family: 'EBGaramond-InitialsF1';
+  src: url('/fonts/initials/F1-Z.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+005A;
 }
 
 @font-face {
