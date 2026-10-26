@@ -132,8 +132,8 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
         </fieldset>
         <fieldset class="rc-choice">
           <legend>Show</legend>
-          <label><input type="radio" name="rc-view" value="table" checked />Table</label>
-          <label><input type="radio" name="rc-view" value="steps" />Steps</label>
+          <label><input type="radio" name="rc-view" value="steps" checked />Steps</label>
+          <label><input type="radio" name="rc-view" value="table" />Table</label>
         </fieldset>
         <button type="button" class="rc-start" data-rc-start>Start cooking</button>
       </div>
@@ -241,7 +241,20 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
                   >{amountOf(ingredient)}</span
                 >}
               </span>
-              <span class="rc-gather-name">{ingredient.name}</span>
+              <span class="rc-gather-name">
+                {ingredient.name}
+                {ingredient.note && <span class="rc-gather-note">
+                  {splitAmounts(ingredient.note).map((part) =>
+                    part.kind === 'text' ? (
+                      part.text
+                    ) : (
+                      <span class="rc-qty" data-amount={part.amount} data-unit={part.unit}
+                        >{formatAmount(part.amount, part.unit)}</span
+                      >
+                    )
+                  )}
+                </span>}
+              </span>
             </label>
           </li>)}
         </ul>
@@ -339,12 +352,14 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
   /* The card may be wider than the reading column: it breaks out to the page, then
      shrinks to what it holds, so a small recipe is a small card. */
   .recipe-card {
-    --card-width: min(72rem, 100cqi - 2 * var(--space-md));
+    --card-width: min(60rem, 100cqi - 2 * var(--space-md));
     --rc-rule: color-mix(in srgb, var(--color-ink-dark) 16%, var(--paper-sheet));
-    /* Hands-off time rests in the shade: the page's dappled leaves, small, under a veil. */
-    --rc-veil: color-mix(in srgb, var(--wash-sage) var(--leaf-shade-veil), transparent);
-    --rc-shade:
-      linear-gradient(var(--rc-veil), var(--rc-veil)), url('/grotto/dapple.svg') 0 0 / 320px 320px;
+    /* Hands-off time is hatched, as in a timing chart: you can walk away. */
+    --rc-shade: repeating-linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--color-ink-dark) 13%, transparent) 0 1px,
+      transparent 1px 6px
+    );
 
     width: var(--card-width);
     margin: var(--space-lg) calc((100% - var(--card-width)) / 2) var(--space-xxl);
@@ -560,13 +575,8 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     vertical-align: -0.05em;
   }
 
-  /* The key is a small window, so it shows the leaves at a scale it can hold. */
   .rc-swatch--wait {
     background: var(--rc-shade), var(--wash-sage);
-    background-size:
-      auto,
-      3em 3em,
-      auto;
   }
 
   .rc-swatch--slip {
@@ -577,7 +587,7 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
 
   .rc-table th,
   .rc-table td {
-    padding: 0.45rem 0.6rem;
+    padding: 0.3rem 0.5rem;
     border: 1px solid var(--rc-rule);
     vertical-align: middle;
   }
@@ -620,8 +630,10 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
 
   .rc-aside {
     display: block;
+    max-width: 14rem;
     font-family: var(--font-body-personal);
-    font-size: var(--text-xs);
+    font-size: var(--text-xxs);
+    line-height: 1.3;
     font-style: italic;
     color: var(--color-text-muted);
   }
@@ -631,7 +643,7 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
   }
 
   .rc-step {
-    min-width: 5.25rem;
+    min-width: 4.5rem;
     background: var(--wash-sage);
     text-align: center;
   }
@@ -655,7 +667,7 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
   .rc-do {
     display: block;
     font-family: var(--font-heading);
-    font-size: var(--text-md);
+    font-size: var(--text-sm);
   }
 
   .rc-when {
@@ -804,6 +816,14 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     margin: 0;
   }
 
+  .rc-gather-note {
+    display: block;
+    font-family: var(--font-body-personal);
+    font-size: var(--text-xs);
+    font-style: italic;
+    color: var(--color-text-muted);
+  }
+
   .rc-gather-list label {
     display: grid;
     grid-template-columns: auto 3.6rem minmax(0, 1fr);
@@ -948,10 +968,6 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     margin-right: 0.4em;
     border: 1px solid var(--rc-rule);
     background: var(--rc-shade), var(--wash-sage);
-    background-size:
-      auto,
-      3em 3em,
-      auto;
     vertical-align: -0.05em;
   }
 
@@ -959,22 +975,19 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     color: var(--color-ochre);
   }
 
-  /* One view at a time. Without JavaScript the screen size decides. */
-  .recipe-card:not([data-view]) .rc-steps-view,
-  .recipe-card[data-view='table'] .rc-steps-view,
-  .recipe-card[data-view='steps'] .rc-table-frame {
+  /* One view at a time: the steps unless the reader asks for the table, which then gets
+     the room it needs. */
+  .recipe-card:not([data-view]) .rc-table-frame,
+  .recipe-card[data-view='steps'] .rc-table-frame,
+  .recipe-card[data-view='table'] .rc-steps-view {
     display: none;
   }
 
+  .recipe-card[data-view='table'] {
+    --card-width: min(72rem, 100cqi - 2 * var(--space-md));
+  }
+
   @media (max-width: 48rem) {
-    .recipe-card:not([data-view]) .rc-steps-view {
-      display: grid;
-    }
-
-    .recipe-card:not([data-view]) .rc-table-frame {
-      display: none;
-    }
-
     .rc-sheet {
       padding: var(--space-md) var(--space-sm);
     }

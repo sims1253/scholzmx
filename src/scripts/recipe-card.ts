@@ -101,7 +101,7 @@ function initRecipeCard(card: HTMLElement): void {
     if (radio) radio.checked = true;
     showMore();
   };
-  setView(matchMedia('(max-width: 48rem)').matches ? 'steps' : 'table');
+  setView('steps');
 
   card.addEventListener('change', (event) => {
     const input = event.target;
