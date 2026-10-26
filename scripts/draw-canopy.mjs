@@ -179,13 +179,11 @@ function vine(rand, opts) {
   return parts.join('');
 }
 
-// Returns the whole layer, and each vine on its own so it can sway on its own.
+// Returns one layer as an SVG mask.
 function drawing({ seed, blur, vines, opacity, crisp = false }) {
   const rand = rng(seed);
   const bodies = vines.map((v) => vine(rand, { ...v, crisp }));
-  const svg = (body) =>
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMin slice"><filter id="b" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="${blur}"/></filter><g filter="url(#b)" opacity="${opacity}">${body}</g></svg>\n`;
-  return { whole: svg(bodies.join('')), each: bodies.map(svg) };
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMin slice"><filter id="b" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="${blur}"/></filter><g filter="url(#b)" opacity="${opacity}">${bodies.join('')}</g></svg>\n`;
 }
 
 // The high canopy sits far from the page, so its shadows are broad and soft.
@@ -238,6 +236,6 @@ const low = drawing({
 });
 
 mkdirSync('public/grotto', { recursive: true });
-writeFileSync('public/grotto/canopy-high.svg', high.whole);
-writeFileSync('public/grotto/canopy-low.svg', low.whole);
-console.log(`canopy-high.svg ${high.whole.length} B, canopy-low.svg ${low.whole.length} B`);
+writeFileSync('public/grotto/canopy-high.svg', high);
+writeFileSync('public/grotto/canopy-low.svg', low);
+console.log(`canopy-high.svg ${high.length} B, canopy-low.svg ${low.length} B`);
