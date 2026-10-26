@@ -69,7 +69,10 @@
   /* The year hangs in the left margin; an equal empty margin on the right keeps the
      entries, not entries-plus-year, centred on the page. */
   .index-page {
-    grid-template-columns: var(--index-margin) minmax(0, 1fr) var(--index-margin);
+    grid-template-columns: var(--index-margin) minmax(0, var(--index-content, 1fr)) var(
+        --index-margin
+      );
+    justify-content: center;
     column-gap: var(--space-lg);
   }
 

@@ -76,29 +76,10 @@ function toggleTheme(): void {
     return;
   }
 
-  // The new light spreads outward from the torch, as if it had just been lit or put out.
-  const btn = document.getElementById('nav-theme-toggle');
-  const box = btn?.getBoundingClientRect();
-  const x = box ? box.left + box.width / 2 : innerWidth;
-  const y = box ? box.top + box.height / 2 : 0;
-  const radius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
-  const transition = document.startViewTransition(run);
-  transition.ready
-    .then(() => {
-      document.documentElement.animate(
-        {
-          clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`],
-        },
-        {
-          duration: 650,
-          easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
-          pseudoElement: '::view-transition-new(root)',
-        }
-      );
-    })
-    .catch(() => {
-      // A skipped transition has already applied the theme.
-    });
+  // A short cross-fade (modern.css), so the whole page changes light at once.
+  document.startViewTransition(run).ready.catch(() => {
+    // A skipped transition has already applied the theme.
+  });
 }
 
 // Initialize

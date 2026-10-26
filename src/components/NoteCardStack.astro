@@ -128,8 +128,25 @@ const {
     padding-inline: var(--space-xs);
   }
 
-  /* On index pages the cards hang from the same left edge as the heading. */
+  /* On index pages the cards fill their column, so they share both edges with the
+     heading and the column is centred on the page. Two to a row where they fit, and a
+     row's lone card sits in the middle rather than on the left. */
+  :global(.index-page) .nc-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    container-type: inline-size;
+  }
+
   :global(.index-page) .nc-item {
+    flex: 0 0 100%;
+    max-width: none;
     margin-inline: 0;
+  }
+
+  @container (min-width: 46rem) {
+    :global(.index-page) .nc-item {
+      flex-basis: calc(50% - var(--space-lg) / 2);
+    }
   }
 </style>

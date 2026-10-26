@@ -107,11 +107,11 @@ html {
     }
   }
 
-  /* Theme changes reveal the new light in a circle from the torch (theme-toggle.ts),
-     so the default cross-fade is switched off. */
+  /* Lighting or putting out the torch is a short, plain cross-fade (theme-toggle.ts). */
+  ::view-transition-group(root),
   ::view-transition-old(root),
   ::view-transition-new(root) {
-    animation: none;
-    mix-blend-mode: normal;
+    animation-duration: 200ms;
+    animation-timing-function: ease-out;
   }
 }

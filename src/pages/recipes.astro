@@ -25,7 +25,7 @@ const tags = [...new Set(recipes.flatMap((recipe) => recipe.data.tags ?? []))].s
   tone="personal"
   layout="cards"
 >
-  <div class="index-page">
+  <div class="index-page" style="--index-content: var(--card-max-width)">
     <header class="page-header">
       <h1 class="page-title">Recipes</h1>
       <p class="page-lede">
@@ -43,8 +43,7 @@ const tags = [...new Set(recipes.flatMap((recipe) => recipe.data.tags ?? []))].s
     >
       <p class="index-label" aria-hidden="true">{initial}</p>
       <NoteCardStack
-        columns="auto"
-        itemMinWidth="22rem"
+        columns={1}
         media="thumb"
         headingLevel={2}
         tagBase="/recipes"
