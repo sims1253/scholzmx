@@ -101,7 +101,7 @@ jobs:
           set -o pipefail
           # Previews are noindex (see above), so the crawlability audit can't pass there;
           # everything else is the production config.
-          mapfile -t urls < <(jq -r --arg base "${PREVIEW_URL%/}" '.urls[] | sub("^https://[^/]+"; $base) | "--url=" + .' .pa11yci.json)
+          mapfile -t urls < <(jq -r --arg base "${PREVIEW_URL%/}" '.urls[] | sub("^https://[^/]+"; $base) | "--collect.url=" + .' .pa11yci.json)
           bunx --no-install lhci autorun --config=.lighthouserc.cjs \
             --assert.assertions.is-crawlable=off \
             --assert.assertions.categories:seo=off \

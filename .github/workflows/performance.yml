@@ -61,7 +61,7 @@ jobs:
         env:
           CHROME_PATH: ${{ steps.chrome.outputs.chrome-path }}
         run: |
-          mapfile -t urls < <(jq -r '.urls[] | "--url=" + .' /tmp/pa11yci.json)
+          mapfile -t urls < <(jq -r '.urls[] | "--collect.url=" + .' /tmp/pa11yci.json)
           bunx --no-install lhci autorun --config=.lighthouserc.cjs "${urls[@]}"
       - name: Accessibility audit
         if: ${{ !cancelled() && steps.chrome.outcome == 'success' }}
