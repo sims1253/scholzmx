@@ -111,27 +111,33 @@ beta (since September 2026); one known beta bug is that a deleted preview's URL 
 keep serving its last build
 ([cloudflare/developer-platform#73](https://github.com/cloudflare/developer-platform/issues/73)).
 
-One-time setup, with a CI token that can only touch the `scholzmx` Worker:
+One-time setup:
 
 1. In the Cloudflare dashboard, open Workers & Pages once so the account has a
    `workers.dev` subdomain.
-2. Create the Worker from your own login. A per-Worker token can only be granted on
-   a Worker that already exists, and creating one needs account-wide Workers Admin.
-   A preview creates it without deploying anything to production:
+2. Create an API token for your account. Cloudflare documents two models, so use
+   what your token editor offers:
+   - **Workers roles** (the editor marks Workers Scripts as legacy): grant the
+     **Admin** role on only the `scholzmx` Worker, so the token cannot touch any
+     other Worker ([Workers roles](https://developers.cloudflare.com/workers/authorization/workers/)).
+     A Worker must exist before it can be selected, and creating one needs
+     account-wide Admin, so create it once from your own login first. A preview
+     does that without deploying anything to production:
 
-   ```bash
-   bun run build
-   bunx wrangler login
-   bunx wrangler@4.152.0 preview --name setup
-   bunx wrangler@4.152.0 preview delete --name setup -y
-   ```
+     ```bash
+     bun run build
+     bunx wrangler login
+     bunx wrangler@4.152.0 preview --name setup
+     bunx wrangler@4.152.0 preview delete --name setup -y
+     ```
 
-3. Create an API token limited to your account, with the Workers **Admin** role on
-   only the `scholzmx` Worker. Per-Worker Admin covers creating and deleting its
-   previews; Editor (which replaces the legacy "Workers Scripts Edit") may not be
-   allowed to delete them. No zone permissions are needed, since previews live on
-   `workers.dev`.
-4. Add `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as Actions secrets. To get
+   - **Permission groups only**: grant **Account → Workers Scripts → Edit**. This
+     token can edit every Worker in the account, and the first preview creates
+     the `scholzmx` Worker by itself.
+
+   No zone permissions are needed either way, since previews live on `workers.dev`.
+
+3. Add `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as Actions secrets. To get
    previews on Dependabot PRs too, add them as Dependabot secrets as well.
 
 Without the secrets the preview job skips with a notice and CI stays green.
