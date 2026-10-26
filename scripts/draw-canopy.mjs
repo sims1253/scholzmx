@@ -1,5 +1,4 @@
-// Draws the grape and kiwi vine canopy whose shadows fall across the top of every page,
-// and the tile of dappled light that follows you down the page.
+// Draws the grape and kiwi vine canopy whose shadows fall across the top of every page.
 // The output SVGs are masks: only their alpha matters, CSS supplies the colour.
 //
 //   node scripts/draw-canopy.mjs
@@ -238,87 +237,7 @@ const low = drawing({
   ],
 });
 
-// Dappled light: a few far-off vines wandering across a square that tiles without seams,
-// leaves hanging from both sides. Anything near an edge is drawn again on the far side,
-// and the blur reaches past the edges.
-function dappleTile({ seed, size, vines, blur }) {
-  const rand = rng(seed);
-  const pieces = [];
-  for (let v = 0; v < vines; v++) {
-    const p0 = [rand() * size, rand() * size];
-    const heading = rand() * Math.PI * 2;
-    const length = 520 + rand() * 360;
-    const side = [-Math.sin(heading), Math.cos(heading)];
-    const sway = (rand() - 0.5) * length * 0.5;
-    const p1 = [
-      p0[0] + Math.cos(heading) * length * 0.33 + side[0] * sway,
-      p0[1] + Math.sin(heading) * length * 0.33 + side[1] * sway,
-    ];
-    const p2 = [
-      p0[0] + Math.cos(heading) * length * 0.66 - side[0] * sway,
-      p0[1] + Math.sin(heading) * length * 0.66 - side[1] * sway,
-    ];
-    const p3 = [p0[0] + Math.cos(heading) * length, p0[1] + Math.sin(heading) * length];
-    const at = (t) => {
-      const u = 1 - t;
-      return [0, 1].map(
-        (k) => u ** 3 * p0[k] + 3 * u * u * t * p1[k] + 3 * u * t * t * p2[k] + t ** 3 * p3[k]
-      );
-    };
-    const box = (points, pad) => ({
-      x: points.reduce((sum, p) => sum + p[0], 0) / points.length,
-      y: points.reduce((sum, p) => sum + p[1], 0) / points.length,
-      r: length / 2 + pad,
-    });
-    const stem = (dx, dy) => {
-      const pt = (p) => `${f(p[0] + dx)},${f(p[1] + dy)}`;
-      return `<path d="M${pt(p0)} C${pt(p1)} ${pt(p2)} ${pt(p3)}" fill="none" stroke="#000" stroke-width="5" stroke-linecap="round"/>`;
-    };
-    pieces.push({ ...box([p0, p3], 20), svg: stem });
-    const leaves = 8 + Math.floor(rand() * 4);
-    for (let i = 0; i < leaves; i++) {
-      const t = (i + 0.5 + (rand() - 0.5) * 0.5) / leaves;
-      const [x, y] = at(t);
-      const [ax, ay] = at(Math.min(1, t + 0.01));
-      const along = Math.atan2(ay - y, ax - x);
-      // Leaves alternate sides and point away from the stem.
-      const out = along + (i % 2 ? 1 : -1) * (Math.PI / 2 - 0.5 + rand() * 0.6);
-      const leafSize = 70 + rand() * 60;
-      const lx = x + Math.cos(out) * leafSize * 0.3;
-      const ly = y + Math.sin(out) * leafSize * 0.3;
-      const angle = (out * 180) / Math.PI + 90;
-      const leaf = rand() < 0.6 ? grapeLeaf(leafSize) : kiwiLeaf(leafSize);
-      pieces.push({
-        x: lx,
-        y: ly,
-        r: leafSize * 1.2,
-        svg: (dx, dy) =>
-          `<g transform="translate(${f(lx + dx)},${f(ly + dy)}) rotate(${f(angle)})">${leaf}</g>`,
-      });
-    }
-  }
-  const parts = [];
-  for (const piece of pieces) {
-    for (const dx of [-size, 0, size]) {
-      for (const dy of [-size, 0, size]) {
-        const x = piece.x + dx;
-        const y = piece.y + dy;
-        if (x < -piece.r || x > size + piece.r || y < -piece.r || y > size + piece.r) continue;
-        parts.push(piece.svg(dx, dy));
-      }
-    }
-  }
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}"><filter id="b" x="-15%" y="-15%" width="130%" height="130%"><feGaussianBlur stdDeviation="${blur}"/></filter><g filter="url(#b)">${parts.join('')}</g></svg>\n`;
-}
-
-const dapple = dappleTile({ seed: 913, size: 1200, vines: 8, blur: 13 });
-
 mkdirSync('public/grotto', { recursive: true });
 writeFileSync('public/grotto/canopy-high.svg', high.whole);
 writeFileSync('public/grotto/canopy-low.svg', low.whole);
-// The near vines hang apart from each other, so on wide screens each sways on its own.
-low.each.forEach((svg, index) => writeFileSync(`public/grotto/canopy-low-${index + 1}.svg`, svg));
-writeFileSync('public/grotto/dapple.svg', dapple);
-console.log(
-  `canopy-high.svg ${high.whole.length} B, canopy-low.svg ${low.whole.length} B, dapple.svg ${dapple.length} B`
-);
+console.log(`canopy-high.svg ${high.whole.length} B, canopy-low.svg ${low.whole.length} B`);

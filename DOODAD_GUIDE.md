@@ -7,7 +7,7 @@ The decorative elements you see on cards throughout the site. Makes things feel 
 Cards get seeded randomization that picks from different categories of doodads:
 
 - **SVG doodles** - Small decorative graphics that get positioned around cards
-- **Background effects** - A coffee ring where a mug was set down near the edge (drawn by `scripts/draw-coffee-rings.mjs`). Leaf shadows aren't painted on cards: the page's dappled light passes over them.
+- **Background effects** - A coffee ring where a mug was set down near the edge (drawn by `scripts/draw-coffee-rings.mjs`).
 - **Element doodles** - HTML elements like tape, tabs, etc. The bookmark ribbon is off unless a card passes `allowBookmark`, since a random ribbon reads as "pinned".
 
 The system uses weighted selection within categories and can handle conflicts (so you don't get clashing elements).
