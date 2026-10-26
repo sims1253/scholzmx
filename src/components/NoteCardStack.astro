@@ -128,9 +128,10 @@ const {
     padding-inline: var(--space-xs);
   }
 
-  /* On index pages the cards fill their column, so they share both edges with the
-     heading and the column is centred on the page. Two to a row where they fit, and a
-     row's lone card sits in the middle rather than on the left. */
+  /* On index pages the cards fill their centred column, so they start at the heading's
+     left edge. Where only one fits on the blog, that makes a card wider than the
+     card-width columns of recipes, research and notes; capping it would push it right
+     of the heading. Two to a row where they fit; a row's lone card sits in the middle. */
   :global(.index-page) .nc-grid {
     display: flex;
     flex-wrap: wrap;

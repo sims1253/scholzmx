@@ -21,7 +21,7 @@ Blog, recipes, research and notes share `src/styles/index-list.css`: a page head
 </div>
 ```
 
-`NoteCardStack` renders the seeded note cards (see `DOODAD_GUIDE.md`); use `StackedCard` directly for custom card content. With `columns="auto"` and `itemMinWidth`, cards fill rows of equal width; `media="thumb"` tapes the hero image into the card's corner instead of running it across the top. Pages with card grids use `layout="cards"`, which widens to two columns of cards on wide screens. Add `IndexFinder.astro` for search and tag filters; it filters `.nc-item` cards by `data-tags`.
+`NoteCardStack` renders the seeded note cards (see `DOODAD_GUIDE.md`); use `StackedCard` directly for custom card content. With `columns="auto"` and `itemMinWidth`, cards fill rows of equal width; `media="thumb"` tapes the hero image into the card's corner instead of running it across the top. On index pages the cards sit in a centred column: one card wide where `.index-page` sets `--index-content: var(--card-max-width)` (recipes, research, notes), or the full `layout="cards"` width on the blog, which runs two cards to a row on wide screens and centres a row's lone card. Add `IndexFinder.astro` for search and tag filters; it filters `.nc-item` cards by `data-tags`.
 
 ## Photographs and plots
 Images that stand alone in a paragraph or figure in posts, recipes and notes are pasted in as prints automatically. Wrap other photos in `.pasted` for the same two paper strips.
