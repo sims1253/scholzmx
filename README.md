@@ -111,14 +111,27 @@ beta (since September 2026); one known beta bug is that a deleted preview's URL 
 keep serving its last build
 ([cloudflare/developer-platform#73](https://github.com/cloudflare/developer-platform/issues/73)).
 
-One-time setup:
+One-time setup, with a CI token that can only touch the `scholzmx` Worker:
 
 1. In the Cloudflare dashboard, open Workers & Pages once so the account has a
-   `workers.dev` subdomain. No Worker or project needs to be created first.
-2. Create an account API token with the **Workers Admin** role for all Workers. The
-   first preview creates the `scholzmx` Worker, and only Admin may create Workers
-   (Editor, which replaces the legacy "Workers Scripts Edit", cannot).
-3. Add `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as Actions secrets. To get
+   `workers.dev` subdomain.
+2. Create the Worker from your own login. A per-Worker token can only be granted on
+   a Worker that already exists, and creating one needs account-wide Workers Admin.
+   A preview creates it without deploying anything to production:
+
+   ```bash
+   bun run build
+   bunx wrangler login
+   bunx wrangler@4.152.0 preview --name setup
+   bunx wrangler@4.152.0 preview delete --name setup -y
+   ```
+
+3. Create an API token limited to your account, with the Workers **Admin** role on
+   only the `scholzmx` Worker. Per-Worker Admin covers creating and deleting its
+   previews; Editor (which replaces the legacy "Workers Scripts Edit") may not be
+   allowed to delete them. No zone permissions are needed, since previews live on
+   `workers.dev`.
+4. Add `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as Actions secrets. To get
    previews on Dependabot PRs too, add them as Dependabot secrets as well.
 
 Without the secrets the preview job skips with a notice and CI stays green.
