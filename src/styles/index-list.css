@@ -272,6 +272,12 @@
   font-style: italic;
 }
 
+/* Each index page already fixes the type filter, so Pagefind's filter box can only
+   offer the one checkbox; the results take the full width instead. */
+.index-finder .pagefind-ui .pagefind-ui__filter-panel {
+  display: none;
+}
+
 .pagefind-ui .pagefind-ui__result {
   padding-block: 0.9rem;
   border-top-color: var(--rule-ink);

@@ -171,6 +171,18 @@
   }
 }
 
+/* The smallest phones (320px): a little smaller and closer, so the row still fits;
+   if it ever cannot, it wraps rather than scrolling sideways. */
+@media (max-width: 24rem) {
+  .nav-links {
+    --nav-gap: 0.4rem;
+
+    flex-wrap: wrap;
+    font-size: 0.875rem;
+    letter-spacing: 0.02em;
+  }
+}
+
 /* ===== Page grids ===== */
 
 .layout-prose,
