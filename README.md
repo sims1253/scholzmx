@@ -85,14 +85,62 @@ bun run test:site    # Build + browser smoke tests + accessibility checks (isola
 
 ### CI/CD Pipeline
 
-Every PR and main/master push runs workflow linting, renderer regression tests,
-code quality checks, and a build with all Quarto posts included. Rendering uses an
-exact-input cache of generated files. CI tests the complete site, then deploys
-that same build on main/master after the `CI passed` check succeeds.
+Every PR and main/master push runs workflow linting and a zizmor security audit
+(`.github/zizmor.yml`), renderer regression tests, code quality checks, and a build
+with all Quarto posts included. Rendering uses an exact-input cache of generated
+files. CI tests the complete site, checks every link and anchor between its own
+pages, then deploys that same build on main/master after the `CI passed` check
+succeeds.
 
-Lighthouse and Pa11y monitor production after deployment. Dependabot opens weekly
-updates for Bun packages and GitHub Actions. See [the pipeline guide](QUARTO-TO-ASTRO-PIPELINE.md)
+Lighthouse and Pa11y monitor production after deployment. A weekly job checks every
+link on the published pages, external ones included, and keeps a "Broken links on
+the published site" issue up to date. Dependabot opens weekly updates for Bun
+packages and GitHub Actions, after a cooldown (7 days, 14 for Bun major updates) so a
+bad release is usually caught before it gets here. See [the pipeline guide](QUARTO-TO-ASTRO-PIPELINE.md)
 for cache behavior, pinned R/Quarto versions, and manual rebuilds.
+
+#### PR previews
+
+Each PR's tested build is published as a Cloudflare Worker Preview named `pr-<number>`
+(`wrangler.jsonc`, `.github/workflows/preview.yml`), with the link and a Lighthouse
+run against it in a PR comment. The preview is deleted when the PR closes
+(`preview-cleanup.yml`). Production stays on GitHub Pages, and the Worker itself is
+never deployed to production. Previews send `X-Robots-Tag: noindex`. PRs from forks
+get no preview, because they cannot read the secrets. Worker Previews are in open
+beta (since September 2026); one known beta bug is that a deleted preview's URL can
+keep serving its last build
+([cloudflare/developer-platform#73](https://github.com/cloudflare/developer-platform/issues/73)).
+
+One-time setup:
+
+1. In the Cloudflare dashboard, open Workers & Pages once so the account has a
+   `workers.dev` subdomain.
+2. Create an API token for your account. Cloudflare documents two models, so use
+   what your token editor offers:
+   - **Workers roles** (the editor marks Workers Scripts as legacy): grant the
+     **Admin** role on only the `scholzmx` Worker, so the token cannot touch any
+     other Worker ([Workers roles](https://developers.cloudflare.com/workers/authorization/workers/)).
+     A Worker must exist before it can be selected, and creating one needs
+     account-wide Admin, so create it once from your own login first. A preview
+     does that without deploying anything to production:
+
+     ```bash
+     bun run build
+     bunx wrangler login
+     bunx wrangler@4.152.0 preview --name setup
+     bunx wrangler@4.152.0 preview delete --name setup -y
+     ```
+
+   - **Permission groups only**: grant **Account → Workers Scripts → Edit**. This
+     token can edit every Worker in the account, and the first preview creates
+     the `scholzmx` Worker by itself.
+
+   No zone permissions are needed either way, since previews live on `workers.dev`.
+
+3. Add `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as Actions secrets. To get
+   previews on Dependabot PRs too, add them as Dependabot secrets as well.
+
+Without the secrets the preview job skips with a notice and CI stays green.
 
 ## Architecture Notes
 

@@ -1,0 +1,12 @@
+// Cloudflare Worker that serves PR previews of the built site (.github/workflows/preview.yml).
+// Production is on GitHub Pages; this Worker is never deployed to production.
+{
+  "name": "scholzmx",
+  "compatibility_date": "2026-10-25",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page",
+  },
+  // Previews use only the settings above.
+  "previews": {},
+}

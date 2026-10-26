@@ -1,7 +1,10 @@
 name: Performance Monitoring
 
 on:
-  workflow_run:
+  # Runs only after CI succeeds on a push to main, checks out that commit, and has
+  # read-only contents and no secrets, so the workflow_run trigger is not exposed to
+  # pull request code.
+  workflow_run: # zizmor: ignore[dangerous-triggers]
     workflows: ['Code Quality CI']
     types: [completed]
     branches: [main, master]
@@ -58,7 +61,7 @@ jobs:
         env:
           CHROME_PATH: ${{ steps.chrome.outputs.chrome-path }}
         run: |
-          mapfile -t urls < <(jq -r '.urls[] | "--url=" + .' /tmp/pa11yci.json)
+          mapfile -t urls < <(jq -r '.urls[] | "--collect.url=" + .' /tmp/pa11yci.json)
           bunx --no-install lhci autorun --config=.lighthouserc.cjs "${urls[@]}"
       - name: Accessibility audit
         if: ${{ !cancelled() && steps.chrome.outcome == 'success' }}

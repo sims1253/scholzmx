@@ -1,7 +1,11 @@
 module.exports = {
   ci: {
     collect: {
-      settings: { budgets: require('./.lighthouse-budget.json') },
+      settings: {
+        budgets: require('./.lighthouse-budget.json'),
+        // Ubuntu 24.04 runners block Chrome's sandbox (as .pa11yci.json already allows for).
+        chromeFlags: '--no-sandbox',
+      },
       numberOfRuns: 3, // Run Lighthouse 3 times and take median for more reliable results
     },
     assert: {
