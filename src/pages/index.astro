@@ -123,16 +123,16 @@ const formatDate = (date: Date) =>
    * Desktop:  [portrait] [about, the reading column] [newest post]
    * The greeting starts on the reading column's left edge, so one axis runs down the page.
    */
+  /* The two side columns are equally wide, so the reading column is centred. */
   .home {
-    --portrait-col: 200px;
-    --aside-col: 12rem;
+    --side-col: 12rem;
     --gap: clamp(1.5rem, 3vw, 3rem);
 
     display: grid;
     grid-template-columns:
-      [portrait] var(--portrait-col)
+      [portrait] var(--side-col)
       [text] minmax(0, var(--measure-prose))
-      [aside] var(--aside-col);
+      [aside] var(--side-col);
     column-gap: var(--gap);
     justify-content: center;
     align-items: start;
@@ -217,26 +217,11 @@ const formatDate = (date: Date) =>
     font-variant-numeric: oldstyle-nums;
   }
 
-  /* Medium screens: the newest post moves under the text. */
+  /* Below the width where portrait, text and newest post fit side by side: one centred
+     reading column, the portrait between greeting and text, the newest post after it. */
   @media (max-width: 72rem) {
     .home {
-      grid-template-columns: [portrait] var(--portrait-col) [text aside] minmax(
-          0,
-          var(--measure-prose)
-        );
-    }
-
-    .latest {
-      grid-column: aside;
-      max-width: 22rem;
-      margin-top: var(--space-md);
-    }
-  }
-
-  /* Narrow screens: one column, portrait between greeting and text. */
-  @media (max-width: 48rem) {
-    .home {
-      grid-template-columns: minmax(0, 1fr);
+      grid-template-columns: minmax(0, var(--measure-prose));
     }
 
     .welcome,
@@ -249,6 +234,11 @@ const formatDate = (date: Date) =>
     .portrait {
       justify-self: center;
       margin: 0 0 var(--space-lg);
+    }
+
+    .latest {
+      max-width: 22rem;
+      margin-top: var(--space-md);
     }
   }
 </style>
