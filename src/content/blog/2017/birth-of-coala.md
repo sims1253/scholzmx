@@ -60,7 +60,7 @@ reviewers. I wanted to list them here but looking at the PRs, that would
 be too many names. We had 7 leader applications for 6 teams and
 recently we added the review team with another Max as leader.
 
-After that Mariatta added the [Code of Conduct](http://coala.io/coc) which
+After that Mariatta added the [Code of Conduct](https://github.com/coala/cEPs/blob/master/cEP-0006.md) which
 was lacking until then.
 This enabled Udayan to apply coala for the RGSoC, which just got accepted.
 YEAY!
@@ -70,8 +70,8 @@ coalians who want to become team members knew it was possible. We got a
 lot of applications and so far it looks promising.
 
 And finally Hemang and Kaisar wove their web-dev magic (dark arts if you ask
-me) and created not only a new [landing page](http://coala.io) but also
-this awesome [projects page](https://projects.coala.io). Although evil
+me) and created not only a new [landing page](https://web.archive.org/web/20170521092904/http://coala.io/) but also
+this awesome [projects page](https://web.archive.org/web/20171111114315/http://projects.coala.io/). Although evil
 tongues claim the landing page was not only a community team effort I claim
 that all your page are belong to us.
 
@@ -93,7 +93,7 @@ communication for maintainers. Hopefully this will be the done until our
 next post.
 
 If you have ideas, questions, comments or other input, visit us in our
-[gitter channel](https://gitter.im/coala/community) or drop us an email
+[gitter channel](https://app.gitter.im/#/room/#coala_community:gitter.im) or drop us an email
 under `community at coala.io`.
 
 Until next time,

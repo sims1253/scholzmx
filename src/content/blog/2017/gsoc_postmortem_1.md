@@ -39,7 +39,7 @@ Writing the application and reviewing what input others had given,
 gathering information from past years and recruiting mentors.
 During that phase we also met Stephanie Taylor at FOSSDEM and got some
 feedback on our application and our newly created
-[projects page](https://projects.coala.io/).
+[projects page](https://web.archive.org/web/20171111114315/http://projects.coala.io/).
 Again, I was responsible for all the feedback being implemented, not
 necessarily doing so myself.
 

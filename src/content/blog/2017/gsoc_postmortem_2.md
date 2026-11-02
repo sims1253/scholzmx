@@ -63,7 +63,7 @@ of our application, as it is actually useful during the following parts
 of the program and offers a lot of value to the students and us when
 the student application phase comes around.
 This lead to our web frontend hero Hemang building our new and awesome
-[Project Page](https://projects.coala.io).
+[Project Page](https://web.archive.org/web/20171111114315/http://projects.coala.io/).
 Before this, we just used a GitHub wiki page with some project drafts
 but the new page was much easier to use, gave a better overview about
 the projects and it gives us the possibility to add features to it in

@@ -76,7 +76,7 @@ Just to get rolling, **the first round will start now and end in two weeks
 If you want to participate, just cook something, make nice pictures of the
 result (maybe also during the cooking part), ~~write a blog post and get it onto
 the coala blog.~~  
-**Update:** Create a PR to [coala/recipes](https://github.com/coala/recipes)
+**Update:** Create a PR to coala/recipes
 with your entry as a .md file and blog post format.  
 The first round will mostly be an idea finding time to figure out how we can
 organize this and how it is supposed to work. :)
