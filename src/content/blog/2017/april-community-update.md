@@ -38,7 +38,7 @@ generally let's me keep eyes on the hoard with less distraction.
 ### Projects Page
 
 So I talked about the project page in the first post.
-Go visit [projects.coala.io](https://projects.coala.io) and see for yourself.
+Go visit [projects.coala.io](https://web.archive.org/web/20171111114315/http://projects.coala.io/) and see for yourself.
 It is absolutely gorgeous.
 Again designed by Hemang and deployed by Kaisar (our dev - ops dream team,
 praise be, praise be).
@@ -113,7 +113,7 @@ So what is coming up?
 
 - There will be a lot of GSoC work for sure.
 - I just wrote the intro for our
-  [Call for Chefs](http://blog.solyoution.io/coala/coala-call-for-chefs.html)
+  [Call for Chefs](/blog/2017/coala-call-for-chefs/)
   cooking competition,
   that essentially was born over a ramen pep talk with Asnel half a year ago.
 - I am updating our ideas page and will try to get more stuff into the works
