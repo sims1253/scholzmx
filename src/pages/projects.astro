@@ -1,87 +1,8 @@
 ---
 import { Image } from 'astro:assets';
-import ryLogo from '../assets/images/projects/ry-logo.webp';
-import starlingLogo from '../assets/images/projects/starling-logo.webp';
-import janusLogo from '../assets/images/projects/janus-logo.webp';
-import huerdLogo from '../assets/images/projects/huerd-logo.png';
-import hrvesterLogo from '../assets/images/projects/hrvester-logo.png';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import StackedCard from '../components/StackedCard.astro';
-
-const projects = [
-  {
-    title: 'ry — Static Checker for R',
-    description:
-      'Catch type errors, missing data frame columns, and scope issues before running R code.',
-    year: 2026,
-    status: 'Active',
-    banner: ryLogo,
-    tech: ['Rust', 'R'],
-    links: [
-      { type: 'GitHub', url: 'https://github.com/sims1253/ry' },
-      { type: 'Docs', url: 'https://github.com/sims1253/ry#readme' },
-    ],
-  },
-  {
-    title: 'Starling — Local Speech Recognition',
-    description:
-      'Transcribe speech locally with a native inference engine and apps for desktop and phone.',
-    year: 2026,
-    status: 'Active',
-    banner: starlingLogo,
-    tech: ['C++', 'ggml', 'TypeScript'],
-    links: [
-      { type: 'GitHub', url: 'https://github.com/sims1253/starling' },
-      { type: 'Docs', url: 'https://github.com/sims1253/starling#readme' },
-    ],
-  },
-  {
-    title: 'Janus — Structured PDF Extraction',
-    description:
-      'Extract data from PDF text and layout locally, inspect source locations, and compare with reference data.',
-    year: 2026,
-    status: 'Active',
-    banner: janusLogo,
-    tech: ['Python', 'PDF'],
-    links: [
-      { type: 'GitHub', url: 'https://github.com/sims1253/nebu/tree/main/janus' },
-      { type: 'Docs', url: 'https://github.com/sims1253/nebu/tree/main/janus#readme' },
-    ],
-  },
-  {
-    title: 'huerd — Herding Hues',
-    description: 'Perceptually distinct color palettes optimized for accessibility in OKLAB (R).',
-    year: 2024,
-    status: 'Active',
-    banner: huerdLogo,
-    tech: ['R', 'OKLAB', 'nloptr'],
-    links: [
-      { type: 'GitHub', url: 'https://github.com/sims1253/huerd' },
-      { type: 'Docs', url: 'https://github.com/sims1253/huerd#readme' },
-    ],
-  },
-  {
-    title: 'hrvester — Heart Rate Variability Toolkit',
-    description: 'Analyze HRV data with robust preprocessing and recovery scoring.',
-    year: 2024,
-    status: 'Active',
-    banner: hrvesterLogo,
-    tech: ['R', 'Signal Processing'],
-    links: [
-      { type: 'GitHub', url: 'https://github.com/sims1253/hrvester' },
-      { type: 'Docs', url: 'https://github.com/sims1253/hrvester#readme' },
-    ],
-  },
-];
-
-// Sort projects by year (most recent first)
-const sortedProjects = projects.sort((a, b) => b.year - a.year);
-
-// "ry — Static Checker for R" becomes a plate name and its common name.
-const plateName = (title: string) => {
-  const [name = title, common] = title.split(' — ');
-  return { name, common };
-};
+import { projects, projectName } from '../data/projects';
 ---
 
 <BaseLayout title="Projects" description="Selected projects" tone="serious" layout="listing">
@@ -94,8 +15,8 @@ const plateName = (title: string) => {
     </header>
 
     <div class="project-cards">
-      {sortedProjects.map((project, index) => {
-        const { name, common } = plateName(project.title);
+      {projects.map((project, index) => {
+        const { name, common } = projectName(project.title);
         return <StackedCard
           seed={`project/${project.title}`}
           title={name}

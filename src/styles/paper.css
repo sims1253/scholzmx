@@ -1,0 +1,88 @@
+/* Paper and print: what the page is made of.
+
+   Rag paper under every page, prints mounted as plates, a sprig for a section break,
+   and a run-in line after a woodcut initial. Everything here is static: one small
+   tiled PNG (scripts/draw-paper.mjs), two SVG masks, and box shadows. */
+@layer components {
+  /* Rag paper. The tile is neutral grey, so it darkens the day's paper and lightens the
+     torchlit paper by the same faint amount; far too faint to cost text any contrast. */
+  body {
+    background-image: url('/grotto/paper.png');
+    background-size: 256px 256px;
+  }
+
+  /* A print is a sheet held by two strips (prose.css). On the sheet the picture sits
+     like an engraving: a hairline keyline round it and, a little further out, the
+     pressed rectangle a printer's plate leaves in the paper. The mark is three shadows
+     on the picture itself: a band of the sheet's own colour, with a dark and a light
+     copy peeping out from under it on the sides away from and towards the light. */
+  .prose p:has(> img:only-child) img,
+  .prose figure:has(img) img {
+    outline: 1px solid var(--plate-keyline);
+    outline-offset: 2px;
+    box-shadow: var(--plate-mark);
+  }
+
+  /* A section break is a sprig of tansy between two short rules. */
+  .prose hr {
+    position: relative;
+    height: 1.8rem;
+    margin: var(--space-xl) auto;
+    border: 0;
+    background:
+      linear-gradient(var(--rule-ink), var(--rule-ink)) left center / calc(50% - 2rem) 1px no-repeat,
+      linear-gradient(var(--rule-ink), var(--rule-ink)) right center / calc(50% - 2rem) 1px
+        no-repeat;
+  }
+
+  .prose hr::before,
+  .prose hr::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 2.6rem;
+    height: 100%;
+    transform: translateX(-50%);
+    mask: var(--fleuron) center / contain no-repeat;
+  }
+
+  .prose hr::before {
+    --fleuron: url('/grotto/fleuron-leaves.svg');
+
+    background: var(--color-moss);
+  }
+
+  .prose hr::after {
+    --fleuron: url('/grotto/fleuron-buttons.svg');
+
+    background: var(--color-tansy);
+  }
+
+  /* After a woodcut initial, the first line runs on in small capitals. */
+  .prose p:has(> .dropcap:first-child)::first-line {
+    font-family: var(--font-label);
+    letter-spacing: 0.03em;
+  }
+
+  /* The technical column hyphenates (modern.css), but never leaves two letters behind:
+     a word needs eight letters, four before the break and four after. */
+  .serious-content .post-body p {
+    hyphenate-limit-chars: 8 4 4;
+    /* stylelint-disable property-no-vendor-prefix */
+    -webkit-hyphenate-limit-before: 4;
+    -webkit-hyphenate-limit-after: 4;
+    /* stylelint-enable property-no-vendor-prefix */
+  }
+
+  /* Things you press give a little under the finger. */
+  button:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  @media print {
+    body {
+      background-image: none;
+    }
+  }
+}

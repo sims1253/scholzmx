@@ -468,29 +468,15 @@
     clear: both; /* Dates and tags run the card's full width, below a taped photo */
     margin-top: var(--space-xs);
   }
+  /* The date as the post gives it: a sentence in the annotating hand, not a form field. */
   .sc-dates {
-    display: flex;
-    gap: var(--space-sm);
-    align-items: baseline;
-    flex-wrap: wrap;
-  }
-  .sc-date-item {
-    display: flex;
-    gap: 0.25rem;
-    align-items: baseline;
-    white-space: nowrap;
-  }
-  .sc-date-label {
-    font-family: var(--font-label);
-    font-size: var(--text-xs, 0.7rem);
+    margin: 0;
+    font-family: var(--font-body-personal);
+    font-size: var(--text-xs);
+    font-style: italic;
+    line-height: 1.4;
     color: var(--color-text-muted);
-    letter-spacing: 0.05em;
-    font-weight: 400;
-  }
-  .sc-date {
-    font-size: var(--text-xxs, 0.7rem);
-    color: var(--color-text-muted);
-    letter-spacing: 0.05em;
+    font-variant-numeric: oldstyle-nums;
   }
   /* Tags read like entries in a book's index */
   .sc-tags {
