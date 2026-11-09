@@ -1,17 +1,5 @@
-/** Papers and theses, newest first. */
+/** Papers and theses, newest first: the homepage shows the first one. */
 export const publications = [
-  {
-    year: 2022,
-    type: 'Preprint',
-    title:
-      'Some models are useful, but how do we know which ones? Towards a unified Bayesian model taxonomy',
-    authors: ['Paul-Christian Bürkner', 'Maximilian Scholz', 'Stefan T. Radev'],
-    venue: 'arXiv',
-    links: {
-      pdf: 'https://arxiv.org/pdf/2209.02439.pdf',
-      doi: 'https://doi.org/10.48550/ARXIV.2209.02439',
-    },
-  },
   {
     year: 2022,
     type: 'Preprint',
@@ -24,6 +12,18 @@ export const publications = [
       code: 'https://doi.org/10.5281/zenodo.7099513',
       data: 'https://doi.org/10.17605/OSF.IO/XGKZV',
       doi: 'https://doi.org/10.48550/ARXIV.2210.06927',
+    },
+  },
+  {
+    year: 2022,
+    type: 'Preprint',
+    title:
+      'Some models are useful, but how do we know which ones? Towards a unified Bayesian model taxonomy',
+    authors: ['Paul-Christian Bürkner', 'Maximilian Scholz', 'Stefan T. Radev'],
+    venue: 'arXiv',
+    links: {
+      pdf: 'https://arxiv.org/pdf/2209.02439.pdf',
+      doi: 'https://doi.org/10.48550/ARXIV.2209.02439',
     },
   },
   {
