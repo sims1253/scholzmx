@@ -344,8 +344,8 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
   </div>
 </section>
 
-{/* Open on the table where the whole of it fits, and on the step list where it would
-    scroll sideways. Decided here, while the page is still being read in, so the card
+{/* Open with the table above the steps where the table fits the window's width, and
+    with the steps alone where it would scroll sideways. Decided here, while the page is still being read in, so the card
     never changes shape after it is shown. Phones are not asked: a table never fits one,
     and measuring it would make the browser lay the page out early for nothing. Without
     JavaScript the step list stays: it is the complete recipe. */}
@@ -367,7 +367,8 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
   /* The card may be wider than the reading column: it breaks out to the page, then
      shrinks to what it holds, so a small recipe is a small card. */
   .recipe-card {
-    --card-width: min(60rem, 100cqi - 2 * var(--space-md));
+    /* One width for both views, so switching between them does not move the sheet. */
+    --card-width: min(72rem, 100cqi - 2 * var(--space-md));
     --rc-rule: color-mix(in srgb, var(--color-ink-dark) 16%, var(--paper-sheet));
     /* Hands-off time is hatched, as in a timing chart: you can walk away. */
     --rc-shade: repeating-linear-gradient(
@@ -990,16 +991,18 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     color: var(--color-ochre);
   }
 
-  /* One view at a time. The inline script after the card opens it on the table where
-     the table fits; the table then gets the room it needs. */
+  /* The step list is the recipe and is always there. The table is an overview that sits
+     above it: the inline script after the card opens it where it fits, and the Show
+     control puts it away or brings it back. */
   .recipe-card:not([data-view]) .rc-table-frame,
-  .recipe-card[data-view='steps'] .rc-table-frame,
-  .recipe-card[data-view='table'] .rc-steps-view {
+  .recipe-card[data-view='steps'] .rc-table-frame {
     display: none;
   }
 
-  .recipe-card[data-view='table'] {
-    --card-width: min(72rem, 100cqi - 2 * var(--space-md));
+  .recipe-card[data-view='table'] .rc-steps-view {
+    margin-top: var(--space-xl);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--rc-rule);
   }
 
   @media (max-width: 48rem) {
