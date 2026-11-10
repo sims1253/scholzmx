@@ -345,15 +345,17 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
 </section>
 
 {/* Open on the table where the whole of it fits, and on the step list where it would
-    scroll sideways (phones, or a long recipe on a narrow window). Decided here, while
-    the page is still being read in, so the card never changes shape after it is shown.
-    Without JavaScript the step list stays: it is the complete recipe. */}
+    scroll sideways. Decided here, while the page is still being read in, so the card
+    never changes shape after it is shown. Phones are not asked: a table never fits one,
+    and measuring it would make the browser lay the page out early for nothing. Without
+    JavaScript the step list stays: it is the complete recipe. */}
 <script is:inline>
   (() => {
     const card = document.currentScript.previousElementSibling;
     const wrap = card.querySelector('.rc-table-wrap');
+    if (!wrap || !matchMedia('(min-width: 48rem)').matches) return;
     card.dataset.view = 'table';
-    if (!wrap || wrap.scrollWidth > wrap.clientWidth + 1) card.dataset.view = 'steps';
+    if (wrap.scrollWidth > wrap.clientWidth + 1) card.dataset.view = 'steps';
   })();
 </script>
 
