@@ -42,7 +42,7 @@ The leaf shadows are SVG masks drawn by `scripts/draw-canopy.mjs`: a soft, high 
 The light follows the visitor's clock. A small script in the page head sets the sun before first paint: by day the shadows lean away from it, long and cool in the morning, short and sharp at noon, long and gold towards evening. From 21:00 to 6:00 the torch lights itself. The torch button overrides the clock until the next dawn or dusk; people whose system prefers dark get torchlight all day.
 
 ### Paper and Print
-The page is rag paper: a faint, neutral-grey tooth drawn by `scripts/draw-paper.mjs` (seeded, so `node scripts/draw-paper.mjs` reproduces `public/grotto/paper.png`) tiles under everything. Pictures in posts are pasted in as prints, each with a hairline keyline and, by day, the pressed mark a printer's plate leaves in the sheet. A `---` in a post or recipe becomes a sprig of tansy. All of it lives in `src/styles/paper.css`.
+The page is rag paper: a faint, neutral-grey tooth tiles under everything. It is a few hundred bytes of SVG noise inside the stylesheet, so it costs no request. Pictures in posts are pasted in as prints, each with a hairline keyline and, by day, the pressed mark a printer's plate leaves in the sheet. A `---` in a post or recipe becomes a sprig of tansy. All of it lives in `src/styles/paper.css`.
 
 ### Blog Pipeline
 I write posts in Quarto (`.qmd` files) with R code, math, and citations. A build script converts them to markdown with properly optimized images. The whole process is automated in CI. See `QUARTO-TO-ASTRO-PIPELINE.md` for details.

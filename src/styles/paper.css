@@ -1,13 +1,14 @@
 /* Paper and print: what the page is made of.
 
    Rag paper under every page, prints mounted as plates, and a sprig for a section
-   break. Everything here is static: one small tiled PNG (scripts/draw-paper.mjs), two
-   SVG masks, and box shadows. */
+   break. Everything here is static and costs no request beyond two small SVG masks:
+   the paper is a few hundred bytes of SVG noise in this file, the rest box shadows. */
 @layer components {
-  /* Rag paper. The tile is neutral grey, so it darkens the day's paper and lightens the
-     torchlit paper by the same faint amount; far too faint to cost text any contrast. */
+  /* Rag paper: a fine tooth of neutral grey, so it darkens the day's paper and lightens
+     the torchlit paper by the same faint amount; far too faint to cost text any
+     contrast. The noise is drawn once per tile by the browser and stitched to repeat. */
   body {
-    background-image: url('/grotto/paper.png');
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 .4 0 0 0 -.14'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)'/%3E%3C/svg%3E");
     background-size: 256px 256px;
   }
 
