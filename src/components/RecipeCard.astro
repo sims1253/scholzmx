@@ -344,6 +344,19 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
   </div>
 </section>
 
+{/* Open on the table where the whole of it fits, and on the step list where it would
+    scroll sideways (phones, or a long recipe on a narrow window). Decided here, while
+    the page is still being read in, so the card never changes shape after it is shown.
+    Without JavaScript the step list stays: it is the complete recipe. */}
+<script is:inline>
+  (() => {
+    const card = document.currentScript.previousElementSibling;
+    const wrap = card.querySelector('.rc-table-wrap');
+    card.dataset.view = 'table';
+    if (!wrap || wrap.scrollWidth > wrap.clientWidth + 1) card.dataset.view = 'steps';
+  })();
+</script>
+
 <script>
   import '../scripts/recipe-card';
 </script>
@@ -975,8 +988,8 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     color: var(--color-ochre);
   }
 
-  /* One view at a time: the steps unless the reader asks for the table, which then gets
-     the room it needs. */
+  /* One view at a time. The inline script after the card opens it on the table where
+     the table fits; the table then gets the room it needs. */
   .recipe-card:not([data-view]) .rc-table-frame,
   .recipe-card[data-view='steps'] .rc-table-frame,
   .recipe-card[data-view='table'] .rc-steps-view {

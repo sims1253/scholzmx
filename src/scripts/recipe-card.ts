@@ -101,7 +101,8 @@ function initRecipeCard(card: HTMLElement): void {
     if (radio) radio.checked = true;
     showMore();
   };
-  setView('steps');
+  // The card arrives with its view already chosen (RecipeCard.astro's inline script).
+  setView(card.dataset.view ?? 'steps');
 
   card.addEventListener('change', (event) => {
     const input = event.target;

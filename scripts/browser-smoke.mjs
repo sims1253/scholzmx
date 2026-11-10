@@ -145,7 +145,24 @@ try {
     );
   }
 
-  await page.goto(`${baseURL}/recipes/hokkaido-dinner-rolls/`, { waitUntil: 'networkidle0' });
+  // A recipe opens on the table where the whole table fits, and on the steps elsewhere.
+  for (const [width, view] of [
+    [1440, 'table'],
+    [390, 'steps'],
+  ]) {
+    await page.setViewport({ width, height: 844 });
+    await page.goto(`${baseURL}/recipes/hokkaido-dinner-rolls/`, { waitUntil: 'networkidle0' });
+    const opened = await page.$eval('[data-recipe-card]', (card) => ({
+      view: card.dataset.view,
+      checked: card.querySelector('input[name="rc-view"]:checked')?.value,
+      hidden:
+        card.querySelector('.rc-table-wrap').scrollWidth -
+        card.querySelector('.rc-table-wrap').clientWidth,
+    }));
+    assert.equal(opened.view, view, `Recipe view at ${width}px`);
+    assert.equal(opened.checked, view, `Recipe view control at ${width}px`);
+    if (view === 'table') assert.ok(opened.hidden <= 1, 'The opening table must not scroll');
+  }
   // Force lazy images to load before checking their decoded dimensions.
   await page.$$eval('img', async (images) => {
     for (const image of images) {
