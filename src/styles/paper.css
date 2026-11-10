@@ -1,8 +1,8 @@
 /* Paper and print: what the page is made of.
 
-   Rag paper under every page, prints mounted as plates, a sprig for a section break,
-   and a run-in line after a woodcut initial. Everything here is static: one small
-   tiled PNG (scripts/draw-paper.mjs), two SVG masks, and box shadows. */
+   Rag paper under every page, prints mounted as plates, and a sprig for a section
+   break. Everything here is static: one small tiled PNG (scripts/draw-paper.mjs), two
+   SVG masks, and box shadows. */
 @layer components {
   /* Rag paper. The tile is neutral grey, so it darkens the day's paper and lightens the
      torchlit paper by the same faint amount; far too faint to cost text any contrast. */
@@ -57,12 +57,6 @@
     --fleuron: url('/grotto/fleuron-buttons.svg');
 
     background: var(--color-tansy);
-  }
-
-  /* After a woodcut initial, the first line runs on in small capitals. */
-  .prose p:has(> .dropcap:first-child)::first-line {
-    font-family: var(--font-label);
-    letter-spacing: 0.03em;
   }
 
   /* The technical column hyphenates (modern.css), but never leaves two letters behind:
