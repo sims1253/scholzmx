@@ -530,10 +530,6 @@
     opacity: 1;
   }
 
-  .astro-code .copy-button:active {
-    transform: translateY(1px);
-  }
-
   .astro-code .copy-button.copied {
     color: var(--color-moss);
     opacity: 1;

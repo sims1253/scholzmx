@@ -75,9 +75,10 @@
     /* stylelint-enable property-no-vendor-prefix */
   }
 
-  /* Things you press give a little under the finger. */
+  /* Things you press give a little under the finger. `translate` adds to a button's own
+     `transform` (the contraption centres itself with one) instead of replacing it. */
   button:active:not(:disabled) {
-    transform: translateY(1px);
+    translate: 0 1px;
   }
 
   @media print {
