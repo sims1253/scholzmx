@@ -367,7 +367,6 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
   /* The card may be wider than the reading column: it breaks out to the page, then
      shrinks to what it holds, so a small recipe is a small card. */
   .recipe-card {
-    /* One width for both views, so switching between them does not move the sheet. */
     --card-width: min(72rem, 100cqi - 2 * var(--space-md));
     --rc-rule: color-mix(in srgb, var(--color-ink-dark) 16%, var(--paper-sheet));
     /* Hands-off time is hatched, as in a timing chart: you can walk away. */
@@ -994,9 +993,16 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
   /* The step list is the recipe and is always there. The table is an overview that sits
      above it: the inline script after the card opens it where it fits, and the Show
      control puts it away or brings it back. */
-  .recipe-card:not([data-view]) .rc-table-frame,
-  .recipe-card[data-view='steps'] .rc-table-frame {
+  .recipe-card:not([data-view]) .rc-table-frame {
     display: none;
+  }
+
+  /* Put away, the table still lends the sheet its width (the sheet is as wide as what
+     it holds), so switching views does not move the sheet. */
+  .recipe-card[data-view='steps'] .rc-table-frame {
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
   }
 
   .recipe-card[data-view='table'] .rc-steps-view {
@@ -1326,6 +1332,9 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
 
     .rc-table-frame {
       display: block !important;
+      height: auto !important;
+      overflow: visible !important;
+      visibility: visible !important;
     }
 
     .rc-table-wrap {
