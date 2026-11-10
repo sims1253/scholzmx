@@ -4,7 +4,7 @@ import DropCap from '../components/DropCap.astro';
 import ImageFrame from '../components/ImageFrame.astro';
 import Niche from '../components/Niche.astro';
 import { getCollection } from 'astro:content';
-import { projects } from '../data/projects';
+import { projects, projectName } from '../data/projects';
 import { publications } from '../data/publications';
 
 /* Optimized local images */
@@ -21,8 +21,7 @@ const newestRecipe = (await getCollection('recipes', ({ data }) => !data.draft))
 const newestProject = projects[0];
 const newestPaper = publications[0];
 
-const monthOf = (date: Date) =>
-  date.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+const yearOf = (date: Date) => String(date.getFullYear());
 
 const niches = [
   {
@@ -33,7 +32,7 @@ const niches = [
     kept: newestPost && {
       href: `/blog/${newestPost.id}`,
       title: newestPost.data.title,
-      when: monthOf(newestPost.data.date),
+      when: yearOf(newestPost.data.date),
     },
   },
   {
@@ -44,7 +43,7 @@ const niches = [
     kept: newestRecipe && {
       href: `/recipes/${newestRecipe.id}`,
       title: newestRecipe.data.title,
-      when: newestRecipe.data.date ? monthOf(newestRecipe.data.date) : undefined,
+      when: newestRecipe.data.date ? yearOf(newestRecipe.data.date) : undefined,
     },
   },
   {
@@ -54,7 +53,9 @@ const niches = [
     caption: 'the workbench',
     kept: newestProject && {
       href: newestProject.links[0]!.url,
-      title: newestProject.title.replace(' — ', ', a '),
+      // A short lowercase name alone ("ry") reads as the tail of a cut-off word.
+      name: projectName(newestProject.title).name,
+      title: projectName(newestProject.title).common,
       when: String(newestProject.year),
     },
   },
@@ -143,7 +144,7 @@ const niches = [
         {niches.map(({ kept, ...niche }) => <li>
           <Niche {...niche}>
             {kept && <p class="kept">
-              <a href={kept.href}>{kept.title}</a>
+              <a href={kept.href}> {'name' in kept && <><em>{kept.name}</em>, </>}{kept.title} </a>
               {kept.when && <span class="kept-when">{kept.when}</span>}
             </p>}
           </Niche>

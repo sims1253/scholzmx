@@ -304,6 +304,9 @@
     )::after {
     content: ' ↗';
     font-size: 0.75em;
+    /* Raised, but without a line box of its own: with one, every line that holds an
+       arrow came out a pixel or two taller than its neighbours. */
+    line-height: 0;
     vertical-align: super;
     opacity: 0.7;
     margin-left: 0.1em;
@@ -551,7 +554,6 @@
     background: var(--color-surface);
     font-family: var(--font-body-personal);
     font-size: var(--text-sm);
-    font-style: italic;
     line-height: 1.2;
     color: var(--color-walnut);
     cursor: pointer;
