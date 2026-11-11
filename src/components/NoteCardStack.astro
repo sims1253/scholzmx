@@ -55,6 +55,15 @@ const {
   headingLevel = 2,
   tagBase = '/blog',
 } = Astro.props;
+
+// "2025-11-23" reads as "23 November 2025", the way the posts themselves give their dates.
+const inWords = (isoDay: string) =>
+  new Date(`${isoDay}T00:00:00Z`).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
 ---
 
 <div
@@ -86,20 +95,12 @@ const {
         />
       </div>}
       <div class="sc-meta">
-        <div class="sc-dates">
-          {it.writtenDate && <div class="sc-date-item">
-            <span class="sc-date-label">Written</span>
-            <time class="sc-date" datetime={it.writtenDate}>
-              {it.writtenDate}
-            </time>
-          </div>}
-          {it.updatedDate && <div class="sc-date-item">
-            <span class="sc-date-label">Updated</span>
-            <time class="sc-date" datetime={it.updatedDate}>
-              {it.updatedDate}
-            </time>
-          </div>}
-        </div>
+        {it.writtenDate && <p class="sc-dates">
+          <time datetime={it.writtenDate}>{inWords(it.writtenDate)}</time
+          >{it.updatedDate && it.updatedDate !== it.writtenDate && (
+            <>, tended <time datetime={it.updatedDate}>{inWords(it.updatedDate)}</time></>
+          )}
+        </p>}
         <div class="sc-tags">
           {it.tags?.map((tag) => <a
             class="sc-chip"

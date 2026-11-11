@@ -28,6 +28,7 @@ Built with [Astro](https://astro.build) because it lets me write content in Quar
 - `DropCap.astro` - Those decorative first letters you see in posts
 - `IndexFinder.astro` - Search and tag filtering for the blog and recipe indexes
 - `QuoteOfTheDay.astro` - The homepage quote; every new quote opens another tansy flower
+- `Niche.astro` - A niche in the grotto's wall: the writing desk, pantry shelf, workbench and folio on the homepage, each with the newest thing made there, and an empty one on the 404 page
 - `RecipeCard.astro` - Recipes as data: Michael Chu's recipe table, a step list, and a cooking mode with timers (format in `COMPONENT-USAGE.md`)
 
 Margin notes come from `> margin:` blockquotes in Markdown and are placed by `src/scripts/margin-notes.ts`.
@@ -39,6 +40,9 @@ Random decorative elements that make cards feel more organic. Seeded tilts and o
 The leaf shadows are SVG masks drawn by `scripts/draw-canopy.mjs`: a soft, high layer and a crisp, low one whose grape and kiwi leaves show their real outlines. The script is seeded, so `node scripts/draw-canopy.mjs` reproduces `public/grotto/canopy-high.svg` and `canopy-low.svg`. CSS supplies the colour, so the same leaves cast green shade by day and stand in front of the torch at night. The motion is transform-only and stops under `prefers-reduced-motion`.
 
 The light follows the visitor's clock. A small script in the page head sets the sun before first paint: by day the shadows lean away from it, long and cool in the morning, short and sharp at noon, long and gold towards evening. From 21:00 to 6:00 the torch lights itself. The torch button overrides the clock until the next dawn or dusk; people whose system prefers dark get torchlight all day.
+
+### Paper and Print
+The page is rag paper: a faint, neutral-grey tooth tiles under everything. It is a few hundred bytes of SVG noise inside the stylesheet, so it costs no request. Pictures in posts are pasted in as prints, each with a hairline keyline and, by day, the pressed mark a printer's plate leaves in the sheet. A `---` in a post or recipe becomes a sprig of tansy. All of it lives in `src/styles/paper.css`.
 
 ### Blog Pipeline
 I write posts in Quarto (`.qmd` files) with R code, math, and citations. A build script converts them to markdown with properly optimized images. The whole process is automated in CI. See `QUARTO-TO-ASTRO-PIPELINE.md` for details.

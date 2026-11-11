@@ -2,42 +2,75 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import DropCap from '../components/DropCap.astro';
 import ImageFrame from '../components/ImageFrame.astro';
+import Niche from '../components/Niche.astro';
 import { getCollection } from 'astro:content';
+import { projects, projectName } from '../data/projects';
+import { publications } from '../data/publications';
 
 /* Optimized local images */
 import selfImage from '../assets/images/homepage/self.jpg';
 import portraitImage from '../assets/images/homepage/portrait.jpg';
 
-/* Get newest post (blog or recipe) */
-const allBlogPosts = await getCollection('blog');
-const allRecipes = await getCollection('recipes');
-
-const latestBlog = allBlogPosts
-  .filter((p) => !p.data.draft)
-  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())[0];
-
-// Both use 'date' for consistency
-const latestRecipe = allRecipes.sort(
-  (a, b) => new Date(b.data.date ?? 0).getTime() - new Date(a.data.date ?? 0).getTime()
+/* The newest thing kept in each niche */
+const newestPost = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime()
 )[0];
+const newestRecipe = (await getCollection('recipes', ({ data }) => !data.draft)).sort(
+  (a, b) => (b.data.date?.getTime() ?? 0) - (a.data.date?.getTime() ?? 0)
+)[0];
+const newestProject = projects[0];
+const newestPaper = publications[0];
 
-// Compare dates and pick the newest
-const blogDate = latestBlog?.data.date ? new Date(latestBlog.data.date) : null;
-const recipeDate = latestRecipe?.data.date ? new Date(latestRecipe.data.date) : null;
+const yearOf = (date: Date) => String(date.getFullYear());
 
-const newestPost =
-  blogDate && recipeDate
-    ? blogDate > recipeDate
-      ? { type: 'blog' as const, post: latestBlog, date: blogDate }
-      : { type: 'recipe' as const, post: latestRecipe, date: recipeDate }
-    : blogDate
-      ? { type: 'blog' as const, post: latestBlog, date: blogDate }
-      : recipeDate
-        ? { type: 'recipe' as const, post: latestRecipe, date: recipeDate }
-        : null;
-
-const formatDate = (date: Date) =>
-  date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+const niches = [
+  {
+    kind: 'desk' as const,
+    href: '/blog',
+    name: 'Blog',
+    caption: 'the writing desk',
+    kept: newestPost && {
+      href: `/blog/${newestPost.id}`,
+      title: newestPost.data.title,
+      when: yearOf(newestPost.data.date),
+    },
+  },
+  {
+    kind: 'pantry' as const,
+    href: '/recipes',
+    name: 'Recipes',
+    caption: 'the pantry shelf',
+    kept: newestRecipe && {
+      href: `/recipes/${newestRecipe.id}`,
+      title: newestRecipe.data.title,
+      when: newestRecipe.data.date ? yearOf(newestRecipe.data.date) : undefined,
+    },
+  },
+  {
+    kind: 'bench' as const,
+    href: '/projects',
+    name: 'Projects',
+    caption: 'the workbench',
+    kept: newestProject && {
+      href: newestProject.links[0]!.url,
+      // A short lowercase name alone ("ry") reads as the tail of a cut-off word.
+      name: projectName(newestProject.title).name,
+      title: projectName(newestProject.title).common,
+      when: String(newestProject.year),
+    },
+  },
+  {
+    kind: 'folio' as const,
+    href: '/research',
+    name: 'Research',
+    caption: 'the folio',
+    kept: newestPaper && {
+      href: newestPaper.links.pdf ?? newestPaper.links.doi ?? '/research',
+      title: newestPaper.title,
+      when: String(newestPaper.year),
+    },
+  },
+];
 ---
 
 <BaseLayout
@@ -101,26 +134,30 @@ const formatDate = (date: Date) =>
       </p>
     </div>
 
-    {newestPost && <aside class="latest" aria-label="Newest post">
-      <p>
-        The newest post, from
-        <time datetime={newestPost.date.toISOString()}>{formatDate(newestPost.date)}</time>, is
-        <a
-          href={
-            newestPost.type === 'blog'
-              ? `/blog/${newestPost.post.id}`
-              : `/recipes/${newestPost.post.id}`
-          }
-          >{newestPost.post.data.title}</a
-        >{/[.!?]$/.test(newestPost.post.data.title) ? '' : '.'}
-      </p>
-    </aside>}
+    {/* The grotto as a place: four niches in the wall, each keeping what a part of the
+        site is made at, and under it the newest thing made there. */}
+    <section class="niches" aria-labelledby="niches-title">
+      <h2 class="niches-title" id="niches-title">
+        There are four niches in the wall. Each keeps the newest thing I made there.
+      </h2>
+      <ul class="niche-row">
+        {niches.map(({ kept, ...niche }) => <li>
+          <Niche {...niche}>
+            {kept && <p class="kept">
+              <a href={kept.href}> {'name' in kept && <><em>{kept.name}</em>, </>}{kept.title} </a>
+              {kept.when && <span class="kept-when">{kept.when}</span>}
+            </p>}
+          </Niche>
+        </li>)}
+      </ul>
+    </section>
   </div>
 </BaseLayout>
 
 <style>
   /*
-   * Desktop:  [portrait] [about, the reading column] [newest post]
+   * Desktop:  [portrait] [about, the reading column] [an equal empty margin]
+   *           [ four niches across the whole width ]
    * The greeting starts on the reading column's left edge, so one axis runs down the page.
    */
   /* The two side columns are equally wide, so the reading column is centred. */
@@ -193,32 +230,58 @@ const formatDate = (date: Date) =>
     margin-bottom: 1em;
   }
 
-  .latest {
-    grid-column: aside;
-    margin-top: 0.4rem;
-    padding-top: 0.6rem;
-    border-top: 2px solid var(--color-tansy);
-    font-size: var(--text-sm);
-    font-style: italic;
-    line-height: 1.45;
-    color: var(--color-text-muted);
+  /* ===== The niches ===== */
+
+  .niches {
+    grid-column: 1 / -1;
+    width: min(100%, 58rem);
+    margin: clamp(2.5rem, 6vw, 4.5rem) auto 0;
   }
 
-  .latest p {
+  /* A sentence, not a banner: it only says what the drawings are. */
+  .niches-title {
+    max-width: 30rem;
+    margin: 0 auto clamp(1.25rem, 3vw, 2rem);
+    font-family: var(--font-heading);
+    font-size: var(--text-lg);
+    font-style: italic;
+    font-weight: 400;
+    line-height: 1.4;
+    text-align: center;
+    color: var(--color-text-secondary);
+  }
+
+  .niche-row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-lg) clamp(0.75rem, 2.5vw, 2rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .niche-row li {
     margin: 0;
   }
 
-  .latest a {
-    font-style: normal;
-    color: var(--color-link);
+  .kept {
+    max-width: 13rem;
+    margin: 0.6rem 0 0;
+    font-size: var(--text-sm);
+    line-height: 1.4;
+    hyphens: manual;
   }
 
-  .latest time {
+  .kept-when {
+    display: block;
+    margin-top: 0.15rem;
+    font-style: italic;
+    color: var(--color-text-muted);
     font-variant-numeric: oldstyle-nums;
   }
 
-  /* Below the width where portrait, text and newest post fit side by side: one centred
-     reading column, the portrait between greeting and text, the newest post after it. */
+  /* Below the width where the portrait fits beside the text: one centred reading
+     column, the portrait between greeting and text, the niches after it. */
   @media (max-width: 72rem) {
     .home {
       grid-template-columns: minmax(0, var(--measure-prose));
@@ -226,8 +289,7 @@ const formatDate = (date: Date) =>
 
     .welcome,
     .portrait,
-    .about,
-    .latest {
+    .about {
       grid-column: 1;
     }
 
@@ -235,10 +297,12 @@ const formatDate = (date: Date) =>
       justify-self: center;
       margin: 0 0 var(--space-lg);
     }
+  }
 
-    .latest {
-      max-width: 22rem;
-      margin-top: var(--space-md);
+  /* Phones: the niches sit two by two. */
+  @media (max-width: 40rem) {
+    .niche-row {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 </style>

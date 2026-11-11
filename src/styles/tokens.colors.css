@@ -54,6 +54,13 @@
   --print-sheet: #fbfaf5; /* Prints stay paper-white, even by torchlight */
   --print-dim: none;
 
+  /* Prints as plates: the keyline round the picture and the pressed mark the plate
+     leaves in the sheet, lit from the top left by day. */
+  --plate-keyline: rgb(34 41 30 / 0.3);
+  --plate-mark:
+    0 0 0 0.4rem var(--print-sheet), -1px -1px 0 0.4rem rgb(34 41 30 / 0.2),
+    1px 1px 0 0.4rem rgb(255 255 255 / 0.9);
+
   /* The canopy: leaf shadows by day, torchlight by night */
   /* The canopy by day follows the sun (set by BaseLayout's head script) */
   --canopy-shade: rgb(var(--sun-shade, 58 78 26) / 0.2);
@@ -100,6 +107,10 @@
     --paper-sheet: var(--color-parchment-light);
     --print-sheet: #e2dacb;
     --print-dim: brightness(0.8) sepia(0.15); /* Warm and dim, like the paper around it */
+    /* By torchlight only the keyline shows: the print is dimmed as a whole, and a band
+       of sheet colour round it would be dimmed too and stand out from the sheet. */
+    --plate-keyline: rgb(58 48 36 / 0.5);
+    --plate-mark: none;
 
     --canopy-shade: rgb(14 10 6 / 0.88);
     --canopy-glow: radial-gradient(
@@ -149,6 +160,10 @@
   --paper-sheet: var(--color-parchment-light);
   --print-sheet: #e2dacb;
   --print-dim: brightness(0.8) sepia(0.15);
+  /* By torchlight only the keyline shows: the print is dimmed as a whole, and a band
+     of sheet colour round it would be dimmed too and stand out from the sheet. */
+  --plate-keyline: rgb(58 48 36 / 0.5);
+  --plate-mark: none;
 
   --canopy-shade: rgb(14 10 6 / 0.88);
   --canopy-glow: radial-gradient(

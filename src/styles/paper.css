@@ -1,0 +1,98 @@
+/* Paper and print: what the page is made of.
+
+   Rag paper under every page, prints mounted as plates, and a sprig for a section
+   break. Everything here is static and costs no request beyond two small SVG masks:
+   the paper is a few hundred bytes of SVG noise in this file, the rest box shadows. */
+@layer components {
+  /* Rag paper: a fine tooth of neutral grey, so it darkens the day's paper and lightens
+     the torchlit paper by the same faint amount; far too faint to cost text any
+     contrast. The noise is drawn once per tile by the browser and stitched to repeat. */
+  body {
+    --paper-tooth: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 .4 0 0 0 -.14'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)'/%3E%3C/svg%3E");
+
+    background-image: var(--paper-tooth);
+    background-size: 256px 256px;
+  }
+
+  /* By torchlight the same tooth at half strength: light grain on dark paper shows
+     far more than dark grain on light. */
+  :root[data-theme='dark'] body {
+    --paper-tooth: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 .2 0 0 0 -.07'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) body {
+      --paper-tooth: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 .2 0 0 0 -.07'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+  }
+
+  /* A print is a sheet held by two strips (prose.css). On the sheet the picture sits
+     like an engraving: a hairline keyline round it and, a little further out, the
+     pressed rectangle a printer's plate leaves in the paper. The mark is three shadows
+     on the picture itself: a band of the sheet's own colour, with a dark and a light
+     copy peeping out from under it on the sides away from and towards the light. */
+  .prose p:has(> img:only-child) img,
+  .prose figure:has(img) img {
+    outline: 1px solid var(--plate-keyline);
+    outline-offset: 2px;
+    box-shadow: var(--plate-mark);
+  }
+
+  /* A section break is a sprig of tansy between two short rules. */
+  .prose hr {
+    position: relative;
+    height: 1.8rem;
+    margin: var(--space-xl) auto;
+    border: 0;
+    background:
+      linear-gradient(var(--rule-ink), var(--rule-ink)) left center / calc(50% - 2rem) 1px no-repeat,
+      linear-gradient(var(--rule-ink), var(--rule-ink)) right center / calc(50% - 2rem) 1px
+        no-repeat;
+  }
+
+  .prose hr::before,
+  .prose hr::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 2.6rem;
+    height: 100%;
+    transform: translateX(-50%);
+    mask: var(--fleuron) center / contain no-repeat;
+  }
+
+  .prose hr::before {
+    --fleuron: url('/grotto/fleuron-leaves.svg');
+
+    background: var(--color-moss);
+  }
+
+  .prose hr::after {
+    --fleuron: url('/grotto/fleuron-buttons.svg');
+
+    background: var(--color-tansy);
+  }
+
+  /* The technical column hyphenates (modern.css), but never leaves two letters behind:
+     a word needs eight letters, four before the break and four after. */
+  .serious-content .post-body p {
+    hyphenate-limit-chars: 8 4 4;
+    /* stylelint-disable property-no-vendor-prefix */
+    -webkit-hyphenate-limit-before: 4;
+    -webkit-hyphenate-limit-after: 4;
+    /* stylelint-enable property-no-vendor-prefix */
+  }
+
+  /* Things you press give a little under the finger. `translate` adds to a button's own
+     `transform` (the contraption centres itself with one) instead of replacing it. */
+  button:active:not(:disabled) {
+    translate: 0 1px;
+  }
+
+  @media print {
+    body {
+      background-image: none;
+    }
+  }
+}

@@ -12,28 +12,31 @@
   shape-margin: clamp(0.02em, 0.5vw, 0.05em);
 }
 
-/* Personal variant - warm and playful for welcome/recipes */
+/* The initial is a square three lines tall: its top on the capitals of the first line,
+   its bottom on the baseline of the third. Both follow from the text face, in units of
+   the paragraph's font size (1rem in .prose):
+
+     size       = 2 line-heights + cap height
+     margin-top = first baseline - cap height, from the paragraph's top
+
+   Alegreya at line-height 1.6: capitals 0.646, first baseline 1.135.
+   ET Book at line-height 1.55: capitals 0.653, first baseline 1.068. */
+
+/* Personal variant - set beside Alegreya (welcome, recipes, notes) */
 .dropcap--personal {
-  font-size: 4.3rem; /* ~2.7 lines at 1.6 line-height, sized for optical alignment */
+  font-size: 3.846rem; /* 2 x 1.6 + 0.646 */
   line-height: 1;
   margin-right: 0.06em;
-  margin-top: 0.11em; /* Mobile default */
+  margin-top: 0.127em; /* (1.135 - 0.646) / 3.846 */
   font-weight: 500;
 }
 
-/* Container query for larger prose containers */
-@container (min-width: 768px) {
-  .dropcap--personal {
-    margin-top: 0.05em; /* Desktop: move dropcap up */
-  }
-}
-
-/* Serious variant - formal and elegant for blog/notes */
+/* Serious variant - set beside ET Book (blog) */
 .dropcap--serious {
-  font-size: 4.15rem; /* ~2.7 lines at 1.55 line-height, sized for optical alignment */
+  font-size: 3.753rem; /* 2 x 1.55 + 0.653 */
   line-height: 1;
   margin-right: 0.06em;
-  margin-top: 0.03em;
+  margin-top: 0.111em; /* (1.068 - 0.653) / 3.753 */
   font-weight: 500;
 }
 
@@ -43,6 +46,12 @@
 }
 
 /* Ornate layered */
+
+/* The ornament is one font file per letter, each limited to its letter by unicode-range,
+   so none of them can supply the line's metrics (a font must cover the space character
+   for that). The letter's font follows it in the list and has the same metrics; without
+   it the text face would set the baseline and the ornament would sit a sixth of its
+   height above the letter. */
 .dropcap--ornate {
   font-family: var(--font-dropcap-foreground), var(--font-heading), serif;
   color: var(--dropcap-color-foreground);
@@ -50,7 +59,8 @@
 .dropcap--ornate::before {
   content: attr(data-first-letter);
   position: absolute;
-  font-family: var(--font-dropcap-background), var(--font-heading), serif;
+  font-family:
+    var(--font-dropcap-background), var(--font-dropcap-foreground), var(--font-heading), serif;
   color: var(--dropcap-color-background);
   z-index: -1;
   left: 0;
@@ -64,7 +74,8 @@
 .dropcap--botanical::before {
   content: attr(data-first-letter);
   position: absolute;
-  font-family: var(--font-dropcap-background), var(--font-heading), serif;
+  font-family:
+    var(--font-dropcap-background), var(--font-dropcap-foreground), var(--font-heading), serif;
   color: var(--dropcap-color-foreground);
   z-index: -1;
   left: 0;

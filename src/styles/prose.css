@@ -66,14 +66,15 @@
   }
 
   /* Pictures in running text are pasted in like prints: a sheet held by two paper
-     strips. Plots and photographs alike; captions sit on the print. */
+     strips. Plots and photographs alike; captions sit on the print. On the sheet each
+     picture is mounted as a plate (paper.css). */
   .prose p:has(> img:only-child),
   .prose figure:has(img) {
     position: relative;
     width: fit-content;
     max-width: 100%;
     margin: var(--space-xl) auto;
-    padding: 0.5rem;
+    padding: 0.8rem;
     background: var(--print-sheet);
     box-shadow:
       0 1px 2px color-mix(in srgb, var(--color-ink-dark) 14%, transparent),
@@ -113,7 +114,6 @@
     display: block;
     margin: 0;
     border-radius: 0;
-    box-shadow: none;
     filter: var(--print-dim);
   }
 

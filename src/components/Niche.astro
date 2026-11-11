@@ -1,0 +1,545 @@
+---
+/**
+ * A niche in the grotto's wall, keeping the thing a part of the site is made at: the
+ * writing desk, the pantry shelf, the workbench, the folio. The drawing and its name
+ * are one link; whatever the niche currently holds goes in the slot beneath.
+ *
+ * By day the recess holds the canopy's shade and the thing's shadow leans with the sun
+ * (the --sun-* properties set in BaseLayout). After dark the recess goes black and the
+ * light that fills it on hover or focus is the torch's. Nothing moves on its own.
+ */
+interface Props {
+  kind: 'desk' | 'pantry' | 'bench' | 'folio' | 'bare';
+  href: string;
+  name: string;
+  /** What the drawing shows, e.g. "the writing desk". */
+  caption?: string;
+}
+
+const { kind, href, name, caption } = Astro.props;
+---
+
+<div class="niche">
+  <a class="niche-door" href={href}>
+    <svg viewBox="0 0 200 240" aria-hidden="true">
+      {kind === 'desk' && (
+        <>
+          <defs>
+            <radialGradient id="niche-light-desk" cx="50%" cy="30%" r="70%">
+              <stop offset="0" class="light-stop" stop-opacity="1"></stop>
+              <stop offset="1" class="light-stop" stop-opacity="0"></stop>
+            </radialGradient>
+          </defs>
+          <path class="recess" d="M36 222 V96 C36 66 60 52 100 52 c40 0 64 14 64 44 V222 Z" />
+          <path
+            class="light"
+            fill="url(#niche-light-desk)"
+            d="M36 222 V96 C36 66 60 52 100 52 c40 0 64 14 64 44 V222 Z"
+          />
+          <g class="ink" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path
+              class="stone"
+              d="M22 234 C23 190 21 140 22 92 22 50 56 35 100 36 c45 -1 78 14 78 56 1 48 -1 98 0 142"
+            />
+            <path d="M36 222 V96 C36 66 60 52 100 52 c40 0 64 14 64 44 V222" stroke-width="1.6" />
+            <path d="M44 222 V100 C44 74 66 61 100 61" stroke-width="0.8" opacity="0.5" />
+            <path
+              d="M164 108 l-10 6 M164 128 l-10 6 M164 148 l-10 6 M164 168 l-10 6 M164 188 l-10 6 M164 208 l-10 6"
+              stroke-width="0.8"
+              opacity="0.5"
+            />
+          </g>
+          <ellipse class="cast" cx="100" cy="221" rx="54" ry="5" />
+          <g class="thing" stroke-linecap="round" stroke-linejoin="round">
+            <g class="ink" fill="none" stroke-width="1.6">
+              <path d="M52 164 L148 162 L152 172 L48 173 Z" />
+              <path d="M58 173 V216 M142 172 V216 M58 198 H142" />
+              <path d="M64 216 h-12 M148 216 h-12" stroke-width="1.2" />
+            </g>
+            <path class="sheet" d="M70 134 L118 129 L122 160 L74 165 Z" />
+            <g class="ink" fill="none" stroke-width="1.1">
+              <path d="M70 134 L118 129 L122 160 L74 165 Z" stroke-width="1.3" />
+              <path
+                d="M78 141 c8 -2 16 0 24 -2 M79 148 c10 -1 18 -2 26 -3 M80 155 c6 0 12 -2 18 -2"
+                opacity="0.85"
+              />
+            </g>
+            <path class="wash wash--ink" d="M127 142 h14 v16 c0 3 -14 3 -14 0z" />
+            <g class="ink" fill="none" stroke-width="1.4">
+              <path d="M127 142 h14 v16 c0 3 -14 3 -14 0z M130 142 v-4 h8 v4" />
+              <path d="M135 140 C140 122 150 108 162 96" />
+              <path
+                d="M140 128 c6 -2 10 -6 16 -14 M144 120 c-6 -2 -8 -6 -8 -10 M150 110 c-4 -2 -6 -6 -6 -10 M153 106 c6 -2 8 -4 10 -8"
+                stroke-width="1"
+              />
+            </g>
+          </g>
+          <g class="ink" fill="none" stroke-width="1.6" stroke-linejoin="round">
+            <path d="M26 222 H174 l2 12 H24 Z" />
+            <path d="M30 228 h140" stroke-width="0.8" opacity="0.5" />
+          </g>
+        </>
+      )}
+      {kind === 'pantry' && (
+        <>
+          <defs>
+            <radialGradient id="niche-light-pantry" cx="50%" cy="30%" r="70%">
+              <stop offset="0" class="light-stop" stop-opacity="1"></stop>
+              <stop offset="1" class="light-stop" stop-opacity="0"></stop>
+            </radialGradient>
+          </defs>
+          <path class="recess" d="M36 222 V64 H164 V222 Z" />
+          <path class="light" fill="url(#niche-light-pantry)" d="M36 222 V64 H164 V222 Z" />
+          <g class="ink" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path
+              class="stone"
+              d="M22 234 C23 180 21 120 22 50 c0 -4 2 -6 6 -6 h144 c4 0 6 2 6 6 1 62 -1 122 0 184"
+            />
+            <path d="M36 222 V64 H164 V222" stroke-width="1.6" />
+            <path d="M44 222 V72 H158" stroke-width="0.8" opacity="0.5" />
+            <path
+              d="M164 84 l-10 6 M164 104 l-10 6 M164 124 l-10 6 M164 170 l-10 6 M164 190 l-10 6 M164 210 l-10 6"
+              stroke-width="0.8"
+              opacity="0.5"
+            />
+          </g>
+          <g class="thing" stroke-linecap="round" stroke-linejoin="round">
+            <g class="ink" fill="none" stroke-width="1.6">
+              <path d="M36 138 H164 v8 H36 Z" />
+              <path d="M40 142 h120" stroke-width="0.8" opacity="0.5" />
+            </g>
+            <ellipse class="cast" cx="100" cy="137" rx="50" ry="3" />
+            <path class="wash wash--moss" d="M52 100 c0 -4 24 -4 24 0 v34 c0 4 -24 4 -24 0z" />
+            <path class="wash wash--grape" d="M88 110 c0 -4 30 -4 30 0 v24 c0 4 -30 4 -30 0z" />
+            <path class="wash wash--tansy" d="M130 104 c0 -3 20 -3 20 0 v30 c0 4 -20 4 -20 0z" />
+            <g class="ink" fill="none" stroke-width="1.4">
+              <path d="M52 100 c0 -4 24 -4 24 0 v34 c0 4 -24 4 -24 0z M52 100 c0 4 24 4 24 0" />
+              <path
+                d="M50 96 c4 -6 24 -6 28 0 c-2 3 -4 3 -6 1 c-3 3 -6 3 -8 1 c-3 3 -6 3 -8 1 c-2 2 -4 1 -6 -3z"
+                stroke-width="1.2"
+              />
+              <path
+                d="M58 112 c4 2 6 6 4 10 M66 108 c-4 4 -2 10 2 14"
+                stroke-width="1"
+                opacity="0.8"
+              />
+              <path d="M88 110 c0 -4 30 -4 30 0 v24 c0 4 -30 4 -30 0z M88 110 c0 4 30 4 30 0" />
+              <path d="M90 104 h26 v6 h-26z" stroke-width="1.2" />
+              <path d="M96 118 h14 v10 h-14z" stroke-width="1" />
+              <path d="M99 123 h8" stroke-width="0.9" opacity="0.7" />
+              <path
+                d="M130 104 c0 -3 20 -3 20 0 v30 c0 4 -20 4 -20 0z M130 104 c0 3 20 3 20 0 M132 100 h16"
+              />
+              <path d="M136 112 c2 4 2 10 0 16" stroke-width="1" opacity="0.7" />
+            </g>
+            <ellipse class="cast" cx="100" cy="221" rx="46" ry="5" />
+            <path
+              class="wash wash--squash"
+              d="M66 196 c0 -22 16 -34 34 -34 s34 12 34 34 c0 14 -16 22 -34 22 s-34 -8 -34 -22z"
+            />
+            <g class="ink" fill="none" stroke-width="1.5">
+              <path
+                d="M66 196 c0 -22 16 -34 34 -34 s34 12 34 34 c0 14 -16 22 -34 22 s-34 -8 -34 -22z"
+              />
+              <path
+                d="M84 166 c-6 10 -6 36 -2 50 M100 162 c-2 14 -2 42 0 56 M116 166 c6 10 6 36 2 50"
+                stroke-width="1.1"
+                opacity="0.8"
+              />
+              <path d="M96 162 c-2 -6 0 -12 4 -14 c4 2 6 8 4 14" stroke-width="1.4" />
+            </g>
+            <path
+              class="wash wash--tansy"
+              d="M80 176 c4 -6 10 -8 16 -8 c-4 4 -8 8 -16 8z"
+              opacity="0.7"
+            />
+          </g>
+          <g class="ink" fill="none" stroke-width="1.6" stroke-linejoin="round">
+            <path d="M26 222 H174 l2 12 H24 Z" />
+            <path d="M30 228 h140" stroke-width="0.8" opacity="0.5" />
+          </g>
+        </>
+      )}
+      {kind === 'bench' && (
+        <>
+          <defs>
+            <radialGradient id="niche-light-bench" cx="50%" cy="30%" r="70%">
+              <stop offset="0" class="light-stop" stop-opacity="1"></stop>
+              <stop offset="1" class="light-stop" stop-opacity="0"></stop>
+            </radialGradient>
+          </defs>
+          <path class="recess" d="M36 222 V82 C60 58 140 58 164 82 V222 Z" />
+          <path
+            class="light"
+            fill="url(#niche-light-bench)"
+            d="M36 222 V82 C60 58 140 58 164 82 V222 Z"
+          />
+          <g class="ink" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path
+              class="stone"
+              d="M22 234 C23 186 21 128 22 74 50 42 150 42 178 74 c1 54 -1 112 0 160"
+            />
+            <path d="M36 222 V82 C60 58 140 58 164 82 V222" stroke-width="1.6" />
+            <path d="M44 222 V86 C66 66 134 66 156 86" stroke-width="0.8" opacity="0.5" />
+            <path
+              d="M164 108 l-10 6 M164 128 l-10 6 M164 148 l-10 6 M164 168 l-10 6 M164 188 l-10 6 M164 208 l-10 6"
+              stroke-width="0.8"
+              opacity="0.5"
+            />
+          </g>
+          <ellipse class="cast" cx="100" cy="221" rx="56" ry="5" />
+          <g class="thing" stroke-linecap="round" stroke-linejoin="round">
+            <g class="ink" fill="none" stroke-width="1.6">
+              <path d="M44 162 H156 v10 H44 Z" />
+              <path d="M50 167 c20 1 40 -1 60 0 c12 0 24 0 40 0" stroke-width="0.8" opacity="0.5" />
+              <path d="M58 172 L50 216 M68 172 L76 216 M52 204 H74" />
+              <path d="M132 172 L124 216 M142 172 L150 216 M126 204 H148" />
+            </g>
+            <g class="ink" fill="none" stroke-width="1.5">
+              <path d="M76 152 L110 157" stroke-width="2.2" />
+              <path d="M108 148 h18 v14 h-18 z M112 148 v14" />
+            </g>
+            <g class="ink" fill="none" stroke-width="1.4">
+              <circle cx="136" cy="138" r="13" />
+              <circle cx="136" cy="138" r="4" />
+              <path
+                d="M136 121 v-4 M136 155 v4 M119 138 h-4 M153 138 h4 M124 126 l-3 -3 M148 150 l3 3 M148 126 l3 -3 M124 150 l-3 3"
+                stroke-width="2.4"
+              />
+              <circle cx="136" cy="138" r="8.5" stroke-width="0.9" opacity="0.6" />
+            </g>
+            <g class="bird">
+              <path
+                class="wash wash--ink"
+                d="M44 150 c4 -6 10 -6 16 -4 c6 -16 22 -18 30 -10 c6 6 8 14 4 20 c-6 8 -18 10 -30 6 c-6 -2 -12 -6 -20 -12z"
+              />
+              <g class="ink" fill="none" stroke-width="1.4">
+                <path
+                  d="M44 150 c4 -6 10 -6 16 -4 c6 -16 22 -18 30 -10 c6 6 8 14 4 20 c-6 8 -18 10 -30 6 c-6 -2 -12 -6 -20 -12z"
+                />
+                <path d="M90 136 l10 2 l-9 4" stroke-width="1.3" />
+                <path d="M74 162 l-2 8 M80 162 l2 8 M70 170 h6 M78 170 h6" stroke-width="1.2" />
+              </g>
+              <g class="speckle">
+                <circle cx="64" cy="146" r="1.1" />
+                <circle cx="72" cy="140" r="1.1" />
+                <circle cx="80" cy="146" r="1.1" />
+                <circle cx="70" cy="152" r="1.1" />
+                <circle cx="78" cy="154" r="1.1" />
+                <circle cx="58" cy="152" r="1" />
+                <circle cx="86" cy="150" r="1" />
+                <circle cx="76" cy="134" r="1" />
+                <circle cx="92" cy="131" r="1.3" class="eye" />
+              </g>
+            </g>
+          </g>
+          <g class="ink" fill="none" stroke-width="1.6" stroke-linejoin="round">
+            <path d="M26 222 H174 l2 12 H24 Z" />
+            <path d="M30 228 h140" stroke-width="0.8" opacity="0.5" />
+          </g>
+        </>
+      )}
+      {kind === 'folio' && (
+        <>
+          <defs>
+            <radialGradient id="niche-light-folio" cx="50%" cy="30%" r="70%">
+              <stop offset="0" class="light-stop" stop-opacity="1"></stop>
+              <stop offset="1" class="light-stop" stop-opacity="0"></stop>
+            </radialGradient>
+          </defs>
+          <path class="recess" d="M36 222 V102 C36 72 70 62 100 48 c30 14 64 24 64 54 V222 Z" />
+          <path
+            class="light"
+            fill="url(#niche-light-folio)"
+            d="M36 222 V102 C36 72 70 62 100 48 c30 14 64 24 64 54 V222 Z"
+          />
+          <g class="ink" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path
+              class="stone"
+              d="M22 234 C23 190 21 140 22 94 22 56 66 44 100 30 c34 14 78 26 78 64 1 46 -1 96 0 140"
+            />
+            <path d="M36 222 V102 C36 72 70 62 100 48 c30 14 64 24 64 54 V222" stroke-width="1.6" />
+            <path d="M44 222 V106 C44 80 72 70 100 58" stroke-width="0.8" opacity="0.5" />
+            <path
+              d="M164 118 l-10 6 M164 138 l-10 6 M164 158 l-10 6 M164 178 l-10 6 M164 198 l-10 6"
+              stroke-width="0.8"
+              opacity="0.5"
+            />
+          </g>
+          <ellipse class="cast" cx="100" cy="221" rx="50" ry="5" />
+          <g class="thing" stroke-linecap="round" stroke-linejoin="round">
+            <g class="ink" fill="none" stroke-width="1.6">
+              <path d="M54 172 L146 172 L138 150 L62 150 Z" />
+              <path d="M100 172 V214 M80 216 H120" />
+              <path
+                d="M96 180 c-6 2 -8 8 -10 14 M104 180 c6 2 8 8 10 14"
+                stroke-width="1"
+                opacity="0.6"
+              />
+            </g>
+            <path class="sheet" d="M56 146 C70 138 86 139 99 146 L99 166 C86 160 70 160 58 168 Z" />
+            <path
+              class="sheet"
+              d="M144 146 C130 138 114 139 101 146 L101 166 C114 160 130 160 142 168 Z"
+            />
+            <g class="ink" fill="none" stroke-width="1.3">
+              <path d="M56 146 C70 138 86 139 99 146 L99 166 C86 160 70 160 58 168 Z" />
+              <path d="M144 146 C130 138 114 139 101 146 L101 166 C114 160 130 160 142 168 Z" />
+              <path
+                d="M58 168 c-2 3 0 6 2 6 M142 168 c2 3 0 6 -2 6 M60 174 c14 -6 28 -5 40 1 c12 -6 26 -7 40 -1"
+                stroke-width="1.1"
+              />
+              <path
+                d="M64 150 c8 -2 16 -2 26 0 M64 155 c8 -2 16 -2 26 0 M65 160 c6 -2 12 -2 20 0"
+                stroke-width="0.9"
+                opacity="0.7"
+              />
+            </g>
+            <g class="sprig">
+              <path
+                class="wash wash--moss"
+                d="M118 146 c-3 -2 -6 -1 -7 2 c3 1 6 0 7 -2z M124 143 c3 -2 6 -1 7 2 c-3 1 -6 0 -7 -2z M114 152 c-3 -2 -6 -1 -7 2 c3 1 6 0 7 -2z M128 149 c3 -2 6 -1 7 2 c-3 1 -6 0 -7 -2z M112 158 c-3 -2 -6 -1 -7 2 c3 1 6 0 7 -2z M130 155 c3 -2 6 -1 7 2 c-3 1 -6 0 -7 -2z"
+              />
+              <g class="ink" fill="none" stroke-width="1">
+                <path d="M121 140 L120 164" />
+                <path
+                  d="M118 146 c-3 -2 -6 -1 -7 2 c3 1 6 0 7 -2z M124 143 c3 -2 6 -1 7 2 c-3 1 -6 0 -7 -2z M114 152 c-3 -2 -6 -1 -7 2 c3 1 6 0 7 -2z M128 149 c3 -2 6 -1 7 2 c-3 1 -6 0 -7 -2z M112 158 c-3 -2 -6 -1 -7 2 c3 1 6 0 7 -2z M130 155 c3 -2 6 -1 7 2 c-3 1 -6 0 -7 -2z"
+                />
+              </g>
+              <path class="tape" d="M116 141 l9 1 l-1 4 l-9 -1z" />
+              <path class="tape" d="M115 159 l9 1 l-1 4 l-9 -1z" />
+            </g>
+            <g class="ink" fill="none" stroke-width="1.4">
+              <circle cx="136" cy="118" r="10" />
+              <circle cx="136" cy="118" r="7" stroke-width="0.8" opacity="0.5" />
+              <path d="M143 125 L154 136" stroke-width="2.4" />
+              <path d="M131 114 c2 -3 5 -4 8 -3" stroke-width="1" opacity="0.7" />
+            </g>
+          </g>
+          <g class="ink" fill="none" stroke-width="1.6" stroke-linejoin="round">
+            <path d="M26 222 H174 l2 12 H24 Z" />
+            <path d="M30 228 h140" stroke-width="0.8" opacity="0.5" />
+          </g>
+        </>
+      )}
+      {kind === 'bare' && (
+        <>
+          <defs>
+            <radialGradient id="niche-light-bare" cx="50%" cy="30%" r="70%">
+              <stop offset="0" class="light-stop" stop-opacity="1"></stop>
+              <stop offset="1" class="light-stop" stop-opacity="0"></stop>
+            </radialGradient>
+          </defs>
+          <path class="recess" d="M36 222 V96 C36 66 60 52 100 52 c40 0 64 14 64 44 V222 Z" />
+          <path
+            class="light"
+            fill="url(#niche-light-bare)"
+            d="M36 222 V96 C36 66 60 52 100 52 c40 0 64 14 64 44 V222 Z"
+          />
+          <g class="ink" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path
+              class="stone"
+              d="M22 234 C23 190 21 140 22 92 22 50 56 35 100 36 c45 -1 78 14 78 56 1 48 -1 98 0 142"
+            />
+            <path d="M36 222 V96 C36 66 60 52 100 52 c40 0 64 14 64 44 V222" stroke-width="1.6" />
+            <path d="M44 222 V100 C44 74 66 61 100 61" stroke-width="0.8" opacity="0.5" />
+            <path
+              d="M164 108 l-10 6 M164 128 l-10 6 M164 148 l-10 6 M164 168 l-10 6 M164 188 l-10 6 M164 208 l-10 6"
+              stroke-width="0.8"
+              opacity="0.5"
+            />
+          </g>
+          <ellipse class="cast" cx="100" cy="221" rx="22" ry="4" />
+          <g class="thing" stroke-linecap="round" stroke-linejoin="round">
+            <path class="sheet" d="M91 186 h18 v34 h-18 z" />
+            <g class="ink" fill="none" stroke-width="1.5">
+              <path d="M91 186 h18 v34 h-18 z" />
+              <path d="M91 190 c3 3 6 -2 9 1 c3 3 6 -2 9 1" stroke-width="1" />
+              <path d="M100 186 v-7" />
+              <path d="M84 220 h32" />
+              <path
+                d="M100 174 c-5 -6 5 -10 0 -17 c-4 -6 4 -10 1 -17"
+                stroke-width="1"
+                opacity="0.55"
+              />
+            </g>
+          </g>
+          <g class="ink" fill="none" stroke-width="1.6" stroke-linejoin="round">
+            <path d="M26 222 H174 l2 12 H24 Z" />
+            <path d="M30 228 h140" stroke-width="0.8" opacity="0.5" />
+          </g>
+        </>
+      )}
+    </svg>
+    <span class="niche-name">{name}</span>
+    {caption && <span class="niche-caption">{caption}</span>}
+  </a>
+  <slot />
+</div>
+
+<style>
+  .niche {
+    --niche-shade: rgb(var(--sun-shade, 58 78 26) / 0.24);
+    --niche-light: rgb(255 226 150 / 0.6);
+    --cast-shade: rgb(var(--sun-shade, 58 78 26) / 0.42);
+    --cast-skew: var(--sun-skew, 0deg);
+    --cast-stretch: var(--sun-stretch, 1);
+
+    display: grid;
+    justify-items: center;
+    align-content: start;
+    text-align: center;
+  }
+
+  /* Torchlight: the recess is dark, and what lights it is the torch. */
+  :global(:root[data-theme='dark']) .niche {
+    --niche-shade: rgb(8 6 3 / 0.7);
+    --niche-light: rgb(255 158 64 / 0.5);
+    --cast-shade: rgb(8 6 3 / 0.55);
+    --cast-skew: -14deg;
+    --cast-stretch: 1.2;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .niche {
+      --niche-shade: rgb(8 6 3 / 0.7);
+      --niche-light: rgb(255 158 64 / 0.5);
+      --cast-shade: rgb(8 6 3 / 0.55);
+      --cast-skew: -14deg;
+      --cast-stretch: 1.2;
+    }
+  }
+
+  .niche-door {
+    display: grid;
+    justify-items: center;
+    width: 100%;
+    color: var(--color-text-primary);
+    text-decoration: none;
+    border-radius: 4px;
+  }
+
+  .niche-door:focus-visible {
+    outline: 2px solid var(--color-moss);
+    outline-offset: 4px;
+    background: none;
+  }
+
+  svg {
+    width: 100%;
+    max-width: 11rem;
+    height: auto;
+    overflow: visible;
+  }
+
+  .niche-name {
+    margin-top: 0.3rem;
+    font-family: var(--font-label);
+    font-size: var(--text-lg);
+    letter-spacing: 0.04em;
+    line-height: 1.1;
+  }
+
+  .niche-caption {
+    font-family: var(--font-heading);
+    font-size: var(--text-sm);
+    font-style: italic;
+    line-height: 1.3;
+    color: var(--color-text-muted);
+  }
+
+  .niche-door:hover .niche-name,
+  .niche-door:focus-visible .niche-name {
+    color: var(--color-link-hover);
+  }
+
+  /* Ink and washes: everything drawn takes its colour from the page's ink and botanicals. */
+  .ink {
+    stroke: var(--color-ink-dark);
+  }
+
+  .stone {
+    stroke-width: 1.1;
+    opacity: 0.8;
+  }
+
+  .recess {
+    fill: var(--niche-shade);
+  }
+
+  .light-stop {
+    stop-color: var(--niche-light);
+  }
+
+  .light {
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+
+  /* The shadow a thing throws on its sill leans with the sun, or away from the torch. */
+  .cast {
+    fill: var(--cast-shade);
+    transform: translateY(-4px) skewX(var(--cast-skew)) scaleX(var(--cast-stretch));
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+  }
+
+  .thing {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .niche-door:hover .light,
+  .niche-door:focus-visible .light {
+    opacity: 1;
+  }
+
+  .niche-door:hover .thing,
+  .niche-door:focus-visible .thing {
+    transform: translateY(-3px);
+  }
+
+  .sheet {
+    fill: var(--print-sheet);
+  }
+
+  .tape {
+    fill: var(--tape-strip);
+    stroke: var(--color-ink-dark);
+    stroke-width: 0.6;
+    opacity: 0.95;
+  }
+
+  .wash {
+    stroke: none;
+  }
+
+  .wash--ink {
+    fill: var(--color-ink-dark);
+  }
+
+  .wash--moss {
+    fill: color-mix(in srgb, var(--color-moss) 60%, var(--color-parchment));
+  }
+
+  .wash--grape {
+    fill: color-mix(in srgb, var(--color-clay) 70%, var(--color-parchment));
+  }
+
+  .wash--tansy {
+    fill: color-mix(in srgb, var(--color-tansy) 60%, var(--color-parchment));
+  }
+
+  .wash--squash {
+    fill: color-mix(in srgb, var(--color-ochre) 75%, var(--color-tansy));
+  }
+
+  .speckle {
+    fill: var(--color-parchment);
+  }
+
+  .speckle .eye {
+    fill: var(--color-tansy);
+  }
+</style>
