@@ -131,9 +131,9 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
           <label><input type="radio" name="rc-scale" value="2" />Double</label>
         </fieldset>
         <fieldset class="rc-choice">
-          <legend>Show</legend>
-          <label><input type="radio" name="rc-view" value="steps" checked />Steps</label>
-          <label><input type="radio" name="rc-view" value="table" />Table</label>
+          <legend>Table</legend>
+          <label><input type="radio" name="rc-view" value="steps" checked />Hide</label>
+          <label><input type="radio" name="rc-view" value="table" />Show</label>
         </fieldset>
         <button type="button" class="rc-start" data-rc-start>Start cooking</button>
       </div>
@@ -991,7 +991,7 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
   }
 
   /* The step list is the recipe and is always there. The table is an overview that sits
-     above it: the inline script after the card opens it where it fits, and the Show
+     above it: the inline script after the card opens it where it fits, and the Table
      control puts it away or brings it back. */
   .recipe-card:not([data-view]) .rc-table-frame {
     display: none;
