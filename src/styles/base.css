@@ -304,6 +304,9 @@
     )::after {
     content: ' ↗';
     font-size: 0.75em;
+    /* Raised, but without a line box of its own: with one, every line that holds an
+       arrow came out a pixel or two taller than its neighbours. */
+    line-height: 0;
     vertical-align: super;
     opacity: 0.7;
     margin-left: 0.1em;
@@ -481,41 +484,35 @@
     }
   }
 
-  /* Copy button styling */
+  /* Copy button: a small mark in the block's own ink, in the corner of the sheet */
   .astro-code .copy-button {
     position: absolute;
-    top: var(--space-sm);
-    right: var(--space-sm);
-    background: rgba(60, 56, 54, 0.8); /* gruvbox bg1 with transparency */
-    border: 1px solid rgba(168, 153, 132, 0.3) !important; /* gruvbox light gray */
-    border-radius: 999px;
-    padding: 0; /* ensure icon is centered within fixed size */
-    width: 32px;
-    height: 32px;
-    font-size: 0; /* Hide text content */
-    line-height: 0; /* avoid baseline affecting centering */
-    box-sizing: border-box;
-    color: #a89984; /* gruvbox light gray/fg4 */
-    cursor: pointer;
-    opacity: 0.08;
-    transition:
-      opacity 0.15s ease,
-      transform 0.15s ease,
-      background 0.2s ease,
-      color 0.2s ease;
-    user-select: none;
-    pointer-events: auto;
+    top: 0.2rem;
+    right: 0.2rem;
     z-index: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-
-    box-shadow: 0 2px 6px rgba(40, 40, 40, 0.4); /* gruvbox bg shadow */
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 0 !important;
+    border-radius: 2px;
+    background: transparent;
+    color: var(--color-text-muted);
+    font-size: 0; /* Hide text content */
+    line-height: 0; /* avoid baseline affecting centering */
+    cursor: pointer;
+    opacity: 0.45;
+    user-select: none;
+    transition:
+      opacity 0.15s ease,
+      color 0.15s ease;
   }
 
   .astro-code .copy-button svg {
-    width: 16px;
-    height: 16px;
+    width: 15px;
+    height: 15px;
     display: block;
     color: inherit;
   }
@@ -527,55 +524,37 @@
   }
 
   .astro-code:hover .copy-button {
-    opacity: 0.5;
+    opacity: 0.8;
   }
 
-  .astro-code .copy-button:hover {
-    background: rgba(80, 73, 69, 0.9); /* gruvbox bg2 */
-    color: #83a598; /* gruvbox bright blue */
-    border-color: rgba(131, 165, 152, 0.5); /* gruvbox bright blue with transparency */
-    transform: translateY(-1px);
-    box-shadow: 0 3px 8px rgba(40, 40, 40, 0.6); /* stronger gruvbox shadow */
+  .astro-code .copy-button:hover,
+  .astro-code .copy-button:focus-visible {
+    color: var(--color-link-hover);
     opacity: 1;
   }
 
-  .astro-code .copy-button:focus-visible {
-    outline-color: #83a598; /* gruvbox bright blue for accessibility */
-  }
-
-  .astro-code .copy-button:active {
-    transform: translateY(0);
-    box-shadow: 0 1px 3px rgba(40, 40, 40, 0.3); /* gruvbox bg shadow on press */
-  }
-
   .astro-code .copy-button.copied {
-    background: rgba(80, 73, 69, 0.9); /* gruvbox bg2 */
-    color: #b8bb26; /* gruvbox bright green */
-    border-color: rgba(184, 187, 38, 0.5); /* gruvbox bright green with transparency */
+    color: var(--color-moss);
+    opacity: 1;
   }
 
   /* Collapsible code sections with botanical styling */
+  /* A folded slip: the code is tucked under its own label until it is wanted. */
   details.code-collapse {
     margin: var(--space-md) 0;
-    border: 1px solid var(--color-lichen);
-    border-radius: 10px;
+    border: 1px solid var(--rule-ink);
+    border-radius: 2px;
     overflow: hidden;
-
-    /* Subtle manuscript frame */
-    box-shadow:
-      0 6px 14px color-mix(in srgb, var(--color-sage) 10%, transparent),
-      0 2px 4px color-mix(in srgb, var(--color-walnut) 6%, transparent);
     background: var(--color-surface);
   }
 
   details.code-collapse summary {
     position: relative;
-    padding: var(--space-xs) calc(var(--space-lg));
+    padding: 0.5rem var(--space-sm) 0.5rem 1.6rem;
     background: var(--color-surface);
-    font-family: var(--font-heading);
-    font-weight: 500;
-    font-size: var(--text-md);
-    line-height: 1;
+    font-family: var(--font-body-personal);
+    font-size: var(--text-sm);
+    line-height: 1.2;
     color: var(--color-walnut);
     cursor: pointer;
     user-select: none;
@@ -583,9 +562,10 @@
     display: flex;
     align-items: center;
     min-height: auto;
-    transition: all 0.2s ease;
-    border-bottom: 1px solid color-mix(in srgb, var(--color-lichen) 40%, transparent);
-    box-shadow: 0 1px 2px color-mix(in srgb, var(--color-walnut) 6%, transparent);
+  }
+
+  details.code-collapse[open] summary {
+    border-bottom: 1px solid var(--rule-ink);
   }
 
   details.code-collapse summary p {
@@ -600,9 +580,10 @@
   details.code-collapse summary::before {
     content: '▸';
     color: var(--color-moss);
+    font-style: normal;
     line-height: 1;
     position: absolute;
-    left: var(--space-xs);
+    left: 0.55rem;
     top: 50%;
     transform: translateY(-50%);
     transition: transform 0.2s ease;
@@ -620,11 +601,6 @@
 
   details.code-collapse summary:hover::before {
     color: var(--color-ochre);
-  }
-
-  details.code-collapse[open] summary {
-    border-bottom-color: var(--color-lichen);
-    margin-bottom: 0;
   }
 
   /* Content area styling - minimal overrides for collapsible context */

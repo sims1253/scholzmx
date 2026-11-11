@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Niche from '../components/Niche.astro';
 ---
 
 <BaseLayout
@@ -16,6 +17,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <p class="way-back">
       The way back leads <a href="/">home</a>, or to the <a href="/blog">blog</a>.
     </p>
+    {/* An empty niche: whatever was kept here is gone, and the candle is out. */}
+    <div class="empty-niche">
+      <Niche kind="bare" href="/" name="Back home" caption="this niche is empty" />
+    </div>
   </section>
 </BaseLayout>
 
@@ -27,5 +32,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 
   .way-back {
     margin-top: var(--space-lg);
+  }
+
+  .empty-niche {
+    width: 11rem;
+    margin-top: var(--space-xl);
   }
 </style>
