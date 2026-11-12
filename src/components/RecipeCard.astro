@@ -131,9 +131,9 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
           <label><input type="radio" name="rc-scale" value="2" />Double</label>
         </fieldset>
         <fieldset class="rc-choice">
-          <legend>Show</legend>
-          <label><input type="radio" name="rc-view" value="steps" checked />Steps</label>
-          <label><input type="radio" name="rc-view" value="table" />Table</label>
+          <legend>Table</legend>
+          <label><input type="radio" name="rc-view" value="steps" checked />Hide</label>
+          <label><input type="radio" name="rc-view" value="table" />Show</label>
         </fieldset>
         <button type="button" class="rc-start" data-rc-start>Start cooking</button>
       </div>
@@ -344,6 +344,21 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
   </div>
 </section>
 
+{/* Open with the table above the steps where the table fits the window's width, and
+    with the steps alone where it would scroll sideways. Decided here, while the page is still being read in, so the card
+    never changes shape after it is shown. Phones are not asked: a table never fits one,
+    and measuring it would make the browser lay the page out early for nothing. Without
+    JavaScript the step list stays: it is the complete recipe. */}
+<script is:inline>
+  (() => {
+    const card = document.currentScript.previousElementSibling;
+    const wrap = card.querySelector('.rc-table-wrap');
+    if (!wrap || !matchMedia('(min-width: 48rem)').matches) return;
+    card.dataset.view = 'table';
+    if (wrap.scrollWidth > wrap.clientWidth + 1) card.dataset.view = 'steps';
+  })();
+</script>
+
 <script>
   import '../scripts/recipe-card';
 </script>
@@ -352,7 +367,7 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
   /* The card may be wider than the reading column: it breaks out to the page, then
      shrinks to what it holds, so a small recipe is a small card. */
   .recipe-card {
-    --card-width: min(60rem, 100cqi - 2 * var(--space-md));
+    --card-width: min(72rem, 100cqi - 2 * var(--space-md));
     --rc-rule: color-mix(in srgb, var(--color-ink-dark) 16%, var(--paper-sheet));
     /* Hands-off time is hatched, as in a timing chart: you can walk away. */
     --rc-shade: repeating-linear-gradient(
@@ -975,16 +990,25 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     color: var(--color-ochre);
   }
 
-  /* One view at a time: the steps unless the reader asks for the table, which then gets
-     the room it needs. */
-  .recipe-card:not([data-view]) .rc-table-frame,
-  .recipe-card[data-view='steps'] .rc-table-frame,
-  .recipe-card[data-view='table'] .rc-steps-view {
+  /* The step list is the recipe and is always there. The table is an overview that sits
+     above it: the inline script after the card opens it where it fits, and the Table
+     control puts it away or brings it back. */
+  .recipe-card:not([data-view]) .rc-table-frame {
     display: none;
   }
 
-  .recipe-card[data-view='table'] {
-    --card-width: min(72rem, 100cqi - 2 * var(--space-md));
+  /* Put away, the table still lends the sheet its width (the sheet is as wide as what
+     it holds), so switching views does not move the sheet. */
+  .recipe-card[data-view='steps'] .rc-table-frame {
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+  }
+
+  .recipe-card[data-view='table'] .rc-steps-view {
+    margin-top: var(--space-xl);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--rc-rule);
   }
 
   @media (max-width: 48rem) {
@@ -1308,6 +1332,9 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
 
     .rc-table-frame {
       display: block !important;
+      height: auto !important;
+      overflow: visible !important;
+      visibility: visible !important;
     }
 
     .rc-table-wrap {

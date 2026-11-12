@@ -93,15 +93,16 @@ function initRecipeCard(card: HTMLElement): void {
     frame.classList.toggle('has-more', wrap.scrollWidth - wrap.clientWidth - wrap.scrollLeft > 2);
   };
   wrap?.addEventListener('scroll', showMore, { passive: true });
+  // Also runs when the table is first shown or a view is chosen: its size changes then.
   if (wrap) new ResizeObserver(showMore).observe(wrap);
 
   const setView = (view: string) => {
     card.dataset.view = view;
     const radio = card.querySelector<HTMLInputElement>(`input[name="rc-view"][value="${view}"]`);
     if (radio) radio.checked = true;
-    showMore();
   };
-  setView('steps');
+  // The card arrives with its view already chosen (RecipeCard.astro's inline script).
+  setView(card.dataset.view ?? 'steps');
 
   card.addEventListener('change', (event) => {
     const input = event.target;

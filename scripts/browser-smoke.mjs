@@ -145,7 +145,27 @@ try {
     );
   }
 
-  await page.goto(`${baseURL}/recipes/hokkaido-dinner-rolls/`, { waitUntil: 'networkidle0' });
+  // A recipe opens with the table where the table fits, and with the steps alone elsewhere.
+  // The steps are the recipe: they show in both views.
+  for (const [width, view] of [
+    [1440, 'table'],
+    [390, 'steps'],
+  ]) {
+    await page.setViewport({ width, height: 844 });
+    await page.goto(`${baseURL}/recipes/hokkaido-dinner-rolls/`, { waitUntil: 'networkidle0' });
+    const opened = await page.$eval('[data-recipe-card]', (card) => ({
+      view: card.dataset.view,
+      checked: card.querySelector('input[name="rc-view"]:checked')?.value,
+      steps: card.querySelector('.rc-steps-view').getClientRects().length > 0,
+      hidden:
+        card.querySelector('.rc-table-wrap').scrollWidth -
+        card.querySelector('.rc-table-wrap').clientWidth,
+    }));
+    assert.equal(opened.view, view, `Recipe view at ${width}px`);
+    assert.equal(opened.checked, view, `Recipe view control at ${width}px`);
+    if (view === 'table') assert.ok(opened.hidden <= 1, 'The opening table must not scroll');
+    assert.ok(opened.steps, `The step list must show at ${width}px`);
+  }
   // Force lazy images to load before checking their decoded dimensions.
   await page.$$eval('img', async (images) => {
     for (const image of images) {
