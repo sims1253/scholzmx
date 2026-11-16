@@ -1,0 +1,156 @@
+/* Maths: MathML from src/lib/markdown/rehype-temml.ts, laid out by the browser.
+   Rules taken from Temml's stylesheet, trimmed to what $...$ authoring reaches. */
+
+@font-face {
+  font-family: 'Grotto Math';
+  src: url('/fonts/math.woff2') format('woff2');
+  font-display: swap;
+}
+
+math {
+  /* The shipped font first so every system sets maths the same, beside ET Book. */
+  font-family: 'Grotto Math', 'STIX Two Math', 'Cambria Math', 'Latin Modern Math', math;
+  font-style: normal;
+  font-weight: normal;
+  font-size-adjust: none;
+  letter-spacing: normal;
+  text-indent: 0;
+  text-transform: none;
+  direction: ltr;
+  /* Keep the dot on i and j in Firefox. */
+  font-feature-settings: 'dtls' off;
+}
+
+math * {
+  border-color: currentcolor;
+}
+
+/* Inline maths may break after a relation or operator, as in TeX (Chromium). */
+math:not(.tml-display) {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+}
+
+@supports (-moz-appearance: none) {
+  math:not(.tml-display) {
+    display: inline;
+  }
+}
+
+/* Long equations scroll inside their own box instead of widening the page. */
+.math-display {
+  margin: 1.5em 0;
+  overflow: auto hidden;
+}
+
+math.tml-display {
+  display: block;
+  width: 100%;
+}
+
+mo.tml-prime {
+  font-feature-settings: 'ssty';
+}
+
+/* Cramped superscripts in WebKit. */
+mfrac > :nth-child(2),
+msqrt,
+mover > :first-child {
+  math-shift: compact;
+}
+
+.tml-right {
+  text-align: right;
+}
+
+.tml-left {
+  text-align: left;
+}
+
+/* Chromium and WebKit: italic correction on superscripts. */
+@supports not (-moz-appearance: none) {
+  .tml-sml-pad {
+    padding-left: 0.05em;
+  }
+
+  .tml-med-pad {
+    padding-left: 0.1em;
+  }
+
+  .tml-lrg-pad {
+    padding-left: 0.15em;
+  }
+}
+
+/* WebKit: place accents over italic letters. */
+@supports (-webkit-backdrop-filter: blur(1px)) {
+  .wbk-acc {
+    transform: translate(0, 0.431em);
+  }
+
+  .wbk-sml {
+    transform: translate(0.07em, 0);
+  }
+
+  .wbk-sml-acc {
+    transform: translate(0.07em, 0.431em);
+  }
+
+  .wbk-med {
+    transform: translate(0.14em, 0);
+  }
+
+  .wbk-med-acc {
+    transform: translate(0.14em, 0.431em);
+  }
+
+  .wbk-lrg {
+    transform: translate(0.21em, 0);
+  }
+
+  .wbk-lrg-acc {
+    transform: translate(0.21em, 0.431em);
+  }
+}
+
+/* Chromium only: place accents over italic letters. */
+@supports (not (-webkit-backdrop-filter: blur(1px))) and (not (-moz-appearance: none)) {
+  .chr-sml {
+    transform: translate(0.07em, 0);
+  }
+
+  .chr-med {
+    transform: translate(0.14em, 0);
+  }
+
+  .chr-lrg {
+    transform: translate(0.21em, 0);
+  }
+
+  /* Chromium aligns MathML table cells only with its own keywords. */
+  .tml-right {
+    /* stylelint-disable-next-line declaration-property-value-no-unknown */
+    text-align: -webkit-right;
+  }
+
+  .tml-left {
+    /* stylelint-disable-next-line declaration-property-value-no-unknown */
+    text-align: -webkit-left;
+  }
+}
+
+/* Rows of align and aligned. */
+mtable.tml-jot > mtr > mtd {
+  padding-block: 0.7ex;
+}
+
+/* Equation numbers of align and equation. */
+.post-content {
+  counter-reset: tmlEqnNo;
+}
+
+.tml-eqn::before {
+  counter-increment: tmlEqnNo;
+  content: '(' counter(tmlEqnNo) ')';
+}

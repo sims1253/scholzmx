@@ -33,8 +33,6 @@ export interface Props {
   tone?: 'personal' | 'serious';
   layout?: 'prose' | 'listing' | 'cards' | 'wide' | 'full';
   prose?: boolean;
-  /** The page may contain KaTeX maths, so it loads KaTeX's stylesheet and font. */
-  math?: boolean;
 }
 
 const {
@@ -44,7 +42,6 @@ const {
   includeQuoteSection = false,
   tone = 'personal',
   layout = 'prose',
-  math = false,
   prose = false,
 } = Astro.props;
 
@@ -235,27 +232,6 @@ const hasInitial = isHome || /^\/(blog|recipes)\/.+/.test(currentPath);
         type="font/woff2"
         crossorigin
       />
-    )}
-
-    {math && (
-      <>
-        <link
-          rel="preload"
-          href="/katex/fonts/KaTeX_Main-Regular.woff2"
-          as="font"
-          type="font/woff2"
-          crossorigin
-        />
-        <link
-          rel="preload"
-          href="/katex/katex.min.css"
-          as="style"
-          onload={"this.onload=null;this.rel='stylesheet'"}
-        />
-        <noscript>
-          <link rel="stylesheet" href="/katex/katex.min.css" />
-        </noscript>
-      </>
     )}
 
     {/* Load the decorative initial before it can change the first paragraph's wrapping. */}

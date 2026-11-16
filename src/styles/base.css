@@ -412,20 +412,6 @@
     word-break: normal;
   }
 
-  /* Optimize KaTeX math rendering */
-  .katex {
-    /* Improve font rendering */
-    font-feature-settings: 'liga' 0;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  .katex-display {
-    /* Better spacing and performance */
-    contain: layout style;
-    margin: 1.5em 0;
-  }
-
   /* Note: Font faces moved to consolidated /src/styles/fonts.css */
 
   /* Utility classes */
@@ -448,7 +434,7 @@
   }
 
   /* Inline code with subtle handcrafted styling */
-  code:not([class]):not(.katex) {
+  code:not([class]) {
     font-family: var(--font-mono);
     background: color-mix(in srgb, var(--color-surface) 95%, var(--color-sage));
     border: 1px solid color-mix(in srgb, var(--color-lichen) 30%, transparent);
@@ -459,12 +445,12 @@
   }
 
   /* Even lighter styling for inline code in headings */
-  h1 code:not([class]):not(.katex),
-  h2 code:not([class]):not(.katex),
-  h3 code:not([class]):not(.katex),
-  h4 code:not([class]):not(.katex),
-  h5 code:not([class]):not(.katex),
-  h6 code:not([class]):not(.katex) {
+  h1 code:not([class]),
+  h2 code:not([class]),
+  h3 code:not([class]),
+  h4 code:not([class]),
+  h5 code:not([class]),
+  h6 code:not([class]) {
     background: color-mix(in srgb, var(--color-surface) 98%, var(--color-sage));
     border-color: color-mix(in srgb, var(--color-lichen) 20%, transparent);
     padding: 1px 3px;
