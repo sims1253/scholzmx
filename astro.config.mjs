@@ -56,8 +56,8 @@ export default defineConfig({
 
   // Optimize performance
   build: {
-    // Keep CSS files separate - large inline CSS causes render delay
-    inlineStylesheets: 'never',
+    // Inline stylesheets under 4 kB, so they block no request; the shared one stays a cached file
+    inlineStylesheets: 'auto',
   },
 
   // Reduce bundle size and improve loading

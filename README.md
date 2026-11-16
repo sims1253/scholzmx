@@ -194,7 +194,7 @@ The October updates add a few useful options for future work:
   now; the new input support is useful if tool versions move to mise later.
 
 ### Performance Philosophy
-- Inline styles are disabled (separate CSS files for better caching)
+- Stylesheets under 4 kB are inlined; the large shared one stays a cached file
 - Aggressive image optimization with Sharp
 - CSS code splitting for faster initial loads
 - Everything optimized for Core Web Vitals
