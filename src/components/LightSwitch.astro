@@ -127,11 +127,12 @@
 
 <style>
   /* --lit is 1 by torchlight, whether chosen, from the clock or from the system; the
-     flame dances and its glow flickers only then. */
+     flame dances and its glow flickers only then. tokens.colors.css owns the rule for
+     when the torch is lit, through its --by-day and --by-torch switches. */
   .light-switch {
-    --lit: 0;
-    --dance: none;
-    --flicker: none;
+    --lit: var(--by-day, 0) var(--by-torch, 1);
+    --dance: var(--by-day, none) var(--by-torch, flame-dance 1.7s ease-in-out infinite);
+    --flicker: var(--by-day, none) var(--by-torch, torch-flicker 5.3s linear infinite);
 
     display: inline-flex;
     align-items: center;
@@ -148,20 +149,6 @@
     color: var(--color-ink-medium);
     font: inherit;
     cursor: pointer;
-  }
-
-  :global(:root[data-theme='dark']) .light-switch {
-    --lit: 1;
-    --dance: flame-dance 1.7s ease-in-out infinite;
-    --flicker: torch-flicker 5.3s linear infinite;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :global(:root:not([data-theme='light'])) .light-switch {
-      --lit: 1;
-      --dance: flame-dance 1.7s ease-in-out infinite;
-      --flicker: torch-flicker 5.3s linear infinite;
-    }
   }
 
   .light-switch:hover {
