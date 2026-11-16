@@ -5,13 +5,11 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import { lightCodeTheme, darkCodeTheme } from './src/lib/shiki-themes.mjs';
 import { unified } from '@astrojs/markdown-remark';
-import purgecss from 'astro-purgecss';
 import pagefind from 'astro-pagefind';
-import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://www.scholzmx.com',
+  site: 'https://scholzmx.com',
   // Preserve the existing spaces between inline elements across the Astro 7 upgrade.
   compressHTML: true,
   redirects: {
@@ -29,88 +27,7 @@ export default defineConfig({
     // Redirect old blog listing page to new one
     '/post/': '/blog/',
   },
-  integrations: [
-    sitemap(),
-    pagefind(),
-    // PurgeCSS with conservative minimal safelist
-    purgecss({
-      // Include markdown/quarto so typography/dropcaps classes referenced in content are detected
-      content: [
-        './src/**/*.{astro,js,jsx,ts,tsx,vue,svelte,md,mdx}',
-        './src/content/**/*.{md,mdx,qmd}',
-        './public/**/*.html',
-      ],
-      safelist: [
-        // Keep all CSS custom properties (variables)
-        /^--/,
-        /^tw:/,
-        /^pagefind-/,
-        // Keep classes that might be added dynamically by JavaScript
-        'active',
-        'focus',
-        'hover',
-        'disabled',
-        // Keep torch toggle states
-        'torch-toggle',
-        'copied',
-        // Keep manuscript and page elements
-        /^manuscript/,
-        /^page/,
-        /^longform/, // legacy during migration
-        /^prose/,
-        /^layout-/,
-        /^personal-content/,
-        /^serious-content/,
-        // Keep navigation states
-        /^nav-/,
-        /^site-/,
-        // Keep botanical and artistic elements
-        /^botanical/,
-        /^border/,
-        /^vine/,
-        /^portrait/,
-        // Keep math/code elements
-        'astro-code',
-        'copy-button',
-        // Dropcap variants generated dynamically in DropCap.astro - CRITICAL
-        /^dropcap$/,
-        /^dropcap--/,
-        // ImageFrame dynamic/toggled classes
-        /^image-frame/,
-        'primary-image',
-        'alternate-image',
-        'clickable',
-        'show-alternate',
-        /^fill-/,
-        // Margin notes injected via JS on blog posts
-        'margin-note',
-        'notes-container',
-        'note-anchor',
-        'visible',
-        // Keep specific Tailwind utilities (NOT broad regex)
-        'tw-grid',
-        'tw-grid-cols-1',
-        'tw-grid-cols-2',
-        'tw-grid-cols-3',
-        'tw-gap-4',
-        'tw-gap-6',
-        'tw-w-full',
-        'tw-max-w-5xl',
-        'tw-max-w-6xl',
-        'tw-mx-auto',
-        'tw-px-md',
-        // Responsive variants for grid
-        'md:tw-grid-cols-2',
-        'lg:tw-grid-cols-3',
-        // Theme-toggle and quote states set from scripts
-        'is-turning',
-        'open',
-      ],
-      keyframes: true,
-      // Keep all @font-face declarations so production keeps heading/body/dropcap fonts
-      fontFace: false,
-    }),
-  ],
+  integrations: [sitemap(), pagefind()],
   // Enable automatic image optimization
   image: {
     service: {
@@ -139,13 +56,12 @@ export default defineConfig({
 
   // Optimize performance
   build: {
-    // Keep CSS files separate - large inline CSS causes render delay
-    inlineStylesheets: 'never',
+    // Inline stylesheets under 4 kB, so they block no request; the shared one stays a cached file
+    inlineStylesheets: 'auto',
   },
 
   // Reduce bundle size and improve loading
   vite: {
-    plugins: [tailwindcss()],
     css: {
       transformer: 'lightningcss',
       lightningcss: {

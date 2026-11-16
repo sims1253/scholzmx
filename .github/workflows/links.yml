@@ -24,7 +24,7 @@ jobs:
     permissions:
       issues: write
     env:
-      SITE: https://www.scholzmx.com
+      SITE: https://scholzmx.com
       ISSUE_TITLE: Broken links on the published site
     steps:
       - name: List the published pages

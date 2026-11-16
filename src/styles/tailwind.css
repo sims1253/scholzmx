@@ -1,4 +1,0 @@
-/* Compile utilities without Preflight so the existing base styles remain in control. */
-@import 'tailwindcss/theme.css' layer(theme) prefix(tw);
-@import 'tailwindcss/utilities.css' layer(utilities) prefix(tw);
-@config '../../tailwind.config.mjs';
