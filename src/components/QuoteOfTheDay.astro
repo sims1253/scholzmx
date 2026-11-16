@@ -5,29 +5,66 @@ import { personalQuotes } from '../data/quotes.js';
 // Get random quote for initial display
 const getRandomQuote = () => personalQuotes[Math.floor(Math.random() * personalQuotes.length)];
 const initialQuote = getRandomQuote();
+// A long quote sets a size smaller, so it still fits under the portrait on a laptop's screen.
+const LONG_QUOTE = 120;
+const isLong = initialQuote!.text.length > LONG_QUOTE;
 
-// Flower heads on the sprig; the first two are open, the rest bloom one per new quote.
-const heads = [
-  [30, 12, true],
-  [21, 19, true],
-  [39, 20, false],
-  [14, 29, false],
-  [45, 31, false],
-  [26, 27, false],
-  [35, 36, false],
+// Tansy heads in the frame's two corners: [x, y, open]. Two are open; the rest open one
+// per new quote, first in the upper corner, then in the lower.
+const upperHeads = [
+  [9, 9, true],
+  [19, 5, false],
+  [5, 19, false],
+] as const;
+const lowerHeads = [
+  [51, 51, true],
+  [41, 55, false],
+  [55, 41, false],
+  [47, 44, false],
 ] as const;
 ---
 
 <figure class="quote-of-the-day">
-  <svg class="quote-sprig" viewBox="0 0 60 84" aria-hidden="true">
+  {/* The frame: a vine climbs out of each corner along the edges. The stems stretch with
+      the quote; the corners, with their leaves and tansy, keep their shape. */}
+  <svg class="quote-vine" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M7 1.5C28 3.5 47-.5 70 2.5" />
+    <path d="M1.5 7C3.5 32-.5 60 2 84 2.5 95 8 98.5 16 98" />
+    <path class="thin" d="M3 12C5 38 1 62 4 88" />
+    <path d="M30 98.5C52 96.5 72 101 93 98.5" />
+    <path d="M98.5 93C96.5 74 100.5 58 98 40" />
+  </svg>
+  <svg class="quote-leaf quote-leaf--top" viewBox="0 0 20 12" aria-hidden="true">
+    <path class="leaf" d="M1 9C6 1 14 0 19 3 14 10 7 11 1 9Z" />
+    <path class="vein" d="M1 9C7 6 12 4 17 3.5" />
+  </svg>
+  <svg class="quote-leaf quote-leaf--side" viewBox="0 0 20 12" aria-hidden="true">
+    <path class="leaf" d="M1 9C6 1 14 0 19 3 14 10 7 11 1 9Z" />
+    <path class="vein" d="M1 9C7 6 12 4 17 3.5" />
+  </svg>
+  <svg class="quote-corner quote-corner--upper" viewBox="0 0 60 60" aria-hidden="true">
     <path
-      class="sprig-stem"
-      d="M30 83C29 66 31 52 30 40M30 40 30 12M30 40 21 19M30 40 39 20M30 44 14 29M31 47 45 31M30 34 26 27M31 42 35 36"
-    ></path>
-    <path class="sprig-leaf" d="M30 66c-7-2-13-7-15-14 6 1 12 5 15 14Z"></path>
-    <path class="sprig-leaf" d="M30 58c7-3 12-9 13-16-6 2-11 7-13 16Z"></path>
-    {heads.map(([cx, cy, open]) => (
-      <circle class:list={['sprig-head', { open }]} cx={cx} cy={cy} r="4.2" />
+      class="stem"
+      d="M14 60C12 42 12 26 16 17 25 13 41 13 60 15M16 17 9 9M16 17 19 5M16 17 5 19"
+    />
+    <path class="leaf" d="M15 34C7 33 2 28 1 21 8 22 13 27 15 34Z" />
+    <path class="leaf" d="M34 14C34 7 39 2 46 1 45 8 40 12 34 14Z" />
+    <path class="vein" d="M15 34C10 30 6 26 2 22M34 14C37 10 41 5 45 2" />
+    {upperHeads.map(([cx, cy, open]) => (
+      <circle class:list={['tansy-head', { open }]} cx={cx} cy={cy} r="3.8" />
+    ))}
+  </svg>
+  <svg class="quote-corner quote-corner--lower" viewBox="0 0 60 60" aria-hidden="true">
+    <path
+      class="stem"
+      d="M46 0C48 18 48 34 44 43 35 47 19 47 0 45M44 43 51 51M44 43 41 55M44 43 55 41M44 43 47 44"
+    />
+    <path class="leaf" d="M45 26C53 27 58 32 59 39 52 38 47 33 45 26Z" />
+    <path class="leaf" d="M26 46C26 53 21 58 14 59 15 52 20 48 26 46Z" />
+    <path class="leaf" d="M47 12C52 8 57 9 59 12 55 16 51 15 47 12Z" />
+    <path class="vein" d="M45 26C50 30 54 34 58 38M26 46C23 50 19 55 15 58" />
+    {lowerHeads.map(([cx, cy, open]) => (
+      <circle class:list={['tansy-head', { open }]} cx={cx} cy={cy} r="3.8" />
     ))}
   </svg>
   <!-- A bee comes to whichever flower has just opened. -->
@@ -53,7 +90,13 @@ const heads = [
       id="quote-wrapper-button"
     >
       <blockquote class="daily-quote">
-        <p class="quote-text" id="quote-text">{initialQuote!.text}</p>
+        <p
+          class:list={['quote-text', { 'is-long': isLong }]}
+          id="quote-text"
+          data-long={LONG_QUOTE}
+        >
+          {initialQuote!.text}
+        </p>
         <footer class="quote-attribution">
           <cite class="quote-author" id="quote-author">— {initialQuote!.author}</cite>
         </footer>
@@ -81,6 +124,10 @@ const heads = [
 
       setTimeout(() => {
         quoteText.textContent = newQuote!.text;
+        quoteText.classList.toggle(
+          'is-long',
+          newQuote!.text.length > Number(quoteText.dataset.long)
+        );
         quoteAuthor.textContent = `— ${newQuote!.author}`;
         container.classList.remove('is-turning');
 
@@ -98,9 +145,9 @@ const heads = [
     }
   }
 
-  // Every quote read opens one more tansy flower on the sprig.
+  // Every quote read opens one more tansy flower in the frame.
   function bloom(): Element | null {
-    const head = document.querySelector('.quote-sprig .sprig-head:not(.open)');
+    const head = document.querySelector('.quote-of-the-day .tansy-head:not(.open)');
     head?.classList.add('open');
     return head;
   }
@@ -109,7 +156,7 @@ const heads = [
   function visit(head: Element | null) {
     const figure = document.querySelector<HTMLElement>('.quote-of-the-day');
     const bee = figure?.querySelector<HTMLElement>('.quote-bee');
-    const open = figure?.querySelectorAll('.sprig-head.open') ?? [];
+    const open = figure?.querySelectorAll('.tansy-head.open') ?? [];
     const target = head ?? open[Math.floor(Math.random() * open.length)];
     if (!figure || !bee || !target) return;
     const box = figure.getBoundingClientRect();
@@ -133,38 +180,109 @@ const heads = [
 </script>
 
 <style>
+  /* A slip of the wall's own paper, framed by a vine that climbs out of two corners. The
+     frame sits in the padding, so it adds no more height than the padding itself. */
   .quote-of-the-day {
     position: relative;
-    display: grid;
-    grid-template-columns: 3rem minmax(0, 1fr);
-    align-items: end;
-    gap: var(--space-sm);
-    max-width: 30rem;
-    margin: 0 auto var(--space-xl);
+    max-width: 22rem;
+    margin: 0;
+    padding: 0.75rem 0.9rem 0.85rem 1rem;
   }
 
-  .quote-sprig {
-    width: 3rem;
-    height: auto;
+  .quote-vine {
+    position: absolute;
+    inset: 0.3rem;
+    width: calc(100% - 0.6rem);
+    height: calc(100% - 0.6rem);
     overflow: visible;
+    pointer-events: none;
   }
 
-  .sprig-stem {
+  .quote-vine path {
     fill: none;
     stroke: var(--color-moss);
-    stroke-width: 1.3;
+    stroke-width: 1.2;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .quote-vine .thin {
+    stroke-width: 0.7;
+    opacity: 0.7;
+  }
+
+  .quote-corner,
+  .quote-leaf {
+    position: absolute;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .quote-corner {
+    width: 3.1rem;
+    height: 3.1rem;
+  }
+
+  .quote-corner--upper {
+    top: -0.45rem;
+    left: -0.45rem;
+  }
+
+  .quote-corner--lower {
+    right: -0.45rem;
+    bottom: -0.45rem;
+  }
+
+  .quote-leaf {
+    width: 1.05rem;
+    height: 0.65rem;
+  }
+
+  /* At the ends of the stems: one along the top, one up the right side */
+  .quote-leaf--top {
+    top: 0;
+    left: calc(0.3rem + 70% - 0.3rem);
+    transform: rotate(-8deg);
+  }
+
+  .quote-leaf--side {
+    top: calc(0.3rem + 40% - 1rem);
+    right: -0.15rem;
+    transform: rotate(-80deg);
+  }
+
+  .stem,
+  .vein {
+    fill: none;
+    stroke: var(--color-moss);
     stroke-linecap: round;
   }
 
-  .sprig-leaf {
-    fill: color-mix(in srgb, var(--color-moss) 55%, transparent);
+  .stem {
+    stroke-width: 1.3;
   }
 
-  .sprig-head {
+  .vein {
+    stroke-width: 0.6;
+    opacity: 0.8;
+  }
+
+  .leaf {
+    fill: color-mix(in srgb, var(--color-moss) 50%, transparent);
+    stroke: var(--color-moss);
+    stroke-width: 0.6;
+  }
+
+  .quote-leaf .vein {
+    stroke-width: 0.8;
+  }
+
+  /* Tansy: a closed bud is a small green button; an open head is a yellow one. */
+  .tansy-head {
     fill: var(--color-moss);
     stroke: transparent;
     stroke-width: 1;
-    transform: scale(0.38);
+    transform: scale(0.45);
     transform-box: fill-box;
     transform-origin: center;
     transition:
@@ -172,10 +290,15 @@ const heads = [
       fill 0.6s ease;
   }
 
-  .sprig-head.open {
+  .tansy-head.open {
     fill: var(--color-tansy);
     stroke: color-mix(in srgb, var(--color-ochre) 70%, var(--color-ink-dark));
     transform: scale(1);
+  }
+
+  /* A reader's hand on the quote: the open heads lift a little toward it. */
+  .quote-of-the-day:has(.quote-interactive-wrapper:is(:hover, :focus-visible)) .tansy-head.open {
+    transform: scale(1.15);
   }
 
   .quote-container {
@@ -194,7 +317,7 @@ const heads = [
     width: 100%;
     background: none;
     border: none;
-    padding: var(--space-xs) var(--space-sm);
+    padding: 0.15rem 0.2rem;
     margin: 0;
     cursor: pointer;
     text-align: start;
@@ -227,7 +350,7 @@ const heads = [
   .quote-text {
     margin: 0;
     font-family: var(--font-body-personal);
-    font-size: var(--text-lg);
+    font-size: max(16px, 0.86rem);
     font-style: italic;
     line-height: 1.4;
     color: var(--color-text-secondary);
@@ -236,13 +359,18 @@ const heads = [
     hyphens: manual;
   }
 
+  .quote-text.is-long {
+    font-size: max(15px, 0.76rem);
+    line-height: 1.3;
+  }
+
   .quote-attribution {
-    margin: 0.35em 0 0;
+    margin: 0.3em 0 0;
   }
 
   .quote-author {
     font-family: var(--font-body-personal);
-    font-size: var(--text-sm);
+    font-size: max(15px, var(--text-xs));
     font-style: normal;
     color: var(--color-text-muted);
   }
@@ -342,7 +470,7 @@ const heads = [
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .sprig-head,
+    .tansy-head,
     .quote-container {
       transition: none;
     }
