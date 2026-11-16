@@ -4,18 +4,8 @@ import Series from '../components/Series.astro';
 import StackedCard from '../components/StackedCard.astro';
 import { publications } from '../data/publications';
 
-const publicationsByYear = publications.reduce<Record<number, (typeof publications)[number][]>>(
-  (acc, pub) => {
-    (acc[pub.year] ||= []).push(pub);
-    return acc;
-  },
-  {}
-);
-const years = Object.keys(publicationsByYear).sort((a, b) => Number(b) - Number(a));
-
 const SELF = 'Maximilian Scholz';
-const describe = (type: string, venue: string) =>
-  type === 'Thesis' ? venue : `${type === 'Journal' ? 'Journal article' : type}, ${venue}`;
+const kindOf = (type: string) => (type === 'Journal' ? 'Journal article' : type);
 const linkLabel = (kind: string) => (kind === 'pdf' || kind === 'doi' ? kind.toUpperCase() : kind);
 ---
 
@@ -23,9 +13,9 @@ const linkLabel = (kind: string) => (kind === 'pdf' || kind === 'doi' ? kind.toU
   title="Research"
   description="Research by Maximilian Scholz"
   tone="serious"
-  layout="listing"
+  layout="cards"
 >
-  <div class="index-page" style="--index-content: var(--card-max-width)">
+  <div class="research-page">
     <header class="page-header">
       <h1 class="page-title">Research</h1>
       <p class="page-lede">
@@ -39,33 +29,34 @@ const linkLabel = (kind: string) => (kind === 'pdf' || kind === 'doi' ? kind.toU
       </p>
     </header>
 
-    {years.map((year) => <section
-      class="index-group"
-      data-index-group
-      aria-labelledby={`year-${year}`}
-    >
-      <h2 class="index-label" id={`year-${year}`}>{year}</h2>
-      <div class="pub-cards">
-        {publicationsByYear[Number(year)]!.map((pub, index) => <StackedCard
-          seed={`pub/${year}/${index}/${pub.title}`}
-          title={pub.title}
-          subtitle={describe(pub.type, pub.venue)}
-          href={pub.links.pdf ?? pub.links.doi ?? pub.links.code}
-          layers={1}
-          ornament={false}
-          headingLevel={3}
-        >
-          <p class="authors">
-            <Series items={pub.authors.map((text) => ({ text, strong: text === SELF }))} />
-          </p>
+    {/* A drawer of catalogue cards, newest first. The year heads each card like a call
+        number, so the cards need no year headings between them. */}
+    <div class="pub-cards">
+      {publications.map((pub, index) => <StackedCard
+        seed={`pub/${pub.year}/${index}/${pub.title}`}
+        title={pub.title}
+        href={pub.links.pdf ?? pub.links.doi ?? pub.links.code}
+        material="index"
+        ornament={false}
+        headingLevel={2}
+      >
+        <p class="pub-call" slot="media">
+          <span class="pub-year">{pub.year}</span>
+          <span>{kindOf(pub.type)}</span>
+        </p>
+        <p class="pub-authors">
+          <Series items={pub.authors.map((text) => ({ text, strong: text === SELF }))} />
+        </p>
+        <p class="pub-venue">{pub.venue}</p>
+        <div class="sc-meta">
           <div class="sc-tags">
             {Object.entries(pub.links).map(([kind, url]) => <a class="sc-chip" href={url}>
               {linkLabel(kind)}
             </a>)}
           </div>
-        </StackedCard>)}
-      </div>
-    </section>)}
+        </div>
+      </StackedCard>)}
+    </div>
   </div>
 </BaseLayout>
 
@@ -76,20 +67,58 @@ const linkLabel = (kind: string) => (kind === 'pdf' || kind === 'doi' ? kind.toU
     color: var(--color-text-secondary);
   }
 
-  .pub-cards {
-    display: grid;
-    gap: var(--space-xl);
-    max-width: var(--card-max-width);
+  /* No years hang in the margin, so the drawer takes the full column. */
+  .research-page {
+    width: 100%;
+    max-width: 60rem;
+    margin-inline: auto;
   }
 
-  .authors {
-    margin: var(--space-xs) 0 0;
+  .pub-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+    gap: var(--space-md);
+  }
+
+  /* The heading line of a catalogue card: the year as call number, the kind of work
+     at the right, and the card's printed clay rule beneath. */
+  .pub-call {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-sm);
+    margin: 0 0 var(--space-xs);
+    padding-bottom: 0.2rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-clay) 45%, transparent);
+    font-family: var(--font-body-personal);
+    font-size: var(--text-sm);
+    font-style: italic;
+    color: var(--color-text-muted);
+  }
+
+  .pub-year {
+    font-family: var(--font-heading);
+    font-size: var(--text-lg);
+    font-style: normal;
+    font-variant-numeric: oldstyle-nums;
+    color: var(--color-moss);
+  }
+
+  .pub-authors {
+    margin: 0.2rem 0 0;
     font-size: var(--text-sm);
     color: var(--color-text-secondary);
   }
 
-  .authors :global(strong) {
+  .pub-authors :global(strong) {
     font-weight: 600;
     color: var(--color-text-primary);
+  }
+
+  .pub-venue {
+    margin: 0;
+    font-size: var(--text-sm);
+    font-style: italic;
+    color: var(--color-text-muted);
   }
 </style>

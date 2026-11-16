@@ -21,7 +21,7 @@ export interface RngFunctions {
  * @param isSheet - Whether this is a single-layer card
  * @param allowBookmark - Whether bookmarks are allowed (prop restriction)
  * @param allowTape - Whether tape corners are allowed (prop restriction)
- * @param ornament - Whether ornament doodles are enabled (prop restriction)
+ * @param ornament - Whether SVG doodles are enabled (prop restriction)
  * @param rng - Random number generation functions
  * @returns Object mapping item IDs to their properties
  */
@@ -40,7 +40,7 @@ export function processDoodadCategories(
   for (const category of categories) {
     // Check category enablement and prop restrictions
     let categoryEnabled = category.enabled;
-    if (category.id === 'doodles') {
+    if (category.id === 'svgDoodles') {
       categoryEnabled = categoryEnabled && ornament;
     }
 

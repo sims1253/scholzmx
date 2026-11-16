@@ -5,7 +5,7 @@ import StackedCard from '../components/StackedCard.astro';
 import { projects, projectName } from '../data/projects';
 ---
 
-<BaseLayout title="Projects" description="Selected projects" tone="serious" layout="listing">
+<BaseLayout title="Projects" description="Selected projects" tone="serious" layout="cards">
   <div class="projects-page">
     <header class="page-header">
       <h1 class="page-title">Projects & Software</h1>
@@ -14,6 +14,7 @@ import { projects, projectName } from '../data/projects';
       </p>
     </header>
 
+    {/* Workshop tags on a board: each tool hangs by its string, its print pasted on. */}
     <div class="project-cards">
       {projects.map((project, index) => {
         const { name, common } = projectName(project.title);
@@ -22,7 +23,7 @@ import { projects, projectName } from '../data/projects';
           title={name}
           subtitle={common}
           href={project.links[0]!.url}
-          layers={3}
+          material="tag"
           layout="side"
           class="project-card"
         >
@@ -30,16 +31,18 @@ import { projects, projectName } from '../data/projects';
             <Image
               src={project.banner}
               alt=""
-              width={176}
+              width={112}
               densities={[1, 2]}
-              loading={index < 2 ? 'eager' : 'lazy'}
+              loading={index < 4 ? 'eager' : 'lazy'}
               decoding="async"
             />
           </div>
           <p class="project-description">{project.description}</p>
-          <p class="project-meta">{project.tech.join(', ')}, {project.year}.</p>
-          <div class="sc-tags">
-            {project.links.map((link) => <a class="sc-chip" href={link.url}>{link.type}</a>)}
+          <div class="sc-meta">
+            <p class="project-meta">{project.tech.join(', ')}, {project.year}.</p>
+            <div class="sc-tags">
+              {project.links.map((link) => <a class="sc-chip" href={link.url}>{link.type}</a>)}
+            </div>
           </div>
         </StackedCard>;
       })}
@@ -48,42 +51,64 @@ import { projects, projectName } from '../data/projects';
 </BaseLayout>
 
 <style>
-  /* The header and cards share one centred 44rem column. */
+  /* The header and the board share one centred column, two tags to a row. */
   .projects-page {
-    max-width: 44rem;
+    width: 100%;
+    max-width: 60rem;
     margin-inline: auto;
   }
 
   .project-cards {
     display: grid;
-    gap: var(--space-xxl);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+    gap: var(--space-lg) var(--space-xl);
   }
 
   /* The name is set like a binomial, its plain-English description beneath. */
   :global(.project-card .sc-title) {
-    font-size: var(--text-2xl);
+    font-size: var(--text-xl);
     font-style: italic;
     font-weight: 400;
     line-height: 1.1;
   }
 
   :global(.project-card .sc-subtitle) {
-    margin-bottom: var(--space-sm);
+    margin-bottom: var(--space-xs);
     font-family: var(--font-heading);
-    font-size: var(--text-lg);
+    font-size: var(--text-md);
     color: var(--color-moss);
   }
 
+  /* The print sits at the tag's left, beside the eyelet; the words take the rest. */
   :global(.project-card .sc-row) {
-    grid-template-columns: minmax(0, 1fr) 11rem;
+    grid-template-columns: 5.5rem minmax(0, 1fr);
+    gap: var(--space-md);
+  }
+
+  :global(.project-card .sc-col.media) {
+    order: -1;
   }
 
   .project-logo {
-    margin-top: 0.4rem;
-    background: var(--paper-sheet);
+    margin-top: 0.5rem;
+    background: var(--print-sheet);
     box-shadow:
       0 1px 2px color-mix(in srgb, var(--color-ink-dark) 14%, transparent),
-      0 12px 22px -14px color-mix(in srgb, var(--color-ink-dark) 38%, transparent);
+      0 8px 14px -10px color-mix(in srgb, var(--color-ink-dark) 38%, transparent);
+    transform: rotate(calc(var(--rot-b, 1deg) * 1.5));
+  }
+
+  /* One short strip holds the small print */
+  .project-logo::before {
+    left: 50%;
+    width: 2.2rem;
+    height: 0.85rem;
+    top: -0.45rem;
+    transform: translateX(-50%) rotate(calc(var(--rot-a, -1deg) * 2));
+  }
+
+  .project-logo::after {
+    display: none;
   }
 
   .project-logo img {
@@ -92,33 +117,31 @@ import { projects, projectName } from '../data/projects';
     height: auto;
     aspect-ratio: 1;
     object-fit: contain;
+    padding: 0.2rem;
     border-radius: 0;
   }
 
   .project-description {
-    margin: 0 0 0.4em;
+    margin: 0;
+    font-size: var(--text-sm);
     color: var(--color-text-secondary);
   }
 
   .project-meta {
     margin: 0;
     font-family: var(--font-body-personal);
-    font-size: var(--text-sm);
+    font-size: var(--text-xs);
     font-style: italic;
     color: var(--color-text-muted);
   }
 
+  .project-meta + :global(.sc-tags) {
+    margin-top: 0.15rem;
+  }
+
   @media (max-width: 640px) {
     :global(.project-card .sc-row) {
-      grid-template-columns: 1fr;
-    }
-
-    :global(.project-card .sc-col.media) {
-      order: -1;
-    }
-
-    .project-logo {
-      width: 9rem;
+      grid-template-columns: 4.5rem minmax(0, 1fr);
     }
   }
 </style>

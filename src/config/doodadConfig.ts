@@ -27,7 +27,7 @@
  */
 
 // Base types for improved type safety
-export type Position = 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight' | 'center';
+export type Position = 'bottomLeft' | 'bottomRight';
 
 // Discriminated union for different doodad kinds
 export type DoodadItem = {
@@ -117,28 +117,10 @@ export const doodadCategories: DoodadCategory[] = [
     ],
   },
   {
-    id: 'doodles',
-    enabled: true, // Controlled by ornament prop
-    probability: 0.4,
-    items: [
-      {
-        id: 'leafDoodle',
-        probability: 1.0,
-        layerTypes: ['single'],
-        kind: 'element',
-      },
-      {
-        id: 'spriteOrnament',
-        probability: 1.0,
-        layerTypes: ['multi'],
-        kind: 'element',
-        generate: ({ betweenInt }) => ({ variant: betweenInt(0, 3) }),
-      },
-    ],
-  },
-  {
     id: 'svgDoodles',
-    enabled: true,
+    enabled: true, // Controlled by the ornament prop
+    // Each doodle is pressed between the sheets and peeks out at a bottom edge, so it
+    // can never sit on the card's words.
     probability: 0.7, // Increased to 70% for better visual consistency
     exclusive: true, // Only one SVG doodle per card for cleaner visuals
     // Doodles keep to the right-hand corners, where no title, excerpt or tag starts.
@@ -151,9 +133,9 @@ export const doodadCategories: DoodadCategory[] = [
         kind: 'svg',
         src: '/doodles/doodle-berries.svg',
         defaultSize: '1.8rem',
-        positions: ['topRight', 'bottomRight'],
+        positions: ['bottomLeft', 'bottomRight'],
         generate: ({ pick, map }) => ({
-          position: pick(0.5) ? 'topRight' : 'bottomRight',
+          position: pick(0.5) ? 'bottomLeft' : 'bottomRight',
           rotation: Math.round(map(-15, 15)),
         }),
       },
@@ -177,9 +159,9 @@ export const doodadCategories: DoodadCategory[] = [
         kind: 'svg',
         src: '/doodles/doodle-flower-lavender.svg',
         defaultSize: '1.6rem',
-        positions: ['bottomRight', 'topRight'],
+        positions: ['bottomRight', 'bottomLeft'],
         generate: ({ pick, map }) => ({
-          position: pick(0.3) || pick(0.5) ? 'bottomRight' : 'topRight',
+          position: pick(0.3) || pick(0.5) ? 'bottomRight' : 'bottomLeft',
           rotation: Math.round(map(-12, 12)),
         }),
       },
@@ -209,19 +191,6 @@ export const doodadCategories: DoodadCategory[] = [
           pick(0.5); // The draw that used to choose a side.
           return { position: 'bottomRight', rotation: Math.round(map(-18, 18)) };
         },
-      },
-    ],
-  },
-  {
-    id: 'shapes',
-    enabled: true,
-    probability: 0.25,
-    items: [
-      {
-        id: 'circleBookmark',
-        probability: 1.0,
-        layerTypes: ['single'],
-        kind: 'element',
       },
     ],
   },
@@ -259,14 +228,15 @@ export const doodadCategories: DoodadCategory[] = [
         probability: 0.1,
         layerTypes: ['all'],
         kind: 'background',
-        // The mug was set down near an edge, so the ring rarely crosses the title.
+        // The mug was set down beside the card and caught only a corner of it: the
+        // ring's centre lies off the sheet, so just an arc crosses its corner.
         generate: ({ map, betweenInt }) => {
-          const spot = betweenInt(0, 2);
+          betweenInt(0, 2); // The draw that used to choose an edge.
           return {
-            ringScale: map(0.8, 1.0),
+            ringScale: map(0.6, 0.75),
             ringAlpha: map(0.15, 0.3),
-            ringX: spot === 0 ? map(-6, 12) : spot === 1 ? map(86, 106) : map(96, 108),
-            ringY: spot === 2 ? map(35, 65) : map(78, 106),
+            ringX: map(110, 116), // Bottom right, clear of the left-set footer line
+            ringY: map(108, 116),
             rotation: map(0, 360),
             variant: betweenInt(1, 3),
           };

@@ -8,12 +8,8 @@ const recipes = (await getCollection('recipes', ({ data }) => !data.draft)).sort
   a.data.title.localeCompare(b.data.title)
 );
 
-// A cookbook index: recipes grouped under their initial letter.
-const initials = [...new Set(recipes.map((recipe) => recipe.data.title[0]!.toUpperCase()))];
-const recipesByInitial = initials.map(
-  (initial) =>
-    [initial, recipes.filter((recipe) => recipe.data.title[0]!.toUpperCase() === initial)] as const
-);
+// A recipe box: alphabetical, each initial's divider tab above its first card.
+const initialOf = (recipe: (typeof recipes)[number]) => recipe.data.title[0]!.toUpperCase();
 const tags = [...new Set(recipes.flatMap((recipe) => recipe.data.tags ?? []))].sort((a, b) =>
   a.localeCompare(b)
 );
@@ -25,7 +21,7 @@ const tags = [...new Set(recipes.flatMap((recipe) => recipe.data.tags ?? []))].s
   tone="personal"
   layout="cards"
 >
-  <div class="index-page" style="--index-content: var(--card-max-width)">
+  <div class="index-page" data-tabbed>
     <header class="page-header">
       <h1 class="page-title">Recipes</h1>
       <p class="page-lede">
@@ -34,36 +30,30 @@ const tags = [...new Set(recipes.flatMap((recipe) => recipe.data.tags ?? []))].s
       </p>
     </header>
 
-    <IndexFinder type="recipe" noun="recipes" tags={tags} />
+    <IndexFinder type="recipe" noun="recipes" count={recipes.length} tags={tags} />
 
-    {recipesByInitial.map(([initial, entries]) => <section
-      class="index-group"
-      data-index-group
-      aria-label={`Recipes starting with ${initial}`}
-    >
-      <p class="index-label" aria-hidden="true">{initial}</p>
-      <NoteCardStack
-        columns={1}
-        media="thumb"
-        headingLevel={2}
-        tagBase="/recipes"
-        items={entries.map((recipe) => ({
-          id: recipe.id,
-          title: recipe.data.title,
-          subtitle: recipe.data.description,
-          href: `/recipes/${recipe.id}`,
-          tags: recipe.data.tags ?? [],
-          hero: recipe.data.heroImage
-            ? {
-                kind: 'asset' as const,
-                src: recipe.data.heroImage,
-                scale: recipe.data.heroImageScale ?? 1,
-                posX: recipe.data.heroImagePositionX ?? 0,
-                posY: recipe.data.heroImagePositionY ?? 0,
-              }
-            : undefined,
-        }))}
-      />
-    </section>)}
+    <NoteCardStack
+      media="thumb"
+      material="recipe"
+      headingLevel={3}
+      tagBase="/recipes"
+      items={recipes.map((recipe) => ({
+        id: recipe.id,
+        title: recipe.data.title,
+        subtitle: recipe.data.description,
+        href: `/recipes/${recipe.id}`,
+        tags: recipe.data.tags ?? [],
+        tab: initialOf(recipe),
+        hero: recipe.data.heroImage
+          ? {
+              kind: 'asset' as const,
+              src: recipe.data.heroImage,
+              scale: recipe.data.heroImageScale ?? 1,
+              posX: recipe.data.heroImagePositionX ?? 0,
+              posY: recipe.data.heroImagePositionY ?? 0,
+            }
+          : undefined,
+      }))}
+    />
   </div>
 </BaseLayout>

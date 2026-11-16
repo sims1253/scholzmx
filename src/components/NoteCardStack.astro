@@ -29,6 +29,8 @@ interface CardItem {
         posY?: number;
       };
   year?: number;
+  /** A divider tab (a year, an initial) that rises above the first card it covers. */
+  tab?: string;
 }
 
 interface Props {
@@ -42,6 +44,7 @@ interface Props {
   media?: 'strip' | 'thumb';
   headingLevel?: 2 | 3 | 4; // Card title level, so cards nest under a section heading
   tagBase?: string; // Index page that filters by tag, e.g. "/recipes"
+  material?: 'paper' | 'recipe'; // What the sheets are: writing paper, or recipe cards
 }
 
 const {
@@ -54,9 +57,18 @@ const {
   media = 'strip',
   headingLevel = 2,
   tagBase = '/blog',
+  material = 'paper',
 } = Astro.props;
 
 // "2025-11-23" reads as "23 November 2025", the way the posts themselves give their dates.
+// A tab heads the first card of each run of cards that share it. It is the run's
+// heading one level above the card titles, so year jumps and the outline still work.
+const TabTag = headingLevel === 4 ? 'h3' : 'h2';
+const tabStarts = (index: number) => {
+  const tab = items[index]?.tab;
+  return tab !== undefined && tab !== items[index - 1]?.tab;
+};
+
 const inWords = (isoDay: string) =>
   new Date(`${isoDay}T00:00:00Z`).toLocaleDateString('en-GB', {
     day: 'numeric',
@@ -70,16 +82,25 @@ const inWords = (isoDay: string) =>
   class:list={['nc-grid', className]}
   style={columns === 'auto' ? `--nc-min: ${itemMinWidth ?? '22rem'}` : undefined}
 >
-  {items.map((it) => <div class="nc-item" data-year={it.year} data-tags={it.tags?.join(',') || ''}>
+  {items.map((it, index) => <div
+    class="nc-item"
+    data-year={it.year}
+    data-tags={it.tags?.join(',') || ''}
+  >
+    {tabStarts(index) && <TabTag class="nc-tab" id={`tab-${it.tab}`}>{it.tab}</TabTag>}
     <StackedCard
       seed={`stack/${it.id}`}
       title={it.title}
       subtitle={it.subtitle}
       href={it.href}
+      material={material}
       layers={layers}
       headingLevel={headingLevel}
     >
-      {it.hero && <div class:list={['sc-media', { 'nc-thumb': media === 'thumb' }]} slot="media">
+      {it.hero && <div
+        class:list={['sc-media', { 'nc-thumb': media === 'thumb' }]}
+        slot={media === 'thumb' ? 'aside' : 'media'}
+      >
         <ImageFrame
           src={it.hero.kind === 'url' ? it.hero.src : it.hero.src}
           alt=""
@@ -128,26 +149,45 @@ const inWords = (isoDay: string) =>
     padding-inline: var(--space-xs);
   }
 
-  /* On index pages the cards fill their centred column, so they start at the heading's
-     left edge. Where only one fits on the blog, that makes a card wider than the
-     card-width columns of recipes, research and notes; capping it would push it right
-     of the heading. Two to a row where they fit; a row's lone card sits in the middle. */
+  /* On index pages the cards fill rows edge to edge: cards in one row share their top
+     and bottom edges, and the last row's cards start at the left. */
   :global(.index-page) .nc-grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    container-type: inline-size;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+    gap: max(var(--space-lg), 1.75rem) var(--space-md); /* rows clear a divider tab */
   }
 
   :global(.index-page) .nc-item {
-    flex: 0 0 100%;
+    position: relative;
+    isolation: isolate;
+    display: grid;
     max-width: none;
     margin-inline: 0;
+    padding-inline: 0;
   }
 
-  @container (min-width: 46rem) {
-    :global(.index-page) .nc-item {
-      flex-basis: calc(50% - var(--space-lg) / 2);
-    }
+  :global(.index-page) .nc-item :global(.sc-card) {
+    z-index: 1;
+  }
+
+  /* A card-box divider: its tab stands up behind the first card of the year (or
+     letter), between the strips of tape, and stays put when the card is lifted. */
+  .nc-tab {
+    position: absolute;
+    bottom: 100%;
+    left: 5.25rem;
+    z-index: 0;
+    margin: 0 0 -0.45rem;
+    padding: 0.1rem 0.8rem 0.5rem;
+    border: 1px solid var(--sc-edge);
+    border-bottom: 0;
+    border-radius: 3px 3px 0 0;
+    background: color-mix(in srgb, var(--sc-sheet-back) 70%, var(--color-sage));
+    font-family: var(--font-heading);
+    font-size: var(--text-md);
+    font-weight: 400;
+    line-height: 1.2;
+    color: var(--color-moss);
+    font-variant-numeric: oldstyle-nums;
+    scroll-margin-top: 3rem;
   }
 </style>

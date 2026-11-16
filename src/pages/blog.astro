@@ -9,9 +9,6 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
 );
 
 const years = [...new Set(posts.map((post) => post.data.date.getFullYear()))];
-const postsByYear = years.map(
-  (year) => [year, posts.filter((post) => post.data.date.getFullYear() === year)] as const
-);
 const tags = [...new Set(posts.flatMap((post) => post.data.tags ?? []))].sort((a, b) =>
   a.localeCompare(b)
 );
@@ -35,7 +32,7 @@ const heroOf = (post: Post) => {
 ---
 
 <BaseLayout title="Blog" description="My long-form writing." tone="serious" layout="cards">
-  <div class="index-page">
+  <div class="index-page" data-tabbed>
     <header class="page-header">
       <h1 class="page-title">Blog</h1>
       <p class="page-lede">
@@ -46,33 +43,27 @@ const heroOf = (post: Post) => {
     <IndexFinder
       type="blog"
       noun="posts"
+      count={posts.length}
       tags={tags}
-      jumps={years.map((year) => ({ href: `#year-${year}`, label: String(year) }))}
+      jumps={years.map((year) => ({ href: `#tab-${year}`, label: String(year) }))}
     />
 
-    {postsByYear.map(([year, entries]) => <section
-      class="index-group"
-      data-index-group
-      aria-labelledby={`year-${year}`}
-    >
-      <h2 class="index-label" id={`year-${year}`}>{year}</h2>
-      <NoteCardStack
-        columns="auto"
-        itemMinWidth="22rem"
-        media="thumb"
-        headingLevel={3}
-        items={entries.map((post) => ({
-          id: post.id,
-          title: post.data.title,
-          subtitle: post.data.description,
-          href: `/blog/${post.id}`,
-          writtenDate: isoDay(post.data.date),
-          updatedDate: post.data.lastUpdated ? isoDay(post.data.lastUpdated) : undefined,
-          tags: post.data.tags ?? [],
-          year,
-          hero: heroOf(post),
-        }))}
-      />
-    </section>)}
+    {/* One box of cards, newest first; each year's tab stands above its first card. */}
+    <NoteCardStack
+      media="thumb"
+      headingLevel={3}
+      items={posts.map((post) => ({
+        id: post.id,
+        title: post.data.title,
+        subtitle: post.data.description,
+        href: `/blog/${post.id}`,
+        writtenDate: isoDay(post.data.date),
+        updatedDate: post.data.lastUpdated ? isoDay(post.data.lastUpdated) : undefined,
+        tags: post.data.tags ?? [],
+        year: post.data.date.getFullYear(),
+        tab: String(post.data.date.getFullYear()),
+        hero: heroOf(post),
+      }))}
+    />
   </div>
 </BaseLayout>
