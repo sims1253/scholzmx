@@ -20,7 +20,6 @@ Built with [Astro](https://astro.build) because it lets me write content in Quar
 ### Content Collections
 - **Blog** (`/blog`): Long-form posts, mostly about statistics and programming
 - **Recipes** (`/recipes`): Seasonal cooking experiments
-- **Notes** (`/notes`): Shorter thoughts and observations
 
 ### Key Components
 - `Canopy.astro` - The vine canopy over every page: leaf shadows that sway and follow the sun by day, a flickering torch after dark
@@ -66,7 +65,7 @@ bun run dev          # Start dev server (localhost:4321)
 ```bash
 # Core development
 bun run dev          # Development server with hot reload
-bun run build        # Production build
+bun run build        # Production build (warns about Quarto posts not yet rendered)
 bun run preview      # Preview production build locally
 
 # Content workflow
