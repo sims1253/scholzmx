@@ -7,7 +7,6 @@ import { lightCodeTheme, darkCodeTheme } from './src/lib/shiki-themes.mjs';
 import { unified } from '@astrojs/markdown-remark';
 import purgecss from 'astro-purgecss';
 import pagefind from 'astro-pagefind';
-import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
@@ -43,7 +42,6 @@ export default defineConfig({
       safelist: [
         // Keep all CSS custom properties (variables)
         /^--/,
-        /^tw:/,
         /^pagefind-/,
         // Keep classes that might be added dynamically by JavaScript
         'active',
@@ -87,21 +85,6 @@ export default defineConfig({
         'notes-container',
         'note-anchor',
         'visible',
-        // Keep specific Tailwind utilities (NOT broad regex)
-        'tw-grid',
-        'tw-grid-cols-1',
-        'tw-grid-cols-2',
-        'tw-grid-cols-3',
-        'tw-gap-4',
-        'tw-gap-6',
-        'tw-w-full',
-        'tw-max-w-5xl',
-        'tw-max-w-6xl',
-        'tw-mx-auto',
-        'tw-px-md',
-        // Responsive variants for grid
-        'md:tw-grid-cols-2',
-        'lg:tw-grid-cols-3',
         // Theme-toggle and quote states set from scripts
         'is-turning',
         'open',
@@ -145,7 +128,6 @@ export default defineConfig({
 
   // Reduce bundle size and improve loading
   vite: {
-    plugins: [tailwindcss()],
     css: {
       transformer: 'lightningcss',
       lightningcss: {

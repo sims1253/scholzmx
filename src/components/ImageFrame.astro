@@ -86,19 +86,15 @@ const finalAlternatePositionY = alternatePositionY || 0;
 const finalAlternateScale = alternateScale || 1;
 const finalAlternateFillMode = alternateFillMode || fillMode;
 
-// Tailwind object-fit class mapping for simple fill mode
+// object-fit class for the picture
 const objectFitClass =
-  fillMode === 'cover'
-    ? 'tw:object-cover'
-    : fillMode === 'contain'
-      ? 'tw:object-contain'
-      : 'tw:object-fill';
+  fillMode === 'cover' ? 'fit-cover' : fillMode === 'contain' ? 'fit-contain' : 'fit-fill';
 const alternateObjectFitClass =
   finalAlternateFillMode === 'cover'
-    ? 'tw:object-cover'
+    ? 'fit-cover'
     : finalAlternateFillMode === 'contain'
-      ? 'tw:object-contain'
-      : 'tw:object-fill';
+      ? 'fit-contain'
+      : 'fit-fill';
 
 // Focal point mapping (-50..50 → 0%..100%) used as CSS object-position when not using custom positioning
 function clamp(val: number, min: number, max: number) {
@@ -108,11 +104,6 @@ const hasFocal = focalX !== undefined || focalY !== undefined;
 const focalXPct = `${clamp((focalX ?? 0) + 50, 0, 100)}%`;
 const focalYPct = `${clamp((focalY ?? 0) + 50, 0, 100)}%`;
 const objectPositionStyle = hasFocal ? `object-position: ${focalXPct} ${focalYPct};` : '';
-
-// Height handling: avoid stretching simple images; if aspectRatio is provided, fill container
-const containerHeightClass = style === 'simple' ? '' : 'tw:h-full';
-const imageHeightClass =
-  style === 'simple' ? (aspectRatio ? 'tw:h-full' : 'tw:h-auto') : 'tw:h-full';
 
 // Size mappings for portrait frame styles
 const portraitSizeMap = {
@@ -224,17 +215,11 @@ const captionId = hasCaption
 ---
 
 {Astro.slots?.has?.('caption') || caption ? (
-  <figure class="image-figure tw:mx-auto">
+  <figure class="image-figure">
     <div
-      class={`image-frame image-frame-${style} tw:relative tw:overflow-hidden tw:block tw:mx-auto ${className} ${
-        isClickable
-          ? 'clickable tw:cursor-pointer tw:transition-transform tw:duration-200 tw:ease-in-out'
-          : ''
-      } ${containerClass} ${
-        style === 'hero'
-          ? 'tw:w-full tw:max-w-5xl tw:mx-auto tw:px-8 tw:-mt-lg tw:mb-lg tw:aspect-[3/2] tw:md:aspect-[3/2] tw:sm:aspect-[4/3]'
-          : ''
-      }`}
+      class={`image-frame image-frame-${style} ${className} ${
+        isClickable ? 'clickable' : ''
+      } ${containerClass} `}
       style={`${aspectRatio ? `aspect-ratio: ${aspectRatio};` : ''} ${style !== 'hero' && style !== 'simple' ? `width: ${finalWidth}; height: ${finalHeight};` : ''}`}
       role={isClickable ? 'button' : undefined}
       tabindex={isClickable ? '0' : undefined}
@@ -248,15 +233,13 @@ const captionId = hasCaption
     >
       {useCustomPositioning ? (
         <div
-          class="image-wrapper primary-image tw:w-full tw:h-full tw:overflow-hidden tw:origin-center tw:relative"
+          class="image-wrapper primary-image"
           style={`transform: scale(${finalScale}) translate(${finalPositionX}%, ${finalPositionY}%);`}
         >
-          <div
-            class="frame-image custom-positioning tw:w-full tw:h-full tw:block tw:absolute tw:top-1/2 tw:left-1/2 tw:overflow-hidden"
-          >
+          <div class="frame-image custom-positioning">
             {typeof src === 'string' ? (
               <img
-                class={`tw:w-full tw:h-full tw:block ${objectFitClass}`}
+                class={objectFitClass}
                 src={src}
                 alt={alt}
                 loading={effectiveLoading}
@@ -271,7 +254,7 @@ const captionId = hasCaption
                 sizes={style === 'hero' ? heroSizes : defaultSizes}
                 format="avif"
                 loading={effectiveLoading}
-                class={`tw:w-full tw:h-full tw:block ${objectFitClass}`}
+                class={objectFitClass}
                 fetchpriority={effectiveFetchPriority}
               />
             )}
@@ -279,12 +262,12 @@ const captionId = hasCaption
         </div>
       ) : (
         <div
-          class={`frame-image simple-fill fill-${fillMode} primary-image tw:w-full ${containerHeightClass} tw:block tw:overflow-hidden`}
+          class={`frame-image simple-fill fill-${fillMode} primary-image`}
           style={aspectRatio ? `aspect-ratio: ${aspectRatio};` : undefined}
         >
           {typeof src === 'string' ? (
             <img
-              class={`tw:w-full ${imageHeightClass} tw:block ${objectFitClass}`}
+              class={objectFitClass}
               style={objectPositionStyle}
               src={src}
               alt={alt}
@@ -301,7 +284,7 @@ const captionId = hasCaption
               sizes={style === 'hero' ? heroSizes : defaultSizes}
               format="avif"
               loading={effectiveLoading}
-              class={`tw:w-full ${imageHeightClass} tw:block ${objectFitClass}`}
+              class={objectFitClass}
               style={objectPositionStyle}
               fetchpriority={effectiveFetchPriority}
             />
@@ -312,16 +295,14 @@ const captionId = hasCaption
       {alternateSrc &&
         (useAlternateCustomPositioning ? (
           <div
-            class="image-wrapper alternate-image tw:opacity-0 tw:transition-opacity tw:duration-300 tw:ease-in-out tw:absolute tw:inset-0 tw:w-full tw:h-full tw:overflow-hidden tw:origin-center"
+            class="image-wrapper alternate-image"
             style={`transform: scale(${finalAlternateScale}) translate(${finalAlternatePositionX}%, ${finalAlternatePositionY}%);`}
             aria-hidden="true"
           >
-            <div
-              class="frame-image custom-positioning tw:w-full tw:h-full tw:block tw:absolute tw:top-1/2 tw:left-1/2 tw:overflow-hidden"
-            >
+            <div class="frame-image custom-positioning">
               {typeof alternateSrc === 'string' ? (
                 <img
-                  class={`tw:w-full tw:h-full tw:block ${alternateObjectFitClass}`}
+                  class={alternateObjectFitClass}
                   src={alternateSrc}
                   alt={alternateAlt || alt}
                   loading="lazy"
@@ -335,18 +316,16 @@ const captionId = hasCaption
                   sizes={style === 'hero' ? heroSizes : defaultSizes}
                   format="avif"
                   loading="lazy"
-                  class={`tw:w-full tw:h-full tw:block ${alternateObjectFitClass}`}
+                  class={alternateObjectFitClass}
                 />
               )}
             </div>
           </div>
         ) : (
-          <div
-            class={`frame-image simple-fill fill-${finalAlternateFillMode} alternate-image tw:absolute tw:inset-0 tw:w-full ${containerHeightClass} tw:block tw:overflow-hidden tw:opacity-0 tw:transition-opacity tw:duration-300 tw:ease-in-out`}
-          >
+          <div class={`frame-image simple-fill fill-${finalAlternateFillMode} alternate-image`}>
             {typeof alternateSrc === 'string' ? (
               <img
-                class={`tw:w-full tw:h-full tw:block ${alternateObjectFitClass}`}
+                class={alternateObjectFitClass}
                 style={objectPositionStyle}
                 src={alternateSrc}
                 alt={alternateAlt || alt}
@@ -362,7 +341,7 @@ const captionId = hasCaption
                 sizes={style === 'hero' ? heroSizes : defaultSizes}
                 format="avif"
                 loading="lazy"
-                class={`tw:w-full tw:h-full tw:block ${alternateObjectFitClass}`}
+                class={alternateObjectFitClass}
                 style={objectPositionStyle}
               />
             )}
@@ -376,13 +355,9 @@ const captionId = hasCaption
   </figure>
 ) : (
   <div
-    class={`image-frame image-frame-${style} tw:relative tw:overflow-hidden tw:block tw:mx-auto ${className} ${
-      isClickable ? 'clickable tw:cursor-pointer' : ''
-    } ${containerClass} ${
-      style === 'hero'
-        ? 'tw:w-full tw:max-w-5xl tw:mx-auto tw:px-8 tw:-mt-lg tw:mb-lg tw:aspect-[3/2] tw:md:aspect-[3/2] tw:sm:aspect-[4/3]'
-        : ''
-    }`}
+    class={`image-frame image-frame-${style} ${className} ${
+      isClickable ? 'clickable' : ''
+    } ${containerClass} `}
     style={`${aspectRatio ? `aspect-ratio: ${aspectRatio};` : ''} ${style !== 'hero' && style !== 'simple' ? `width: ${finalWidth}; height: ${finalHeight};` : ''}`}
     role={isClickable ? 'button' : undefined}
     tabindex={isClickable ? '0' : undefined}
@@ -395,15 +370,13 @@ const captionId = hasCaption
   >
     {useCustomPositioning ? (
       <div
-        class="image-wrapper primary-image tw:w-full tw:h-full tw:overflow-hidden tw:origin-center tw:relative"
+        class="image-wrapper primary-image"
         style={`transform: scale(${finalScale}) translate(${finalPositionX}%, ${finalPositionY}%);`}
       >
-        <div
-          class="frame-image custom-positioning tw:w-full tw:h-full tw:block tw:absolute tw:top-1/2 tw:left-1/2 tw:overflow-hidden"
-        >
+        <div class="frame-image custom-positioning">
           {typeof src === 'string' ? (
             <img
-              class={`tw:w-full tw:h-full tw:block ${objectFitClass}`}
+              class={objectFitClass}
               src={src}
               alt={alt}
               loading={effectiveLoading}
@@ -419,19 +392,17 @@ const captionId = hasCaption
               sizes={style === 'hero' ? heroSizes : defaultSizes}
               format="avif"
               loading={effectiveLoading}
-              class={`tw:w-full tw:h-full tw:block ${objectFitClass}`}
+              class={objectFitClass}
               fetchpriority={effectiveFetchPriority}
             />
           )}
         </div>
       </div>
     ) : (
-      <div
-        class={`frame-image simple-fill fill-${fillMode} primary-image tw:w-full ${containerHeightClass} tw:block tw:overflow-hidden`}
-      >
+      <div class={`frame-image simple-fill fill-${fillMode} primary-image`}>
         {typeof src === 'string' ? (
           <img
-            class={`tw:w-full tw:h-full tw:block ${objectFitClass}`}
+            class={objectFitClass}
             style={objectPositionStyle}
             src={src}
             alt={alt}
@@ -449,7 +420,7 @@ const captionId = hasCaption
             sizes={style === 'hero' ? heroSizes : defaultSizes}
             format="avif"
             loading={effectiveLoading}
-            class={`tw:w-full tw:h-full tw:block ${objectFitClass}`}
+            class={objectFitClass}
             style={objectPositionStyle}
             fetchpriority={effectiveFetchPriority}
           />
@@ -459,15 +430,13 @@ const captionId = hasCaption
     {alternateSrc &&
       (useAlternateCustomPositioning ? (
         <div
-          class="image-wrapper alternate-image tw:opacity-0 tw:transition-opacity tw:duration-300 tw:ease-in-out tw:absolute tw:inset-0 tw:w-full tw:h-full tw:overflow-hidden tw:origin-center"
+          class="image-wrapper alternate-image"
           style={`transform: scale(${finalAlternateScale}) translate(${finalAlternatePositionX}%, ${finalAlternatePositionY}%);`}
         >
-          <div
-            class="frame-image custom-positioning tw:w-full tw:h-full tw:block tw:absolute tw:top-1/2 tw:left-1/2 tw:overflow-hidden"
-          >
+          <div class="frame-image custom-positioning">
             {typeof alternateSrc === 'string' ? (
               <img
-                class={`tw:w-full tw:h-full tw:block ${alternateObjectFitClass}`}
+                class={alternateObjectFitClass}
                 src={alternateSrc}
                 alt={alternateAlt || alt}
                 loading="lazy"
@@ -481,19 +450,19 @@ const captionId = hasCaption
                 sizes={style === 'hero' ? heroSizes : defaultSizes}
                 format="avif"
                 loading="lazy"
-                class={`tw:w-full tw:h-full tw:block ${alternateObjectFitClass}`}
+                class={alternateObjectFitClass}
               />
             )}
           </div>
         </div>
       ) : (
         <div
-          class={`frame-image simple-fill fill-${finalAlternateFillMode} alternate-image tw:absolute tw:inset-0 tw:w-full ${containerHeightClass} tw:block tw:overflow-hidden tw:opacity-0 tw:transition-opacity tw:duration-300 tw:ease-in-out`}
+          class={`frame-image simple-fill fill-${finalAlternateFillMode} alternate-image`}
           aria-hidden="true"
         >
           {typeof alternateSrc === 'string' ? (
             <img
-              class={`tw:w-full tw:h-full tw:block ${alternateObjectFitClass}`}
+              class={alternateObjectFitClass}
               style={objectPositionStyle}
               src={alternateSrc}
               alt={alternateAlt || alt}
@@ -509,7 +478,7 @@ const captionId = hasCaption
               sizes={style === 'hero' ? heroSizes : defaultSizes}
               format="avif"
               loading="lazy"
-              class={`tw:w-full tw:h-full tw:block ${alternateObjectFitClass}`}
+              class={alternateObjectFitClass}
               style={objectPositionStyle}
             />
           )}
@@ -567,16 +536,35 @@ const captionId = hasCaption
     height: 100%;
   }
 
-  /* object-fit handled via Tailwind utilities now */
+  .image-frame img {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .fit-cover {
+    object-fit: cover;
+  }
+
+  .fit-contain {
+    object-fit: contain;
+  }
+
+  .fit-fill {
+    object-fit: fill;
+  }
 
   /* Hero image style - for blog post headers */
   .image-frame-hero {
+    width: 100%;
+    max-width: 64rem;
     background: var(--color-background);
     /* No border-radius or box-shadow for seamless integration */
   }
 
   /* Simple image style - for basic usage */
   .image-frame-simple {
+    width: 100%;
     border-radius: var(--border-radius);
     box-shadow: 0 4px 12px rgba(139, 90, 60, 0.15);
   }
@@ -621,8 +609,7 @@ const captionId = hasCaption
     opacity: 0;
     transition: opacity 0.3s ease;
     position: absolute;
-    top: 0;
-    left: 0;
+    inset: 0;
     width: 100%;
     height: 100%;
   }

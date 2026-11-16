@@ -45,7 +45,6 @@
     "@lhci/cli": "^0.15.1",
     "@oxlint/plugins": "1.90.0",
     "@pagefind/default-ui": "^1.6.0",
-    "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^26.6.6",
     "astro-pagefind": "^2.0.1",
     "astro-purgecss": "^7.0.1",
@@ -64,7 +63,6 @@
     "shiki": "4.6.0",
     "stylelint": "^17.16.0",
     "stylelint-config-standard": "^40.0.0",
-    "tailwindcss": "^4.3.3",
     "typescript": "6.0.3"
   },
   "engines": {

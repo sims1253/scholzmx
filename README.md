@@ -155,7 +155,6 @@ Images in `src/assets/` get automatic Astro optimization (WebP conversion, respo
 - Vanilla CSS with modern features (custom properties, container queries, etc.)
 - PurgeCSS removes unused styles in production
 - LightningCSS for optimal minification and modern browser targeting
-- Tailwind 4 utilities compile through the official Vite plugin; Preflight is disabled
 
 ### Tooling compatibility
 
