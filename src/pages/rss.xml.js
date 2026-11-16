@@ -2,26 +2,25 @@ import rss from '@astrojs/rss';
 import { getCollection } from 'astro:content';
 
 export async function GET(context) {
-  const blog = await getCollection('blog');
-  const sortedBlog = blog
-    .filter((post) => !post.data.draft)
-    .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+  const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+    (a, b) => b.data.date.getTime() - a.data.date.getTime()
+  );
 
   return rss({
-    title: 'Grotto - Digital Garden & Personal Website',
+    title: 'Maximilian Scholz · Blog',
     description:
-      'Ideas, recipes, projects, and musings from a digital garden. Built with slow web principles and a warm, botanical aesthetic.',
+      'Long-form writing by Maximilian Scholz on Bayesian statistics, simulation studies, R and open source.',
     site: context.site,
-    items: sortedBlog.map((post) => ({
+    // Post pages are served as directories, so their address ends in a slash.
+    trailingSlash: true,
+    items: posts.map((post) => ({
       title: post.data.title,
-      pubDate: post.data.date || post.data.pubDate,
-      description: post.data.description || post.data.excerpt || `Read ${post.data.title}`,
-      link: `/blog/${post.slug}/`,
-      // Include categories/tags if they exist
-      categories: post.data.tags || post.data.categories || [],
+      pubDate: post.data.date,
+      description: post.data.description,
+      link: `/blog/${post.id}/`,
+      categories: post.data.tags ?? [],
     })),
-    // Optional: RSS feed customization
-    customData: `<language>en-us</language>
+    customData: `<language>en</language>
     <managingEditor>noreply@scholzmx.com (Maximilian Scholz)</managingEditor>
     <webMaster>noreply@scholzmx.com (Maximilian Scholz)</webMaster>`,
   });
