@@ -1,18 +1,11 @@
-/* Modern fluid dropcap styles */
-.dropcap {
-  float: left;
-  display: inline-block;
-  vertical-align: top;
-  shape-outside: margin-box;
-  user-select: none;
-  position: relative;
-  font-weight: 600;
+/* Drop-cap initials (markup: src/lib/markdown/initial.ts)
 
-  /* Modern shape optimization for better text wrapping */
-  shape-margin: clamp(0.02em, 0.5vw, 0.05em);
-}
+   The letter stays in the paragraph's text and is drawn large as its ::first-letter, so
+   screen readers and the clipboard get the whole first word. The empty .dropcap element
+   is decoration only: hidden from assistive technology, it paints the ornament behind
+   the letter from data-first-letter.
 
-/* The initial is a square three lines tall: its top on the capitals of the first line,
+   The initial is a square three lines tall: its top on the capitals of the first line,
    its bottom on the baseline of the third. Both follow from the text face, in units of
    the paragraph's font size (1rem in .prose):
 
@@ -22,64 +15,77 @@
    Alegreya at line-height 1.6: capitals 0.646, first baseline 1.135.
    ET Book at line-height 1.55: capitals 0.653, first baseline 1.068. */
 
+p:has(> .dropcap) {
+  position: relative; /* anchors the ornament and a hung quotation mark */
+}
+
+p:has(> .dropcap)::first-letter {
+  float: left;
+}
+
+p:has(> .dropcap)::first-letter,
+.dropcap {
+  line-height: 1;
+  font-weight: 500;
+}
+
 /* Personal variant - set beside Alegreya (welcome, recipes, notes) */
+p:has(> .dropcap--personal)::first-letter,
 .dropcap--personal {
   font-size: 3.846rem; /* 2 x 1.6 + 0.646 */
-  line-height: 1;
-  margin-right: 0.06em;
   margin-top: 0.127em; /* (1.135 - 0.646) / 3.846 */
-  font-weight: 500;
+  margin-right: 0.06em;
 }
 
 /* Serious variant - set beside ET Book (blog) */
+p:has(> .dropcap--serious)::first-letter,
 .dropcap--serious {
   font-size: 3.753rem; /* 2 x 1.55 + 0.653 */
-  line-height: 1;
-  margin-right: 0.06em;
   margin-top: 0.111em; /* (1.068 - 0.653) / 3.753 */
-  font-weight: 500;
+  margin-right: 0.06em;
 }
 
 /* Simple */
-.dropcap--simple {
+p:has(> .dropcap--simple)::first-letter {
   font-family: var(--font-heading);
 }
 
-/* Ornate layered */
-
-/* The ornament is one font file per letter, each limited to its letter by unicode-range,
-   so none of them can supply the line's metrics (a font must cover the space character
-   for that). The letter's font follows it in the list and has the same metrics; without
-   it the text face would set the baseline and the ornament would sit a sixth of its
-   height above the letter. */
-.dropcap--ornate {
+/* Layered styles. The ornament is one font file per letter, each limited to its letter
+   by unicode-range, so none of them can supply the line's metrics (a font must cover the
+   space character for that). The letter's font follows it in the list and has the same
+   metrics; without it the text face would set the baseline and the ornament would sit a
+   sixth of its height above the letter. */
+p:has(> .dropcap--ornate)::first-letter,
+p:has(> .dropcap--botanical)::first-letter {
   font-family: var(--font-dropcap-foreground), var(--font-heading), serif;
+}
+
+p:has(> .dropcap--ornate)::first-letter {
   color: var(--dropcap-color-foreground);
 }
-.dropcap--ornate::before {
-  content: attr(data-first-letter);
+
+/* The ornament sits exactly over the letter's float: same size, same top margin. */
+.dropcap {
   position: absolute;
-  font-family:
-    var(--font-dropcap-background), var(--font-dropcap-foreground), var(--font-heading), serif;
-  color: var(--dropcap-color-background);
-  z-index: -1;
-  left: 0;
   top: 0;
+  left: 0;
+  z-index: -1;
+  pointer-events: none;
 }
 
-/* Botanical layered */
-.dropcap--botanical {
-  font-family: var(--font-dropcap-foreground), var(--font-heading), serif;
-}
+.dropcap--ornate::before,
 .dropcap--botanical::before {
   content: attr(data-first-letter);
-  position: absolute;
   font-family:
     var(--font-dropcap-background), var(--font-dropcap-foreground), var(--font-heading), serif;
+}
+
+.dropcap--ornate::before {
+  color: var(--dropcap-color-background);
+}
+
+.dropcap--botanical::before {
   color: var(--dropcap-color-foreground);
-  z-index: -1;
-  left: 0;
-  top: 0;
 }
 
 /* Color variants apply to swirls (::before) only */
@@ -99,10 +105,12 @@
   color: var(--color-sage);
 }
 
-/* Responsive shape adjustments for very small screens */
-@media (max-width: 400px) {
-  .dropcap {
-    /* Disable complex shape wrapping on very small screens for better performance */
-    shape-outside: none;
-  }
+/* An opening quotation mark before the initial hangs in the margin beside it. */
+.dropcap-quote {
+  position: absolute;
+  top: 0;
+  right: 100%;
+  padding-right: 0.1em;
+  font-size: 2em;
+  line-height: 1;
 }

@@ -45,6 +45,6 @@ steps:
     detail: If you used a french press, skim off the foam on top.
 ---
 
-<span class="dropcap dropcap--ornate dropcap--personal" data-first-letter="M" aria-hidden="true">M</span>aking good coffee is mostly about being consistent. This recipe uses a 1:16 ratio and simple timing that works reliably. Keep track of what you do and you'll figure out what you like.
+Making good coffee is mostly about being consistent. This recipe uses a 1:16 ratio and simple timing that works reliably. Keep track of what you do and you'll figure out what you like.
 
 Yes, this is kind of a joke recipe. But I was too lazy to go dig up my paper pile with notes and refine them. So for now so this is all you get.
