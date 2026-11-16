@@ -11,7 +11,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://www.scholzmx.com',
+  site: 'https://scholzmx.com',
   // Preserve the existing spaces between inline elements across the Astro 7 upgrade.
   compressHTML: true,
   redirects: {
