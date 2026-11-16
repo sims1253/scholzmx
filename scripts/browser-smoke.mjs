@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { globSync } from 'node:fs';
 import puppeteer from 'puppeteer';
+import { site } from './address-check.mjs';
 
 const baseURL = process.env.SITE_TEST_URL || 'http://127.0.0.1:4321';
 const browser = await puppeteer.launch({
@@ -174,7 +175,7 @@ try {
     }
   });
   const socialImage = await page.$eval('meta[property="og:image"]', (element) => element.content);
-  assert.equal(new URL(socialImage).origin, 'https://www.scholzmx.com');
+  assert.equal(new URL(socialImage).origin, site);
   const imageResponse = await fetch(`${baseURL}${new URL(socialImage).pathname}`);
   assert.equal(imageResponse.status, 200, 'Social image must exist in the build');
   for (const path of ['/rss.xml', '/sitemap-index.xml', '/sitemap-0.xml']) {
