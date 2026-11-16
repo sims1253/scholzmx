@@ -205,16 +205,25 @@ const readingTime = getReadingTime(post.body || '');
     position: relative;
   }
 
-  /* The contents rail (PostContents) runs beside exactly this box: the post's text. */
+  /* The contents rail (PostContents) stands beside exactly this box, the post's text:
+     it fades when the box ends, and measures the column by it (100cqi). */
   .post-reading {
     position: relative;
+    container: post-reading / inline-size;
   }
 
-  /* A section opened from the contents lands with room above its heading, level with
-     the top of the rail. (The global :target rule does not survive purgecss.) */
+  /* A section opened from the contents lands with room above its heading; beside the
+     rail, level with its top. (The global :target rule does not survive purgecss.) */
   .post-body :global(h2),
   .post-body :global(h3) {
     scroll-margin-top: 2.5rem;
+  }
+
+  @container prose (width >= 60rem) {
+    .post-body :global(h2),
+    .post-body :global(h3) {
+      scroll-margin-top: 8rem;
+    }
   }
 
   .post-header {

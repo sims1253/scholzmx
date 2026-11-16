@@ -6,8 +6,8 @@
  * shown when a post has three or more sections; links are built from the rendered
  * headings, so it works without JavaScript.
  *
- * The rail is placed against its containing block: the post page wraps this and the
- * post body in one positioned box, so the rail runs exactly as long as the text.
+ * The post page wraps this and the post body in one box, the reading box: the rail
+ * stands still in the window beside it and fades out where the box ends.
  */
 interface Props {
   headings: { depth: number; slug: string; text: string }[];
@@ -29,15 +29,18 @@ const sections = Astro.props.headings.filter((heading) => heading.depth === 2);
 
 <script>
   const contents = document.querySelector<HTMLDetailsElement>('.post-contents');
-  if (contents) {
+  const list = contents?.querySelector('nav');
+  if (contents && list) {
     const links = [...contents.querySelectorAll<HTMLAnchorElement>('a[href^="#"]')];
     const headings = links.map((link) =>
       document.getElementById(decodeURIComponent(link.hash.slice(1)))
     );
+    const inMargin = () => getComputedStyle(contents).position === 'fixed';
 
     // The section being read is the last one whose heading has passed the upper third
     // of the window. The observed band reaches far above the window, so it means "above
-    // that line", and a heading crosses it even when the reader jumps past it.
+    // that line", and a heading crosses it even when the reader jumps past it. When the
+    // list scrolls inside itself, it brings the current title into view.
     const markCurrent = () => {
       const line = window.innerHeight * 0.35;
       const current = headings.findLastIndex(
@@ -47,22 +50,50 @@ const sections = Astro.props.headings.filter((heading) => heading.depth === 2);
         if (index === current) link.setAttribute('aria-current', 'location');
         else link.removeAttribute('aria-current');
       });
+      const link = links[current];
+      if (link && inMargin() && list.scrollHeight > list.clientHeight) {
+        const top = link.offsetTop - list.offsetTop;
+        if (top < list.scrollTop || top + link.offsetHeight > list.scrollTop + list.clientHeight) {
+          list.scrollTop = top - (list.clientHeight - link.offsetHeight) / 2;
+        }
+      }
     };
     const observer = new IntersectionObserver(markCurrent, { rootMargin: '100000px 0px -65% 0px' });
     headings.forEach((heading) => heading && observer.observe(heading));
+
+    // The rail stands still in the window, so it fades out where it stands once the end
+    // of the text rises above its foot, before it could lie over the footer.
+    const reading = contents.parentElement;
+    let pending = false;
+    const fadeAtEnd = () => {
+      pending = false;
+      if (!reading) return;
+      const past =
+        reading.getBoundingClientRect().bottom < list.getBoundingClientRect().bottom + 24;
+      contents.toggleAttribute('data-past', past);
+    };
+    const onScroll = () => {
+      if (!pending) {
+        pending = true;
+        requestAnimationFrame(fadeAtEnd);
+      }
+    };
+    fadeAtEnd();
+    window.addEventListener('scroll', onScroll, { passive: true });
 
     // In the margin the list is always shown, so the disclosure is opened for assistive
     // technology too; it closes again only if this opened it.
     let openedForRail = false;
     const fitToMargin = () => {
-      const inMargin = getComputedStyle(contents).position === 'absolute';
-      if (inMargin && !contents.open) {
+      const margin = inMargin();
+      if (margin && !contents.open) {
         contents.open = true;
         openedForRail = true;
-      } else if (!inMargin && openedForRail) {
+      } else if (!margin && openedForRail) {
         contents.open = false;
         openedForRail = false;
       }
+      onScroll();
     };
     fitToMargin();
     window.addEventListener('resize', fitToMargin, { passive: true });
@@ -129,27 +160,60 @@ const sections = Astro.props.headings.filter((heading) => heading.depth === 2);
      Where the margin beside the column holds a rail at least 10.5rem wide, a gap and a
      gutter (60rem: 1260px, as the column is about 31rem). The text, the margin notes on
      the right and everything wide stay where they are: the rail takes only the empty
-     left margin. */
-  @container (width >= 60rem) {
+     left margin.
+
+     The rail holds one place in the window from the first paint to the end of the text,
+     level with the post's title at the top of the page. It is fixed, so it never travels;
+     horizontally it keeps its static place at the column's edge and steps back into the
+     margin. The page makes the reading box a container, so 100cqi is the column. */
+  @container prose (width >= 60rem) {
     .post-contents {
       --rail-gap: 2.5rem;
+      --rail-top: 8rem;
+      --rail-width: min(13rem, (100vw - 100cqi) / 2 - var(--rail-gap) - 1.5rem);
       --stem-pad: 1.1rem;
       --bud: 0.4rem;
 
-      position: absolute;
-      inset-block: 0;
-      right: calc(100% + var(--rail-gap));
-      width: min(13rem, (100cqi - 100%) / 2 - var(--rail-gap) - 1.5rem);
-      margin: 0;
+      position: fixed;
+      top: var(--rail-top);
+      width: var(--rail-width);
+      margin: 0 0 0 calc(-1 * (var(--rail-width) + var(--rail-gap)));
+      transition:
+        opacity var(--transition-medium),
+        visibility 0s;
     }
 
-    /* The list follows the reader down the post. */
+    /* At the end of the text the rail fades out where it stands, so it never lies over
+       the footer; the script marks the moment. Focus inside keeps it. */
+    .post-contents[data-past]:not(:focus-within) {
+      opacity: 0;
+      visibility: hidden;
+      transition:
+        opacity var(--transition-medium),
+        visibility 0s var(--transition-medium);
+    }
+
+    /* A list taller than the window scrolls inside itself. */
     .post-contents nav {
-      position: sticky;
-      top: 2.5rem;
-      max-height: calc(100svh - 5rem);
+      max-height: calc(100svh - var(--rail-top) - 2.5rem);
       overflow-y: auto;
+      overscroll-behavior: contain;
       padding: 0.25rem 0.25rem 0.25rem 0.5rem;
+    }
+
+    /* Without JavaScript nothing can tell where the text ends, so the rail stands in a
+       box as long as the text and sticks in its place: it rises once with the page, and
+       leaves with the end of the text instead of lying over the footer. */
+    @media (scripting: none) {
+      .post-contents {
+        position: absolute;
+        inset-block: 0;
+      }
+
+      .post-contents nav {
+        position: sticky;
+        top: var(--rail-top);
+      }
     }
 
     /* A stem the height of the list, the titles hanging from it towards the text. */
