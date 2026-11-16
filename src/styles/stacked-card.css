@@ -68,6 +68,8 @@
     --sc-sheet-back: color-mix(in srgb, var(--sc-sheet) 92%, var(--color-ink-dark));
     --sc-lift: 0px;
     --sc-turn: var(--rot-c, 0deg);
+    /* Moss ink a shade nearer the body ink, so it keeps AA on every tint */
+    --sc-moss: color-mix(in srgb, var(--color-moss) 70%, var(--color-ink-dark));
 
     position: relative;
     z-index: 1;
@@ -371,6 +373,11 @@
     --sc-sheet: color-mix(in srgb, var(--sc-base) 91%, var(--color-tansy));
   }
 
+  /* A manila tag is cream already; more tansy would wash out its muted ink by torchlight */
+  .sc-card[data-material='tag'][data-tint='cream'] {
+    --sc-sheet: color-mix(in srgb, var(--sc-base) 94%, var(--color-ochre));
+  }
+
   .sc-card[data-tint='sage'] {
     --sc-sheet: color-mix(in srgb, var(--sc-base) 86%, var(--color-sage));
   }
@@ -381,7 +388,7 @@
 
   /* Aged paper: yellowed, with foxing spots */
   .sc-card[data-tint='aged'] {
-    --sc-sheet: color-mix(in srgb, var(--sc-base) 88%, var(--color-ochre));
+    --sc-sheet: color-mix(in srgb, var(--sc-base) 91%, var(--color-ochre));
     --sc-age:
       radial-gradient(
         circle at 82% 22%,
