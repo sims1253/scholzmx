@@ -1,30 +1,63 @@
-:root {
-  /* ===== Color Tokens: noon under the vines ===== */
+/* ===== Color Tokens: noon under the vines, and the grotto by torchlight ===== */
 
-  /* Papers: rag paper in green shade */
-  --color-parchment: #f2f1e8; /* Page */
-  --color-parchment-light: #e9eadf; /* Inset surfaces: code, search, labels */
+/* A token that changes by torchlight names both of its values, day first:
+
+     --token: var(--by-day, <day value>) var(--by-torch, <torchlight value>);
+
+   --by-day and --by-torch are switches, and exactly one is on. The one that is on holds
+   `initial`, so its var() falls back to the value written in it; the one that is off holds
+   a space, so its value drops out. The three rules below flip the switches, and they are
+   the only place that says when the torch is lit: the visitor's system prefers dark and
+   the torch button has not put it out, or the button (or the night) has lit it.
+   light-dark() would read better but takes colours only, and the torch also changes
+   filters, gradients and animations; it would also need color-scheme, which repaints
+   the browser's own scrollbars and form controls. */
+:root {
+  --by-day: initial;
+  --by-torch: ;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --by-day: ;
+    --by-torch: initial;
+  }
+}
+
+:root[data-theme='dark'] {
+  --by-day: ;
+  --by-torch: initial;
+}
+
+:root {
+  /* Papers: rag paper in green shade; by torchlight, warm dark stone */
+  --color-parchment: var(--by-day, #f2f1e8) var(--by-torch, #18140f); /* Page */
+  /* Inset surfaces: code, search, labels */
+  --color-parchment-light: var(--by-day, #e9eadf) var(--by-torch, #221d16);
 
   /* Inks: iron-gall, slightly green */
-  --color-ink-dark: #22291e; /* Body text */
-  --color-ink-medium: #3b4436; /* Secondary text */
-  --color-ink-light: #525c4b; /* Muted text, still AA in the deepest shade */
-  --color-ink-plate: #161b13; /* Rare maximum contrast */
+  --color-ink-dark: var(--by-day, #22291e) var(--by-torch, #eee5d2); /* Body text */
+  --color-ink-medium: var(--by-day, #3b4436) var(--by-torch, #d6cab3); /* Secondary text */
+  /* Muted text, still AA in the deepest shade */
+  --color-ink-light: var(--by-day, #525c4b) var(--by-torch, #aba08a);
+  --color-ink-plate: var(--by-day, #161b13) var(--by-torch, #fff4e0); /* Rare maximum contrast */
 
   /* Vine and tansy carry the identity. The old names stay so components keep working. */
-  --color-walnut: #3e5a2b; /* Vine green: links, section heads */
-  --color-ochre: #855a00; /* Tansy ink: hover, active */
-  --color-clay: #7b3b4b; /* Grape skin: sparing highlight */
+  /* Vine green: links, section heads; tansy by torchlight */
+  --color-walnut: var(--by-day, #3e5a2b) var(--by-torch, #e3b456);
+  --color-ochre: var(--by-day, #855a00) var(--by-torch, #f59a45); /* Tansy ink; ember */
+  --color-clay: var(--by-day, #7b3b4b) var(--by-torch, #d08a92); /* Grape skin: sparing highlight */
 
   /* Botanicals */
-  --color-moss: #5e7350; /* Structural green */
-  --color-sage: #afb9a2; /* Quiet substrate */
-  --color-lichen: #d3d8c8; /* Keylines */
+  --color-moss: var(--by-day, #5e7350) var(--by-torch, #93a67f); /* Structural green */
+  --color-sage: var(--by-day, #afb9a2) var(--by-torch, #5f664f); /* Quiet substrate */
+  --color-lichen: var(--by-day, #d3d8c8) var(--by-torch, #3b3a2c); /* Keylines */
 
   /* Cool/meta */
-  --color-iron: #44505a;
-  --color-tansy: #d9a21b; /* Tansy flower: decoration only, never text */
-  --color-verdigris: #5f8a78;
+  --color-iron: var(--by-day, #44505a) var(--by-torch, #93a3b5);
+  /* Tansy flower: decoration only, never text */
+  --color-tansy: var(--by-day, #d9a21b) var(--by-torch, #e8b83a);
+  --color-verdigris: var(--by-day, #5f8a78) var(--by-torch, #7ea899);
 
   /* Semantic mappings */
   --color-text-primary: var(--color-ink-dark);
@@ -33,8 +66,9 @@
 
   --color-link: var(--color-walnut);
   --color-link-hover: var(--color-ochre);
-  --color-underline: color-mix(in srgb, var(--color-walnut) 35%, transparent);
-  --color-underline-hover: var(--color-tansy);
+  --color-underline: var(--by-day, color-mix(in srgb, var(--color-walnut) 35%, transparent))
+    var(--by-torch, color-mix(in srgb, var(--color-walnut) 40%, transparent));
+  --color-underline-hover: var(--by-day, var(--color-tansy)) var(--by-torch, var(--color-ochre));
 
   --color-accent-primary: var(--color-walnut);
   --color-accent-secondary: var(--color-moss);
@@ -44,140 +78,56 @@
   --color-surface: var(--color-parchment-light);
 
   /* Derived utility mixes */
-  --rule-ink: color-mix(in srgb, var(--color-ink-dark) 16%, var(--color-parchment));
-  --wash-sage: color-mix(in srgb, var(--color-sage) 14%, var(--color-parchment));
+  --rule-ink: var(--by-day, color-mix(in srgb, var(--color-ink-dark) 16%, var(--color-parchment)))
+    var(--by-torch, color-mix(in srgb, var(--color-ink-light) 22%, var(--color-parchment)));
+  --wash-sage: var(--by-day, color-mix(in srgb, var(--color-sage) 14%, var(--color-parchment)))
+    var(--by-torch, color-mix(in srgb, var(--color-sage) 18%, var(--color-parchment)));
   --btn-walnut-hover: color-mix(in srgb, var(--color-walnut) 88%, black);
 
   /* Pasted things: photo and card paper, the strips that hold them, prints in posts */
-  --paper-sheet: color-mix(in srgb, var(--color-parchment) 75%, white);
+  --paper-sheet: var(--by-day, color-mix(in srgb, var(--color-parchment) 75%, white))
+    var(--by-torch, var(--color-parchment-light));
   --tape-strip: color-mix(in srgb, var(--color-parchment) 72%, var(--color-sage));
-  --print-sheet: #fbfaf5; /* Prints stay paper-white, even by torchlight */
-  --print-dim: none;
+  /* Prints stay paper-white, even by torchlight, where they are warm and dim like the
+     paper around them */
+  --print-sheet: var(--by-day, #fbfaf5) var(--by-torch, #e2dacb);
+  --print-dim: var(--by-day, none) var(--by-torch, brightness(0.8) sepia(0.15));
 
   /* Prints as plates: the keyline round the picture and the pressed mark the plate
-     leaves in the sheet, lit from the top left by day. */
-  --plate-keyline: rgb(34 41 30 / 0.3);
-  --plate-mark:
-    0 0 0 0.4rem var(--print-sheet), -1px -1px 0 0.4rem rgb(34 41 30 / 0.2),
-    1px 1px 0 0.4rem rgb(255 255 255 / 0.9);
+     leaves in the sheet, lit from the top left by day. By torchlight only the keyline
+     shows: the print is dimmed as a whole, and a band of sheet colour round it would be
+     dimmed too and stand out from the sheet. */
+  --plate-keyline: var(--by-day, rgb(34 41 30 / 0.3)) var(--by-torch, rgb(58 48 36 / 0.5));
+  --plate-mark: var(
+      --by-day,
+      0 0 0 0.4rem var(--print-sheet),
+      -1px -1px 0 0.4rem rgb(34 41 30 / 0.2),
+      1px 1px 0 0.4rem rgb(255 255 255 / 0.9)
+    )
+    var(--by-torch, none);
 
-  /* The canopy: leaf shadows by day, torchlight by night */
-  /* The canopy by day follows the sun (set by BaseLayout's head script) */
-  --canopy-shade: rgb(var(--sun-shade, 58 78 26) / 0.2);
-  --canopy-glow: var(--sun-glow, none);
-  --canopy-flicker: none;
-  --canopy-skew: var(--sun-skew, 0deg);
-  --canopy-stretch: var(--sun-stretch, 1);
-  --canopy-crisp: var(--sun-crisp, 1);
+  /* The canopy: leaf shadows by day, following the sun (set by BaseLayout's head
+     script); by night the torch, lit from one corner */
+  --canopy-shade: var(--by-day, rgb(var(--sun-shade, 58 78 26) / 0.2))
+    var(--by-torch, rgb(14 10 6 / 0.88));
+  --canopy-glow: var(--by-day, var(--sun-glow, none))
+    var(
+      --by-torch,
+      radial-gradient(
+        ellipse 75% 65% at 90% 0%,
+        rgb(255 158 64 / 0.3),
+        rgb(255 128 48 / 0.1) 45%,
+        transparent 75%
+      )
+    );
+  --canopy-flicker: var(--by-day, none) var(--by-torch, torch-flicker 5.3s linear infinite);
+  --canopy-skew: var(--by-day, var(--sun-skew, 0deg)) var(--by-torch, 0deg);
+  --canopy-stretch: var(--by-day, var(--sun-stretch, 1)) var(--by-torch, 1);
+  --canopy-crisp: var(--by-day, var(--sun-crisp, 1)) var(--by-torch, 1);
 
   /* The flame in the navigation: still by day, alive by torchlight */
-  --torch-flame-base: #b5651d;
-  --torch-flame-glow: none;
-  --torch-flame-dance: none;
-}
-
-/* Torchlight: the grotto after dark, lit from one corner */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    --color-parchment: #18140f;
-    --color-parchment-light: #221d16;
-
-    --color-ink-dark: #eee5d2;
-    --color-ink-medium: #d6cab3;
-    --color-ink-light: #aba08a;
-    --color-ink-plate: #fff4e0;
-
-    --color-walnut: #e3b456; /* Tansy by torchlight */
-    --color-ochre: #f59a45; /* Ember */
-    --color-clay: #d08a92;
-
-    --color-moss: #93a67f;
-    --color-sage: #5f664f;
-    --color-lichen: #3b3a2c;
-
-    --color-iron: #93a3b5;
-    --color-tansy: #e8b83a;
-    --color-verdigris: #7ea899;
-
-    --color-underline: color-mix(in srgb, var(--color-walnut) 40%, transparent);
-    --color-underline-hover: var(--color-ochre);
-
-    --rule-ink: color-mix(in srgb, var(--color-ink-light) 22%, var(--color-parchment));
-    --wash-sage: color-mix(in srgb, var(--color-sage) 18%, var(--color-parchment));
-    --paper-sheet: var(--color-parchment-light);
-    --print-sheet: #e2dacb;
-    --print-dim: brightness(0.8) sepia(0.15); /* Warm and dim, like the paper around it */
-    /* By torchlight only the keyline shows: the print is dimmed as a whole, and a band
-       of sheet colour round it would be dimmed too and stand out from the sheet. */
-    --plate-keyline: rgb(58 48 36 / 0.5);
-    --plate-mark: none;
-
-    --canopy-shade: rgb(14 10 6 / 0.88);
-    --canopy-glow: radial-gradient(
-      ellipse 75% 65% at 90% 0%,
-      rgb(255 158 64 / 0.3),
-      rgb(255 128 48 / 0.1) 45%,
-      transparent 75%
-    );
-    --canopy-flicker: torch-flicker 5.3s linear infinite;
-    --canopy-skew: 0deg;
-    --canopy-stretch: 1;
-    --canopy-crisp: 1;
-
-    --torch-flame-base: #f07f2a;
-    --torch-flame-glow: drop-shadow(0 0 4px rgb(255 150 60 / 0.7));
-    --torch-flame-dance: flame-dance 1.7s ease-in-out infinite;
-  }
-}
-
-/* Explicit choice via data-theme on <html> */
-:root[data-theme='dark'] {
-  --color-parchment: #18140f;
-  --color-parchment-light: #221d16;
-
-  --color-ink-dark: #eee5d2;
-  --color-ink-medium: #d6cab3;
-  --color-ink-light: #aba08a;
-  --color-ink-plate: #fff4e0;
-
-  --color-walnut: #e3b456;
-  --color-ochre: #f59a45;
-  --color-clay: #d08a92;
-
-  --color-moss: #93a67f;
-  --color-sage: #5f664f;
-  --color-lichen: #3b3a2c;
-
-  --color-iron: #93a3b5;
-  --color-tansy: #e8b83a;
-  --color-verdigris: #7ea899;
-
-  --color-underline: color-mix(in srgb, var(--color-walnut) 40%, transparent);
-  --color-underline-hover: var(--color-ochre);
-
-  --rule-ink: color-mix(in srgb, var(--color-ink-light) 22%, var(--color-parchment));
-  --wash-sage: color-mix(in srgb, var(--color-sage) 18%, var(--color-parchment));
-  --paper-sheet: var(--color-parchment-light);
-  --print-sheet: #e2dacb;
-  --print-dim: brightness(0.8) sepia(0.15);
-  /* By torchlight only the keyline shows: the print is dimmed as a whole, and a band
-     of sheet colour round it would be dimmed too and stand out from the sheet. */
-  --plate-keyline: rgb(58 48 36 / 0.5);
-  --plate-mark: none;
-
-  --canopy-shade: rgb(14 10 6 / 0.88);
-  --canopy-glow: radial-gradient(
-    ellipse 75% 65% at 90% 0%,
-    rgb(255 158 64 / 0.3),
-    rgb(255 128 48 / 0.1) 45%,
-    transparent 75%
-  );
-  --canopy-flicker: torch-flicker 5.3s linear infinite;
-  --canopy-skew: 0deg;
-  --canopy-stretch: 1;
-  --canopy-crisp: 1;
-
-  --torch-flame-base: #f07f2a;
-  --torch-flame-glow: drop-shadow(0 0 4px rgb(255 150 60 / 0.7));
-  --torch-flame-dance: flame-dance 1.7s ease-in-out infinite;
+  --torch-flame-base: var(--by-day, #b5651d) var(--by-torch, #f07f2a);
+  --torch-flame-glow: var(--by-day, none)
+    var(--by-torch, drop-shadow(0 0 4px rgb(255 150 60 / 0.7)));
+  --torch-flame-dance: var(--by-day, none) var(--by-torch, flame-dance 1.7s ease-in-out infinite);
 }

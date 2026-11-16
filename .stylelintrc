@@ -56,13 +56,5 @@
     "block-no-empty": null,
     "declaration-block-no-shorthand-property-overrides": null
   },
-  "ignoreFiles": ["public/**/*", "dist/**/*", "node_modules/**/*", "src/**/*.astro"],
-  "overrides": [
-    {
-      "files": ["src/styles/tailwind.css"],
-      "rules": {
-        "import-notation": "string"
-      }
-    }
-  ]
+  "ignoreFiles": ["public/**/*", "dist/**/*", "node_modules/**/*", "src/**/*.astro"]
 }
