@@ -134,16 +134,18 @@ const readingTime = getReadingTime(post.body || '');
       />
     </div>}
 
-    <PostContents headings={headings} />
+    <div class="post-reading">
+      <PostContents headings={headings} />
 
-    <section
-      class="post-body prose"
-      itemprop="articleBody"
-      data-pagefind-body
-      data-pagefind-filter="type:blog"
-    >
-      <Content />
-    </section>
+      <section
+        class="post-body prose"
+        itemprop="articleBody"
+        data-pagefind-body
+        data-pagefind-filter="type:blog"
+      >
+        <Content />
+      </section>
+    </div>
 
     <aside class="footnotes-area" aria-label="Footnotes"></aside>
 
@@ -201,6 +203,18 @@ const readingTime = getReadingTime(post.body || '');
 <style>
   .post-content {
     position: relative;
+  }
+
+  /* The contents rail (PostContents) runs beside exactly this box: the post's text. */
+  .post-reading {
+    position: relative;
+  }
+
+  /* A section opened from the contents lands with room above its heading, level with
+     the top of the rail. (The global :target rule does not survive purgecss.) */
+  .post-body :global(h2),
+  .post-body :global(h3) {
+    scroll-margin-top: 2.5rem;
   }
 
   .post-header {

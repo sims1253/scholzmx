@@ -1,8 +1,13 @@
 ---
 /**
- * The contents of a long post, folded away like the index slip at the front of a
- * herbal. Only shown when a post has three or more sections; links are built from the
- * rendered headings, so it works without JavaScript.
+ * The contents of a long post. Where the page leaves room in the left margin, the
+ * list stands there beside the text as a stem, and a tansy bud marks the section being
+ * read. Elsewhere it is folded away like the index slip at the front of a herbal. Only
+ * shown when a post has three or more sections; links are built from the rendered
+ * headings, so it works without JavaScript.
+ *
+ * The rail is placed against its containing block: the post page wraps this and the
+ * post body in one positioned box, so the rail runs exactly as long as the text.
  */
 interface Props {
   headings: { depth: number; slug: string; text: string }[];
@@ -13,7 +18,7 @@ const sections = Astro.props.headings.filter((heading) => heading.depth === 2);
 
 {sections.length >= 3 && <details class="post-contents" data-pagefind-ignore>
   <summary>Contents <span class="post-contents-count">{sections.length} sections</span></summary>
-  <nav aria-label="Sections of this post">
+  <nav aria-label="Contents">
     <ol>
       {sections.map((section) => <li>
         <a href={`#${section.slug}`}>{section.text}</a>
@@ -21,6 +26,48 @@ const sections = Astro.props.headings.filter((heading) => heading.depth === 2);
     </ol>
   </nav>
 </details>}
+
+<script>
+  const contents = document.querySelector<HTMLDetailsElement>('.post-contents');
+  if (contents) {
+    const links = [...contents.querySelectorAll<HTMLAnchorElement>('a[href^="#"]')];
+    const headings = links.map((link) =>
+      document.getElementById(decodeURIComponent(link.hash.slice(1)))
+    );
+
+    // The section being read is the last one whose heading has passed the upper third
+    // of the window. The observed band reaches far above the window, so it means "above
+    // that line", and a heading crosses it even when the reader jumps past it.
+    const markCurrent = () => {
+      const line = window.innerHeight * 0.35;
+      const current = headings.findLastIndex(
+        (heading) => heading !== null && heading.getBoundingClientRect().top <= line
+      );
+      links.forEach((link, index) => {
+        if (index === current) link.setAttribute('aria-current', 'location');
+        else link.removeAttribute('aria-current');
+      });
+    };
+    const observer = new IntersectionObserver(markCurrent, { rootMargin: '100000px 0px -65% 0px' });
+    headings.forEach((heading) => heading && observer.observe(heading));
+
+    // In the margin the list is always shown, so the disclosure is opened for assistive
+    // technology too; it closes again only if this opened it.
+    let openedForRail = false;
+    const fitToMargin = () => {
+      const inMargin = getComputedStyle(contents).position === 'absolute';
+      if (inMargin && !contents.open) {
+        contents.open = true;
+        openedForRail = true;
+      } else if (!inMargin && openedForRail) {
+        contents.open = false;
+        openedForRail = false;
+      }
+    };
+    fitToMargin();
+    window.addEventListener('resize', fitToMargin, { passive: true });
+  }
+</script>
 
 <style>
   .post-contents {
@@ -76,6 +123,116 @@ const sections = Astro.props.headings.filter((heading) => heading.depth === 2);
 
   .post-contents a:hover {
     color: var(--color-walnut);
+  }
+
+  /* ===== The rail =====
+     Where the margin beside the column holds a rail at least 10.5rem wide, a gap and a
+     gutter (60rem: 1260px, as the column is about 31rem). The text, the margin notes on
+     the right and everything wide stay where they are: the rail takes only the empty
+     left margin. */
+  @container (width >= 60rem) {
+    .post-contents {
+      --rail-gap: 2.5rem;
+      --stem-pad: 1.1rem;
+      --bud: 0.4rem;
+
+      position: absolute;
+      inset-block: 0;
+      right: calc(100% + var(--rail-gap));
+      width: min(13rem, (100cqi - 100%) / 2 - var(--rail-gap) - 1.5rem);
+      margin: 0;
+    }
+
+    /* The list follows the reader down the post. */
+    .post-contents nav {
+      position: sticky;
+      top: 2.5rem;
+      max-height: calc(100svh - 5rem);
+      overflow-y: auto;
+      padding: 0.25rem 0.25rem 0.25rem 0.5rem;
+    }
+
+    /* A stem the height of the list, the titles hanging from it towards the text. */
+    .post-contents ol {
+      margin: 0;
+      padding: 0 var(--stem-pad) 0 0;
+      border-right: 1px solid var(--rule-ink);
+      list-style: none;
+      font-size: var(--text-sm);
+      text-align: right;
+      transition: border-color var(--transition-medium);
+    }
+
+    .post-contents li {
+      padding: 0;
+    }
+
+    /* Receding: muted while the reader reads, forward under the pointer or the keyboard. */
+    .post-contents a {
+      position: relative;
+      display: block;
+      width: fit-content;
+      margin-left: auto;
+      padding-block: 0.3rem;
+      line-height: 1.3;
+      text-decoration: none;
+      text-wrap: balance;
+      color: var(--color-text-muted);
+      transition: color var(--transition-medium);
+    }
+
+    .post-contents:is(:hover, :focus-within) a {
+      color: var(--color-text-secondary);
+    }
+
+    .post-contents:is(:hover, :focus-within) ol {
+      border-right-color: color-mix(in srgb, var(--color-walnut) 45%, var(--rule-ink));
+    }
+
+    .post-contents a[aria-current] {
+      color: var(--color-text-primary);
+    }
+
+    .post-contents:is(:hover, :focus-within) a:hover {
+      color: var(--color-link-hover);
+    }
+
+    /* The bud sits on the stem beside the current title's first line. */
+    .post-contents a[aria-current]::after {
+      content: '';
+      position: absolute;
+      top: calc(0.3rem + 0.65lh - var(--bud) / 2);
+      right: calc(-1 * var(--stem-pad) - var(--bud) / 2 - 0.5px);
+      width: var(--bud);
+      height: var(--bud);
+      border-radius: 50%;
+      background: var(--color-tansy);
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-ochre) 60%, transparent);
+    }
+
+    /* Shown in the margin, the list needs no summary to open it. Browsers that cannot
+       style the disclosure's content keep the summary, and the script opens it. */
+    @supports selector(::details-content) {
+      .post-contents summary {
+        display: none;
+      }
+
+      .post-contents::details-content {
+        height: 100%;
+        content-visibility: visible;
+      }
+    }
+  }
+
+  /* By torchlight the bud glows like an ember. */
+  :global(:root[data-theme='dark']) .post-contents a[aria-current]::after {
+    box-shadow: 0 0 0.45rem color-mix(in srgb, var(--color-tansy) 70%, transparent);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .post-contents a[aria-current]::after {
+      box-shadow: 0 0 0.45rem color-mix(in srgb, var(--color-tansy) 70%, transparent);
+    }
   }
 
   @media print {
