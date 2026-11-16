@@ -59,9 +59,9 @@ const sections = [
 ];
 
 const isHome = currentPath === '/';
-// Only posts and notes show code; the index pages under /blog/ and /notes/ do not.
-const hasCode = /^\/(blog|notes)\/.+/.test(currentPath);
-const hasInitial = isHome || /^\/(blog|recipes|notes)\/.+/.test(currentPath);
+// Only posts show code; the index page under /blog/ does not.
+const hasCode = /^\/blog\/.+/.test(currentPath);
+const hasInitial = isHome || /^\/(blog|recipes)\/.+/.test(currentPath);
 ---
 
 <!doctype html>

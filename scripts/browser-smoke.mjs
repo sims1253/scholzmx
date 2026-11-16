@@ -18,7 +18,7 @@ try {
   const blogPaths = [...globSync('**/index.html', { cwd: 'dist/blog' })]
     .filter((path) => path !== 'index.html')
     .map((path) => `/blog/${path.replace(/index\.html$/, '')}`);
-  const paths = ['/', '/blog/', '/recipes/', '/notes/', '/research/', '/projects/', ...blogPaths];
+  const paths = ['/', '/blog/', '/recipes/', '/research/', '/projects/', ...blogPaths];
   for (const width of [1440, 1280, 390]) {
     await page.setViewport({ width, height: 844 });
     for (const path of paths) {
