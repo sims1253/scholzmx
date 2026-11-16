@@ -6,9 +6,8 @@
  * - A paragraph that opens with an emphasised label such as `*Update:*` is an editorial
  *   note, not the start of the text; the initial goes to the paragraph after it.
  * - The letter may sit inside a link or emphasis.
- * - A one-letter first word ("A story", "I am") keeps its space as a no-break space;
- *   an ordinary space would collapse at the start of the line, beside the floated
- *   initial, and screen readers and the clipboard would get "Astory".
+ * - A one-letter first word ("A story", "I am") marks the ornament, so CSS can close
+ *   the gap its space would leave beside the initial (initialAttributes).
  * - Punctuation right after the letter ("I'm") is kept out of the initial (joinInitial).
  * - Opening quotation marks before it are wrapped in `.dropcap-quote` and hung in the
  *   margin, so the initial is still the letter.
@@ -29,7 +28,6 @@ export interface RehypeInitialOptions {
 const PASS_THROUGH = new Set(['a', 'em', 'strong', 'i', 'b', 'mark', 'cite', 'u', 's']);
 const OPENING_QUOTES = /^[\s"'“‘„‚«‹»›]+/u;
 const LETTER = /^\p{L}/u;
-const ONE_LETTER_WORD = /^(\p{L})\s+/u;
 const LABEL = new Set(['em', 'strong', 'i', 'b']);
 
 export default function rehypeInitial(options: RehypeInitialOptions) {
@@ -62,7 +60,7 @@ export function decorate(paragraph: Element, variant: InitialVariant): boolean {
   const rest = text.value.slice(quotes.length);
   if (!LETTER.test(rest)) return false;
 
-  text.value = joinInitial(rest.charAt(0), rest.slice(1)).replace(ONE_LETTER_WORD, '$1\u00A0');
+  text.value = joinInitial(rest.charAt(0), rest.slice(1));
   const hung = quotes.trim();
   if (hung) {
     parent.children.splice(parent.children.indexOf(text), 0, {

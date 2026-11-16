@@ -3,10 +3,10 @@
  * and DropCap.astro (the homepage).
  *
  * The letter itself stays in the text, so "This" is one word to a screen reader and on
- * the clipboard. CSS draws it large with `p:has(> .dropcap)::first-letter`. The element
- * defined here only carries the ornament behind the letter: it is empty, hidden from
- * assistive technology, and paints its glyph from `data-first-letter` in a pseudo-element
- * (src/styles/dropcap.css).
+ * the clipboard; CSS sets it at size 0 with `p:has(> .dropcap)::first-letter`. The
+ * element defined here draws the initial: it is empty, hidden from assistive technology,
+ * and paints the letter and the ornament behind it from `data-first-letter`, both in
+ * pseudo-elements of one box, so the two always register (src/styles/dropcap.css).
  */
 
 export type InitialColor = 'gold' | 'walnut' | 'moss' | 'ochre' | 'sage';
@@ -27,13 +27,19 @@ export interface InitialAttributes {
   'aria-hidden': 'true';
 }
 
-export function initialAttributes(letter: string, options: InitialOptions = {}): InitialAttributes {
+/**
+ * `text` is the text the initial opens: its first character is the letter. When the
+ * letter is a word of its own ("A story"), the class `dropcap--word` lets CSS close the
+ * gap the following space leaves beside the initial.
+ */
+export function initialAttributes(text: string, options: InitialOptions = {}): InitialAttributes {
   const { color, style = 'ornate', variant = 'personal' } = options;
   const classes = ['dropcap', `dropcap--${style}`, `dropcap--${variant}`];
   if (color) classes.push(`dropcap--${color}`);
+  if (/^\p{L}\s/u.test(text)) classes.push('dropcap--word');
   return {
     class: classes.join(' '),
-    'data-first-letter': letter.charAt(0).toUpperCase(),
+    'data-first-letter': text.charAt(0).toUpperCase(),
     'aria-hidden': 'true',
   };
 }

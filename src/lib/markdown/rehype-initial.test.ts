@@ -9,8 +9,9 @@ import { initialAttributes } from './initial.ts';
 import rehypeInitial from './rehype-initial.ts';
 
 const options = { collections: { blog: 'serious', recipes: 'personal' } } as const;
-const ornament = (letter: string, variant = 'serious') =>
-  `<span class="dropcap dropcap--ornate dropcap--${variant}" data-first-letter="${letter}" aria-hidden="true"></span>`;
+const ornament = (letter: string, variant = 'serious', extra = '') =>
+  `<span class="dropcap dropcap--ornate dropcap--${variant}${extra}" data-first-letter="${letter}" aria-hidden="true"></span>`;
+const word = (letter: string) => ornament(letter, 'serious', ' dropcap--word');
 
 async function render(
   markdown: string,
@@ -56,16 +57,16 @@ void test('hangs an opening quotation mark so the initial is the letter', async 
   );
 });
 
-void test('keeps the space after a one-letter first word', async () => {
-  assert.equal(await render('A story told.'), `<p>${ornament('A')}A\u00A0story told.</p>`);
-  assert.equal(await render('I  am.'), `<p>${ornament('I')}I\u00A0am.</p>`);
+void test('keeps a one-letter first word as it is and marks the ornament', async () => {
+  assert.equal(await render('A story told.'), `<p>${word('A')}A story told.</p>`);
+  assert.equal(await render('I  am.'), `<p>${word('I')}I  am.</p>`);
 });
 
 void test('passes over an editorial note such as *Update:* to the text that follows', async () => {
   const html = await render('*Update:* We published it.\n\nI am working on it.');
   assert.equal(
     html,
-    `<p><em>Update:</em> We published it.</p>\n<p>${ornament('I')}I\u00A0am working on it.</p>`
+    `<p><em>Update:</em> We published it.</p>\n<p>${word('I')}I am working on it.</p>`
   );
   assert.match(await render('**Note:** a label.'), /^<p><strong>/);
   assert.match(await render('*Emphasis* opens.'), /dropcap/);
