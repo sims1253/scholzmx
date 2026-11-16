@@ -5,7 +5,6 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import { lightCodeTheme, darkCodeTheme } from './src/lib/shiki-themes.mjs';
 import { unified } from '@astrojs/markdown-remark';
-import purgecss from 'astro-purgecss';
 import pagefind from 'astro-pagefind';
 
 // https://astro.build/config
@@ -28,72 +27,7 @@ export default defineConfig({
     // Redirect old blog listing page to new one
     '/post/': '/blog/',
   },
-  integrations: [
-    sitemap(),
-    pagefind(),
-    // PurgeCSS with conservative minimal safelist
-    purgecss({
-      // Include markdown/quarto so typography/dropcaps classes referenced in content are detected
-      content: [
-        './src/**/*.{astro,js,jsx,ts,tsx,vue,svelte,md,mdx}',
-        './src/content/**/*.{md,mdx,qmd}',
-        './public/**/*.html',
-      ],
-      safelist: [
-        // Keep all CSS custom properties (variables)
-        /^--/,
-        /^pagefind-/,
-        // Keep classes that might be added dynamically by JavaScript
-        'active',
-        'focus',
-        'hover',
-        'disabled',
-        // Keep torch toggle states
-        'torch-toggle',
-        'copied',
-        // Keep manuscript and page elements
-        /^manuscript/,
-        /^page/,
-        /^longform/, // legacy during migration
-        /^prose/,
-        /^layout-/,
-        /^personal-content/,
-        /^serious-content/,
-        // Keep navigation states
-        /^nav-/,
-        /^site-/,
-        // Keep botanical and artistic elements
-        /^botanical/,
-        /^border/,
-        /^vine/,
-        /^portrait/,
-        // Keep math/code elements
-        'astro-code',
-        'copy-button',
-        // Dropcap variants generated dynamically in DropCap.astro - CRITICAL
-        /^dropcap$/,
-        /^dropcap--/,
-        // ImageFrame dynamic/toggled classes
-        /^image-frame/,
-        'primary-image',
-        'alternate-image',
-        'clickable',
-        'show-alternate',
-        /^fill-/,
-        // Margin notes injected via JS on blog posts
-        'margin-note',
-        'notes-container',
-        'note-anchor',
-        'visible',
-        // Theme-toggle and quote states set from scripts
-        'is-turning',
-        'open',
-      ],
-      keyframes: true,
-      // Keep all @font-face declarations so production keeps heading/body/dropcap fonts
-      fontFace: false,
-    }),
-  ],
+  integrations: [sitemap(), pagefind()],
   // Enable automatic image optimization
   image: {
     service: {

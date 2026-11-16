@@ -153,7 +153,6 @@ Images in `src/assets/` get automatic Astro optimization (WebP conversion, respo
 
 ### CSS Strategy
 - Vanilla CSS with modern features (custom properties, container queries, etc.)
-- PurgeCSS removes unused styles in production
 - LightningCSS for optimal minification and modern browser targeting
 
 ### Tooling compatibility
