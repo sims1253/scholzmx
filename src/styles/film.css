@@ -1,0 +1,100 @@
+/* Film: the homepage portrait, printed on a film stock that follows the light.
+
+   By daylight the portrait looks printed from a fine-grained daylight stock: a little
+   warm, matte blacks, fine grain. By torchlight it looks pushed on a tungsten stock:
+   dimmer and warmer, coarser grain, a red-orange halation glow round the edge, and the
+   corners falling away. The change rides on the theme switch, like the rest of the page.
+   Nothing moves and nothing reacts to the pointer.
+
+   Static paint only: one 8 KB grain tile (scripts/draw-film-grain.mjs), a filter and
+   two blend layers on the frame's pseudo-elements. The tile is a background of those
+   layers, so a page without a filmed photograph never fetches it.
+
+   Another framed photograph (ImageFrame) takes the film when an element round it carries
+   `data-film`. Food photographs, plots and screenshots stay exact. */
+
+@layer enhancements {
+  /* --film is the one dial: 1 is the full stock, 0.5 half of everything, 0 leaves the
+     photograph exactly as it was. */
+  :root {
+    --film: 1;
+
+    /* Daylight stock */
+    --film-grain-amount: calc(0.2 * var(--film));
+    --film-grain-size: 64px;
+    --film-tone: sepia(calc(0.1 * var(--film))) saturate(calc(1 - 0.08 * var(--film)))
+      contrast(calc(1 - 0.05 * var(--film))) brightness(calc(1 + 0.03 * var(--film)));
+    /* Torchlight only: the tungsten layer, its vignette and the halation glow. */
+    --film-tungsten-layer: none;
+    --film-vignette: 0;
+    --film-halation: 0;
+  }
+
+  /* Torchlight stock: the same values under both ways the torch is lit (tokens.colors.css). */
+  :root[data-theme='dark'] {
+    --film-grain-amount: calc(0.3 * var(--film));
+    --film-grain-size: 96px;
+    --film-tone: sepia(calc(0.18 * var(--film))) saturate(calc(1 - 0.12 * var(--film)))
+      contrast(calc(1 + 0.08 * var(--film)));
+    --film-tungsten-layer: '';
+    --film-vignette: calc(0.35 * var(--film));
+    --film-halation: calc(0.45 * var(--film));
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) {
+      --film-grain-amount: calc(0.3 * var(--film));
+      --film-grain-size: 96px;
+      --film-tone: sepia(calc(0.18 * var(--film))) saturate(calc(1 - 0.12 * var(--film)))
+        contrast(calc(1 + 0.08 * var(--film)));
+      --film-tungsten-layer: '';
+      --film-vignette: calc(0.35 * var(--film));
+      --film-halation: calc(0.45 * var(--film));
+    }
+  }
+
+  /* Screen only: a printed page gets the photograph as it is. */
+  @media screen {
+    :is(.portrait, [data-film]) .image-frame {
+      isolation: isolate;
+
+      img {
+        filter: var(--film-tone);
+      }
+
+      /* Both layers let the pointer through, so "save image" and the portrait's click
+         still reach the photograph. */
+      &::before,
+      &::after {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+
+      /* The grain, with an overlay blend: mid-grey leaves the picture as it is, the
+         tile's lighter and darker specks lift and press it, most in the midtones. */
+      &::after {
+        content: '';
+        z-index: 2;
+        background: url('/film/grain.png') 0 0 / var(--film-grain-size);
+        opacity: var(--film-grain-amount);
+        mix-blend-mode: overlay;
+      }
+
+      /* Torchlight: the print seen by tungsten light, multiplied in as a warm amber that
+         dims blue and green and keeps red, so it no longer glares on the dark page, and
+         the corners fall away. Round the edge, where the bright print meets the dark
+         mount, the red-orange glow of halation: a soft inset shadow, since a real one
+         needs a blur of the highlights on every repaint. */
+      &::before {
+        content: var(--film-tungsten-layer);
+        z-index: 1;
+        background:
+          radial-gradient(ellipse 72% 72%, transparent 58%, rgb(0 0 0 / var(--film-vignette))),
+          rgb(calc(255 - 2 * var(--film)) calc(255 - 29 * var(--film)) calc(255 - 61 * var(--film)));
+        box-shadow: inset 0 0 28px 0 rgb(255 84 24 / var(--film-halation));
+        mix-blend-mode: multiply;
+      }
+    }
+  }
+}
