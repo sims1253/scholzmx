@@ -7,11 +7,8 @@
     --shadow-lg:
       0 1px 2px color-mix(in srgb, var(--color-ink-dark) 14%, transparent),
       0 14px 26px -12px color-mix(in srgb, var(--color-ink-dark) 38%, transparent);
-
-    /* Back sheets sit a shade deeper than the face, so the stack reads */
-    --sc-sheet: var(--paper-sheet);
-    --sc-sheet-back: color-mix(in srgb, var(--paper-sheet) 92%, var(--color-ink-dark));
     --sc-edge: color-mix(in srgb, var(--color-ink-dark) 12%, transparent);
+    --sc-sheet-back: color-mix(in srgb, var(--paper-sheet) 92%, var(--color-ink-dark));
 
     /* A lifted sheet throws a wider, softer shadow. It is cast by the room's light, so
        it stays dark by torchlight too, where the resting shadows are lit edges. */
@@ -20,33 +17,82 @@
       0 2px 3px color-mix(in srgb, var(--sc-shade) 10%, transparent),
       0 22px 34px -14px color-mix(in srgb, var(--sc-shade) 42%, transparent);
     --sc-ease: cubic-bezier(0.2, 0.8, 0.3, 1);
+
+    /* The desk: cards lie a little off their cells (StackedCard's --place-x/-y), so
+       neighbours overlap at their margins. The gaps are sized so an overlap only ever
+       reaches a neighbour's padding, never its words. */
+    --desk-row-gap: 1.25rem;
+    --desk-col-gap: 0.6rem;
+    --desk-scatter: 1;
+  }
+
+  @media (max-width: 40rem) {
+    :root {
+      --desk-row-gap: 1.75rem;
+      --desk-scatter: 0.4;
+    }
+  }
+
+  /* A desk of cards: as many columns as fit, each card at its own natural height. */
+  .sc-desk {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--desk-min, 18rem)), 1fr));
+    align-items: start;
+    gap: var(--desk-row-gap) var(--desk-col-gap);
+  }
+
+  /* ===== Where the card lies ===== */
+
+  /* The spot is the card's place on the desk: shifted off its cell and laid on or under
+     its neighbours. A card being looked at comes to the top of the pile. */
+  .sc-spot {
+    position: relative;
+    z-index: var(--over, 1);
+    isolation: isolate;
+    translate: calc(var(--place-x, 0rem) * var(--desk-scatter))
+      calc(var(--place-y, 0rem) * var(--desk-scatter));
+  }
+
+  .sc-spot:has(.sc-card[data-linked]:hover),
+  .sc-spot:focus-within {
+    z-index: 5;
   }
 
   /* ===== The stack ===== */
 
   /* The whole card turns and lifts; the sheets beneath are counter-moved, so the top
-     sheet (and the tape holding it) comes away from the stack. */
+     sheet (and what holds it) comes away from the stack. */
   .sc-card {
+    --sc-base: var(--paper-sheet);
+    --sc-sheet: var(--sc-base);
+    --sc-sheet-back: color-mix(in srgb, var(--sc-sheet) 92%, var(--color-ink-dark));
     --sc-lift: 0px;
-    --sc-turn: calc(var(--rot-c, 0deg) * 0.6);
+    --sc-turn: var(--rot-c, 0deg);
 
     position: relative;
-    height: 100%;
-    transform: translate(var(--offx, 0), calc(var(--sc-lift) * -1)) rotate(var(--sc-turn));
+    z-index: 1;
+    transform: translateY(calc(var(--sc-lift) * -1)) rotate(var(--sc-turn));
     transition: transform 0.24s var(--sc-ease);
   }
 
   .sc-card[data-linked]:hover,
   .sc-card[data-linked]:has(.sc-title-link:focus-visible) {
     --sc-lift: 5px;
-    --sc-turn: calc(var(--rot-c, 0deg) * 0.15);
+    --sc-turn: calc(var(--rot-c, 0deg) * 0.3);
   }
 
   .sc-card[data-linked]:has(.sc-title-link:active) {
     --sc-lift: -1px;
-    --sc-turn: calc(var(--rot-c, 0deg) * 0.4);
+    --sc-turn: calc(var(--rot-c, 0deg) * 0.7);
 
     transition-duration: 0.08s;
+  }
+
+  /* Keyboard focus lifts the card like a hover and rings the sheet, not the words. The
+     ring sits on the card, since a torn or folded face clips anything outside it. */
+  .sc-card:has(.sc-title-link:focus-visible) {
+    outline: 2px solid var(--color-walnut);
+    outline-offset: 4px;
   }
 
   .sc-face {
@@ -54,13 +100,11 @@
     z-index: 1;
     display: flex;
     flex-direction: column;
-    height: 100%;
     border-radius: 2px;
-    background: var(--sc-sheet);
+    background: var(--sc-print, none), var(--sc-age, none), var(--sc-rule, none), var(--sc-sheet);
     border: 1px solid var(--sc-edge);
     box-shadow: var(--shadow-md);
-    overflow: hidden; /* overlays clip to the sheet */
-    contain: layout paint; /* keep the coffee ring inside the card */
+    overflow: hidden; /* stains clip to the sheet */
     transition: box-shadow 0.24s var(--sc-ease);
   }
 
@@ -71,12 +115,6 @@
 
   .sc-card[data-linked]:has(.sc-title-link:active) .sc-face {
     box-shadow: var(--shadow-sm);
-  }
-
-  /* Keyboard focus lifts the card like a hover and rings the sheet, not the words. */
-  .sc-card:has(.sc-title-link:focus-visible) .sc-face {
-    outline: 2px solid var(--color-walnut);
-    outline-offset: 3px;
   }
 
   .sc-card::before,
@@ -95,11 +133,11 @@
   }
 
   .sc-card::before {
-    transform: translateY(var(--sc-lift)) rotate(var(--rot-a, -1.2deg)) translate(-2px, 2px);
+    transform: translateY(var(--sc-lift)) rotate(var(--rot-a, -1.2deg)) translate(-3px, 3px);
   }
 
   .sc-card::after {
-    transform: translateY(var(--sc-lift)) rotate(var(--rot-b, 1deg)) translate(2px, 1px);
+    transform: translateY(var(--sc-lift)) rotate(var(--rot-b, 1deg)) translate(3px, 1px);
   }
 
   .sc-layer-c,
@@ -109,12 +147,13 @@
   }
 
   .sc-layer-c {
-    transform: translateY(var(--sc-lift)) rotate(var(--rot-c, 0.6deg)) translate(1px, 1px);
+    transform: translateY(var(--sc-lift)) rotate(calc(var(--rot-a, 0.6deg) * -0.7))
+      translate(2px, 4px);
   }
 
   .sc-layer-d {
-    transform: translateY(var(--sc-lift)) rotate(calc(var(--rot-c, 0.6deg) * -1))
-      translate(-1px, -1px);
+    transform: translateY(var(--sc-lift)) rotate(calc(var(--rot-b, 0.6deg) * -1.2))
+      translate(-2px, -2px);
   }
 
   /* Two sheets show one back sheet */
@@ -128,7 +167,7 @@
     border: 0;
     box-shadow: none;
     background: color-mix(in srgb, var(--color-ink-dark) 6%, transparent);
-    transform: translateY(var(--sc-lift)) scale(1.03) rotate(var(--rot-b, 1deg));
+    transform: translateY(var(--sc-lift)) scale(1.02) rotate(var(--rot-b, 1deg));
     z-index: -1;
   }
 
@@ -325,144 +364,595 @@
     filter: var(--print-dim);
   }
 
-  /* The taped photo takes the corner the tansy tab would hang from */
-  .sc-card:has(.nc-thumb) .sc-tab {
-    display: none;
+  /* ===== The paper: tint, ruling, edge, dog-ear ===== */
+
+  /* No two sheets came from the same pad. Small mixes keep every text colour at AA. */
+  .sc-card[data-tint='cream'] {
+    --sc-sheet: color-mix(in srgb, var(--sc-base) 91%, var(--color-tansy));
   }
 
-  /* ===== Adornments ===== */
-
-  /* Coffee ring: a mug set down near the card's edge, drawn by
-     scripts/draw-coffee-rings.mjs. The face clips whatever hangs over the edge. */
-  .sc-card[data-ring='active'] .sc-face::before {
-    content: '';
-    position: absolute;
-    left: var(--ring-x, 90%);
-    top: var(--ring-y, 90%);
-    width: calc(11rem * var(--ring-scale, 0.9));
-    aspect-ratio: 1;
-    background-color: var(--color-ochre);
-    mask: var(--ring-src) center / contain no-repeat;
-    opacity: calc(var(--ring-alpha, 0.2) * 2);
-    transform: translate(-50%, -50%) rotate(var(--ring-turn, 0deg));
-    z-index: 0;
-    pointer-events: none;
+  .sc-card[data-tint='sage'] {
+    --sc-sheet: color-mix(in srgb, var(--sc-base) 86%, var(--color-sage));
   }
 
-  /* A sprig pressed between the sheets: it lies under the face and shows only where it
-     sticks out past the bottom edge, so it never sits on the card's words. */
-  .sc-doodle {
-    position: absolute;
-    bottom: calc(var(--doodle-size) * -0.75);
-    z-index: 0;
-    width: calc(var(--doodle-size) * 1.2);
-    height: calc(var(--doodle-size) * 1.2);
-    background-color: var(--color-moss);
-    opacity: 0.6;
-    pointer-events: none;
-    mask: var(--doodle-src) center / contain no-repeat;
-    transform: var(--doodle-turn);
+  .sc-card[data-tint='grey'] {
+    --sc-sheet: color-mix(in srgb, var(--sc-base) 92%, var(--color-iron));
   }
 
-  .sc-doodle.bottomRight {
-    right: 1.4rem;
+  /* Aged paper: yellowed, with foxing spots */
+  .sc-card[data-tint='aged'] {
+    --sc-sheet: color-mix(in srgb, var(--sc-base) 88%, var(--color-ochre));
+    --sc-age:
+      radial-gradient(
+        circle at 82% 22%,
+        color-mix(in srgb, var(--color-ochre) 14%, transparent) 0 0.2rem,
+        transparent 0.35rem
+      ),
+      radial-gradient(
+        circle at 12% 70%,
+        color-mix(in srgb, var(--color-ochre) 10%, transparent) 0 0.15rem,
+        transparent 0.3rem
+      ),
+      radial-gradient(
+        ellipse at 100% 100%,
+        color-mix(in srgb, var(--color-ochre) 10%, transparent),
+        transparent 60%
+      );
   }
 
-  .sc-doodle.bottomLeft {
-    left: 1.4rem;
+  .sc-card {
+    --sc-ruled-ink: color-mix(in srgb, var(--color-iron) 11%, transparent);
+    --sc-margin-ink: color-mix(in srgb, var(--color-clay) 24%, transparent);
+    --sc-margin-line: linear-gradient(var(--sc-margin-ink), var(--sc-margin-ink))
+      calc(var(--space-md) - 0.6rem) 0 / 1px 100% no-repeat;
+    --sc-ruled-lines: repeating-linear-gradient(
+        transparent 0 calc(1.6rem - 1px),
+        var(--sc-ruled-ink) calc(1.6rem - 1px) 1.6rem
+      )
+      0 0.9rem / 100% 100% no-repeat;
   }
 
-  /* Bookmark ribbon pinned to top edge */
-  .sc-bookmark {
-    position: absolute;
-    top: -2px;
-    width: 24px;
-    height: 32px;
-    background: linear-gradient(
-      var(--color-tansy),
-      color-mix(in srgb, var(--color-tansy) 70%, var(--color-ochre))
+  .sc-card[data-ruling='margin'] {
+    --sc-rule: var(--sc-margin-line);
+  }
+
+  .sc-card[data-ruling='ruled'] {
+    --sc-rule: var(--sc-margin-line), var(--sc-ruled-lines);
+  }
+
+  .sc-card[data-material='index'][data-ruling='ruled'],
+  .sc-card[data-material='recipe'][data-ruling='ruled'] {
+    --sc-rule: var(--sc-ruled-lines);
+  }
+
+  /* Squared paper from a maths pad */
+  .sc-card[data-ruling='squared'] {
+    --sc-rule:
+      repeating-linear-gradient(
+        90deg,
+        transparent 0 calc(0.7rem - 1px),
+        color-mix(in srgb, var(--color-iron) 11%, transparent) calc(0.7rem - 1px) 0.7rem
+      ),
+      repeating-linear-gradient(
+        transparent 0 calc(0.7rem - 1px),
+        color-mix(in srgb, var(--color-iron) 11%, transparent) calc(0.7rem - 1px) 0.7rem
+      );
+  }
+
+  /* Torn from a ring binder: three punched holes down the left, ruled, and the words
+     moved in to clear the holes. */
+  .sc-card[data-ruling='binder'] {
+    --sc-hole: radial-gradient(
+      circle at 50% 42%,
+      color-mix(in srgb, var(--sc-shade) 16%, var(--color-background)) 0 0.17rem,
+      color-mix(in srgb, var(--sc-shade) 40%, var(--color-background)) 0.27rem,
+      transparent 0.29rem
     );
-    clip-path: polygon(0 0, 100% 0, 100% 80%, 50% 100%, 0 80%);
-    box-shadow: 0 1px 2px color-mix(in srgb, var(--color-ink-dark) 25%, transparent);
+    --sc-rule:
+      var(--sc-hole) 0.2rem 18% / 0.8rem 0.8rem no-repeat,
+      var(--sc-hole) 0.2rem 50% / 0.8rem 0.8rem no-repeat,
+      var(--sc-hole) 0.2rem 82% / 0.8rem 0.8rem no-repeat,
+      linear-gradient(var(--sc-margin-ink), var(--sc-margin-ink)) 1.35rem 0 / 1px 100% no-repeat,
+      var(--sc-ruled-lines);
+  }
+
+  .sc-card[data-ruling='binder'] .sc-content {
+    padding-left: calc(var(--space-md) + 1rem);
+  }
+
+  /* A torn, deckled, folded or nibbled sheet has no straight box to cast a box shadow;
+     the card casts a drop shadow of its true outline instead. */
+  .sc-card:is([data-edge='torn'], [data-edge='deckle'], [data-fold], [data-mark='mouse']) {
+    filter: drop-shadow(0 1px 1px color-mix(in srgb, var(--sc-shade) 18%, transparent))
+      drop-shadow(0 6px 8px color-mix(in srgb, var(--sc-shade) 14%, transparent));
+    transition:
+      transform 0.24s var(--sc-ease),
+      filter 0.24s var(--sc-ease);
+  }
+
+  .sc-card[data-linked]:is(
+      [data-edge='torn'],
+      [data-edge='deckle'],
+      [data-fold],
+      [data-mark='mouse']
+    ):hover,
+  .sc-card:is([data-edge='torn'], [data-edge='deckle'], [data-fold], [data-mark='mouse']):has(
+      .sc-title-link:focus-visible
+    ) {
+    filter: drop-shadow(0 2px 2px color-mix(in srgb, var(--sc-shade) 14%, transparent))
+      drop-shadow(0 16px 16px color-mix(in srgb, var(--sc-shade) 24%, transparent));
+  }
+
+  .sc-card:is([data-edge='torn'], [data-edge='deckle'], [data-fold], [data-mark='mouse']) .sc-face,
+  .sc-card:is([data-edge='torn'], [data-edge='deckle'], [data-fold], [data-mark='mouse']):hover
+    .sc-face,
+  .sc-card:is([data-edge='torn'], [data-edge='deckle'], [data-fold], [data-mark='mouse']):has(
+      .sc-title-link:focus-visible
+    )
+    .sc-face {
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  /* Torn off a notepad along the top */
+  .sc-card[data-edge='torn'] .sc-face {
+    mask:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 6' preserveAspectRatio='none'%3E%3Cpath d='M0 6V3l3-2 4 2 3-1 4 3 3-2 5 1 2-2 4 2 3-1 4 2 3-2 4 3 2-2 4 1V6Z'/%3E%3C/svg%3E")
+        top / 2.6rem 6px repeat-x,
+      linear-gradient(#000, #000) bottom / 100% calc(100% - 5px) no-repeat;
+  }
+
+  /* Handmade paper: a soft, uneven right edge */
+  .sc-card[data-edge='deckle'] .sc-face {
+    mask:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 5 40' preserveAspectRatio='none'%3E%3Cpath d='M0 0h3c1 3 2 5 1 8s-2 6 0 9 2 6 0 9-1 5 1 8 1 4-1 6H0Z'/%3E%3C/svg%3E")
+        right / 5px 2.4rem repeat-y,
+      linear-gradient(#000, #000) left / calc(100% - 4px) 100% no-repeat;
+  }
+
+  /* A nibbled corner: something small has been at it (see the mouse) */
+  .sc-card[data-mark='mouse'] .sc-face {
+    mask:
+      radial-gradient(circle 0.5rem at calc(100% - 0.05rem) calc(100% - 0.95rem), #0000 96%, #000),
+      radial-gradient(circle 0.55rem at calc(100% - 0.8rem) calc(100% + 0.05rem), #0000 96%, #000),
+      radial-gradient(circle 0.4rem at 100% 100%, #0000 96%, #000);
+    mask-composite: intersect;
+  }
+
+  /* A dog-ear: the corner turned over. The face loses the corner and the flap shows
+     the back of the sheet. */
+  /* Small enough to stay in the padding at any width */
+  .sc-card[data-fold] {
+    --fold: clamp(0.7rem, 2.6vw, 1.05rem);
+  }
+
+  .sc-card[data-fold='br'] .sc-face {
+    clip-path: polygon(
+      0 0,
+      100% 0,
+      100% calc(100% - var(--fold)),
+      calc(100% - var(--fold)) 100%,
+      0 100%
+    );
+  }
+
+  .sc-card[data-fold='bl'] .sc-face {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, var(--fold) 100%, 0 calc(100% - var(--fold)));
+  }
+
+  .sc-card[data-fold='tr'] .sc-face {
+    clip-path: polygon(0 0, calc(100% - var(--fold)) 0, 100% var(--fold), 100% 100%, 0 100%);
+  }
+
+  .sc-fold {
+    position: absolute;
     z-index: 2;
+    width: var(--fold);
+    height: var(--fold);
+    background: linear-gradient(
+      var(--fold-light, 135deg),
+      color-mix(in srgb, var(--sc-sheet) 86%, var(--color-ink-dark)),
+      color-mix(in srgb, var(--sc-sheet) 96%, var(--color-ink-dark))
+    );
   }
 
-  .sc-bookmark.right {
-    right: 12px;
+  .sc-fold.br {
+    right: 0;
+    bottom: 0;
+    clip-path: polygon(0 0, 100% 0, 0 100%);
   }
 
-  .sc-bookmark.left {
-    left: 12px;
+  .sc-fold.bl {
+    left: 0;
+    bottom: 0;
+    clip-path: polygon(0 0, 100% 0, 100% 100%);
   }
 
-  /* The same paper strips that hold the pasted photographs */
+  .sc-fold.tr {
+    right: 0;
+    top: 0;
+    clip-path: polygon(0 0, 100% 100%, 0 100%);
+  }
+
+  /* ===== What holds it down ===== */
+
+  /* Tape: strips of different stock, laid at different angles, torn off the roll by
+     hand so no two ends match. */
   .sc-tape {
     position: absolute;
-    width: 3.2rem;
-    height: 1.1rem;
-    top: -0.55rem;
+    top: -0.5rem;
+    z-index: 4;
+    width: var(--tape-len, 3.2rem);
+    height: 1.05rem;
     background: var(--tape-strip);
-    box-shadow: 0 1px 1px color-mix(in srgb, var(--color-ink-dark) 12%, transparent);
     opacity: 0.88;
-    z-index: 2;
+    box-shadow: 0 1px 1px color-mix(in srgb, var(--color-ink-dark) 12%, transparent);
+    transform: rotate(var(--tape-turn, 0deg));
   }
 
   .sc-tape.left {
-    left: 14px;
-    transform: rotate(-4deg);
+    left: 0.7rem;
   }
 
   .sc-tape.right {
-    right: 16px;
-    transform: rotate(3deg);
+    right: 0.7rem;
   }
 
-  .sc-sticker {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    background: color-mix(in srgb, var(--color-tansy) 35%, white);
-    opacity: 0.45;
-    border-radius: 2px;
-    z-index: 2;
+  .sc-tape.centre {
+    left: calc(50% - var(--tape-len, 3.2rem) / 2);
   }
 
-  .sc-sticker.tr {
+  /* Across a corner, at a steep angle; short, so it stays in the corner's padding */
+  .sc-tape.corner-left,
+  .sc-tape.corner-right {
     top: 0;
-    right: 0;
-    transform: translate(6px, -6px) rotate(6deg);
+    width: min(var(--tape-len), 2.8rem);
   }
 
-  .sc-sticker.bl {
-    bottom: 0;
-    left: 0;
-    transform: translate(-6px, 6px) rotate(-6deg);
+  .sc-tape.corner-left {
+    left: -1.1rem;
   }
 
-  /* Vertical tab accent: it peeks over the top edge and stops above the title. */
-  .sc-tab {
+  .sc-tape.corner-right {
+    right: -1.1rem;
+  }
+
+  .sc-tape[data-tear='1'] {
+    clip-path: polygon(
+      0 10%,
+      5% 0,
+      95% 5%,
+      100% 22%,
+      96% 48%,
+      100% 72%,
+      95% 100%,
+      3% 94%,
+      0 70%,
+      4% 44%
+    );
+  }
+
+  .sc-tape[data-tear='2'] {
+    clip-path: polygon(2% 0, 100% 0, 97% 30%, 100% 56%, 98% 100%, 0 100%, 3% 74%, 0 50%, 4% 24%);
+  }
+
+  .sc-tape[data-tear='3'] {
+    clip-path: polygon(0 0, 98% 6%, 100% 36%, 95% 62%, 100% 100%, 4% 96%, 0 62%, 3% 30%);
+  }
+
+  .sc-tape[data-tone='masking'] {
+    background: color-mix(in srgb, var(--color-tansy) 28%, var(--paper-sheet));
+    opacity: 0.9;
+  }
+
+  .sc-tape[data-tone='washi'] {
+    background:
+      repeating-linear-gradient(
+        -45deg,
+        transparent 0 0.3rem,
+        color-mix(in srgb, var(--paper-sheet) 45%, transparent) 0.3rem 0.5rem
+      ),
+      color-mix(in srgb, var(--color-clay) 30%, var(--paper-sheet));
+    opacity: 0.78;
+  }
+
+  .sc-tape[data-tone='moss'] {
+    background: color-mix(in srgb, var(--color-moss) 32%, var(--paper-sheet));
+    opacity: 0.82;
+  }
+
+  /* Clear tape: barely there, a dull sheen and a dirty edge */
+  .sc-tape[data-tone='clear'] {
+    background: linear-gradient(
+      color-mix(in srgb, var(--color-ink-dark) 16%, transparent),
+      color-mix(in srgb, var(--color-ink-dark) 6%, transparent) 30% 80%,
+      color-mix(in srgb, var(--color-ink-dark) 14%, transparent)
+    );
+    opacity: 1;
+    box-shadow: none;
+  }
+
+  /* A drawing pin through the top of the sheet */
+  .sc-pin {
     position: absolute;
-    top: -1.25rem;
-    right: 3rem;
-    width: 1.5rem;
-    height: 2rem;
-    background: color-mix(in srgb, var(--color-tansy) 35%, transparent);
-    transform: rotate(-3deg);
-    z-index: 0;
+    top: -0.2rem;
+    left: calc(50% - 0.4rem);
+    z-index: 4;
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at 35% 32%,
+      color-mix(in srgb, white 55%, var(--color-clay)) 0 0.08rem,
+      var(--color-clay) 0.2rem,
+      color-mix(in srgb, var(--color-clay) 70%, var(--sc-shade))
+    );
+    box-shadow: 2px 3px 2px color-mix(in srgb, var(--sc-shade) 30%, transparent);
+  }
+
+  /* A staple through the top left corner, gone in at a slant */
+  .sc-staple {
+    position: absolute;
+    top: 0.35rem;
+    left: 0.25rem;
+    z-index: 4;
+    width: 0.95rem;
+    height: 2.5px;
+    border-radius: 1px;
+    background: color-mix(in srgb, var(--color-iron) 75%, var(--sc-sheet));
+    box-shadow: 0 1px 0 color-mix(in srgb, var(--sc-shade) 25%, transparent);
+    transform: rotate(-36deg);
+  }
+
+  /* A paperclip over the top edge: it holds the sheet to the one beneath */
+  .sc-clip {
+    position: absolute;
+    top: -1.75rem;
+    right: 1.8rem;
+    z-index: 4;
+    width: 0.85rem;
+    height: 2.4rem;
+    overflow: visible;
+    fill: none;
+    stroke: color-mix(in srgb, var(--color-iron) 85%, var(--sc-sheet));
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    filter: drop-shadow(1px 1px 0 color-mix(in srgb, var(--sc-shade) 22%, transparent));
+    transform: rotate(var(--rot-b, 4deg));
+  }
+
+  /* ===== Marks: what has happened to the sheet since ===== */
+
+  /* Each mark keeps to a home the card keeps clear: the bottom-right corner, beside
+     the footer line (which makes room for it), or the strip along the top edge. */
+  .sc-card[data-zone] .sc-meta {
+    min-height: 2.4rem;
+    padding-right: 3.6rem;
+  }
+
+  .sc-mark {
+    position: absolute;
+    z-index: 3;
+    display: block;
+    color: var(--color-ink-medium);
+    pointer-events: none;
+    transform: rotate(var(--mark-turn, 0deg));
+  }
+
+  .sc-mark svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    fill: none;
+    stroke: currentcolor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .sc-mark .ink {
+    stroke-width: 1.3;
+  }
+
+  .sc-mark .thin {
+    stroke-width: 0.8;
+  }
+
+  .sc-mark .fill {
+    fill: currentcolor;
+    stroke: none;
+  }
+
+  .sc-mark-corner {
+    right: 0.5rem;
+    bottom: 0.45rem;
+  }
+
+  /* A mug set down on the corner */
+  .sc-mark-ring {
+    right: -2.3rem;
+    bottom: -2.3rem;
+    width: 4.6rem;
+    height: 4.6rem;
+  }
+
+  .ring-stain {
+    position: absolute;
+    inset: 0;
+    background-color: var(--color-ochre);
+    mask: url('/grotto/coffee-ring-1.svg') center / contain no-repeat;
+    opacity: 0.55;
+  }
+
+  [data-variant='2'] > .ring-stain {
+    mask-image: url('/grotto/coffee-ring-2.svg');
+  }
+
+  [data-variant='3'] > .ring-stain {
+    mask-image: url('/grotto/coffee-ring-3.svg');
+  }
+
+  .sc-mark-blot {
+    width: 2.1rem;
+    height: 2.1rem;
+    color: var(--color-ink-dark);
+    opacity: 0.78;
+  }
+
+  /* Someone held it with a buttery thumb */
+  .sc-mark-thumb {
+    width: 1.55rem;
+    height: 1.95rem;
+    color: var(--color-ochre);
+    opacity: 0.5;
+  }
+
+  /* The library's date stamp, in violet ink, never quite level */
+  .sc-mark-stamp {
+    width: 4.6rem;
+    height: 2.3rem;
+    color: var(--color-clay);
+    opacity: 0.62;
+    transform: rotate(calc(var(--mark-turn) / 3));
+  }
+
+  /* A pencilled tick and a doodle in the margin */
+  .sc-mark-pencil {
+    width: 2.4rem;
+    height: 1.65rem;
+    color: var(--color-ink-light);
+    opacity: 0.8;
+    transform: rotate(calc(var(--mark-turn) / 4));
+  }
+
+  .sc-mark-pencil .pencil {
+    stroke-width: 1;
+  }
+
+  /* A tansy flower, pressed and taped on, hanging over the edge */
+  .sc-mark-tansy {
+    right: -0.7rem;
+    bottom: -0.55rem;
+    width: 2.5rem;
+    height: 2.95rem;
+    transform: rotate(calc(var(--mark-turn) / 2));
+  }
+
+  .sc-mark-tansy .moss {
+    stroke: var(--color-moss);
+    stroke-width: 1.3;
+  }
+
+  .sc-mark-tansy .flower {
+    fill: var(--color-tansy);
+    stroke: var(--color-ochre);
+    stroke-width: 0.6;
+  }
+
+  .sc-mark-tansy .flower-eye {
+    fill: var(--color-ochre);
+    stroke: none;
+    opacity: 0.55;
+  }
+
+  .sc-mark-tansy .tape {
+    fill: var(--tape-strip);
+    stroke: none;
+    opacity: 0.85;
+  }
+
+  /* A field mouse at work on the corner, a scrap of it in its paws */
+  .sc-mark-mouse {
+    right: 0.75rem;
+    bottom: 0.2rem;
+    width: 2.6rem;
+    height: 1.95rem;
+    color: var(--color-ink-dark);
+    transform: scaleX(-1);
+  }
+
+  .sc-mark-mouse .fur {
+    fill: color-mix(in srgb, var(--color-ink-light) 35%, var(--sc-sheet));
+    stroke-width: 1.2;
+  }
+
+  .sc-mark-mouse .ear {
+    fill: color-mix(in srgb, var(--color-clay) 30%, var(--sc-sheet));
+    stroke-width: 1.1;
+  }
+
+  .sc-mark-mouse .tail {
+    stroke-width: 1;
+  }
+
+  .sc-mark-mouse .scrap {
+    fill: var(--sc-sheet);
+    stroke-width: 0.7;
+  }
+
+  /* Critters walking the top edge itself, clear of the title below */
+  .sc-mark-edge {
+    top: -0.3rem;
+    left: var(--mark-along, 40%);
+    z-index: 5;
+    color: var(--color-ink-dark);
+  }
+
+  /* A divider tab stands behind the first card of a run; the critters walk past it */
+  .sc-spot:has(.nc-tab) .sc-mark-edge {
+    left: max(var(--mark-along, 40%), 10.5rem);
+  }
+
+  .sc-mark-ants {
+    width: 3.4rem;
+    height: 0.65rem;
+    transform: rotate(calc(var(--mark-turn) / 14));
+  }
+
+  .sc-mark-ants .crumb {
+    fill: var(--color-tansy);
+    stroke: var(--color-ochre);
+    stroke-width: 0.5;
+  }
+
+  /* An inchworm measuring the top edge */
+  .sc-mark-inchworm {
+    top: -0.95rem;
+    width: 1.8rem;
+    height: 1.05rem;
+    color: var(--color-moss);
+    transform: scaleX(var(--worm-way, 1));
+  }
+
+  [data-variant='2'].sc-mark-inchworm {
+    --worm-way: -1;
+  }
+
+  .sc-mark-inchworm .worm {
+    stroke-width: 3.4;
+  }
+
+  .sc-mark-inchworm .rings {
+    stroke: color-mix(in srgb, var(--sc-sheet) 55%, transparent);
+    stroke-width: 3.4;
+    stroke-dasharray: 0.7 2.6;
+    stroke-linecap: butt;
+  }
+
+  .sc-mark-ladybird {
+    width: 0.85rem;
+    height: 0.85rem;
+    color: var(--sc-shade);
+    transform: rotate(calc(var(--mark-turn) + 90deg));
+  }
+
+  .sc-mark-ladybird .shell {
+    fill: #b8322a;
+    stroke: var(--sc-shade);
+    stroke-width: 0.6;
   }
 
   /* ===== Materials: one per shelf, each one printed detail on the same sheet ===== */
-
-  /* Writing paper (blog, notes): a faint margin line down the left edge */
-  .sc-card[data-material='paper'] .sc-face {
-    background:
-      linear-gradient(
-          color-mix(in srgb, var(--color-clay) 22%, transparent),
-          color-mix(in srgb, var(--color-clay) 22%, transparent)
-        )
-        calc(var(--space-md) - 0.6rem) 0 / 1px 100% no-repeat,
-      var(--sc-sheet);
-  }
 
   /* Library catalogue card (research): the page prints a clay rule under the heading
      line; the card has the hole for the drawer's rod punched through at the bottom. */
@@ -487,7 +977,7 @@
   /* Workshop tag (projects): manila card, clipped corners, a reinforced eyelet and its
      string. The clipped face cannot carry a box shadow, so the tag casts a drop shadow. */
   .sc-card[data-material='tag'] {
-    --sc-sheet: color-mix(in srgb, var(--paper-sheet) 84%, var(--color-tansy));
+    --sc-base: color-mix(in srgb, var(--paper-sheet) 84%, var(--color-tansy));
     --sc-notch: 1.5rem;
 
     filter: drop-shadow(0 1px 1px color-mix(in srgb, var(--sc-shade) 16%, transparent))
@@ -561,21 +1051,15 @@
   }
 
   /* Recipe card: the printed double band across the top */
-  .sc-card[data-material='recipe'] .sc-face {
-    box-shadow:
-      inset 0 0.3rem 0 color-mix(in srgb, var(--color-clay) 45%, var(--sc-sheet)),
-      inset 0 calc(0.3rem + 2px) 0 var(--sc-sheet),
-      inset 0 calc(0.3rem + 3px) 0 color-mix(in srgb, var(--color-clay) 45%, var(--sc-sheet)),
-      var(--shadow-md);
-  }
-
-  .sc-card[data-material='recipe'][data-linked]:hover .sc-face,
-  .sc-card[data-material='recipe']:has(.sc-title-link:focus-visible) .sc-face {
-    box-shadow:
-      inset 0 0.3rem 0 color-mix(in srgb, var(--color-clay) 45%, var(--sc-sheet)),
-      inset 0 calc(0.3rem + 2px) 0 var(--sc-sheet),
-      inset 0 calc(0.3rem + 3px) 0 color-mix(in srgb, var(--color-clay) 45%, var(--sc-sheet)),
-      var(--shadow-lift);
+  .sc-card[data-material='recipe'] {
+    --sc-band: color-mix(in srgb, var(--color-clay) 45%, var(--sc-sheet));
+    --sc-print: linear-gradient(
+        var(--sc-band) 0 0.3rem,
+        transparent 0.3rem calc(0.3rem + 2px),
+        var(--sc-band) calc(0.3rem + 2px) calc(0.3rem + 3px),
+        transparent 0
+      )
+      top / 100% 1rem no-repeat;
   }
 
   /* Without motion the card still lifts and settles; it just does not travel. */

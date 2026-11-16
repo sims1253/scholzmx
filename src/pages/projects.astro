@@ -15,7 +15,7 @@ import { projects, projectName } from '../data/projects';
     </header>
 
     {/* Workshop tags on a board: each tool hangs by its string, its print pasted on. */}
-    <div class="project-cards">
+    <div class="project-cards sc-desk">
       {projects.map((project, index) => {
         const { name, common } = projectName(project.title);
         return <StackedCard
@@ -58,10 +58,10 @@ import { projects, projectName } from '../data/projects';
     margin-inline: auto;
   }
 
+  /* Tags hang from strings, so they keep more air between them than sheets on a desk */
   .project-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
-    gap: var(--space-lg) var(--space-xl);
+    --desk-min: 20rem;
+    --desk-col-gap: var(--space-xl);
   }
 
   /* The name is set like a binomial, its plain-English description beneath. */

@@ -31,13 +31,12 @@ const linkLabel = (kind: string) => (kind === 'pdf' || kind === 'doi' ? kind.toU
 
     {/* A drawer of catalogue cards, newest first. The year heads each card like a call
         number, so the cards need no year headings between them. */}
-    <div class="pub-cards">
+    <div class="pub-cards sc-desk">
       {publications.map((pub, index) => <StackedCard
         seed={`pub/${pub.year}/${index}/${pub.title}`}
         title={pub.title}
         href={pub.links.pdf ?? pub.links.doi ?? pub.links.code}
         material="index"
-        ornament={false}
         headingLevel={2}
       >
         <p class="pub-call" slot="media">
@@ -75,9 +74,7 @@ const linkLabel = (kind: string) => (kind === 'pdf' || kind === 'doi' ? kind.toU
   }
 
   .pub-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
-    gap: var(--space-md);
+    --desk-min: 17rem;
   }
 
   /* The heading line of a catalogue card: the year as call number, the kind of work

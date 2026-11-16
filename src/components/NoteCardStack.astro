@@ -87,7 +87,6 @@ const inWords = (isoDay: string) =>
     data-year={it.year}
     data-tags={it.tags?.join(',') || ''}
   >
-    {tabStarts(index) && <TabTag class="nc-tab" id={`tab-${it.tab}`}>{it.tab}</TabTag>}
     <StackedCard
       seed={`stack/${it.id}`}
       title={it.title}
@@ -97,6 +96,7 @@ const inWords = (isoDay: string) =>
       layers={layers}
       headingLevel={headingLevel}
     >
+      {tabStarts(index) && <TabTag class="nc-tab" id={`tab-${it.tab}`} slot="tab">{it.tab}</TabTag>}
       {it.hero && <div
         class:list={['sc-media', { 'nc-thumb': media === 'thumb' }]}
         slot={media === 'thumb' ? 'aside' : 'media'}
@@ -139,6 +139,7 @@ const inWords = (isoDay: string) =>
   .nc-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--nc-min, 100%)), 1fr));
+    align-items: start;
     gap: var(--space-xl) var(--space-lg);
   }
 
@@ -149,24 +150,21 @@ const inWords = (isoDay: string) =>
     padding-inline: var(--space-xs);
   }
 
-  /* On index pages the cards fill rows edge to edge: cards in one row share their top
-     and bottom edges, and the last row's cards start at the left. */
+  /* On index pages the cards lie on the desk side by side, each at its own height. */
   :global(.index-page) .nc-grid {
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
-    gap: max(var(--space-lg), 1.75rem) var(--space-md); /* rows clear a divider tab */
+    gap: var(--desk-row-gap) var(--desk-col-gap);
   }
 
   :global(.index-page) .nc-item {
-    position: relative;
-    isolation: isolate;
-    display: grid;
     max-width: none;
     margin-inline: 0;
     padding-inline: 0;
   }
 
-  :global(.index-page) .nc-item :global(.sc-card) {
-    z-index: 1;
+  /* The first card of a year (or letter) leaves room for its divider tab. */
+  :global(.index-page) .nc-item:has(.nc-tab) {
+    padding-top: 1.1rem;
   }
 
   /* A card-box divider: its tab stands up behind the first card of the year (or
