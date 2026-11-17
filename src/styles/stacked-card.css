@@ -18,11 +18,11 @@
       0 22px 34px -14px color-mix(in srgb, var(--sc-shade) 42%, transparent);
     --sc-ease: cubic-bezier(0.2, 0.8, 0.3, 1);
 
-    /* The desk: cards lie a little off their cells (StackedCard's --place-x/-y), so
-       neighbours overlap at their margins. The gaps are sized so an overlap only ever
-       reaches a neighbour's padding, never its words. */
-    --desk-row-gap: 1.25rem;
-    --desk-col-gap: 0.6rem;
+    /* The desk: cards lie a little off their cells and turned (StackedCard's --place-x/-y
+       and tilt), and the sheets under a card stick out past it. The gaps take all of
+       that, so neighbours lie apart and the desk shows between them. */
+    --desk-row-gap: 2.5rem;
+    --desk-col-gap: 2.25rem;
     --desk-scatter: 1;
   }
 

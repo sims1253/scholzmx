@@ -58,10 +58,11 @@ import { projects, projectName } from '../data/projects';
     margin-inline: auto;
   }
 
-  /* Tags hang from strings, so they keep more air between them than sheets on a desk */
+  /* A tag's string runs off its left end, so tags keep more air between them than sheets
+     on a desk: the string must not reach the tag beside it. */
   .project-cards {
     --desk-min: 20rem;
-    --desk-col-gap: var(--space-lg);
+    --desk-col-gap: 3.5rem;
   }
 
   /* The name is set like a binomial, its plain-English description beneath. */
