@@ -12,8 +12,10 @@ math {
   font-family: 'Grotto Math', 'STIX Two Math', 'Cambria Math', 'Latin Modern Math', math;
   font-style: normal;
   font-weight: normal;
+  line-height: normal;
   font-size-adjust: none;
   letter-spacing: normal;
+  overflow-wrap: normal;
   text-indent: 0;
   text-transform: none;
   direction: ltr;
@@ -49,8 +51,9 @@ math.tml-display {
   width: 100%;
 }
 
+/* Primes at their proper height: the STIX Two Math feature, as in Temml-STIX2.css. */
 mo.tml-prime {
-  font-feature-settings: 'ssty';
+  font-feature-settings: 'ss04';
 }
 
 /* Cramped superscripts in WebKit. */
@@ -143,6 +146,17 @@ mover > :first-child {
 /* Rows of align and aligned. */
 mtable.tml-jot > mtr > mtd {
   padding-block: 0.7ex;
+}
+
+/* Firefox spaces the rows of a table itself, so the cells add little or nothing. */
+@supports (-moz-appearance: none) {
+  mtd {
+    padding-block: 0;
+  }
+
+  mtable.tml-jot > mtr > mtd {
+    padding-block: 0.2ex;
+  }
 }
 
 /* Equation numbers of align and equation. */
