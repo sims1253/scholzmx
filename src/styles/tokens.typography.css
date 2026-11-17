@@ -1,17 +1,18 @@
 :root {
   /* ===== Typography Tokens ===== */
 
-  /* Two text faces, chosen by tone. Alegreya also sets every heading, so the
-     calligraphic voice stays constant while ET Book carries the technical writing. */
-  --font-body-personal:
-    'Alegreya', 'EB Garamond', 'Times New Roman', georgia, serif; /* Welcome, recipes, notes */
-  --font-body-serious:
-    'ET Book Roman', 'EB Garamond', 'Times New Roman', georgia, serif; /* Blog, research, projects */
+  /* Two voices, each with one job. Alegreya is the voice of the place: wordmark,
+     navigation, headings, labels and the body of personal pages. ET Book is the body
+     of serious pages and nothing else. Each falls back first to a local Times stretched
+     to its metrics (fonts-critical.css), so the swap does not move the text. */
+  --font-body-personal: 'Alegreya', 'Alegreya Fallback', 'Times New Roman', serif;
+  --font-body-serious: 'ET Book Roman', 'ET Book Fallback', 'Times New Roman', serif;
   --font-body: var(--font-body-personal);
-  --font-heading: 'Alegreya', 'EB Garamond', 'Times New Roman', georgia, serif;
-  --font-ui: 'Alegreya', georgia, serif;
-  /* Small caps cut of the same face: wordmark, navigation and small labels */
-  --font-label: 'Alegreya SC', 'Alegreya', georgia, serif;
+  --font-heading: var(--font-body-personal);
+  --font-ui: var(--font-body-personal);
+  /* Wordmark, navigation and small labels: Alegreya's own small caps. Set
+     font-variant-caps: small-caps beside every use. */
+  --font-label: var(--font-body-personal);
   --font-mono: 'Fira Code', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
 
   /* Font weights */
@@ -35,7 +36,7 @@
 
   /* Dropcap fonts */
   --font-dropcap-background: 'EBGaramond-InitialsF1';
-  --font-dropcap-foreground: 'EBGaramond-InitialsF2';
+  --font-dropcap-foreground: 'EBGaramond-InitialsF2', 'Initials Fallback';
   --dropcap-color-background: var(--color-moss);
   --dropcap-color-foreground: var(--color-ink-dark);
 
