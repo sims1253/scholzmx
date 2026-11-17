@@ -10,10 +10,8 @@
 ---
 
 <div class="canopy" aria-hidden="true" data-canopy>
-  <div class="canopy-sun">
-    <div class="canopy-leaves canopy-leaves--high"></div>
-    <div class="canopy-leaves canopy-leaves--low"></div>
-  </div>
+  <div class="canopy-leaves canopy-leaves--high"></div>
+  <div class="canopy-leaves canopy-leaves--low"></div>
 </div>
 
 <script>
@@ -50,14 +48,6 @@
     animation: var(--canopy-flicker);
   }
 
-  /* By day the shadows lean away from the sun and lengthen as it sinks. */
-  .canopy-sun {
-    position: absolute;
-    inset: 0;
-    transform: skewX(var(--canopy-skew)) scaleY(var(--canopy-stretch));
-    transform-origin: 50% 0;
-  }
-
   /* One slow sway per layer, eased like a branch: no stacked gusts, whose sudden
      changes of direction read as stutter on layers this large. Leaves hang from the top,
      so the rotation moves the lower ones furthest. */
@@ -78,13 +68,12 @@
     animation: sway-high 19s cubic-bezier(0.37, 0, 0.63, 1) infinite alternate;
   }
 
-  /* The crisp, near leaves are sharpest at noon and soften as the light gets low. */
+  /* The crisp, near leaves move more than the far ones. */
   .canopy-leaves--low {
     mask:
       url('/grotto/canopy-low.svg') top center / cover no-repeat,
       var(--canopy-fade);
     mask-composite: intersect;
-    opacity: var(--canopy-crisp);
     animation: sway-low 11s cubic-bezier(0.37, 0, 0.63, 1) -3s infinite alternate;
   }
 
