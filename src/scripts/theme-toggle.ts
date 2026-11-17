@@ -1,5 +1,6 @@
-// The torch. By night it lights itself (the head script in BaseLayout reads the
-// visitor's clock); the button overrides the clock until the next dawn or dusk.
+// The light switch (src/components/LightSwitch.astro). By night torchlight comes on by
+// itself (the head script in BaseLayout reads the visitor's clock); the button overrides
+// the clock until the next dawn or dusk.
 const KEY = 'torch';
 // Keep in step with the head script.
 const DAWN = 6;
@@ -56,8 +57,19 @@ function applyTheme(theme: string): void {
   // Update aria-pressed state
   if (btn) {
     btn.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
-    btn.title = theme === 'dark' ? 'Put out the torch' : 'Light the torch';
+    btn.title = theme === 'dark' ? 'Blow out the candle' : 'Light the candle';
   }
+}
+
+// The switch plays the change: the candle catches, or it is blown out (CSS, keyed on
+// data-turn). Only a click plays it; on load and at dusk the drawing just is in its state.
+function playTurn(theme: 'dark' | 'light'): void {
+  const btn = document.getElementById('nav-theme-toggle');
+  if (!btn) return;
+  delete btn.dataset.turn;
+  // Flush styles in between, so the same turn twice still starts over.
+  void btn.getBoundingClientRect();
+  btn.dataset.turn = theme === 'dark' ? 'light' : 'out';
 }
 
 function toggleTheme(): void {
@@ -67,6 +79,7 @@ function toggleTheme(): void {
   const run = () => {
     remember(next);
     applyTheme(next);
+    playTurn(next);
   };
 
   const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -92,7 +105,7 @@ export function initThemeToggle(): void {
     btn.addEventListener('click', toggleTheme);
   }
 
-  // The day moves on while the page is open: shadows turn, and at dusk the torch lights.
+  // The day moves on while the page is open: shadows turn, and at dusk torchlight comes on.
   setInterval(() => {
     window.grottoSky?.();
     applyTheme(getEffectiveTheme());
