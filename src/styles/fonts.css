@@ -43,7 +43,7 @@
   font-display: fallback;
 }
 
-/* Drop caps. /* One file per letter: a page downloads only the initial it uses (unicode-range). */
+/* Drop caps. One file per letter: a page downloads only the initial it uses (unicode-range). */
 
 @font-face {
   font-family: 'EBGaramond-InitialsF1';
