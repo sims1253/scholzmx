@@ -5,6 +5,8 @@ import remarkMath from 'remark-math';
 import rehypeTemml from './src/lib/markdown/rehype-temml.ts';
 import mathFont from './src/lib/markdown/math-font.ts';
 import { lightCodeTheme, darkCodeTheme } from './src/lib/shiki-themes.mjs';
+import rehypeInitial from './src/lib/markdown/rehype-initial.ts';
+import remarkMarginNotes from './src/lib/markdown/remark-margin-notes.ts';
 import { unified } from '@astrojs/markdown-remark';
 import pagefind from 'astro-pagefind';
 
@@ -44,7 +46,14 @@ export default defineConfig({
 
   // Use Astro's native markdown processing with math support and Gruvbox themes
   markdown: {
-    processor: unified({ remarkPlugins: [remarkMath], rehypePlugins: [rehypeTemml] }),
+    processor: unified({
+      remarkPlugins: [remarkMath, remarkMarginNotes],
+      rehypePlugins: [
+        rehypeTemml,
+        // Folders under src/content/ whose pages open with a drop-cap initial
+        [rehypeInitial, { collections: { blog: 'serious', recipes: 'personal' } }],
+      ],
+    }),
     shikiConfig: {
       // Kanagawa Lotus and Dragon, with any token below 4.5:1 deepened (src/lib/shiki-themes.mjs)
       themes: {
