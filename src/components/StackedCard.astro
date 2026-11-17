@@ -54,7 +54,7 @@ const { mark, fastener } = dress;
 // Stains lie in the paper; flowers and critters sit on top of it and may overhang.
 const inPaper = mark && ['ring', 'blot', 'thumb', 'stamp', 'pencil'].includes(mark.kind);
 
-const spotStyle = `--place-x: ${dress.place.x}rem; --place-y: ${dress.place.y}rem; --over: ${dress.place.over}`;
+const spotStyle = `--place-x: ${dress.place.x}rem; --place-y: ${dress.place.y}rem; --short: ${dress.place.short}rem; --over: ${dress.place.over}`;
 const cardStyle = `--rot-c: ${dress.tilt.face}deg; --rot-a: ${dress.tilt.a}deg; --rot-b: ${dress.tilt.b}deg`;
 ---
 

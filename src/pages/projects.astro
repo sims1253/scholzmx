@@ -31,7 +31,7 @@ import { projects, projectName } from '../data/projects';
             <Image
               src={project.banner}
               alt=""
-              width={112}
+              width={160}
               densities={[1, 2]}
               loading={index < 4 ? 'eager' : 'lazy'}
               decoding="async"
@@ -61,7 +61,7 @@ import { projects, projectName } from '../data/projects';
   /* Tags hang from strings, so they keep more air between them than sheets on a desk */
   .project-cards {
     --desk-min: 20rem;
-    --desk-col-gap: var(--space-xl);
+    --desk-col-gap: var(--space-lg);
   }
 
   /* The name is set like a binomial, its plain-English description beneath. */
@@ -81,7 +81,7 @@ import { projects, projectName } from '../data/projects';
 
   /* The print sits at the tag's left, beside the eyelet; the words take the rest. */
   :global(.project-card .sc-row) {
-    grid-template-columns: 5.5rem minmax(0, 1fr);
+    grid-template-columns: 7.5rem minmax(0, 1fr);
     gap: var(--space-md);
   }
 
@@ -141,7 +141,7 @@ import { projects, projectName } from '../data/projects';
 
   @media (max-width: 640px) {
     :global(.project-card .sc-row) {
-      grid-template-columns: 4.5rem minmax(0, 1fr);
+      grid-template-columns: 5.5rem minmax(0, 1fr);
     }
   }
 </style>

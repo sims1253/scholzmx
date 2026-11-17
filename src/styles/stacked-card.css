@@ -33,11 +33,12 @@
     }
   }
 
-  /* A desk of cards: as many columns as fit, each card at its own natural height. */
+  /* A desk of cards: as many columns as fit. The sheets in a row are nearly one length:
+     each reaches to the foot of its row, less its own --short, so a card with few words
+     leaves no hole under it. */
   .sc-desk {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--desk-min, 18rem)), 1fr));
-    align-items: start;
     gap: var(--desk-row-gap) var(--desk-col-gap);
   }
 
@@ -48,6 +49,9 @@
   .sc-spot {
     position: relative;
     z-index: var(--over, 1);
+    display: flex;
+    flex: 1;
+    flex-direction: column;
     isolation: isolate;
     translate: calc(var(--place-x, 0rem) * var(--desk-scatter))
       calc(var(--place-y, 0rem) * var(--desk-scatter));
@@ -73,6 +77,10 @@
 
     position: relative;
     z-index: 1;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    margin-bottom: calc(var(--short, 0rem) * var(--desk-scatter));
     transform: translateY(calc(var(--sc-lift) * -1)) rotate(var(--sc-turn));
     transition: transform 0.24s var(--sc-ease);
   }
@@ -101,6 +109,7 @@
     position: relative;
     z-index: 1;
     display: flex;
+    flex: 1;
     flex-direction: column;
     border-radius: 2px;
     background: var(--sc-print, none), var(--sc-age, none), var(--sc-rule, none), var(--sc-sheet);
@@ -322,7 +331,7 @@
   /* A small print taped into the bottom corner, beside the footer line, so the title
      and description keep the sheet's full width. The footer line makes room for it. */
   .sc-card:has(.nc-thumb) {
-    --sc-thumb: 5.5rem;
+    --sc-thumb: clamp(5.5rem, 30vw, 7.5rem);
   }
 
   .sc-media.nc-thumb {

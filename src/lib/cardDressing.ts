@@ -50,8 +50,12 @@ export interface Dressing {
   layers: 1 | 2 | 3 | 4;
   /** Turns of the face and of the sheets beneath it, in degrees */
   tilt: { face: number; a: number; b: number };
-  /** Where the card lies off its grid cell, in rem; `over` orders overlapping cards */
-  place: { x: number; y: number; over: 1 | 2 | 3 };
+  /**
+   * Where the card lies off its grid cell, in rem; `over` orders overlapping cards.
+   * `short` is how far the sheet stops above the foot of its row: sheets in a row are
+   * nearly one length, so no card leaves a hole under it.
+   */
+  place: { x: number; y: number; over: 1 | 2 | 3; short: number };
   tint: Tint;
   ruling: Ruling;
   edge: Edge;
@@ -263,21 +267,22 @@ export function dressCard(seed: string, options: DressOptions = {}): Dressing {
   const marking = createSeededRng(seed, 'card-v4:marks');
 
   // Where it lies. Most cards sit a little off; a few were dropped on with a flick.
-  const flick = place.chance(0.2) ? 1.6 : 1;
+  const flick = place.chance(0.2) ? 1.4 : 1;
   const tilt = {
     face: round(signed(place, 0.3, 1.9) * flick),
     a: round(signed(place, 0.8, 2.6)),
     b: round(signed(place, 0.6, 2.2)),
   };
   const layout = {
-    x: round(place.between(-0.9, 0.9)),
-    y: round(place.between(-0.4, 0.9)),
+    x: round(place.between(-0.5, 0.5)),
+    y: round(place.between(-0.25, 0.45)),
     over: oneOf(place, 1, 2, 3),
   };
 
   const single = material === 'index' || material === 'tag';
   const r = place.random();
   const layers = options.layers ?? (single ? 1 : r < 0.25 ? 1 : r < 0.65 ? 2 : r < 0.9 ? 3 : 4);
+  const short = round(place.between(0, 1.3));
 
   // What paper it is
   const tint = weighted(paper, TINT_WEIGHTS, 'plain');
@@ -322,7 +327,7 @@ export function dressCard(seed: string, options: DressOptions = {}): Dressing {
   return {
     layers,
     tilt,
-    place: layout,
+    place: { ...layout, short },
     tint,
     ruling,
     edge: mark?.kind === 'mouse' ? 'cut' : edge,

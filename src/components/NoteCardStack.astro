@@ -150,13 +150,17 @@ const inWords = (isoDay: string) =>
     padding-inline: var(--space-xs);
   }
 
-  /* On index pages the cards lie on the desk side by side, each at its own height. */
+  /* On index pages the cards lie on the desk side by side, a row's sheets nearly one
+     length (see .sc-desk). */
   :global(.index-page) .nc-grid {
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+    align-items: stretch;
     gap: var(--desk-row-gap) var(--desk-col-gap);
   }
 
   :global(.index-page) .nc-item {
+    display: flex;
+    flex-direction: column;
     max-width: none;
     margin-inline: 0;
     padding-inline: 0;
