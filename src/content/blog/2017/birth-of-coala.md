@@ -6,7 +6,7 @@ tags: ['coala']
 draft: false
 ---
 
-<span class="dropcap dropcap--ornate dropcap--serious" data-first-letter="T" aria-hidden="true">T</span>his is my first entry on the coala blog. Welcome everyone.
+This is my first entry on the coala blog. Welcome everyone.
 My name is Maximilian and I am the community team leader for coala since
 December. In this post I want to talk about the teams in coala and
 especially about the community team, its members and our work so far.

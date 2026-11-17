@@ -5,6 +5,7 @@ import ImageFrame from '../../components/ImageFrame.astro';
 import Series from '../../components/Series.astro';
 import NoteCardStack from '../../components/NoteCardStack.astro';
 import PostContents from '../../components/PostContents.astro';
+import '../../styles/math.css';
 
 export async function getStaticPaths() {
   const posts = (await getCollection('blog')).filter((post) => !post.data.draft);
@@ -91,7 +92,6 @@ const readingTime = getReadingTime(post.body || '');
   tone="serious"
   layout="prose"
   prose={true}
-  math={post.body?.includes('$') ?? false}
 >
   <article class="post-content" itemscope itemtype="https://schema.org/Article">
     <header class="post-header">
@@ -178,27 +178,6 @@ const readingTime = getReadingTime(post.body || '');
     </footer>
   </article>
 </BaseLayout>
-
-<script>
-  // Convert Quarto-style "> margin:" blockquotes into inline anchors with data-note
-  document.addEventListener('DOMContentLoaded', function () {
-    const blockquotes = document.querySelectorAll('.post-body blockquote');
-    blockquotes.forEach((blockquote) => {
-      const firstP = blockquote.querySelector('p:first-child');
-      if (!firstP || !firstP.textContent) return;
-      const raw = firstP.textContent.trim();
-      if (!/^margin:/i.test(raw)) return;
-      const noteText = raw.replace(/^margin:\s*/i, '').trim();
-      // Replace the blockquote with a span anchor placed before it, then remove the blockquote
-      const anchor = document.createElement('span');
-      anchor.className = 'note-anchor';
-      anchor.textContent = '';
-      anchor.setAttribute('data-note', noteText);
-      blockquote.parentElement?.insertBefore(anchor, blockquote);
-      blockquote.remove();
-    });
-  });
-</script>
 
 <style>
   .post-content {
@@ -330,10 +309,5 @@ const readingTime = getReadingTime(post.body || '');
 
   .back-link {
     margin: var(--space-xl) 0 0;
-  }
-
-  /* Margin notes are positioned by margin-notes.ts; only their look lives here. */
-  .post-body.prose :global(.margin-note::before) {
-    display: none !important;
   }
 </style>
