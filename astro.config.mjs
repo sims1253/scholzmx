@@ -2,7 +2,8 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
+import rehypeTemml from './src/lib/markdown/rehype-temml.ts';
+import mathFont from './src/lib/markdown/math-font.ts';
 import { lightCodeTheme, darkCodeTheme } from './src/lib/shiki-themes.mjs';
 import rehypeInitial from './src/lib/markdown/rehype-initial.ts';
 import remarkMarginNotes from './src/lib/markdown/remark-margin-notes.ts';
@@ -29,7 +30,7 @@ export default defineConfig({
     // Redirect old blog listing page to new one
     '/post/': '/blog/',
   },
-  integrations: [sitemap(), pagefind()],
+  integrations: [sitemap(), pagefind(), mathFont()],
   // Enable automatic image optimization
   image: {
     service: {
@@ -48,7 +49,7 @@ export default defineConfig({
     processor: unified({
       remarkPlugins: [remarkMath, remarkMarginNotes],
       rehypePlugins: [
-        rehypeKatex,
+        rehypeTemml,
         // Folders under src/content/ whose pages open with a drop-cap initial
         [rehypeInitial, { collections: { blog: 'serious', recipes: 'personal' } }],
       ],

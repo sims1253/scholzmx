@@ -34,8 +34,6 @@ export interface Props {
   tone?: 'personal' | 'serious';
   layout?: 'prose' | 'listing' | 'cards' | 'wide' | 'full';
   prose?: boolean;
-  /** The page may contain KaTeX maths, so it loads KaTeX's stylesheet and font. */
-  math?: boolean;
 }
 
 const {
@@ -45,7 +43,6 @@ const {
   includeQuoteSection = false,
   tone = 'personal',
   layout = 'prose',
-  math = false,
   prose = false,
 } = Astro.props;
 
@@ -222,20 +219,6 @@ const warmFonts = [
         });
       });
     </script>
-
-    {math && (
-      <>
-        <link
-          rel="preload"
-          href="/katex/katex.min.css"
-          as="style"
-          onload={"this.onload=null;this.rel='stylesheet'"}
-        />
-        <noscript>
-          <link rel="stylesheet" href="/katex/katex.min.css" />
-        </noscript>
-      </>
-    )}
 
     {/* The canopy's far leaves are the largest thing painted on every page. CSS masks
         are fetched in CORS mode, so the preload is too, or it would download twice. */}
