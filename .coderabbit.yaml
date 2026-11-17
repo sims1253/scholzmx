@@ -1,0 +1,5 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+# CodeRabbit does not review this repository, and its notice saying so is noise on every
+# pull request.
+reviews:
+  review_status: false
