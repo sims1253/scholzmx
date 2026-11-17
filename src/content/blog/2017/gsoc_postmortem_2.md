@@ -6,7 +6,7 @@ tags: ['coala', 'Community']
 draft: false
 ---
 
-<span class="dropcap dropcap--ornate dropcap--serious" data-first-letter="I" aria-hidden="true">I</span> always wanted to help with GSoC but felt that my coding skills and
+I always wanted to help with GSoC but felt that my coding skills and
 codebase knowledge were not good enough to be a mentor as good as
 I'd like to be.
 So I followed the call for main admin and on the story went.

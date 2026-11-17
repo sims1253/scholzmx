@@ -27,7 +27,7 @@ cache: true
 freeze: false
 ---
 
-<span class="dropcap dropcap--ornate dropcap--serious" data-first-letter="I" aria-hidden="true">I</span> gave myself some time before writing this but it wants out. If you are curious about how it feels to run a charity in a 1500 player megagame, this series might be for you.
+I gave myself some time before writing this but it wants out. If you are curious about how it feels to run a charity in a 1500 player megagame, this series might be for you.
 
 ## The Game
 

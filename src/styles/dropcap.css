@@ -1,4 +1,43 @@
-/* Modern fluid dropcap styles */
+/* Drop-cap initials (markup: src/lib/markdown/initial.ts)
+
+   Two copies of the first letter:
+   - The real one stays in the paragraph's text, so screen readers and the clipboard get
+     the whole first word. Its ::first-letter is set at size 0: it is there, but takes
+     no room and paints nothing.
+   - The .dropcap element draws the initial. It is empty and hidden from assistive
+     technology, and paints both layers from data-first-letter: the letter (::after) and
+     the ornament behind it (::before). One box draws both, so they always register.
+
+   The initial is a square three lines tall: its top on the capitals of the first line,
+   its bottom on the baseline of the third. Both follow from the text face, in units of
+   the paragraph's font size (1rem in .prose):
+
+     size       = 2 line-heights + cap height
+     margin-top = first baseline - cap height, from the paragraph's top
+
+   Alegreya at line-height 1.6: capitals 0.646, first baseline 1.135.
+   ET Book at line-height 1.55: capitals 0.653, first baseline 1.068. */
+
+p:has(> .dropcap)::first-letter {
+  font-size: 0;
+}
+
+/* A one-letter first word ("A story") keeps its space, which would open a gap between
+   the initial and the next word: the space after a zero-size letter is not at the start
+   of the line, so it does not collapse. Pull the first line back by the width of that
+   space, a metric of the text face like the ones above: ET Book 0.2446, Alegreya 0.198. */
+p:has(> .dropcap--word.dropcap--serious) {
+  text-indent: -0.2446em;
+}
+p:has(> .dropcap--word.dropcap--personal) {
+  text-indent: -0.198em;
+}
+/* text-indent is inherited, and an inline-block inside the paragraph (the ↗ of an
+   external link, the initial itself) would indent its own first line too. */
+p:has(> .dropcap--word) * {
+  text-indent: 0;
+}
+
 .dropcap {
   float: left;
   display: inline-block;
@@ -12,15 +51,9 @@
   shape-margin: clamp(0.02em, 0.5vw, 0.05em);
 }
 
-/* The initial is a square three lines tall: its top on the capitals of the first line,
-   its bottom on the baseline of the third. Both follow from the text face, in units of
-   the paragraph's font size (1rem in .prose):
-
-     size       = 2 line-heights + cap height
-     margin-top = first baseline - cap height, from the paragraph's top
-
-   Alegreya at line-height 1.6: capitals 0.646, first baseline 1.135.
-   ET Book at line-height 1.55: capitals 0.653, first baseline 1.068. */
+.dropcap::after {
+  content: attr(data-first-letter);
+}
 
 /* Personal variant - set beside Alegreya (welcome, recipes, notes) */
 .dropcap--personal {
@@ -105,4 +138,17 @@
     /* Disable complex shape wrapping on very small screens for better performance */
     shape-outside: none;
   }
+}
+
+/* An opening quotation mark before the initial hangs in the margin beside it. */
+p:has(> .dropcap) {
+  position: relative;
+}
+.dropcap-quote {
+  position: absolute;
+  top: 0;
+  right: 100%;
+  padding-right: 0.1em;
+  font-size: 2em;
+  line-height: 1;
 }
