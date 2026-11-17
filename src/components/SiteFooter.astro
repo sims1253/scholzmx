@@ -1,17 +1,8 @@
 ---
-import QuoteOfTheDay from './QuoteOfTheDay.astro';
 import FooterLedge from './FooterLedge.astro';
-
-interface Props {
-  includeQuoteSection?: boolean;
-}
-
-const { includeQuoteSection = false } = Astro.props;
 ---
 
 <footer class="site-footer">
-  {includeQuoteSection && <QuoteOfTheDay />}
-
   <FooterLedge />
 
   <div class="colophon">
@@ -33,10 +24,6 @@ const { includeQuoteSection = false } = Astro.props;
       <li><a href="/rss.xml">RSS feed</a></li>
     </ul>
     <p>
-      Grotto is tended by Maximilian Scholz, without trackers or cookies. It is set in Alegreya and
-      ET Book.
-    </p>
-    <p>
       Writing and pictures are shared under
       <a
         href="https://creativecommons.org/licenses/by-sa/4.0/"
@@ -52,24 +39,34 @@ const { includeQuoteSection = false } = Astro.props;
   .site-footer {
     position: relative;
     z-index: 1;
-    margin-top: var(--space-xxl);
-    padding: 0 var(--space-md) var(--space-xl);
+    margin-top: 0.6rem;
+    padding: 0 var(--space-md) 0.5rem;
   }
 
+  /* Small print under the ledge's rule: the links, then the licence, on one line where
+     they fit. */
   .colophon {
-    max-width: 34rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: baseline;
+    gap: 0 1.5rem;
+    max-width: 46rem;
     margin: 0 auto;
-    padding-top: var(--space-lg);
-    border-top: 1px solid var(--rule-ink);
+    padding-top: 0.2rem;
     font-family: var(--font-ui);
-    font-size: var(--text-sm);
+    font-size: var(--text-xs);
     line-height: 1.5;
     color: var(--color-text-muted);
     text-align: center;
   }
 
+  .colophon a {
+    white-space: nowrap;
+  }
+
   .colophon p {
-    margin: 0 0 0.4em;
+    margin: 0;
     text-wrap: balance;
     hyphens: manual;
   }
@@ -78,19 +75,20 @@ const { includeQuoteSection = false } = Astro.props;
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 0.25rem 1.5rem;
-    margin: 0 0 var(--space-sm);
+    gap: 0 1.1rem;
+    margin: 0;
     padding: 0;
     list-style: none;
-    font-size: var(--text-md);
+    font-size: var(--text-xs);
   }
 
   .footer-links li {
     margin: 0;
   }
 
+  /* The links stay easy to hit though the type is small. */
   .footer-links a {
     display: inline-block;
-    padding-block: 0.35rem;
+    padding-block: 0.15rem;
   }
 </style>

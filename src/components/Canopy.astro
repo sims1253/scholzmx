@@ -32,7 +32,8 @@
 
     position: absolute;
     inset: 0 0 auto;
-    height: min(120vh, 64rem);
+    /* Never longer than the page, or a short page scrolls into empty shade. */
+    height: min(120vh, 64rem, 100%);
     overflow: hidden;
     pointer-events: none;
     z-index: 0;
