@@ -41,11 +41,11 @@
 
   /* Instant-hover, slow-fade pattern for better interaction feedback */
   .nav-link,
-  .torch-toggle,
+  .light-switch,
   .copy-button,
   .site-logo,
   a:not(.nav-link):not(.site-logo),
-  button:not(.torch-toggle):not(.copy-button),
+  button:not(.light-switch):not(.copy-button),
   details.code-collapse summary,
   .clickable-frame {
     transition:
@@ -58,11 +58,11 @@
   }
 
   .nav-link:hover,
-  .torch-toggle:hover,
+  .light-switch:hover,
   .copy-button:hover,
   .site-logo:hover,
   a:not(.nav-link):not(.site-logo):hover,
-  button:not(.torch-toggle):not(.copy-button):hover,
+  button:not(.light-switch):not(.copy-button):hover,
   details.code-collapse summary:hover,
   .clickable-frame:hover {
     transition: none; /* Instant feedback on hover */
