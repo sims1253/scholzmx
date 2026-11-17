@@ -140,7 +140,8 @@ const niches = [
   /*
    * Desktop, one screen:
    *   [portrait, then the quote] [welcome, then the bio] [the niches, cut into the margin]
-   * In a tall window the quote moves under the bio (see the min-height rule below).
+   * In a tall window the quote moves under the bio, and the height left after that
+   * loosens the page: see the min-height rule below.
    * The greeting starts on the reading column's left edge, so one axis runs down the page.
    * The margins run the full height beside the greeting and the bio, so the bio decides
    * where the page ends.
@@ -154,6 +155,9 @@ const niches = [
     --side-col: clamp(11rem, (100% - var(--text-col) - 2 * var(--gap)) / 2, 18rem);
     /* The portrait's frame (ImageFrame, size large) and its top margin: the quote hangs under it */
     --portrait-height: calc(230px + 0.5rem);
+    /* Height the window has beyond what the compact page needs: the text grows back to
+       full size with it. None, unless the window is tall. */
+    --room: 0px;
 
     display: grid;
     grid-template-columns:
@@ -172,9 +176,9 @@ const niches = [
     grid-column: text;
     grid-row: 1;
     max-width: none;
-    margin: -0.6rem 0 0.6rem;
+    margin: -0.6rem 0 calc(0.6rem + var(--room) * 0.08);
     font-family: var(--font-heading);
-    font-size: var(--text-md);
+    font-size: min(var(--text-lg), var(--text-md) + var(--room) * 0.022);
     font-weight: 400;
     line-height: 1.4;
     text-wrap: pretty;
@@ -252,7 +256,7 @@ const niches = [
   }
 
   .about p {
-    margin-bottom: 0.65em;
+    margin-bottom: calc(0.65em + var(--room) * 0.05);
   }
 
   .about p:last-child {
@@ -299,7 +303,7 @@ const niches = [
 
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-sm) 0.75rem;
+    gap: calc(var(--space-sm) + var(--room) * 0.12) 0.75rem;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -324,22 +328,55 @@ const niches = [
   }
 
   /* The whole page fits a laptop's screen: the bio sets a size smaller (never under 18px)
-     and a little closer. */
+     and a little closer. Where the window has room, it grows back to the size and leading
+     the rest of the site reads at. */
   @media (min-width: 72.001rem) {
     .about {
-      font-size: max(18px, 0.905rem);
-      line-height: 1.5;
+      font-size: min(1rem, max(18px, 0.905rem) + var(--room) * 0.0125);
+    }
+
+    /* On the paragraph, so the length is worked out at the bio's own size */
+    .about p {
+      line-height: min(1.6em, 1.5em + var(--room) * 0.0135);
     }
   }
 
   /* A tall window has room under the bio, so the quote stands there and closes the text,
      and the page is not left half empty. A short window keeps the quote under the
      portrait, where it costs no height and the page still fits the screen. The heights
-     are those at which the longest quote still fits; a narrower text column runs longer
-     and needs more. */
-  @media (min-width: 90rem) and (min-height: 66rem),
-    (min-width: 72.001rem) and (min-height: 74rem) {
+     (--tall-from) are those at which the longest quote still fits; a narrower text column
+     runs longer and needs more.
+
+     Height beyond that loosens the page instead of lying empty at its foot:
+     - the text grows back to full size and the quote stands further off, by rule
+       (--room). The rule keeps 2rem back, as growing text can wrap onto one more line
+       at once.
+     - of the height then really left, half goes above the page, to at most --air. The
+       two spacers are flex items with no size of their own, so they only ever take
+       height that is free, and no quote can push the page past the screen. */
+  @media (min-width: 90rem) and (min-height: 1080px),
+    (min-width: 72.001rem) and (min-height: 1184px) {
+    :global(.main-content:has(.home)) {
+      --air: 4rem;
+
+      display: flex;
+      flex-direction: column;
+    }
+
+    :global(.main-content:has(.home))::before,
+    :global(.main-content:has(.home))::after {
+      content: '';
+      flex: 1 1 0;
+    }
+
+    :global(.main-content:has(.home))::before {
+      max-height: var(--air);
+    }
+
     .home {
+      --tall-from: 1080px;
+      --room: clamp(0px, 100vh - var(--tall-from) - 2rem, 160px);
+
       grid-template-rows: auto auto 1fr;
     }
 
@@ -353,7 +390,13 @@ const niches = [
       grid-row: 3;
       justify-self: center;
       width: auto;
-      margin-top: var(--space-xl);
+      margin-top: calc(var(--space-lg) + var(--room) * 0.2);
+    }
+  }
+
+  @media (max-width: 89.999rem) {
+    .home {
+      --tall-from: 1184px;
     }
   }
 
