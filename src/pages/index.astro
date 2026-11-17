@@ -140,6 +140,7 @@ const niches = [
   /*
    * Desktop, one screen:
    *   [portrait, then the quote] [welcome, then the bio] [the niches, cut into the margin]
+   * In a tall window the quote moves under the bio (see the min-height rule below).
    * The greeting starts on the reading column's left edge, so one axis runs down the page.
    * The margins run the full height beside the greeting and the bio, so the bio decides
    * where the page ends.
@@ -328,6 +329,31 @@ const niches = [
     .about {
       font-size: max(18px, 0.905rem);
       line-height: 1.5;
+    }
+  }
+
+  /* A tall window has room under the bio, so the quote stands there and closes the text,
+     and the page is not left half empty. A short window keeps the quote under the
+     portrait, where it costs no height and the page still fits the screen. The heights
+     are those at which the longest quote still fits; a narrower text column runs longer
+     and needs more. */
+  @media (min-width: 90rem) and (min-height: 66rem),
+    (min-width: 72.001rem) and (min-height: 74rem) {
+    .home {
+      grid-template-rows: auto auto 1fr;
+    }
+
+    .portrait,
+    .niches {
+      grid-row: 1 / -1;
+    }
+
+    .quote {
+      grid-column: text;
+      grid-row: 3;
+      justify-self: center;
+      width: auto;
+      margin-top: var(--space-xl);
     }
   }
 
