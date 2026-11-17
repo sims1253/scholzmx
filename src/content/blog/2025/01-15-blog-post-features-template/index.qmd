@@ -29,7 +29,7 @@ cache: true
 freeze: false
 ---
 
-<span class="dropcap dropcap--ornate dropcap--serious" data-first-letter="T" aria-hidden="true">T</span> his is my copy-paste template for new blog posts. I got tired of looking up the same Quarto features every time, so this is essentially just a growing example for me.
+This is my copy-paste template for new blog posts. I got tired of looking up the same Quarto features every time, so this is essentially just a growing example for me.
 
 ## YAML frontmatter
 
@@ -51,9 +51,10 @@ Optional stuff:
 
 ## Typography
 
-Drop caps are gorgeous:
-```html
-<span class="dropcap dropcap--ornate dropcap--serious" data-first-letter="T" aria-hidden="true">T</span> ext starts here...
+Drop caps are gorgeous, and automatic: the first letter of the first paragraph becomes one at build time. To leave a post without one, add this to the header:
+
+```yaml
+dropcap: false
 ```
 
 Math: inline like $\mu = \sum_{i=1}^n x_i$

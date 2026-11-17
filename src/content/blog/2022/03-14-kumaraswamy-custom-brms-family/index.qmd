@@ -27,7 +27,7 @@ freeze: false
 *Update:* We finally published [bayesfam](https://github.com/sims1253/bayesfam),
 a package that contains a bunch of custom families for brms.
 
-<span class="dropcap dropcap--ornate dropcap--serious" data-first-letter="I" aria-hidden="true">I</span> am currently working with different unit interval distributions and one of the
+I am currently working with different unit interval distributions and one of the
 more common ones to be mentioned in the literature is the Kumaraswamy distribution
 @kumaraswamyGeneralizedProbabilityDensity1980.
 As I am working with brms and there is no built-in family for the kumaraswamy distribution,
