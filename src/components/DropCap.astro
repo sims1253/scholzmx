@@ -1,17 +1,25 @@
 ---
+// The drop-cap initial for hand-written pages. Markdown pages get the same markup from
+// src/lib/markdown/rehype-initial.ts. Place it at the very start of a paragraph, right
+// before the rest of the first word: <p><DropCap letter="I" />'m …</p>. The letter is
+// always followed by a word joiner, since the component cannot see what comes next
+// (see joinInitial).
+import {
+  initialAttributes,
+  WORD_JOINER,
+  type InitialColor,
+  type InitialStyle,
+  type InitialVariant,
+} from '../lib/markdown/initial.ts';
+
 export interface Props {
   letter: string;
-  color?: 'gold' | 'walnut' | 'moss' | 'ochre' | 'sage';
-  style?: 'simple' | 'ornate' | 'botanical';
-  variant?: 'personal' | 'serious';
+  color?: InitialColor;
+  style?: InitialStyle;
+  variant?: InitialVariant;
 }
 const { letter, color = 'sage', style = 'ornate', variant = 'personal' } = Astro.props;
-const dropCapLetter = (letter ?? '').charAt(0).toUpperCase();
+const attributes = initialAttributes(letter ?? '', { color, style, variant });
 ---
 
-<span
-  class={`dropcap dropcap--${color} dropcap--${style} dropcap--${variant}`}
-  data-first-letter={dropCapLetter}
-  aria-hidden="true"
-  >{dropCapLetter}</span
->
+<span {...attributes}></span>{attributes['data-first-letter'] + WORD_JOINER}

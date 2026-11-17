@@ -2,8 +2,11 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
+import rehypeTemml from './src/lib/markdown/rehype-temml.ts';
+import mathFont from './src/lib/markdown/math-font.ts';
 import { lightCodeTheme, darkCodeTheme } from './src/lib/shiki-themes.mjs';
+import rehypeInitial from './src/lib/markdown/rehype-initial.ts';
+import remarkMarginNotes from './src/lib/markdown/remark-margin-notes.ts';
 import { unified } from '@astrojs/markdown-remark';
 import pagefind from 'astro-pagefind';
 
@@ -27,7 +30,7 @@ export default defineConfig({
     // Redirect old blog listing page to new one
     '/post/': '/blog/',
   },
-  integrations: [sitemap(), pagefind()],
+  integrations: [sitemap(), pagefind(), mathFont()],
   // Enable automatic image optimization
   image: {
     service: {
@@ -43,7 +46,14 @@ export default defineConfig({
 
   // Use Astro's native markdown processing with math support and Gruvbox themes
   markdown: {
-    processor: unified({ remarkPlugins: [remarkMath], rehypePlugins: [rehypeKatex] }),
+    processor: unified({
+      remarkPlugins: [remarkMath, remarkMarginNotes],
+      rehypePlugins: [
+        rehypeTemml,
+        // Folders under src/content/ whose pages open with a drop-cap initial
+        [rehypeInitial, { collections: { blog: 'serious', recipes: 'personal' } }],
+      ],
+    }),
     shikiConfig: {
       // Kanagawa Lotus and Dragon, with any token below 4.5:1 deepened (src/lib/shiki-themes.mjs)
       themes: {

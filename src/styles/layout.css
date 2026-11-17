@@ -42,6 +42,7 @@
 
 .site-logo {
   font-family: var(--font-label);
+  font-variant-caps: small-caps;
   font-size: clamp(1.3rem, 1rem + 1vw, 1.667rem);
   letter-spacing: 0.06em;
   line-height: 1;
@@ -62,6 +63,7 @@
   padding: 0;
   list-style: none;
   font-family: var(--font-label);
+  font-variant-caps: small-caps;
   font-size: clamp(1rem, 0.9rem + 0.4vw, 1.167rem);
   letter-spacing: 0.04em;
 }
@@ -110,8 +112,8 @@
 }
 
 /* The smallest phones (320px): a little smaller and closer, so the row fits (with about
-   12px to spare in Alegreya SC). It never wraps: the wider fallback font, shown until
-   Alegreya SC arrives, would wrap it and the page would jump back up when it did. */
+   12px to spare in Alegreya small caps). It never wraps: the wider fallback font, shown until
+   Alegreya arrives, would wrap it and the page would jump back up when it did. */
 @media (max-width: 24rem) {
   .nav-links {
     --nav-gap: 0.4rem;

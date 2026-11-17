@@ -37,6 +37,7 @@ const sections = Astro.props.headings.filter((heading) => heading.depth === 2);
     align-content: center;
     padding-block: 0.6rem;
     font-family: var(--font-label);
+    font-variant-caps: small-caps;
     font-size: var(--text-md);
     letter-spacing: 0.04em;
     color: var(--color-walnut);
@@ -45,6 +46,7 @@ const sections = Astro.props.headings.filter((heading) => heading.depth === 2);
 
   .post-contents-count {
     font-family: var(--font-ui);
+    font-variant-caps: normal;
     font-size: var(--text-sm);
     font-style: italic;
     letter-spacing: 0;
@@ -64,6 +66,7 @@ const sections = Astro.props.headings.filter((heading) => heading.depth === 2);
 
   .post-contents li::marker {
     font-family: var(--font-label);
+    font-variant-caps: small-caps;
     color: var(--color-text-muted);
   }
 

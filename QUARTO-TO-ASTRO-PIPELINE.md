@@ -48,8 +48,8 @@ Sharp and Astro updates also removed the baseline Sharp and devalue findings.
 - `basic-ftp@5.3.1`: [directory-listing denial of service](https://github.com/advisories/GHSA-c475-qrg2-pj4r).
   The fix is 6.2.1, but the browser audit tools' `get-uri@6.0.5` requires `^5.0.2`.
 - `katex@0.16.47`: [prototype pollution can bypass trust restrictions](https://github.com/advisories/GHSA-238p-pmpm-9mq7).
-  The fix is 0.18.2, but `rehype-katex` and `micromark-extension-math` require `^0.16.0`.
-  Math renders from authored content at build time with the default trust settings.
+  The fix is 0.18.2, but `micromark-extension-math` (under `remark-math`) requires `^0.16.0`.
+  The site never runs KaTeX: Temml renders the maths (`src/lib/markdown/rehype-temml.ts`).
 - `braces@3.0.3`: [nested-pattern denial of service](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm).
   No patched version is published; this comes through the CSS build and lint tools.
 - `extract-zip@2.0.1`: [symlink path traversal](https://github.com/advisories/GHSA-jmr9-qjv8-65gv)
