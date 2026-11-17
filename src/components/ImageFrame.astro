@@ -1,27 +1,34 @@
 ---
 // A framed picture: a post or recipe hero, a card's photo, or the homepage portrait,
 // which can turn over to a second photo when clicked.
+//
+// The frame is always filled. Which part of the picture shows is said in terms of the
+// picture, not of the frame, so one setting picks the same spot in a wide hero and in a
+// small print (the geometry is the `.frame-view img.local` rule below):
+// - `scale` enlarges the picture from the size at which it would fit whole into the frame.
+//   Where that would leave the frame partly empty, the picture is enlarged until it fills.
+// - `positionX`/`positionY` shift the picture right and down, in percent of its own size:
+//   the point of the picture at the frame's centre is (50 - positionX)%, (50 - positionY)%.
+//   The picture stops at the frame's edges.
+// scripts/browser-smoke.mjs pins the homepage portrait's framing to the pixel.
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
-
-type Fit = 'cover' | 'contain';
 
 export interface Props {
   src: string | ImageMetadata;
   alt: string;
+  /** The widest the frame is shown, in px: the size the image service is asked for */
   width?: number;
-  height?: number;
   loading?: 'lazy' | 'eager';
 
-  // Move and zoom the picture inside its frame: percentages from the centre, and a factor.
   positionX?: number;
   positionY?: number;
   scale?: number;
-  fillMode?: Fit;
 
   style?: 'watercolor' | 'hero' | 'simple';
   size?: 'small' | 'medium' | 'large'; // watercolor only
-  aspectRatio?: string; // e.g. "8/3"
+  /** The frame's shape, e.g. "8/3". A watercolor frame has its own. */
+  aspectRatio?: string;
 
   // A second photo the frame turns over to when clicked
   alternateSrc?: string | ImageMetadata;
@@ -35,12 +42,10 @@ const {
   src,
   alt,
   width,
-  height,
   loading = 'lazy',
   positionX,
   positionY,
   scale,
-  fillMode = 'cover',
   style = 'simple',
   size = 'medium',
   aspectRatio,
@@ -61,18 +66,10 @@ const portraitSizes = {
   large: { width: 200, height: 230 },
 };
 const portrait = style === 'watercolor' ? portraitSizes[size] : undefined;
-const frameWidth = width ?? portrait?.width;
-const frameHeight = height ?? portrait?.height;
 
-// What Astro's image service is asked for
-const imageWidth = frameWidth ?? (isHero ? 800 : 100);
-function parseAspectRatio(r?: string): { w: number; h: number } | undefined {
-  const [w, h] = (r ?? '').split('/').map(Number);
-  return w && h && w > 0 && h > 0 ? { w, h } : undefined;
-}
-const ar = parseAspectRatio(aspectRatio);
-const imageHeight = height ?? (ar ? Math.round(imageWidth * (ar.h / ar.w)) : 400);
-
+// What Astro's image service is asked for. The picture keeps its own shape; the frame
+// crops it in the browser.
+const imageWidth = width ?? portrait?.width ?? (isHero ? 800 : 100);
 const responsiveWidths = isHero
   ? [393, 768, 1024, 1200]
   : portrait
@@ -87,10 +84,12 @@ const sizes = isHero
 const eager = isHero || loading === 'eager';
 const frameStyle = [
   aspectRatio && `aspect-ratio: ${aspectRatio};`,
-  portrait && `width: ${frameWidth}px; height: ${frameHeight}px;`,
+  portrait && `width: ${portrait.width}px; height: ${portrait.height}px;`,
 ]
   .filter(Boolean)
   .join(' ');
+
+const number = (value: number) => Number(value.toFixed(4));
 
 // The primary photo and, on a clickable frame, the one it turns over to
 const layers = [
@@ -110,9 +109,11 @@ const layers = [
 ].map((layer) => ({
   ...layer,
   primary: layer.role === 'primary',
-  // Without a position or zoom, the picture simply fills the frame.
-  moved: layer.x !== undefined || layer.y !== undefined || layer.scale !== undefined,
-  transform: `scale(${layer.scale || 1}) translate(${layer.x || 0}%, ${layer.y || 0}%);`,
+  view: [
+    `--zoom: ${number(layer.scale || 1)}`,
+    `--focus-x: ${number(0.5 - (layer.x || 0) / 100)}`,
+    `--focus-y: ${number(0.5 - (layer.y || 0) / 100)}`,
+  ].join('; '),
 }));
 ---
 
@@ -131,44 +132,38 @@ const layers = [
   {layers.map((layer) => {
     const img = {
       alt: layer.alt,
-      class: `fit-${fillMode}`,
       loading: layer.primary && eager ? ('eager' as const) : ('lazy' as const),
       fetchpriority: layer.primary && isHero ? ('high' as const) : undefined,
     };
+    // A local picture's proportions are known at build time. Those of a picture from a
+    // URL are not: see `img.remote`.
     const picture =
       typeof layer.src === 'string' ? (
         <img
           {...img}
+          class="remote"
           src={layer.src}
           decoding={layer.primary ? (img.loading === 'eager' ? 'sync' : 'async') : undefined}
         />
       ) : (
         <Image
           {...img}
+          class="local"
+          style={`--aspect: ${number(layer.src.width / layer.src.height)}`}
           src={layer.src}
           width={imageWidth}
-          height={layer.moved ? undefined : imageHeight}
           widths={responsiveWidths}
           sizes={sizes}
           format="avif"
         />
       );
-    return layer.moved ? (
-      <div
-        class={`image-wrapper ${layer.role}-image`}
-        style={`transform: ${layer.transform}`}
-        aria-hidden={layer.primary ? undefined : 'true'}
-      >
-        <div class="frame-image custom-positioning">{picture}</div>
-      </div>
-    ) : (
-      <div
-        class={`frame-image simple-fill ${layer.role}-image`}
-        aria-hidden={layer.primary ? undefined : 'true'}
-      >
-        {picture}
-      </div>
-    );
+    return <div
+      class={`frame-view ${layer.role}-image`}
+      style={layer.view}
+      aria-hidden={layer.primary ? undefined : 'true'}
+    >
+      {picture}
+    </div>;
   })}
 </div>
 
@@ -180,47 +175,45 @@ const layers = [
     display: block;
   }
 
-  .image-frame img {
-    display: block;
-    width: 100%;
-    height: 100%;
-  }
-
-  .fit-cover {
-    object-fit: cover;
-  }
-
-  .fit-contain {
-    object-fit: contain;
-  }
-
-  .image-wrapper {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    transform-origin: center center;
+  /* The window onto the picture: cq units inside it are the frame's own width and height */
+  .frame-view {
     position: relative;
-  }
-
-  /* A moved picture: centred on the frame, then shifted and zoomed by its wrapper */
-  .frame-image.custom-positioning {
     width: 100%;
     height: 100%;
-    display: block;
-    transform: translate(-50%, -50%);
+    overflow: hidden;
+    container-type: size;
+  }
+
+  .frame-view img {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    overflow: hidden;
+    display: block;
+    max-width: none;
   }
 
-  .frame-image.simple-fill {
+  /* --fit is the picture's width when it fits whole into the frame. It is shown --zoom
+     times that, and never smaller than the frame. Its focus point goes to the frame's
+     centre, as far as the picture's edges allow. */
+  .frame-view img.local {
+    --fit: min(100cqw, 100cqh * var(--aspect));
+    --w: max(var(--fit) * var(--zoom), 100cqw, 100cqh * var(--aspect));
+    --h: calc(var(--w) / var(--aspect));
+
+    width: var(--w);
+    height: var(--h);
+    left: clamp(100cqw - var(--w), 50cqw - var(--focus-x) * var(--w), 0px);
+    top: clamp(100cqh - var(--h), 50cqh - var(--focus-y) * var(--h), 0px);
+  }
+
+  /* A picture from a URL: its proportions are not known, so it fills the frame around
+     its focus point, and --zoom enlarges it from there. */
+  .frame-view img.remote {
+    inset: 0;
     width: 100%;
-    /* Prevent baseline gap and reserve exactly content height */
-    line-height: 0;
     height: 100%;
-    display: block;
-    overflow: hidden;
+    object-fit: cover;
+    object-position: calc(var(--focus-x) * 100%) calc(var(--focus-y) * 100%);
+    transform-origin: calc(var(--focus-x) * 100%) calc(var(--focus-y) * 100%);
+    transform: scale(max(1, var(--zoom)));
   }
 
   /* A post or recipe header; the page sets its margins and corners. */
@@ -238,6 +231,8 @@ const layers = [
   }
 
   /* The portrait. The homepage repaints the frame as a pasted photograph. */
+  /* The mat is 8px wide, and the picture is measured inside it. A picture larger than
+     that runs out over the mat, to the frame's edge. */
   .image-frame-watercolor {
     border-radius: var(--organic-md);
     padding: 8px;
@@ -251,6 +246,10 @@ const layers = [
       0 2px 8px rgba(139, 90, 60, 0.1),
       0 8px 24px rgba(90, 70, 50, 0.12),
       inset 0 0 20px rgba(255, 248, 240, 0.5);
+  }
+
+  .image-frame-watercolor .frame-view {
+    overflow: visible;
   }
 
   .image-frame-watercolor img {
@@ -274,13 +273,6 @@ const layers = [
 
   .image-frame.clickable:hover {
     box-shadow: 0 8px 20px rgba(139, 90, 60, 0.25);
-  }
-
-  .image-frame-watercolor.clickable:hover {
-    box-shadow:
-      0 4px 12px rgba(139, 90, 60, 0.15),
-      0 12px 30px rgba(90, 70, 50, 0.15),
-      inset 0 0 25px rgba(255, 248, 240, 0.6);
   }
 
   .image-frame.clickable:focus {

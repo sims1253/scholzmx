@@ -47,6 +47,8 @@ cache: true   # speeds up builds for R-heavy posts
 
 Optional stuff:
 - `heroImage`: Header image path
+- `heroImageScale`: Zoom into the header image. `1` shows as much of it as the frame allows
+- `heroImagePositionX`, `heroImagePositionY`: Shift the image right and down, as a fraction of its own size. `heroImagePositionY: 0.235` puts the point 26.5% from the image's top in the middle of the frame. The post's card on the blog index shows the same spot
 - `lastUpdated`: When you edited it
 
 ## Typography

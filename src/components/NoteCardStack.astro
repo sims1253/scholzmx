@@ -60,6 +60,16 @@ const {
   material = 'paper',
 } = Astro.props;
 
+// A print keeps its picture's own proportions, between square and 16:9, so a screenshot is
+// not cut to a slice. One the post zooms into or shifts is cut to 4:3 around that spot; so
+// is a picture from a URL, whose proportions are not known.
+function printRatio(hero: NonNullable<CardItem['hero']>): string {
+  const cut = (hero.scale ?? 1) !== 1 || Boolean(hero.posX) || Boolean(hero.posY);
+  if (cut || hero.kind === 'url') return '4/3';
+  const ratio = Math.min(16 / 9, Math.max(1, hero.src.width / hero.src.height));
+  return `${ratio.toFixed(3)}/1`;
+}
+
 // "2025-11-23" reads as "23 November 2025", the way the posts themselves give their dates.
 // A tab heads the first card of each run of cards that share it. It is the run's
 // heading one level above the card titles, so year jumps and the outline still work.
@@ -104,14 +114,12 @@ const inWords = (isoDay: string) =>
         <ImageFrame
           src={it.hero.kind === 'url' ? it.hero.src : it.hero.src}
           alt=""
-          aspectRatio={media === 'thumb' ? '4/3' : aspectRatio}
+          aspectRatio={media === 'thumb' ? printRatio(it.hero) : aspectRatio}
           style="simple"
-          fillMode="cover"
           positionX={it.hero.posX !== undefined ? it.hero.posX * 100 : undefined}
           positionY={it.hero.posY !== undefined ? it.hero.posY * 100 : undefined}
           scale={it.hero.scale}
           width={media === 'thumb' ? 480 : 1200}
-          height={media === 'thumb' ? 360 : 450}
         />
       </div>}
       <div class="sc-meta">

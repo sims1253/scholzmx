@@ -30,7 +30,6 @@ export interface Props {
   title: string;
   description?: string;
   image?: string;
-  includeQuoteSection?: boolean;
   tone?: 'personal' | 'serious';
   layout?: 'prose' | 'listing' | 'cards' | 'wide' | 'full';
   prose?: boolean;
@@ -40,7 +39,6 @@ const {
   title,
   description = 'A digital garden and personal website - thoughtful, slow web principles with a warm, botanical aesthetic.',
   image,
-  includeQuoteSection = false,
   tone = 'personal',
   layout = 'prose',
   prose = false,
@@ -305,7 +303,7 @@ const warmFonts = [
         </div>
       </main>
 
-      <SiteFooter includeQuoteSection={includeQuoteSection} />
+      <SiteFooter />
     </div>
 
     <BackToTop />
