@@ -54,7 +54,7 @@
   color: var(--color-ink-dark);
 }
 
-/* Links and the torch share one row and one gap. */
+/* Links and the light switch share one row and one gap. */
 .nav-links {
   display: flex;
   align-items: center;
@@ -103,69 +103,7 @@
   transform: translateX(-50%);
 }
 
-/* The button is exactly as wide as the flame, so its gap matches the links'. */
-.torch-toggle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  /* 44px to press, while the flame still takes only its own 1.1em in the row. */
-  width: 44px;
-  height: 44px;
-  margin-inline: calc((1.1em - 44px) / 2);
-  padding: 0;
-  border: 0;
-  background: transparent;
-  font: inherit;
-  cursor: pointer;
-}
-
-/* Cropped to the flame, so the icon is the height of the link text's capitals and
-   descenders and its edges line up with the gap. */
-.torch-icon {
-  width: 1.1em;
-  height: 1.5em;
-  overflow: visible;
-}
-
-.torch-flame {
-  stroke: var(--color-ink-medium);
-  stroke-width: 1;
-  transform-box: fill-box;
-  transform-origin: 50% 100%;
-  filter: var(--torch-flame-glow);
-  animation: var(--torch-flame-dance);
-}
-
-.torch-flame-tip {
-  stop-color: var(--color-tansy);
-}
-
-.torch-flame-base {
-  stop-color: var(--torch-flame-base);
-}
-
-.torch-holder {
-  fill: var(--color-ink-medium);
-}
-
-.torch-toggle:hover .torch-flame {
-  stroke: var(--color-ochre);
-}
-
-@keyframes flame-dance {
-  0%,
-  100% {
-    transform: scale(1, 1) skewX(0deg);
-  }
-  30% {
-    transform: scale(0.94, 1.06) skewX(-3deg);
-  }
-  60% {
-    transform: scale(1.04, 0.95) skewX(2deg);
-  }
-}
-
-/* Phones: the name gets its own row, sections and torch spread across the second. */
+/* Phones: the name gets its own row, sections and light switch spread across the second. */
 @media (max-width: 34rem) {
   .nav-links {
     width: 100%;
@@ -183,13 +121,6 @@
     flex-wrap: nowrap;
     font-size: 0.875rem;
     letter-spacing: 0.02em;
-  }
-
-  /* The closer gaps leave no room for a 44px-wide target beside "Research"; 24px
-     (the WCAG minimum) keeps it clear of the link. */
-  .torch-toggle {
-    width: 24px;
-    margin-inline: calc((1.1em - 24px) / 2);
   }
 }
 

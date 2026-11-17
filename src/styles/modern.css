@@ -107,7 +107,8 @@ html {
     }
   }
 
-  /* Lighting or putting out the torch is a short, plain cross-fade (theme-toggle.ts). */
+  /* Changing the light is a short, plain cross-fade (theme-toggle.ts); the light switch
+     plays its own change (LightSwitch.astro). */
   ::view-transition-group(root),
   ::view-transition-old(root),
   ::view-transition-new(root) {
