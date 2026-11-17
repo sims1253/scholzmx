@@ -6,7 +6,7 @@ tags: ['coala', 'Community', 'GSoC']
 draft: false
 ---
 
-<span class="dropcap dropcap--ornate dropcap--serious" data-first-letter="T" aria-hidden="true">T</span>he last time you heard something from the community team was almost 3 month
+The last time you heard something from the community team was almost 3 month
 ago.
 Long long time ago...
 

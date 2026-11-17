@@ -26,7 +26,7 @@
       },
       {
         "resourceType": "font",
-        "budget": 100
+        "budget": 105
       },
       {
         "resourceType": "image",
@@ -81,6 +81,87 @@
     ]
   },
   {
+    "path": "/projects*",
+    "timings": [
+      {
+        "metric": "first-contentful-paint",
+        "budget": 1800
+      },
+      {
+        "metric": "largest-contentful-paint",
+        "budget": 2500
+      },
+      {
+        "metric": "speed-index",
+        "budget": 3000
+      },
+      {
+        "metric": "interactive",
+        "budget": 3500
+      }
+    ],
+    "resourceSizes": [
+      {
+        "resourceType": "document",
+        "budget": 50
+      },
+      {
+        "resourceType": "font",
+        "budget": 170
+      },
+      {
+        "resourceType": "image",
+        "budget": 200
+      },
+      {
+        "resourceType": "media",
+        "budget": 100
+      },
+      {
+        "resourceType": "script",
+        "budget": 150
+      },
+      {
+        "resourceType": "stylesheet",
+        "budget": 75
+      },
+      {
+        "resourceType": "other",
+        "budget": 50
+      },
+      {
+        "resourceType": "total",
+        "budget": 500
+      }
+    ],
+    "resourceCounts": [
+      {
+        "resourceType": "document",
+        "budget": 1
+      },
+      {
+        "resourceType": "font",
+        "budget": 4
+      },
+      {
+        "resourceType": "image",
+        "budget": 12
+      },
+      {
+        "resourceType": "script",
+        "budget": 8
+      },
+      {
+        "resourceType": "stylesheet",
+        "budget": 6
+      },
+      {
+        "resourceType": "third-party",
+        "budget": 5
+      }
+    ]
+  },
+  {
     "path": "/blog/*",
     "timings": [
       {
@@ -100,6 +181,16 @@
       {
         "resourceType": "image",
         "budget": 400
+      },
+      {
+        "resourceType": "font",
+        "budget": 310
+      }
+    ],
+    "resourceCounts": [
+      {
+        "resourceType": "font",
+        "budget": 12
       }
     ]
   },
@@ -127,6 +218,16 @@
       {
         "resourceType": "script",
         "budget": 200
+      },
+      {
+        "resourceType": "font",
+        "budget": 170
+      }
+    ],
+    "resourceCounts": [
+      {
+        "resourceType": "font",
+        "budget": 4
       }
     ]
   }

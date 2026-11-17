@@ -113,7 +113,7 @@ meanwhile:
     during: proof
 ---
 
-<span class="dropcap dropcap--ornate dropcap--personal" data-first-letter="T" aria-hidden="true">T</span>hese dinner rolls have become a staple of the baking-grandma in our Brindlewood Bay group and are perfect for any occasion where you want some easy-to-portion bread on the side. The squash gives them a lovely color and keeps them soft. The Spices add a touch of autumn to them on top.
+These dinner rolls have become a staple of the baking-grandma in our Brindlewood Bay group and are perfect for any occasion where you want some easy-to-portion bread on the side. The squash gives them a lovely color and keeps them soft. The Spices add a touch of autumn to them on top.
 
 > margin: You can swap the butter for a plant-based alternative to make these vegan.
 

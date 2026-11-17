@@ -16,7 +16,7 @@ format:
     preserve-yaml: true
 ---
 
-<span class="dropcap dropcap--ornate dropcap--serious" data-first-letter="B" aria-hidden="true">B</span> uilding a framework for simulation studies in Bayesian statistics has been a journey of discovery. Let me share some thoughts on what I'm working on with [bayesim](https://github.com/sims1253/bayesim).
+Building a framework for simulation studies in Bayesian statistics has been a journey of discovery. Let me share some thoughts on what I'm working on with [bayesim](https://github.com/sims1253/bayesim).
 
 ## The Motivation
 

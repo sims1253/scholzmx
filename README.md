@@ -157,8 +157,9 @@ Images in `src/assets/` get automatic Astro optimization (WebP conversion, respo
 
 ### Tooling compatibility
 
-Astro 7.3.1 uses the unified Markdown processor to preserve remark-math and
-rehype-katex rendering. HTML whitespace compression also retains the previous mode.
+Astro 7.3.1 uses the unified Markdown processor to keep remark-math, which
+`src/lib/markdown/rehype-temml.ts` turns into MathML. HTML whitespace
+compression also retains the previous mode.
 Pagefind 2 builds the index; `Search.astro` uses the maintained default UI to keep
 existing search labels, styling, and collection filters.
 

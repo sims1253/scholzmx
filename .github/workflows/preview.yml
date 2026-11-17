@@ -97,14 +97,13 @@ jobs:
         env:
           CHROME_PATH: ${{ steps.chrome.outputs.chrome-path }}
           PREVIEW_URL: ${{ steps.deploy.outputs.url }}
+          # Previews are noindex (see above), so the config skips the crawlability audit;
+          # everything else is the production config.
+          LHCI_PREVIEW: 'true'
         run: |
           set -o pipefail
-          # Previews are noindex (see above), so the crawlability audit can't pass there;
-          # everything else is the production config.
           mapfile -t urls < <(jq -r --arg base "${PREVIEW_URL%/}" '.urls[] | sub("^https://[^/]+"; $base) | "--collect.url=" + .' .pa11yci.json)
           bunx --no-install lhci autorun --config=.lighthouserc.cjs \
-            --assert.assertions.is-crawlable=off \
-            --assert.assertions.categories:seo=off \
             "${urls[@]}" 2>&1 | tee /tmp/lighthouse.txt
 
       - name: Write the PR comment

@@ -6,7 +6,7 @@ tags: ['coala', 'Community']
 draft: false
 ---
 
-<span class="dropcap dropcap--ornate dropcap--serious" data-first-letter="A" aria-hidden="true">A</span> story I like to tell to showcase the welcoming atmosphere at coala is one
+A story I like to tell to showcase the welcoming atmosphere at coala is one
 about ramen.
 Some time last year I was talking with [Asnel](https://github.com/Asnelchristian)
 about how to improve a bowl of instant ramen until you get a healthy (and also

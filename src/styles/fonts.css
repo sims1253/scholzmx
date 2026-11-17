@@ -1,71 +1,49 @@
-/* Consolidated font declarations - all self-hosted fonts in one file */
+/* Faces a page loads only when it sets text in them. The two first-paint faces and their
+   metric-matched stand-ins are in fonts-critical.css. font-display follows what each
+   face is for:
+   - The text faces swap. Their stand-ins have the same metrics, so a late arrival
+     changes the letters and nothing else.
+   - Fira Code uses fallback: code reads fine in any monospace, and after three seconds
+     the code a reader has started on stays as it is instead of shifting under them.
+   - The initials swap too. They are found only when the first paragraph is laid out, so
+     optional would lose the ornament on nearly every first view. Every initial is 1em
+     wide, so until it arrives a Courier capital stretched to 1em holds its place
+     ('Initials Fallback' below) and the paragraph does not rewrap when it lands. */
 
-/* === CRITICAL FONTS (preloaded) === */
-
-/* Alegreya - Personal content body font (regular weight most used) */
 @font-face {
   font-family: 'Alegreya';
-  src: url('/fonts/Alegreya/alegreya-v38-latin-regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
+  src: url('/fonts/Alegreya/alegreya-latin-wght-italic.woff2') format('woff2');
+  font-weight: 400 900;
+  font-style: italic;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Alegreya';
-  src: url('/fonts/Alegreya/alegreya-v38-latin-italic.woff2') format('woff2');
+  font-family: 'ET Book Roman';
+  src: url('/fonts/et-book-display-italic-old-style-figures.woff2') format('woff2');
   font-weight: 400;
   font-style: italic;
   font-display: swap;
 }
 
-/* Alegreya SC - Wordmark, navigation and small labels */
-@font-face {
-  font-family: 'Alegreya SC';
-  src: url('/fonts/Alegreya/alegreya-sc-v28-latin-regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Alegreya SC';
-  src: url('/fonts/Alegreya/alegreya-sc-v28-latin-500.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* ET Book Roman - Serious content body font */
+/* One weight for th, author names and <strong>, with the roman's old-style figures. */
 @font-face {
   font-family: 'ET Book Roman';
-  src: url('/fonts/et-book-roman-old-style-figures.woff2') format('woff2');
-  font-weight: 400;
+  src: url('/fonts/et-book-semi-bold-old-style-figures.woff2') format('woff2');
+  font-weight: 600 700;
   font-style: normal;
   font-display: swap;
 }
 
-/* Fira Code - Code blocks (already preloaded in BaseLayout) */
 @font-face {
   font-family: 'Fira Code';
   src: url('/fonts/FiraCode-Regular.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
-  font-display: swap;
+  font-display: fallback;
 }
 
-@font-face {
-  font-family: 'Fira Code';
-  src: url('/fonts/FiraCode-Medium.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* === SPECIALTY FONTS (load on demand) === */
-
-/* Dropcap fonts - only loaded when needed */
-/* One file per letter: a page downloads only the initial it uses (unicode-range). */
+/* Drop caps. One file per letter: a page downloads only the initial it uses (unicode-range). */
 
 @font-face {
   font-family: 'EBGaramond-InitialsF1';
@@ -309,73 +287,13 @@
   font-display: swap;
 }
 
-/* === SECONDARY WEIGHTS (non-critical, load later) === */
-
-/* Additional Alegreya weights for emphasis */
+/* Courier New, Liberation Mono and Cousine share a 0.6em advance: 1 / 0.6 = 166.67%.
+   The initials' ascent is 1em and their descent 0.014em. */
 @font-face {
-  font-family: 'Alegreya';
-  src: url('/fonts/Alegreya/alegreya-v38-latin-500.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Alegreya';
-  src: url('/fonts/Alegreya/alegreya-v38-latin-500italic.woff2') format('woff2');
-  font-weight: 500;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Alegreya';
-  src: url('/fonts/Alegreya/alegreya-v38-latin-700.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Alegreya';
-  src: url('/fonts/Alegreya/alegreya-v38-latin-700italic.woff2') format('woff2');
-  font-weight: 700;
-  font-style: italic;
-  font-display: swap;
-}
-
-/* === EB Garamond (fallback for both tones) === */
-
-@font-face {
-  font-family: 'EB Garamond';
-  src: url('/fonts/eb-garamond-400.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'EB Garamond';
-  src: url('/fonts/eb-garamond-400-italic.woff2') format('woff2');
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
-}
-
-/* ET Book additional weights */
-
-@font-face {
-  font-family: 'ET Book Roman';
-  src: url('/fonts/et-book-semi-bold-old-style-figures.woff2') format('woff2');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'ET Book Roman';
-  src: url('/fonts/et-book-bold-line-figures.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
+  font-family: 'Initials Fallback';
+  src: local('Courier New'), local('CourierNewPSMT'), local('Liberation Mono'), local('Cousine');
+  size-adjust: 166.67%;
+  ascent-override: 60%;
+  descent-override: 0.84%;
+  line-gap-override: 0%;
 }
