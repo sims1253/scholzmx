@@ -7,7 +7,8 @@
  * headings, so it works without JavaScript.
  *
  * The post page wraps this and the post body in one box, the reading box: the rail
- * stands still in the window beside it and fades out where the box ends.
+ * stands still in the window beside it, on the window's golden section, and fades out
+ * where the box ends.
  */
 interface Props {
   headings: { depth: number; slug: string; text: string }[];
@@ -16,7 +17,11 @@ interface Props {
 const sections = Astro.props.headings.filter((heading) => heading.depth === 2);
 ---
 
-{sections.length >= 3 && <details class="post-contents" data-pagefind-ignore>
+{sections.length >= 3 && <details
+  class="post-contents"
+  style={`--sections: ${sections.length}`}
+  data-pagefind-ignore
+>
   <summary>Contents <span class="post-contents-count">{sections.length} sections</span></summary>
   <nav aria-label="Contents">
     <ol>
@@ -162,14 +167,18 @@ const sections = Astro.props.headings.filter((heading) => heading.depth === 2);
      the right and everything wide stay where they are: the rail takes only the empty
      left margin.
 
-     The rail holds one place in the window from the first paint to the end of the text,
-     level with the post's title at the top of the page. It is fixed, so it never travels;
+     The rail holds one place in the window from the first paint to the end of the text.
+     Its top is on the golden section, 38.2% of the way down: beside a post's opening
+     picture, where the eye rests, and clear of the title. A list too long for the room
+     below that line starts higher, by about a title's height for each section it holds,
+     and never above the place of the title. It is fixed, so it never travels;
      horizontally it keeps its static place at the column's edge and steps back into the
      margin. The page makes the reading box a container, so 100cqi is the column. */
   @container prose (width >= 60rem) {
     .post-contents {
       --rail-gap: 2.5rem;
-      --rail-top: 8rem;
+      --rail-foot: 2.5rem;
+      --rail-top: clamp(8rem, 100svh - var(--sections) * 2.75rem - var(--rail-foot), 38.2svh);
       --rail-width: min(13rem, (100vw - 100cqi) / 2 - var(--rail-gap) - 1.5rem);
       --stem-pad: 1.1rem;
       --bud: 0.4rem;
@@ -195,7 +204,7 @@ const sections = Astro.props.headings.filter((heading) => heading.depth === 2);
 
     /* A list taller than the window scrolls inside itself. */
     .post-contents nav {
-      max-height: calc(100svh - var(--rail-top) - 2.5rem);
+      max-height: calc(100svh - var(--rail-top) - var(--rail-foot));
       overflow-y: auto;
       overscroll-behavior: contain;
       padding: 0.25rem 0.25rem 0.25rem 0.5rem;

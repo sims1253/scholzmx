@@ -212,8 +212,8 @@ const readingTime = getReadingTime(post.body || '');
     container: post-reading / inline-size;
   }
 
-  /* A section opened from the contents lands with room above its heading; beside the
-     rail, level with its top. (The global :target rule does not survive purgecss.) */
+  /* A section opened from the contents lands with room above its heading, and with more
+     of it where the rail stands beside the text. */
   .post-body :global(h2),
   .post-body :global(h3) {
     scroll-margin-top: 2.5rem;
