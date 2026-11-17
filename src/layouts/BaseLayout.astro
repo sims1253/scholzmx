@@ -114,9 +114,9 @@ const hasInitial = isHome || /^\/(blog|recipes)\/.+/.test(currentPath);
     <meta name="generator" content={Astro.generator} />
 
     <!-- The light follows the visitor's clock, set before first paint so it never flashes.
-         By day the canopy's shadows lean away from the sun, long and cool in the morning,
-         short and sharp at noon, long and gold towards evening. At night the torch lights
-         itself; the torch button overrides that until the next dawn or dusk.
+         By day the canopy's shadows take the colour of the hour: cool in the morning, green
+         at noon, gold towards evening, with a glow from the sun's side of the sky. At night
+         the torch lights itself; the torch button overrides that until the next dawn or dusk.
          src/scripts/theme-toggle.ts calls window.grottoSky again as the day moves on. -->
     <script is:inline>
       (() => {
@@ -158,9 +158,10 @@ const hasInitial = isHome || /^\/(blog|recipes)\/.+/.test(currentPath);
                 ? `radial-gradient(ellipse 80% 70% at 0% 0%, rgb(214 232 255 / ${(0.28 * (-sun - 0.35)) / 0.65}), transparent 70%)`
                 : 'none';
           const root = document.documentElement;
+          // The lean and length of cast shadows, for small things that stand on a surface.
+          // The canopy does not use them: its leaves keep their shape at every hour.
           root.style.setProperty('--sun-skew', `${(-sun * 8).toFixed(2)}deg`);
           root.style.setProperty('--sun-stretch', (1 + 0.3 * low ** 1.5).toFixed(3));
-          root.style.setProperty('--sun-crisp', (1 - 0.45 * low).toFixed(3));
           root.style.setProperty('--sun-shade', shade.join(' '));
           root.style.setProperty('--sun-glow', glow);
 
