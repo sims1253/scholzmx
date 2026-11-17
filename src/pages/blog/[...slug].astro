@@ -134,16 +134,18 @@ const readingTime = getReadingTime(post.body || '');
       />
     </div>}
 
-    <PostContents headings={headings} />
+    <div class="post-reading">
+      <PostContents headings={headings} />
 
-    <section
-      class="post-body prose"
-      itemprop="articleBody"
-      data-pagefind-body
-      data-pagefind-filter="type:blog"
-    >
-      <Content />
-    </section>
+      <section
+        class="post-body prose"
+        itemprop="articleBody"
+        data-pagefind-body
+        data-pagefind-filter="type:blog"
+      >
+        <Content />
+      </section>
+    </div>
 
     <aside class="footnotes-area" aria-label="Footnotes"></aside>
 
@@ -180,6 +182,27 @@ const readingTime = getReadingTime(post.body || '');
 <style>
   .post-content {
     position: relative;
+  }
+
+  /* The contents rail (PostContents) stands beside exactly this box, the post's text:
+     it fades when the box ends, and measures the column by it (100cqi). */
+  .post-reading {
+    position: relative;
+    container: post-reading / inline-size;
+  }
+
+  /* A section opened from the contents lands with room above its heading, and with more
+     of it where the rail stands beside the text. */
+  .post-body :global(h2),
+  .post-body :global(h3) {
+    scroll-margin-top: 2.5rem;
+  }
+
+  @container prose (width >= 60rem) {
+    .post-body :global(h2),
+    .post-body :global(h3) {
+      scroll-margin-top: 8rem;
+    }
   }
 
   .post-header {

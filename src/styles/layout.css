@@ -142,7 +142,7 @@
 .layout-prose {
   --layout-measure: var(--measure-prose);
 
-  container-type: inline-size;
+  container: prose / inline-size;
 }
 
 .layout-listing {
