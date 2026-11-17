@@ -18,8 +18,11 @@
    Alegreya at line-height 1.6: capitals 0.646, first baseline 1.135.
    ET Book at line-height 1.55: capitals 0.653, first baseline 1.068. */
 
+/* The line height too, as a paragraph may set it as a length, which the letter would
+   inherit as it stands and so make the first line taller. */
 p:has(> .dropcap)::first-letter {
   font-size: 0;
+  line-height: 0;
 }
 
 /* A one-letter first word ("A story") keeps its space, which would open a gap between
