@@ -94,9 +94,22 @@ const sections = [
 ];
 
 const isHome = currentPath === '/';
-// Only posts show code; the index page under /blog/ does not.
-const hasCode = /^\/blog\/.+/.test(currentPath);
-const hasInitial = isHome || /^\/(blog|recipes)\/.+/.test(currentPath);
+
+const FONT = {
+  alegreya: '/fonts/Alegreya/alegreya-latin-wght-normal.woff2',
+  alegreyaItalic: '/fonts/Alegreya/alegreya-latin-wght-italic.woff2',
+  etBook: '/fonts/et-book-roman-old-style-figures.woff2',
+  etBookItalic: '/fonts/et-book-display-italic-old-style-figures.woff2',
+  initials: '/fonts/EBGaramond-InitialsF2.woff2',
+};
+const criticalFonts = tone === 'serious' ? [FONT.alegreya, FONT.etBook] : [FONT.alegreya];
+// The other tone's body face, the italics and the drop-cap letters (which only show when
+// they are already at hand). The script skips the files this page has already loaded.
+const warmFonts = [
+  ...(tone === 'serious' ? [FONT.etBookItalic] : [FONT.etBook]),
+  FONT.alegreyaItalic,
+  FONT.initials,
+];
 ---
 
 <!doctype html>
@@ -183,69 +196,29 @@ const hasInitial = isHome || /^\/(blog|recipes)\/.+/.test(currentPath);
 
     <slot name="head" />
 
-    <!-- Alegreya sets headings and Alegreya SC the wordmark and navigation on every page. -->
-    <link
-      rel="preload"
-      href="/fonts/Alegreya/alegreya-v38-latin-regular.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      href="/fonts/Alegreya/alegreya-sc-v28-latin-regular.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-    {/* Every page sets italic above the fold (the welcome, ledes, a post's meta line). Arriving
-        late, it rewraps those lines and moves the page under them. */}
-    <link
-      rel="preload"
-      href="/fonts/Alegreya/alegreya-v38-latin-italic.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-    {tone === 'serious' && (
-      <link
-        rel="preload"
-        href="/fonts/et-book-roman-old-style-figures.woff2"
-        as="font"
-        type="font/woff2"
-        crossorigin
-      />
-    )}
-    {tone === 'serious' && hasCode && (
-      <link
-        rel="preload"
-        href="/fonts/et-book-semi-bold-old-style-figures.woff2"
-        as="font"
-        type="font/woff2"
-        crossorigin
-      />
-    )}
-
-    {hasCode && (
-      <link
-        rel="preload"
-        href="/fonts/FiraCode-Regular.woff2"
-        as="font"
-        type="font/woff2"
-        crossorigin
-      />
-    )}
-
-    {/* Load the decorative initial before it can change the first paragraph's wrapping. */}
-    {hasInitial && (
-      <link
-        rel="preload"
-        href="/fonts/EBGaramond-InitialsF2.woff2"
-        as="font"
-        type="font/woff2"
-        crossorigin
-      />
-    )}
+    {/* The first paint needs one face on personal pages and two on serious ones; everything
+        else (italics, bold, code, initials, maths) loads when the page sets text in it. */}
+    {criticalFonts.map((href) => (
+      <link rel="preload" href={href} as="font" type="font/woff2" crossorigin />
+    ))}
+    {/* Once the page has loaded and the browser is idle, fetch at low priority the faces
+        the next page is likely to need, so it paints in them straight away. Not on
+        Save-Data or a slow connection. */}
+    <script is:inline define:vars={{ warmFonts }}>
+      addEventListener('load', () => {
+        const net = navigator.connection;
+        if (net && (net.saveData || /2g|3g/.test(net.effectiveType))) return;
+        (window.requestIdleCallback ?? setTimeout)(() => {
+          const have = performance.getEntriesByType('resource').map((entry) => entry.name);
+          for (const href of warmFonts) {
+            if (have.some((name) => name.endsWith(href))) continue;
+            const link = Object.assign(document.createElement('link'), { rel: 'prefetch', href });
+            link.crossOrigin = '';
+            document.head.append(link);
+          }
+        });
+      });
+    </script>
 
     {/* The canopy's far leaves are the largest thing painted on every page. CSS masks
         are fetched in CORS mode, so the preload is too, or it would download twice. */}
