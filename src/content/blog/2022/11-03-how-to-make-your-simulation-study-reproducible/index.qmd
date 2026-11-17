@@ -16,7 +16,7 @@ format:
     preserve-yaml: true
 ---
 
-<span class="dropcap dropcap--ornate dropcap--serious" data-first-letter="R" aria-hidden="true">R</span>eproducibility is crucial for simulation studies, not just for scientific transparency but also for debugging. When something goes wrong in your simulation, you need to be able to reproduce the exact same results to figure out what happened.
+Reproducibility is crucial for simulation studies, not just for scientific transparency but also for debugging. When something goes wrong in your simulation, you need to be able to reproduce the exact same results to figure out what happened.
 
 ```{r}
 #| label: setup

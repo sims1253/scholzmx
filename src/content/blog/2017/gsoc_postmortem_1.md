@@ -6,7 +6,7 @@ tags: ['coala', 'Community']
 draft: false
 ---
 
-<span class="dropcap dropcap--ornate dropcap--serious" data-first-letter="I" aria-hidden="true">I</span>n this series I'll try to reflect on how the summer went from the point
+In this series I'll try to reflect on how the summer went from the point
 of view of the main admin for coala.
 As I both feel that reading very long blog posts is hard and that I
 won't be able to write everything down in one go, I will split this up
