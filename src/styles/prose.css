@@ -120,7 +120,7 @@
   .prose figure:has(img) figcaption {
     max-width: 36rem;
     margin: 0.5rem auto 0.1rem;
-    color: #3b4436;
+    color: var(--print-ink);
   }
 
   /* Optional: tighter excerpt variant for cards */

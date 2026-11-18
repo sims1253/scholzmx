@@ -8,6 +8,8 @@ const initialQuote = getRandomQuote();
 // A long quote sets a size smaller, so it still fits under the portrait on a laptop's screen.
 const LONG_QUOTE = 120;
 const isLong = initialQuote!.text.length > LONG_QUOTE;
+// A name stays on one line: "— Michael McGough," and "Joel Quartuccio", never a surname alone.
+const NAMES = /(?<!,) /g;
 
 // Tansy heads in the frame's two corners: [x, y, open]. Two are open; the rest open one
 // per new quote, first in the upper corner, then in the lower.
@@ -98,7 +100,9 @@ const lowerHeads = [
           {initialQuote!.text}
         </p>
         <footer class="quote-attribution">
-          <cite class="quote-author" id="quote-author">— {initialQuote!.author}</cite>
+          <cite class="quote-author" id="quote-author" data-names={NAMES.source}
+            >{`— ${initialQuote!.author}`.replace(NAMES, '\u00a0')}</cite
+          >
         </footer>
       </blockquote>
     </button>
@@ -128,7 +132,10 @@ const lowerHeads = [
           'is-long',
           newQuote!.text.length > Number(quoteText.dataset.long)
         );
-        quoteAuthor.textContent = `— ${newQuote!.author}`;
+        quoteAuthor.textContent = `— ${newQuote!.author}`.replace(
+          new RegExp(quoteAuthor.dataset.names ?? '$^', 'g'),
+          '\u00a0'
+        );
         container.classList.remove('is-turning');
 
         // Create accessible announcement for screen readers
@@ -368,11 +375,16 @@ const lowerHeads = [
     margin: 0.3em 0 0;
   }
 
+  /* A block of its own, so its lines are led by its own size and not by the quote's. */
   .quote-author {
+    display: block;
     font-family: var(--font-body-personal);
     font-size: max(15px, var(--text-xs));
     font-style: normal;
+    line-height: 1.35;
     color: var(--color-text-muted);
+    text-wrap: balance;
+    overflow-wrap: anywhere;
   }
 
   /* The bee: drawn in the same hand as the footer's ledge, parked off-page until a visit */

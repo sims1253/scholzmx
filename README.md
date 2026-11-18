@@ -27,9 +27,9 @@ Built with [Astro](https://astro.build) because it lets me write content in Quar
 - `StackedCard.astro` / `NoteCardStack.astro` - The note cards on the listing pages, with the doodad system (more on that below)
 - `DropCap.astro` - Those decorative first letters you see in posts
 - `IndexFinder.astro` - Search and tag filtering for the blog and recipe indexes
-- `QuoteOfTheDay.astro` - The homepage quote; every new quote opens another tansy flower
-- `Niche.astro` - A niche in the grotto's wall: the writing desk, pantry shelf, workbench and folio on the homepage, each with the newest thing made there, and an empty one on the 404 page
-- `RecipeCard.astro` - Recipes as data: Michael Chu's recipe table, a step list, and a cooking mode with timers (format in `COMPONENT-USAGE.md`)
+- `QuoteOfTheDay.astro` - The quote that closes the homepage; every new quote opens another tansy flower
+- `Niche.astro` - A niche in the grotto's wall: the writing desk, pantry shelf, workbench and folio on the homepage, each with the newest thing made there (they are the homepage's first screen), and an empty one on the 404 page
+- `RecipeCard.astro` - The whole recipe as data: Michael Chu's recipe table or a step list with notes and pictures, and a cooking mode with timers (format in `COMPONENT-USAGE.md`)
 
 Margin notes come from `> margin:` blockquotes in Markdown and are placed by `src/scripts/margin-notes.ts`.
 

@@ -22,7 +22,7 @@
 interface Kept {
   href: string;
   title: string;
-  /** A short name set before the title, e.g. a project's own name. */
+  /** A short name set before the title, e.g. a project's own name: "ry: Static Checker for R". */
   name?: string;
   when?: string;
 }
@@ -50,6 +50,26 @@ const ROOMS: Record<Kind, { href: string; name: string; caption?: string; sceneM
 
 const { kind, kept, ...overrides } = Astro.props;
 const { href, name, caption, sceneMs } = { ...ROOMS[kind], ...overrides };
+
+// The line under a niche is as wide as the niche's column, and has room for about this
+// many characters in three lines under the narrowest one. A longer title is cut there after a
+// whole word, in its own words, and not on a word that only leads to the next one.
+const KEPT_LENGTH = 60;
+const LEADS_ON = new Set('a an and as at by for from in into of on or the to with'.split(' '));
+const shorten = (title: string) => {
+  if (title.length <= KEPT_LENGTH) return title;
+  const words = title
+    .slice(0, KEPT_LENGTH + 1)
+    .split(' ')
+    .slice(0, -1);
+  while (words.length > 1 && LEADS_ON.has((words.at(-1) ?? '').toLowerCase())) words.pop();
+  return `${words.join(' ').replace(/[,:;–—-]+$/, '')}…`;
+};
+const shown = kept && shorten(kept.title);
+const whole = kept && (kept.name ? `${kept.name}: ${kept.title}` : kept.title);
+const cut = kept !== undefined && shown !== kept.title;
+// A thing kept elsewhere (a repository, a paper's PDF) says that it leaves the site.
+const leaves = kept !== undefined && /^https?:\/\//.test(kept.href);
 ---
 
 <div
@@ -637,7 +657,12 @@ const { href, name, caption, sceneMs } = { ...ROOMS[kind], ...overrides };
     </a>
   </div>
   {kept && <p class="kept">
-    <a href={kept.href}> {kept.name && <><em>{kept.name}</em>, </>}{kept.title} </a>
+    <a
+      href={kept.href}
+      title={cut ? whole : undefined}
+      aria-label={cut || leaves ? `${whole}${leaves ? ' (leaves this site)' : ''}` : undefined}
+    >
+      {kept.name && <><em>{kept.name}</em>: </>}{shown}</a>
     {kept.when && <span class="kept-when">{kept.when}</span>}
   </p>}
 </div>
@@ -645,7 +670,8 @@ const { href, name, caption, sceneMs } = { ...ROOMS[kind], ...overrides };
 <script>
   // A niche's scene plays when a pointer comes to it or the keyboard focuses one of its
   // links; on a touch screen, where a tap follows the link, it plays once as the niche
-  // first scrolls into view. A scene runs to its end and is not cut short or looped.
+  // first scrolls into view. Niches that arrive together take turns, so the wall stirs in
+  // one place at a time. A scene runs to its end and is not cut short or looped.
   // Without motion there is nothing to play: CSS shows the punchline on hover or focus.
   const still = matchMedia('(prefers-reduced-motion: reduce)');
   const touch = matchMedia('(hover: none)');
@@ -654,20 +680,25 @@ const { href, name, caption, sceneMs } = { ...ROOMS[kind], ...overrides };
   const awake = new IntersectionObserver((entries) => {
     for (const entry of entries) entry.target.classList.toggle('is-awake', entry.isIntersecting);
   });
+  let turn = Promise.resolve();
   const arriving = new IntersectionObserver(
     (entries) => {
       for (const entry of entries) {
-        if (!entry.isIntersecting || !(entry.target instanceof HTMLElement)) continue;
-        arriving.unobserve(entry.target);
-        play(entry.target);
+        const niche = entry.target;
+        if (!entry.isIntersecting || !(niche instanceof HTMLElement)) continue;
+        arriving.unobserve(niche);
+        turn = turn.then(() => play(niche)).then(() => pause(BETWEEN_MS));
       }
     },
     { threshold: 0.6 }
   );
 
   const busy = new WeakSet<HTMLElement>();
+  const BETWEEN_MS = 900;
+  const pause = (ms: number) => new Promise<void>((done) => window.setTimeout(done, ms));
 
-  function play(niche: HTMLElement) {
+  /** Plays a niche's scene; settles when it is over, or at once if there is none to play. */
+  async function play(niche: HTMLElement): Promise<void> {
     if (still.matches || busy.has(niche)) return;
     busy.add(niche);
     // Each scene has more than one ending; which one plays is up to chance.
@@ -676,19 +707,18 @@ const { href, name, caption, sceneMs } = { ...ROOMS[kind], ...overrides };
     // Flush styles between removing and adding the class, so the scene starts over.
     void niche.getBoundingClientRect();
     niche.classList.add('is-playing');
-    window.setTimeout(() => {
-      niche.classList.remove('is-playing');
-      busy.delete(niche);
-    }, Number(niche.dataset.scene));
+    await pause(Number(niche.dataset.scene));
+    niche.classList.remove('is-playing');
+    busy.delete(niche);
   }
 
   for (const niche of document.querySelectorAll<HTMLElement>('.niche')) {
     awake.observe(niche);
     if (!niche.dataset.scene) continue;
     niche.addEventListener('pointerenter', (event) => {
-      if (event.pointerType !== 'touch') play(niche);
+      if (event.pointerType !== 'touch') void play(niche);
     });
-    niche.addEventListener('focusin', () => play(niche));
+    niche.addEventListener('focusin', () => void play(niche));
     if (touch.matches) arriving.observe(niche);
   }
 </script>
@@ -755,6 +785,7 @@ const { href, name, caption, sceneMs } = { ...ROOMS[kind], ...overrides };
     overflow: visible;
   }
 
+  /* The name is the way in, so it is the one that looks like a link. */
   .niche-name {
     margin-top: 0.3rem;
     font-family: var(--font-label);
@@ -762,6 +793,11 @@ const { href, name, caption, sceneMs } = { ...ROOMS[kind], ...overrides };
     font-size: var(--niche-name-size, var(--text-lg));
     letter-spacing: 0.04em;
     line-height: 1.1;
+    color: var(--color-link);
+    text-decoration: underline;
+    text-decoration-color: var(--color-underline);
+    text-decoration-thickness: max(0.06em, 1px);
+    text-underline-offset: 0.2em;
   }
 
   .niche-caption {
@@ -775,23 +811,40 @@ const { href, name, caption, sceneMs } = { ...ROOMS[kind], ...overrides };
   .niche-door:hover .niche-name,
   .niche-door:focus-visible .niche-name {
     color: var(--color-link-hover);
+    text-decoration-color: var(--color-underline-hover);
   }
 
-  /* What the niche keeps: its newest thing, and when it was made. */
+  /* What the niche keeps: its newest thing, and when it was made. It is set quieter than
+     the name above it. A long title arrives shortened after a whole word and wraps as it
+     needs; the whole title is still there to be read out. */
   .kept {
-    max-width: min(13rem, 100%);
-    margin: 0.35rem 0 0;
+    max-width: min(var(--kept-width, 13rem), 100%);
+    margin: 0.45rem 0 0;
     font-size: var(--kept-size, var(--text-sm));
     line-height: 1.4;
     hyphens: manual;
+    text-wrap: balance;
   }
 
   .kept a {
-    display: -webkit-box;
-    overflow: hidden;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: var(--kept-lines, 6);
-    line-clamp: var(--kept-lines, 6);
+    color: var(--color-text-secondary);
+    text-decoration-color: color-mix(in srgb, currentcolor 30%, transparent);
+    text-decoration-thickness: 1px;
+  }
+
+  .kept a:hover {
+    color: var(--color-link-hover);
+  }
+
+  /* The arrow the site's prose puts after a link that leaves it (base.css). */
+  .kept a[href^='http']::after {
+    content: '↗';
+    display: inline-block;
+    margin-left: 0.3em;
+    font-size: 0.75em;
+    line-height: 0;
+    vertical-align: super;
+    opacity: 0.7;
   }
 
   .kept-when {

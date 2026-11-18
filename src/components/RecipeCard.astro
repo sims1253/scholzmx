@@ -1,21 +1,23 @@
 ---
 /**
- * The recipe card: one recipe description rendered as Michael Chu's table (wide screens),
- * as numbered steps with a list to gather from (phones, screen readers, anyone who wants
- * the details), and as a cooking mode that walks through the steps with timers.
- * See src/lib/recipe.ts.
+ * The recipe card is the whole recipe: one description shown as Michael Chu's table (an
+ * overview, on screens it fits), as numbered steps with their notes, pictures and a list
+ * to gather from, and as a cooking mode that walks through the steps with timers.
+ * Table and steps are two views of the same thing, one at a time. Under the table, the
+ * step picked in it is shown as the list has it. See src/lib/recipe.ts.
  */
+import { Image } from 'astro:assets';
 import Series from './Series.astro';
 import {
   formatAmount,
   formatClock,
-  formatDuration,
   formatStepTime,
+  formatYield,
   layOut,
   rowEntries,
   splitAmounts,
   startTimes,
-  timing,
+  timersOf,
   type RecipeEquipment,
   type RecipeIngredient,
   type RecipeMeanwhile,
@@ -34,7 +36,6 @@ interface Props {
 const { ingredients, steps, meanwhile = [], makes, prepMinutes = 0, equipment = [] } = Astro.props;
 
 const grid = layOut(ingredients, steps);
-const { active, total } = timing(steps, prepMinutes);
 const starts = startTimes(steps, prepMinutes);
 const ingredientById = new Map(ingredients.map((ingredient) => [ingredient.id, ingredient]));
 const stepIndex = new Map(steps.map((step, index) => [step.id, index]));
@@ -51,14 +52,18 @@ const tools = equipment.map((item) => ({ text: item.name }));
 const toolsDoubled = equipment.map((item) => ({ text: item.doubled ?? item.name }));
 const gearChanges = equipment.some((item) => item.doubled);
 
-// Only say what the data supports: no "0 minutes of work" when steps aren't timed.
-const sentence = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
-const timeSentence =
-  active > 0 && total > active
-    ? `${sentence(formatDuration(active))} of work, ready in ${formatDuration(total)}.`
-    : total > 0
-      ? `Ready in ${formatDuration(total)}.`
-      : '';
+// A step can read differently when the recipe is halved or doubled. Every version
+// renders; the script shows the one for the chosen amount.
+const versionsOf = (step: RecipeStep) => {
+  const others = [
+    { factor: '0.5', text: step.halved },
+    { factor: '2', text: step.doubled },
+  ].filter((version) => version.text);
+  return [
+    { text: step.detail, only: undefined, except: others.map((other) => other.factor).join(' ') },
+    ...others.map((other) => ({ text: other.text, only: other.factor, except: '' })),
+  ].filter((version) => version.text);
+};
 
 const amountOf = (ingredient: RecipeIngredient) =>
   ingredient.amount === undefined ? '' : formatAmount(ingredient.amount, ingredient.unit);
@@ -66,14 +71,17 @@ const asideOf = (ingredient: RecipeIngredient) =>
   [ingredient.prep, ingredient.note].filter(Boolean).join('; ');
 const tasksDuring = (step: RecipeStep) =>
   meanwhile.filter((task) => task.during === step.id).map((task) => task.do);
-const columnTasks = Array.from({ length: grid.columns }, (_, index) =>
-  grid.cells.filter((cell) => cell.col === index + 1).flatMap((cell) => tasksDuring(cell.step))
-);
-const longest = (step: RecipeStep) =>
-  step.minutes === undefined ? 0 : Array.isArray(step.minutes) ? step.minutes[1] : step.minutes;
-// Heat stays on one line, so "220 → 200 °C" never breaks at the arrow.
+// The line under the table promises only what this recipe's steps have.
+const extras = [
+  steps.some((step) => step.notes?.length) ? 'my notes' : '',
+  steps.some((step) => step.photo) ? 'pictures' : '',
+].filter(Boolean);
+// The time stays on one line and the heat on another, so "220 → 200 °C" never breaks at
+// the arrow and a narrow column sets "25 min, 160 °C" in two lines at most.
 const when = (step: RecipeStep) =>
-  [formatStepTime(step.minutes), step.heat?.replaceAll(' ', ' ')].filter(Boolean).join(', ');
+  [formatStepTime(step.minutes), step.heat]
+    .flatMap((part) => (part ? [part.replaceAll(' ', '\u00a0')] : []))
+    .join(', ');
 const inputsOf = (step: RecipeStep) =>
   step.uses.map((id) => {
     const ingredient = ingredientById.get(id);
@@ -111,14 +119,18 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
       <p class="rc-summary">
         {makes && (
           <>Makes
-            <span class="rc-qty" data-amount={makes.amount}>{formatAmount(makes.amount)}</span>
-            {makes.unit}.
+            <span itemprop="recipeYield">
+              <span class="rc-qty" data-amount={makes.amount} data-yield
+                >{formatYield(makes.amount)}</span
+              >
+              {makes.unit}</span
+            >.
           </>
-        )}{timeSentence}
-        {equipment.length > 0 && <span data-hide-doubled={gearChanges ? '' : undefined}>
+        )}
+        {equipment.length > 0 && <span data-scale-except={gearChanges ? '2' : undefined}>
           You'll need <Series items={tools} last="and" />.
         </span>}
-        {gearChanges && <span data-show-doubled hidden>
+        {gearChanges && <span data-scale-only="2" hidden>
           You'll need <Series items={toolsDoubled} last="and" />.
         </span>}
       </p>
@@ -130,106 +142,132 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
           <label><input type="radio" name="rc-scale" value="1" checked />As written</label>
           <label><input type="radio" name="rc-scale" value="2" />Double</label>
         </fieldset>
-        <fieldset class="rc-choice">
-          <legend>Table</legend>
-          <label><input type="radio" name="rc-view" value="steps" checked />Hide</label>
-          <label><input type="radio" name="rc-view" value="table" />Show</label>
+        <fieldset class="rc-choice rc-choice--view">
+          <legend>Show as</legend>
+          <label><input type="radio" name="rc-view" value="table" />Table</label>
+          <label><input type="radio" name="rc-view" value="steps" checked />Steps</label>
         </fieldset>
         <button type="button" class="rc-start" data-rc-start>Start cooking</button>
       </div>
     </header>
 
-    <div class="rc-table-frame" data-rc-frame data-pagefind-ignore>
-      <p class="rc-more" aria-hidden="true">More to the right</p>
-      <div class="rc-table-wrap" role="region" aria-labelledby="rc-caption" tabindex="0">
-        <table class="rc-table">
-          <caption id="rc-caption">
-            <span class="rc-legend">
-              <span class="rc-read">Read left to right: each step combines the rows it spans.</span>
-              <span class="rc-key"><span class="rc-swatch"></span>Hands on</span>
-              <span class="rc-key"><span class="rc-swatch rc-swatch--wait"></span>Hands off</span>
-              {meanwhile.length > 0 && <span class="rc-key">
-                <span class="rc-swatch rc-swatch--slip"></span>Meanwhile: during the step below
-              </span>}
-            </span>
-          </caption>
-          {(getReady || meanwhile.length > 0) && <thead>
-            <tr>
-              <td class="rc-corner" data-stage={getReady ? 0 : undefined}>
-                {getReady && <span class="rc-num">1</span>}
-                {getReady && 'Get ready'}
-              </td>
-              {columnTasks.map((tasks) => <td class="rc-above">
-                {tasks.length > 0 && <span class="rc-slip">
-                  <span class="rc-slip-label">Meanwhile</span>
-                  {tasks.join('; ')}
-                </span>}
-              </td>)}
-            </tr>
-          </thead>}
-          <tbody>
-            {grid.rows.map((ingredient, row) => <tr
-              data-ingredient={ingredient.id}
-              data-taken-at={(grid.takenAt.get(ingredient.id) ?? 0) + offset}
-            >
-              <th scope="row" class="rc-ingredient">
-                <span class="rc-name">
-                  {ingredient.amount !== undefined && <span
-                    class="rc-qty"
-                    data-amount={ingredient.amount}
-                    data-unit={ingredient.unit}
-                    data-fixed={ingredient.scales === false ? '' : undefined}
-                    >{amountOf(ingredient)}</span
-                  >}
-                  {ingredient.name}
-                </span>
-                {asideOf(ingredient) && <span class="rc-aside">
-                  {splitAmounts(asideOf(ingredient)).map((part) =>
-                    part.kind === 'text' ? (
-                      part.text
-                    ) : (
-                      <span class="rc-qty" data-amount={part.amount} data-unit={part.unit}
-                        >{formatAmount(part.amount, part.unit)}</span
+    <div class="rc-table-frame" data-pagefind-ignore>
+      {/* How to read the table, and what its fills mean. It stands above the part that
+          scrolls sideways, so it stays whole, and it is the table's name. */}
+      <p class="rc-legend" id="rc-caption">
+        <span class="rc-read">
+          Read left to right: each step combines the rows it spans. Pick a step to read how it is
+          done, under the table.
+        </span>
+        <span class="rc-key"><span class="rc-swatch"></span>Hands on</span>
+        <span class="rc-key"><span class="rc-swatch rc-swatch--wait"></span>Hands off</span>
+        {meanwhile.length > 0 && <span class="rc-key">
+          <span class="rc-swatch rc-swatch--slip"></span>Meanwhile: to do while its step waits
+        </span>}
+      </p>
+      <div class="rc-table-run" data-rc-frame>
+        <p class="rc-more" aria-hidden="true">More to the right</p>
+        <div class="rc-table-wrap" role="region" aria-labelledby="rc-caption" tabindex="0">
+          <table class="rc-table" aria-labelledby="rc-caption">
+            {/* Column headers, for a reader who cannot see which column a cell is in. Only
+                "get ready" shows: it is the ingredient column. */}
+            <thead>
+              <tr>
+                <th scope="col" class="rc-corner" data-stage={getReady ? 0 : undefined}>
+                  {getReady && <span class="rc-num">1</span>}
+                  {getReady && <a class="rc-ready" href="#rc-step-0">Get ready</a>}
+                  <span class="sr-only">{getReady ? ': the ingredients' : 'Ingredients'}</span>
+                </th>
+                {columnStarts.map((minutes) => <th scope="col" class="rc-above">
+                  <span class="sr-only">
+                    {timed ? `Starting at ${formatClock(minutes)}` : 'Then'}
+                  </span>
+                </th>)}
+              </tr>
+            </thead>
+            <tbody>
+              {grid.rows.map((ingredient, row) => <tr
+                data-ingredient={ingredient.id}
+                data-taken-at={(grid.takenAt.get(ingredient.id) ?? 0) + offset}
+              >
+                <th scope="row" class="rc-ingredient">
+                  <span class="rc-name">
+                    {ingredient.amount !== undefined && <span
+                      class="rc-qty"
+                      data-amount={ingredient.amount}
+                      data-unit={ingredient.unit}
+                      data-fixed={ingredient.scales === false ? '' : undefined}
+                      >{amountOf(ingredient)}</span
+                    >}
+                    {ingredient.name}
+                  </span>
+                  {asideOf(ingredient) && <span class="rc-aside">
+                    {splitAmounts(asideOf(ingredient)).map((part) =>
+                      part.kind === 'text' ? (
+                        part.text
+                      ) : (
+                        <span class="rc-qty" data-amount={part.amount} data-unit={part.unit}
+                          >{formatAmount(part.amount, part.unit)}</span
+                        >
+                      )
+                    )}
+                  </span>}
+                </th>
+                {rowEntries(grid, row).map((entry) =>
+                  entry.kind === 'empty' ? (
+                    <td
+                      class:list={['rc-blank', { 'rc-lead': entry.col < takenCol(ingredient.id) }]}
+                      colspan={entry.span > 1 ? entry.span : undefined}
+                    />
+                  ) : (
+                    <td
+                      class:list={['rc-step', { 'rc-wait': entry.cell.step.wait }]}
+                      rowspan={entry.cell.rowSpan > 1 ? entry.cell.rowSpan : undefined}
+                      data-stage={entry.cell.index + offset}
+                    >
+                      {tasksDuring(entry.cell.step).length > 0 && <span class="rc-slip">
+                        <span class="rc-slip-label">Meanwhile</span>
+                        {tasksDuring(entry.cell.step).join('; ')}
+                      </span>}
+                      <span class="rc-num">{number(entry.cell.index)}</span>
+                      <a class="rc-do" href={`#rc-step-${entry.cell.index + offset}`}
+                        >{entry.cell.step.do}</a
                       >
-                    )
-                  )}
-                </span>}
-              </th>
-              {rowEntries(grid, row).map((entry) =>
-                entry.kind === 'empty' ? (
-                  <td
-                    class:list={['rc-blank', { 'rc-lead': entry.col < takenCol(ingredient.id) }]}
-                    colspan={entry.span > 1 ? entry.span : undefined}
-                  />
-                ) : (
-                  <td
-                    class:list={['rc-step', { 'rc-wait': entry.cell.step.wait }]}
-                    rowspan={entry.cell.rowSpan > 1 ? entry.cell.rowSpan : undefined}
-                    data-stage={entry.cell.index + offset}
-                  >
-                    <span class="rc-num">{number(entry.cell.index)}</span>
-                    <span class="rc-do">{entry.cell.step.do}</span>
-                    {when(entry.cell.step) && <span class="rc-when">{when(entry.cell.step)}</span>}
-                  </td>
-                )
-              )}
-            </tr>)}
-          </tbody>
-          {timed && <tfoot>
-            <tr>
-              <th scope="row" class="rc-clock-label">Starts at</th>
-              {columnStarts.map((minutes) => <td class="rc-clock">{formatClock(minutes)}</td>)}
-            </tr>
-          </tfoot>}
-        </table>
+                      {when(entry.cell.step) && <span class="rc-when"
+                        >{when(entry.cell.step)}</span
+                      >}
+                    </td>
+                  )
+                )}
+              </tr>)}
+            </tbody>
+            {timed && <tfoot>
+              <tr>
+                <th scope="row" class="rc-clock-label">Starts at</th>
+                {columnStarts.map((minutes) => <td class="rc-clock">{formatClock(minutes)}</td>)}
+              </tr>
+            </tfoot>}
+          </table>
+          {/* Room after the last column, so the table can stop on a whole one. */}
+          <span class="rc-tail" aria-hidden="true"></span>
+        </div>
       </div>
     </div>
 
     <div class="rc-steps-view">
+      {/* Under the table: what the step shown here is, and the way to the others. */}
+      <p class="rc-pick-hint" data-pagefind-ignore>
+        Pick a step in the table to read here how it is
+        done{extras.length > 0 && `, with ${extras.join(' and ')}`}. Or
+        <button type="button" class="rc-link" data-rc-all>
+          read all {steps.length + offset} steps in order
+        </button
+        >.
+      </p>
       <aside class="rc-gather" aria-labelledby="rc-gather-title">
         <h3 class="rc-gather-title" id="rc-gather-title">Gather</h3>
         <ul class="rc-gather-list">
-          {grid.rows.map((ingredient) => <li>
+          {grid.rows.map((ingredient) => <li itemprop="recipeIngredient">
             <label>
               <input type="checkbox" />
               <span class="rc-gather-qty">
@@ -260,14 +298,14 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
         </ul>
       </aside>
 
-      <ol class="rc-steps">
-        {getReady && <li class="rc-steps-item" data-stage="0" data-minutes="0">
-          <h3 class="rc-steps-do">Get ready</h3>
+      <ol class="rc-steps" itemprop="recipeInstructions">
+        {getReady && <li class="rc-steps-item" id="rc-step-0" data-stage="0" data-number="1">
+          <h3 class="rc-steps-do" tabindex="-1">Get ready</h3>
           <div class="rc-steps-detail">
-            {equipment.length > 0 && <p data-hide-doubled={gearChanges ? '' : undefined}>
+            {equipment.length > 0 && <p data-scale-except={gearChanges ? '2' : undefined}>
               Set out <Series items={tools} last="and" />.
             </p>}
-            {gearChanges && <p data-show-doubled hidden>
+            {gearChanges && <p data-scale-only="2" hidden>
               Set out <Series items={toolsDoubled} last="and" />.
             </p>}
             {prepWork.length > 0 && <ul class="rc-prep">
@@ -280,38 +318,80 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
         </li>}
         {steps.map((step, index) => <li
           class:list={['rc-steps-item', { 'rc-steps-item--wait': step.wait }]}
+          id={`rc-step-${index + offset}`}
           data-stage={index + offset}
-          data-minutes={longest(step)}
+          data-number={number(index)}
+          data-timers={timersOf(step).length > 0 ? JSON.stringify(timersOf(step)) : undefined}
         >
-          <h3 class="rc-steps-do">{step.do}</h3>
-          <ul class="rc-uses">
-            {inputsOf(step).map((input) => <li>
-              <span class="rc-uses-qty">
-                {input.ingredient?.amount !== undefined && <span
-                  class="rc-qty"
-                  data-amount={input.ingredient.amount}
-                  data-unit={input.ingredient.unit}
-                  data-fixed={input.ingredient.scales === false ? '' : undefined}
-                  >{amountOf(input.ingredient)}</span
-                >}
-              </span>
-              <span class:list={['rc-uses-name', { 'rc-uses-result': !input.ingredient }]}
-                >{input.text}</span
-              >
-            </li>)}
-          </ul>
-          {step.detail && <p class="rc-steps-detail">{step.detail}</p>}
-          {(when(step) || step.wait) && <p
-            class:list={['rc-steps-when', { 'rc-steps-when--wait': step.wait }]}
+          <div class="rc-steps-text">
+            <h3 class="rc-steps-do" tabindex="-1">{step.do}</h3>
+            <ul class="rc-uses">
+              {inputsOf(step).map((input) => <li>
+                <span class="rc-uses-qty">
+                  {input.ingredient?.amount !== undefined && <span
+                    class="rc-qty"
+                    data-amount={input.ingredient.amount}
+                    data-unit={input.ingredient.unit}
+                    data-fixed={input.ingredient.scales === false ? '' : undefined}
+                    >{amountOf(input.ingredient)}</span
+                  >}
+                </span>
+                <span class:list={['rc-uses-name', { 'rc-uses-result': !input.ingredient }]}
+                  >{input.text}</span
+                >
+              </li>)}
+            </ul>
+            {versionsOf(step).map((version) => <p
+              class="rc-steps-detail"
+              data-scale-only={version.only}
+              data-scale-except={version.except || undefined}
+              hidden={version.only !== undefined}
+            >
+              {version.text}
+            </p>)}
+            {(when(step) || step.wait) && <p
+              class:list={['rc-steps-when', { 'rc-steps-when--wait': step.wait }]}
+            >
+              {[when(step), step.wait ? 'hands off' : ''].filter(Boolean).join(', ')}
+            </p>}
+            {tasksDuring(step).map((task) => <p class="rc-steps-meanwhile">
+              <span>Meanwhile:</span>
+              {task}
+            </p>)}
+            {step.notes && <div class="rc-notes">
+              {step.notes.map((note) => <p>
+                {splitAmounts(note).map((part) =>
+                  part.kind === 'text' ? (
+                    part.text
+                  ) : (
+                    <span class="rc-qty" data-amount={part.amount} data-unit={part.unit}
+                      >{formatAmount(part.amount, part.unit)}</span
+                    >
+                  )
+                )}
+              </p>)}
+            </div>}
+          </div>
+          {step.photo && <figure
+            class="rc-photo"
+            style={`--shape: ${(step.photo.src.width / step.photo.src.height).toFixed(3)}`}
           >
-            {[when(step), step.wait ? 'hands off' : ''].filter(Boolean).join(', ')}
-          </p>}
-          {tasksDuring(step).map((task) => <p class="rc-steps-meanwhile">
-            <span>Meanwhile:</span>
-            {task}
-          </p>)}
+            <Image
+              src={step.photo.src}
+              alt={step.photo.alt}
+              width={640}
+              widths={[320, 480, 640, 960, 1280]}
+              sizes="(min-width: 48rem) 27rem, 85vw"
+              format="avif"
+              loading="lazy"
+            />
+            <figcaption>{step.photo.caption}</figcaption>
+          </figure>}
         </li>)}
       </ol>
+      <p class="rc-to-table" data-pagefind-ignore hidden>
+        <button type="button" class="rc-link" data-rc-to-table>Back to the table</button>
+      </p>
     </div>
   </div>
 
@@ -322,17 +402,25 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
           <span class="rc-cook-count" data-rc-count></span>
           <span class="rc-cook-do" data-rc-do></span>
         </p>
-        <div class="rc-cook-uses" data-rc-uses></div>
         <p class="rc-cook-detail" data-rc-detail></p>
+        <details class="rc-cook-notes" data-rc-notes hidden>
+          <summary>Notes</summary>
+          <div class="rc-cook-more" data-rc-notes-body></div>
+        </details>
         <p class="rc-cook-meanwhile" data-rc-meanwhile hidden></p>
+        <p class="rc-cook-cue" data-rc-cue hidden>
+          <span data-rc-cue-text></span>
+          <button type="button" class="rc-link" data-rc-cue-done>Did it</button>
+        </p>
         <ul class="rc-timers" data-rc-timers aria-label="Other timers"></ul>
       </div>
       <div class="rc-cook-clock">
         <button type="button" class="rc-timer" data-rc-timer hidden>Start timer</button>
         <p class="rc-countdown" data-rc-countdown hidden>
           <span class="rc-countdown-time" data-rc-countdown-time></span>
-          <span class="rc-countdown-label">left on this step</span>
+          <span class="rc-countdown-label" data-rc-countdown-label>left on this step</span>
         </p>
+        <button type="button" class="rc-link rc-cancel" data-rc-cancel hidden>Cancel timer</button>
       </div>
       <div class="rc-cook-nav">
         <button type="button" class="rc-link" data-rc-back>Back</button>
@@ -340,15 +428,17 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
         <button type="button" class="rc-link" data-rc-stop>Stop cooking</button>
       </div>
     </div>
-    <p class="sr-only" aria-live="assertive" data-rc-announce></p>
   </div>
+  {/* Says the step picked or reached, in its turn; a timer that ends speaks at once. */}
+  <p class="sr-only" aria-live="polite" data-rc-announce data-pagefind-ignore></p>
+  <p class="sr-only" aria-live="assertive" data-rc-alarm data-pagefind-ignore></p>
 </section>
 
-{/* Open with the table above the steps where the table fits the window's width, and
-    with the steps alone where it would scroll sideways. Decided here, while the page is still being read in, so the card
-    never changes shape after it is shown. Phones are not asked: a table never fits one,
-    and measuring it would make the browser lay the page out early for nothing. Without
-    JavaScript the step list stays: it is the complete recipe. */}
+{/* Open with the table where it fits the window's width, and with the steps where it
+    would scroll sideways. Decided here, while the page is still being read in, so the
+    card never changes shape after it is shown. Phones are not asked: a table never fits
+    one, so they have the steps only. Without JavaScript the step list stays: it is the
+    complete recipe. */}
 <script is:inline>
   (() => {
     const card = document.currentScript.previousElementSibling;
@@ -382,7 +472,7 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
 
   .rc-sheet {
     width: fit-content;
-    min-width: min(100%, 44rem);
+    min-width: min(100%, 40rem);
     max-width: 100%;
     margin-inline: auto;
     padding: var(--space-lg) var(--space-lg) var(--space-md);
@@ -511,7 +601,8 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
 
   /* ===== Table ===== */
 
-  .rc-table-frame {
+  /* The part of the table's frame that scrolls sideways, with what says so. */
+  .rc-table-run {
     position: relative;
   }
 
@@ -525,11 +616,11 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     text-align: right;
   }
 
-  .rc-table-frame.has-more .rc-more {
+  .rc-table-run.has-more .rc-more {
     display: block;
   }
 
-  .rc-table-frame.has-more::after {
+  .rc-table-run.has-more::after {
     content: '';
     position: absolute;
     inset: 1.6rem 0 0 auto;
@@ -539,8 +630,26 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     pointer-events: none;
   }
 
+  /* Scrolled sideways, the table comes to rest with a step's column starting at the
+     pinned ingredients, so no half-hidden column shows beside them. The script measures
+     the pinned column and the room the last stop needs after the table. */
   .rc-table-wrap {
+    position: relative;
     overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-left: var(--rc-pinned, 0);
+  }
+
+  .rc-above {
+    scroll-snap-align: start;
+  }
+
+  .rc-tail {
+    position: absolute;
+    top: 0;
+    left: var(--rc-run, 0);
+    width: 1px;
+    height: 1px;
   }
 
   .rc-table-wrap:focus-visible {
@@ -557,19 +666,15 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     line-height: 1.35;
   }
 
-  /* The caption is the key: how to read the table, and what its fills mean. */
-  .rc-table caption {
-    caption-side: top;
-    padding-bottom: var(--space-sm);
-    font-size: var(--text-xs);
-    color: var(--color-text-muted);
-    text-align: left;
-  }
-
+  /* The key: how to read the table, and what its fills mean. */
   .rc-legend {
     display: flex;
     flex-wrap: wrap;
     gap: 0.2rem 1.2rem;
+    margin: 0 0 var(--space-sm);
+    font-size: var(--text-xs);
+    line-height: 1.35;
+    color: var(--color-text-muted);
   }
 
   .rc-read {
@@ -680,10 +785,25 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     font-variant-numeric: oldstyle-nums;
   }
 
+  /* A step's name leads to how it is done, and looks like the link it is. */
+  .rc-do,
+  .rc-ready {
+    color: var(--color-link);
+    text-decoration: underline;
+    text-decoration-color: var(--color-underline);
+    text-decoration-thickness: max(0.06em, 1px);
+    text-underline-offset: 0.2em;
+  }
+
   .rc-do {
     display: block;
     font-family: var(--font-heading);
     font-size: var(--text-sm);
+  }
+
+  :is(.rc-do, .rc-ready):hover {
+    color: var(--color-link-hover);
+    text-decoration-color: var(--color-underline-hover);
   }
 
   .rc-when {
@@ -717,13 +837,18 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     background-size: 7px 4px;
   }
 
-  /* The band above the table holds "get ready" and the meanwhile slips. */
-  .rc-table thead td {
+  /* The row above the table holds "get ready", over the ingredients it is about. */
+  .rc-table thead th {
+    /* Holds its hidden header text, which would otherwise widen the page */
+    position: relative;
+    padding-block: 0;
     border-style: none;
+    background: transparent;
+    font-weight: 400;
     vertical-align: bottom;
   }
 
-  .rc-corner {
+  .rc-table .rc-corner:has(.rc-ready) {
     padding-bottom: 0.35rem;
     font-size: var(--text-sm);
     color: var(--color-text-secondary);
@@ -736,16 +861,12 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     font-size: var(--text-sm);
   }
 
-  .rc-table .rc-above {
-    padding: 0 0.15rem;
-  }
-
-  /* A slip of paper tucked into the top of the step it belongs to */
+  /* A slip of paper laid on the step it belongs to: what to do while that step waits.
+     It is part of the step's cell, so it scrolls and fades with it. */
   .rc-slip {
-    position: relative;
-    z-index: 2;
     display: block;
-    margin: 0 0 -0.4rem 1.1rem;
+    max-width: 13rem;
+    margin: 0.2rem auto 0.7rem;
     padding: 0.3rem 0.45rem;
     border: 1px dashed color-mix(in srgb, var(--color-ink-dark) 40%, transparent);
     background: var(--paper-sheet);
@@ -775,6 +896,16 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     text-align: right;
   }
 
+  /* The corner and the clock's label are pinned with the ingredient column, so a table
+     scrolled sideways keeps its first column whole and nothing slides under it half-read. */
+  .rc-table thead .rc-corner,
+  .rc-table tfoot .rc-clock-label {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: var(--paper-sheet);
+  }
+
   .rc-clock {
     text-align: center;
     font-variant-numeric: oldstyle-nums tabular-nums;
@@ -790,7 +921,7 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
   /* On wide cards the list to gather from stays in view beside the steps. */
   @media (min-width: 56rem) {
     .rc-steps-view {
-      grid-template-columns: minmax(0, 40rem) minmax(13rem, 17rem);
+      grid-template-columns: minmax(0, 30rem) minmax(13rem, 17rem);
     }
 
     .rc-gather {
@@ -837,7 +968,7 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     font-family: var(--font-body-personal);
     font-size: var(--text-xs);
     font-style: italic;
-    color: var(--color-text-muted);
+    color: var(--color-text-secondary);
   }
 
   .rc-gather-list label {
@@ -845,17 +976,19 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     grid-template-columns: auto 3.6rem minmax(0, 1fr);
     gap: 0.5rem;
     align-items: baseline;
-    padding-block: 0.15rem;
+    padding-block: 0.3rem;
     cursor: pointer;
   }
 
-  /* Tick boxes drawn in the card's ink, so they belong to the page in both lights. */
+  /* Tick boxes drawn in the card's ink, so they belong to the page in both lights.
+     Large enough for a floury finger. */
   .rc-gather-list input {
     display: grid;
     place-content: center;
-    width: 1em;
-    height: 1em;
-    margin: 0;
+    align-self: start;
+    width: 1.2rem;
+    height: 1.2rem;
+    margin: 0.15rem 0 0;
     border: 1px solid color-mix(in srgb, var(--color-ink-dark) 45%, transparent);
     border-radius: 2px;
     background: var(--paper-sheet);
@@ -891,23 +1024,27 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     opacity: 0.5;
   }
 
+  /* A measure a cook can read at arm's length: about 65 characters. */
   .rc-steps {
-    max-width: 40rem;
+    max-width: 30rem;
     margin: 0;
     padding: 0;
     list-style: none;
-    counter-reset: rc-step;
   }
 
+  /* A step brought into view starts a little under the window's top, so its number and
+     name are the first thing read. */
   .rc-steps-item {
     position: relative;
     margin: 0 0 var(--space-md);
     padding: 0 0 0 2.6rem;
-    counter-increment: rc-step;
+    scroll-margin-top: var(--space-md);
   }
 
+  /* The number is written into the step, not counted: under the table one step shows
+     alone and keeps its number. */
   .rc-steps-item::before {
-    content: counter(rc-step);
+    content: attr(data-number);
     position: absolute;
     left: 0;
     top: -0.1rem;
@@ -991,28 +1128,152 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     color: var(--color-ochre);
   }
 
-  /* The step list is the recipe and is always there. The table is an overview that sits
-     above it: the inline script after the card opens it where it fits, and the Table
-     control puts it away or brings it back. */
-  .recipe-card:not([data-view]) .rc-table-frame {
+  /* What a step's text leaves out: the why, the tips, the latitude. Set as a pencilled
+     aside, upright and at a size to read from the counter. */
+  .rc-notes {
+    margin: 0.5rem 0 0;
+    padding-left: 0.8rem;
+    border-left: 1px solid color-mix(in srgb, var(--color-moss) 55%, transparent);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    color: var(--color-text-secondary);
+  }
+
+  .rc-notes p {
+    margin: 0 0 0.45rem;
+  }
+
+  .rc-notes p:last-child {
+    margin-bottom: 0;
+  }
+
+  .rc-notes .rc-qty {
+    font-weight: inherit;
+  }
+
+  /* What the step looks like when it is right: a print kept with its step. An upright
+     picture and a wide one get the same height at most, so neither crowds the text. */
+  .rc-photo {
+    width: min(100%, 21rem * var(--shape, 1.5));
+    margin: 0.8rem 0 0.2rem;
+    padding: 0.45rem 0.45rem 0.35rem;
+    background: var(--print-sheet);
+    box-shadow:
+      0 1px 2px color-mix(in srgb, var(--color-ink-dark) 14%, transparent),
+      0 10px 20px -14px color-mix(in srgb, var(--color-ink-dark) 40%, transparent);
+  }
+
+  .rc-photo img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 0;
+    filter: var(--print-dim);
+  }
+
+  .rc-photo figcaption {
+    margin: 0.35rem 0 0;
+    font-size: var(--text-xs);
+    font-style: italic;
+    line-height: 1.35;
+    color: var(--print-ink);
+  }
+
+  /* Table and steps are two views of one recipe, one at a time. Without JavaScript the
+     card has no view and shows the steps, which are the complete recipe. The inline
+     script after the card opens the table where it fits; "Show as" switches. */
+  .recipe-card:not([data-view='table']) .rc-table-frame {
     display: none;
   }
 
-  /* Put away, the table still lends the sheet its width (the sheet is as wide as what
-     it holds), so switching views does not move the sheet. */
-  .recipe-card[data-view='steps'] .rc-table-frame {
-    height: 0;
-    overflow: hidden;
-    visibility: hidden;
+  .rc-pick-hint {
+    display: none;
+    max-width: 44rem;
+    margin: 0 0 var(--space-md);
+    font-size: var(--text-sm);
+    font-style: italic;
+    color: var(--color-text-muted);
   }
 
-  .recipe-card[data-view='table'] .rc-steps-view {
-    margin-top: var(--space-xl);
-    padding-top: var(--space-lg);
-    border-top: 1px solid var(--rc-rule);
+  .rc-to-table {
+    display: none;
+    margin: var(--space-sm) 0 0 2.6rem;
   }
 
-  @media (max-width: 48rem) {
+  .rc-pick-hint .rc-link {
+    padding: 0;
+    font-size: inherit;
+    font-style: inherit;
+  }
+
+  /* Under the table: the step picked in it (the first, until another is), as the list
+     has it, with its notes and its picture beside them. A line over it says how to read
+     the others; a link under it leads back to the table. The table has the ingredients,
+     so the list to gather from stays away. While cooking the bar says what the step
+     says. */
+  @media (min-width: 48rem) {
+    .recipe-card[data-view='table'] .rc-steps-view {
+      display: block;
+      margin-top: var(--space-md);
+      padding-top: var(--space-md);
+      border-top: 1px solid var(--rc-rule);
+    }
+
+    .recipe-card.is-cooking[data-view='table'] .rc-steps-view,
+    .recipe-card[data-view='table'] .rc-gather,
+    .recipe-card[data-view='table'] .rc-steps-item:not(.is-picked) {
+      display: none;
+    }
+
+    .recipe-card[data-view='table'] .rc-pick-hint,
+    .recipe-card[data-view='table'] .rc-to-table:not([hidden]) {
+      display: block;
+    }
+
+    .recipe-card[data-view='table'] .rc-steps {
+      max-width: none;
+    }
+
+    .recipe-card[data-view='table'] .rc-steps-item {
+      display: grid;
+      grid-template-columns: minmax(0, 30rem) minmax(0, auto);
+      column-gap: var(--space-xl);
+      align-items: start;
+      margin-bottom: 0;
+    }
+
+    /* "Get ready" has no picture and no wrapper around its text. */
+    .recipe-card[data-view='table'] .rc-steps-item > :is(.rc-steps-do, .rc-steps-detail) {
+      grid-column: 1;
+    }
+
+    .recipe-card[data-view='table'] .rc-photo {
+      margin-top: 0.3rem;
+    }
+
+    /* The step shown under the table is marked in it with a bar over its column, in the
+       ink of a chosen option. A ring is kept for what the keyboard is on. */
+    .recipe-card[data-view='table']:not(.is-cooking) .rc-step.is-picked {
+      box-shadow: inset 0 4px 0 var(--color-walnut);
+    }
+
+    .recipe-card[data-view='table']:not(.is-cooking) .rc-corner.is-picked {
+      box-shadow: inset 0 -4px 0 var(--color-walnut);
+    }
+  }
+
+  /* With the script there, a step in the table is something to pick. */
+  .recipe-card[data-view] .rc-table [data-stage] {
+    cursor: pointer;
+  }
+
+  /* A phone shows one column of the table at a time, so it has the steps only. */
+  @media (max-width: 47.999rem) {
+    .recipe-card .rc-table-frame,
+    .rc-choice--view {
+      display: none;
+    }
+
     .rc-sheet {
       padding: var(--space-md) var(--space-sm);
     }
@@ -1050,8 +1311,9 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     top: 0.3rem;
   }
 
+  /* The corner is pinned over what scrolls under it, so its words fade, not the cell. */
   .rc-step.is-done,
-  .rc-corner.is-done,
+  .rc-corner.is-done > *,
   .rc-steps-item.is-done {
     opacity: 0.5;
   }
@@ -1082,15 +1344,10 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
       center / contain no-repeat;
   }
 
-  .recipe-card.is-cooking .rc-table [data-stage] {
-    cursor: pointer;
-  }
-
   .rc-cook {
     position: fixed;
     inset: auto 0 0;
     z-index: 1100;
-    padding: 0 0 var(--space-sm);
     pointer-events: none;
   }
 
@@ -1113,6 +1370,7 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     background: var(--paper-sheet);
     border: 1px solid color-mix(in srgb, var(--color-ink-dark) 12%, transparent);
     border-top: 3px solid color-mix(in srgb, var(--color-tansy) 45%, var(--paper-sheet));
+    border-bottom: 0;
     box-shadow: 0 -12px 30px -14px color-mix(in srgb, var(--color-ink-dark) 45%, transparent);
     pointer-events: auto;
   }
@@ -1140,6 +1398,7 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
 
   .rc-cook-count {
     margin-right: 0.5rem;
+    white-space: nowrap;
     font-size: var(--text-sm);
     color: var(--color-text-muted);
   }
@@ -1149,30 +1408,126 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     font-size: var(--text-xl);
   }
 
-  .rc-cook-uses .rc-uses {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0 1rem;
-    margin: 0.2rem 0 0;
-  }
-
-  .rc-cook-uses .rc-uses li {
-    display: inline;
-  }
-
-  .rc-cook-uses .rc-uses-qty:not(:empty) {
-    margin-right: 0.3em;
-  }
-
   .rc-cook-detail {
     max-width: 44rem;
     margin: 0.25rem 0 0;
   }
 
-  /* In the step list the highlighted step already shows what goes in and what to do. */
-  .recipe-card[data-view='steps'] .rc-cook-uses,
-  .recipe-card[data-view='steps'] .rc-cook-detail {
+  /* The step's notes and its picture wait folded in the bar, so the bar stays low over
+     the table. */
+  .rc-cook-notes {
+    margin-top: 0.3rem;
+    font-size: var(--text-sm);
+  }
+
+  .rc-cook-notes summary {
+    width: fit-content;
+    color: var(--color-link);
+    cursor: pointer;
+  }
+
+  .rc-cook-more {
+    display: flex;
+    gap: var(--space-md);
+    align-items: start;
+    max-height: 44svh;
+    margin-top: 0.3rem;
+    overflow-y: auto;
+  }
+
+  .rc-cook-more .rc-notes {
+    flex: 1 1 18rem;
+    max-width: 34rem;
+    margin-top: 0;
+  }
+
+  .rc-cook-more .rc-photo {
+    flex: none;
+    width: min(45%, 30svh * var(--shape, 1.5));
+    margin: 0.2rem 0.4rem 0.6rem;
+  }
+
+  /* In the step list the highlighted step already shows what goes in and what to do, so
+     the bar is one low row: the step, its timer, and the way on. */
+  .recipe-card:not([data-view='table']) :is(.rc-cook-detail, .rc-cook-notes) {
     display: none;
+  }
+
+  @media (min-width: 48.001rem) {
+    .recipe-card:not([data-view='table']) .rc-cook-inner {
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      grid-template-areas: 'step clock nav';
+      align-items: center;
+    }
+
+    .recipe-card:not([data-view='table']) .rc-cook-nav {
+      align-self: center;
+    }
+  }
+
+  /* On a narrow screen that row has no room for a timer beside the step's name and the
+     way on: the timer takes a row of its own under them. */
+  @media (min-width: 48.001rem) and (max-width: 63.999rem) {
+    .recipe-card:not([data-view='table']) .rc-cook-inner {
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas:
+        'step nav'
+        'clock clock';
+    }
+
+    .recipe-card:not([data-view='table']) .rc-cook-clock {
+      justify-self: start;
+      text-align: left;
+    }
+  }
+
+  @media (max-width: 47.999rem) {
+    .recipe-card :is(.rc-cook-detail, .rc-cook-notes) {
+      display: none;
+    }
+  }
+
+  /* Over a table on a narrow screen the step's text takes the bar's width, and the timer
+     shares a row with the way on. */
+  @media (min-width: 48.001rem) and (max-width: 63.999rem) {
+    .recipe-card[data-view='table'] .rc-cook-inner {
+      grid-template-areas:
+        'step step'
+        'clock nav';
+      align-items: center;
+    }
+
+    .recipe-card[data-view='table'] .rc-cook-clock {
+      justify-self: start;
+      text-align: left;
+    }
+  }
+
+  .rc-cook-notes[hidden] {
+    display: none;
+  }
+
+  /* What a timer's stage asks for when it ends, e.g. "turn the oven down". It goes with
+     the cook from step to step, and stays until the cook says it is done. */
+  .rc-cook-cue {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 0.8rem;
+    width: fit-content;
+    margin: 0.35rem 0 0;
+    padding: 0.1rem 0.6rem;
+    background: color-mix(in srgb, var(--color-tansy) 38%, var(--paper-sheet));
+    box-shadow: inset 3px 0 0 var(--color-ochre);
+    font-weight: 600;
+  }
+
+  .rc-cook-cue[hidden] {
+    display: none;
+  }
+
+  .rc-cook-cue .rc-link {
+    font-weight: 400;
   }
 
   .rc-cook-meanwhile {
@@ -1183,8 +1538,19 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
 
   .rc-cook-clock {
     grid-area: clock;
+    display: flex;
+    align-items: center;
+    gap: 0.2rem 0.9rem;
     justify-self: end;
     text-align: right;
+  }
+
+  .rc-cook-clock [hidden] {
+    display: none;
+  }
+
+  .rc-cook-clock:has([data-rc-timer][hidden]):has([data-rc-countdown][hidden]) {
+    display: none;
   }
 
   .rc-countdown {
@@ -1201,6 +1567,8 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
   }
 
   .rc-countdown-label {
+    display: inline-block;
+    max-width: 16rem;
     font-size: var(--text-xs);
     font-style: italic;
     color: var(--color-text-muted);
@@ -1215,8 +1583,9 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     align-self: end;
   }
 
+  /* The chips are made by the script, so they carry no scope of their own. */
   .rc-timer,
-  .rc-timers button {
+  .rc-timers :global(button) {
     padding: 0.35rem 0.85rem;
     border: 1px solid var(--color-ochre);
     border-radius: 999px;
@@ -1246,6 +1615,22 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     cursor: default;
   }
 
+  /* Back and Stop are words, with a finger's room around them. */
+  .rc-cook-nav .rc-link {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .rc-cancel {
+    white-space: nowrap;
+  }
+
+  /* Asked once more before it drops a timer */
+  .rc-cook-nav .rc-link.is-asking {
+    color: var(--color-text-primary);
+    font-weight: 600;
+  }
+
   .rc-timers {
     display: flex;
     flex-wrap: wrap;
@@ -1263,21 +1648,17 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     margin: 0;
   }
 
-  .rc-timers button {
+  .rc-timers :global(button) {
     padding: 0.15rem 0.7rem;
     font-size: var(--text-xs);
     font-variant-numeric: tabular-nums;
   }
 
-  .rc-timers button.is-done {
+  .rc-timers :global(button.is-done) {
     background: color-mix(in srgb, var(--color-tansy) 40%, var(--paper-sheet));
   }
 
   @media (max-width: 48rem) {
-    .rc-cook {
-      padding: 0;
-    }
-
     .rc-cook-inner {
       grid-template-columns: minmax(0, 1fr);
       grid-template-areas:
@@ -1285,22 +1666,45 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
         'clock'
         'nav';
       border-inline: 0;
-      border-bottom: 0;
+    }
+
+    /* A running timer costs the bar one low row: the time stands beside the step's
+       name, and what comes then shares a line with the way to cancel. */
+    .rc-cook-inner:has(.rc-countdown:not([hidden])) {
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas:
+        'step time'
+        'then cancel'
+        'nav nav';
+      row-gap: 0.15rem;
+    }
+
+    .rc-cook-clock:has(.rc-countdown:not([hidden])),
+    .rc-countdown:not([hidden]) {
+      display: contents;
+    }
+
+    .rc-countdown-time {
+      grid-area: time;
+      font-size: 1.8rem;
+      line-height: 1.1;
+    }
+
+    .rc-countdown-label {
+      grid-area: then;
+      align-self: center;
+      max-width: none;
+      line-height: 1.3;
+      text-align: left;
+    }
+
+    .rc-cancel {
+      grid-area: cancel;
+      align-self: center;
     }
 
     .rc-cook-clock {
       justify-self: start;
-      text-align: left;
-    }
-
-    .rc-countdown-time {
-      display: inline;
-      margin-right: 0.5rem;
-      font-size: 2rem;
-    }
-
-    .rc-cook-clock:has([data-rc-timer][hidden]):has([data-rc-countdown][hidden]) {
-      display: none;
     }
 
     /* Next is the button you reach for; Back and Stop sit either side as words. */
@@ -1319,23 +1723,47 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     padding-bottom: calc(var(--rc-bar, 10rem) + 2rem);
   }
 
-  :global(html.rc-cooking .back-to-top) {
+  /* The bar lives in the page's content, which the footer is otherwise drawn over. */
+  :global(html.rc-cooking .main-content) {
+    z-index: 3;
+  }
+
+  /* The card is the page, and a short one: it needs no way back to the top, least of
+     all one that sits on the card's edge. */
+  :global(body:has(.recipe-card) .back-to-top) {
     display: none;
   }
 
+  /* On paper: the table as the overview, then the steps with their notes. */
   @media print {
     .rc-controls,
     .rc-cook,
-    .rc-steps-view,
-    .rc-more {
+    .rc-more,
+    .rc-tail {
       display: none !important;
     }
 
     .rc-table-frame {
       display: block !important;
-      height: auto !important;
-      overflow: visible !important;
-      visibility: visible !important;
+      margin-bottom: var(--space-lg);
+    }
+
+    .rc-pick-hint,
+    .rc-to-table {
+      display: none !important;
+    }
+
+    .rc-steps-view {
+      display: grid !important;
+    }
+
+    /* On paper every step is there, whichever one was picked on screen. */
+    .recipe-card[data-view='table'] .rc-steps-item {
+      margin-bottom: var(--space-md);
+    }
+
+    .recipe-card[data-view='table'] .rc-steps-item:not(.is-picked) {
+      display: grid;
     }
 
     .rc-table-wrap {

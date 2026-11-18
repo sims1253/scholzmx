@@ -3,6 +3,7 @@ title: 'Simple Pour-Over Coffee'
 description: "While I don't like coffee, many people in my life tend to think something is wrong with me for that..."
 servings: '1 cup'
 time: '4 minutes'
+date: 2025-09-22
 tags: ['Drinks']
 #heroImage: '../../assets/images/recipes/coffee-setup.jpg'
 #heroImagePositionX: 0
@@ -47,4 +48,4 @@ steps:
 
 Making good coffee is mostly about being consistent. This recipe uses a 1:16 ratio and simple timing that works reliably. Keep track of what you do and you'll figure out what you like.
 
-Yes, this is kind of a joke recipe. But I was too lazy to go dig up my paper pile with notes and refine them. So for now so this is all you get.
+Yes, this is kind of a joke recipe. But I was too lazy to go dig up my paper pile with notes and refine them. So for now this is all you get.
