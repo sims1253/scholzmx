@@ -59,7 +59,8 @@ const {
 const isHero = style === 'hero';
 const clickable = alternateSrc !== undefined;
 
-// Watercolor portraits have fixed sizes; heroes and simple frames take their column's width.
+// Watercolor portraits have a size of their own, which a page may set wider (the frame
+// keeps its shape); heroes and simple frames take their column's width.
 const portraitSizes = {
   small: { width: 120, height: 140 },
   medium: { width: 160, height: 180 },
@@ -78,13 +79,14 @@ const responsiveWidths = isHero
 const sizes = isHero
   ? '(min-width: 90rem) 1100px, (min-width: 72rem) 72rem, 100vw'
   : portrait
-    ? '(min-width: 1200px) 240px, (min-width: 768px) 200px, 160px'
+    ? '(min-width: 1200px) 320px, (min-width: 768px) 200px, 160px'
     : '(min-width: 768px) 640px, 100vw';
 
 const eager = isHero || loading === 'eager';
 const frameStyle = [
   aspectRatio && `aspect-ratio: ${aspectRatio};`,
-  portrait && `width: ${portrait.width}px; height: ${portrait.height}px;`,
+  portrait &&
+    `--frame-width: ${portrait.width}px; aspect-ratio: ${portrait.width} / ${portrait.height};`,
 ]
   .filter(Boolean)
   .join(' ');
@@ -233,6 +235,7 @@ const layers = [
   /* The mat is 8px wide, and the picture is measured inside it. A picture larger than
      that runs out over the mat, to the frame's edge. */
   .image-frame-watercolor {
+    width: var(--frame-width);
     border-radius: var(--organic-md);
     padding: 8px;
     background: linear-gradient(
