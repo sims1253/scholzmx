@@ -151,7 +151,9 @@ function initRecipeCard(card: HTMLElement): void {
     const pinned = card.querySelector<HTMLElement>('.rc-ingredient')?.offsetWidth ?? 0;
     if (wrap && cell.matches('.rc-step')) {
       const left = cell.getBoundingClientRect().left - wrap.getBoundingClientRect().left;
-      wrap.scrollBy({ left: left - pinned - 8, behavior: scrolling() });
+      // At once, not smoothly: the scroll below would cut a smooth one short and leave
+      // the column under the pinned one.
+      wrap.scrollBy({ left: left - pinned - 8 });
     }
     cell.scrollIntoView({ block: 'center', inline: 'nearest', behavior: scrolling() });
   };
