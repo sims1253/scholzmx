@@ -51,8 +51,8 @@ const ROOMS: Record<Kind, { href: string; name: string; caption?: string; sceneM
 const { kind, kept, ...overrides } = Astro.props;
 const { href, name, caption, sceneMs } = { ...ROOMS[kind], ...overrides };
 
-// The line under a niche is as wide as the niche, and has room for about this many
-// characters in four lines under the smallest one. A longer title is cut there after a
+// The line under a niche is as wide as the niche's column, and has room for about this
+// many characters in three lines under the narrowest one. A longer title is cut there after a
 // whole word, in its own words, and not on a word that only leads to the next one.
 const KEPT_LENGTH = 60;
 const LEADS_ON = new Set('a an and as at by for from in into of on or the to with'.split(' '));
