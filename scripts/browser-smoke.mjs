@@ -225,7 +225,7 @@ try {
   await page.click('input[name="rc-scale"][value="2"]');
   assert.match(
     await page.$eval('#rc-step-3 .rc-notes', (element) => element.textContent),
-    /below 50 g sugar.*above 100 g.*75 g hit/s
+    /below 50\sg sugar.*above 100\sg.*75\sg hit/s
   );
   await page.click('input[name="rc-scale"][value="1"]');
   // Every picture says what it shows.
@@ -258,7 +258,7 @@ try {
   for (let step = 0; step < 4; step++) await page.click('[data-rc-next]');
   assert.match(
     await page.$eval('[data-rc-timer]', (element) => element.textContent),
-    /8 min, then 15 min/
+    /8\smin, then 15\smin/
   );
   assert.match(
     await page.$eval('[data-rc-announce]', (element) => element.textContent),
@@ -267,7 +267,7 @@ try {
   await page.click('[data-rc-timer]');
   assert.match(
     await page.$eval('[data-rc-countdown-label]', (element) => element.textContent),
-    /200 °C.*180 °C.*with convection/
+    /200\s°C.*180\s°C.*with convection/
   );
   // A reload in the middle of the bake keeps the step and its timer, and the card as it
   // was: the amount, and what was ticked off.
@@ -290,18 +290,24 @@ try {
   await page.waitForSelector('[data-rc-cue]:not([hidden])');
   assert.match(
     await page.$eval('[data-rc-cue-text]', (element) => element.textContent),
-    /^Bake, now: turn the oven down to 200 °C/
+    /^Bake, now: turn the oven down to 200\s°C/
   );
   assert.match(
     await page.$eval('[data-rc-alarm]', (element) => element.textContent),
     /^Bake: Turn the oven down/
   );
-  await page.click('[data-rc-cue-done]');
-  assert.equal(await page.$('[data-rc-cue]:not([hidden])'), null);
-  // Stopping would drop the running timer, so it asks first; Escape leaves it alone.
-  // Back and Stop are large enough for a finger.
+  // Stopping would drop the running timer, so it asks first. Escape asks the same way,
+  // on the button, where it can be seen. Back and Stop are large enough for a finger.
+  const asking = () =>
+    page.$eval('[data-rc-stop]', (stop) => ({
+      text: stop.textContent,
+      focused: stop === document.activeElement,
+    }));
   await page.keyboard.press('Escape');
   assert.ok(await page.$eval('[data-rc-cook]', (bar) => !bar.hidden), 'Escape kept the timer');
+  assert.deepEqual(await asking(), { text: 'Drop the timer and stop?', focused: true });
+  await page.focus('[data-rc-next]');
+  assert.equal((await asking()).text, 'Stop cooking', 'Moving on takes the question back');
   for (const control of ['[data-rc-back]', '[data-rc-stop]']) {
     const box = await page.$eval(control, (element) => {
       const { width, height } = element.getBoundingClientRect();
@@ -315,6 +321,20 @@ try {
     /Drop the timer and stop\?/
   );
   assert.ok(await page.$eval('[data-rc-cook]', (bar) => !bar.hidden), 'One press does not stop');
+  // What the first stage asked for stays when the whole timer has ended, until the cook
+  // has done it.
+  await page.focus('[data-rc-next]');
+  await page.evaluate(() => {
+    const now = Date.now;
+    Date.now = () => now() + 20 * 60_000;
+  });
+  await page.waitForSelector('.rc-timers button.is-done');
+  assert.match(
+    await page.$eval('[data-rc-cue]:not([hidden]) [data-rc-cue-text]', (cue) => cue.textContent),
+    /^Bake, now: turn the oven down/
+  );
+  await page.click('[data-rc-cue-done]');
+  assert.equal(await page.$('[data-rc-cue]:not([hidden])'), null);
   await page.click('[data-rc-stop]');
   assert.ok(await page.$eval('[data-rc-cook]', (bar) => bar.hidden));
 
@@ -332,6 +352,17 @@ try {
   assert.equal(
     await page.$eval('.rc-do', (name) => getComputedStyle(name).textDecorationLine),
     'underline'
+  );
+  // Picking the step that shows already keeps it, and takes the reader to it.
+  await page.click('.rc-corner a');
+  assert.deepEqual(
+    await page.$eval('[data-recipe-card]', (card) => ({
+      shown: [...card.querySelectorAll('.rc-steps-item')]
+        .filter((step) => step.getClientRects().length > 0)
+        .map((step) => step.id),
+      focused: document.activeElement.textContent.trim(),
+    })),
+    { shown: ['rc-step-0'], focused: 'Get ready' }
   );
   await page.click('.rc-step[data-stage="5"] a');
   const pickedStep = await page.$eval('[data-recipe-card]', (card) => ({
@@ -378,6 +409,21 @@ try {
   // the pinned ingredients and the right edge, and leaves a column that fits alone.
   await page.setViewport({ width: 820, height: 1180 });
   await page.reload({ waitUntil: 'networkidle0' });
+  // On a tablet the cooking bar keeps a step's count and name on one line beside a
+  // running timer.
+  await page.click('input[name="rc-view"][value="steps"]');
+  await page.click('[data-rc-start]');
+  for (let step = 0; step < 7; step++) await page.click('[data-rc-next]');
+  await page.click('[data-rc-timer]');
+  assert.ok(
+    await page.$eval('.rc-cook-head', (head) => {
+      const [count, name] = [...head.children].map((part) => part.getClientRects());
+      return count.length === 1 && name.length === 1 && name[0].top < count[0].bottom;
+    }),
+    'The bar sets "Step 8 of 9 Bake" on one line'
+  );
+  await page.click('[data-rc-cancel]');
+  await page.click('[data-rc-stop]');
   await page.click('input[name="rc-view"][value="table"]');
   await page.click('[data-rc-start]');
   const column = () =>
