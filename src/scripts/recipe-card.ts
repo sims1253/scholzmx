@@ -12,7 +12,8 @@ interface Timer {
   phase: number;
   start: number;
   end: number;
-  /** What the last finished stage asked for, e.g. "Turn the oven down to 200 °C". */
+  /** What the last finished stage asked for, e.g. "Turn the oven down to 200 °C", until
+   *  the cook says it is done. */
   cue: string;
   done: boolean;
 }
@@ -20,9 +21,19 @@ interface Timer {
 const wide = matchMedia('(min-width: 48rem)');
 const still = matchMedia('(prefers-reduced-motion: reduce)');
 
+/** What a reload in the middle of cooking brings back. */
+interface Cooking {
+  step: number;
+  timers: Timer[];
+  amount: string;
+  view: string;
+  /** The ingredients ticked off in the list to gather from, by position. */
+  gathered: number[];
+}
+
 const pad = (n: number) => String(n).padStart(2, '0');
-// Saving the step and its timers is a convenience: with storage blocked, cooking carries
-// on unsaved.
+// Saving where the cook is is a convenience: with storage blocked, cooking carries on
+// unsaved.
 const remember = <T>(use: () => T): T | undefined => {
   try {
     return use();
@@ -70,11 +81,12 @@ function initRecipeCard(card: HTMLElement): void {
   const part = <T extends HTMLElement>(selector: string) => bar.querySelector<T>(selector);
   const count = part('[data-rc-count]');
   const title = part('[data-rc-do]');
-  const uses = part('[data-rc-uses]');
   const detail = part('[data-rc-detail]');
   const notes = part('[data-rc-notes]');
   const meanwhile = part('[data-rc-meanwhile]');
   const cue = part('[data-rc-cue]');
+  const cueText = part('[data-rc-cue-text]');
+  const cueDone = part<HTMLButtonElement>('[data-rc-cue-done]');
   const countdownLabel = part('[data-rc-countdown-label]');
   const timerButton = part<HTMLButtonElement>('[data-rc-timer]');
   const countdown = part('[data-rc-countdown]');
@@ -82,10 +94,12 @@ function initRecipeCard(card: HTMLElement): void {
   const timerList = part('[data-rc-timers]');
   const cancel = part<HTMLButtonElement>('[data-rc-cancel]');
   const announce = card.querySelector('[data-rc-announce]');
+  const alarm = card.querySelector('[data-rc-alarm]');
   const back = part<HTMLButtonElement>('[data-rc-back]');
   const next = part<HTMLButtonElement>('[data-rc-next]');
-  const storageKey = `recipe-step:${location.pathname}`;
-  const timersKey = `recipe-timers:${location.pathname}`;
+  const stopButton = part<HTMLButtonElement>('[data-rc-stop]');
+  const ticks = [...card.querySelectorAll<HTMLInputElement>('.rc-gather-list input')];
+  const cookingKey = `recipe-cooking:${location.pathname}`;
 
   // ===== Scaling and view =====
 
@@ -128,8 +142,12 @@ function initRecipeCard(card: HTMLElement): void {
 
   const scrolling = (): ScrollBehavior => (still.matches ? 'auto' : 'smooth');
   const nameOf = (stage: number) => textOf(stages[stage]?.querySelector('.rc-steps-do'));
+  // Where the cook is can wait its turn to be read out; a timer cannot.
   const say = (message: string) => {
     if (announce) announce.textContent = message;
+  };
+  const sound = (message: string) => {
+    if (alarm) alarm.textContent = message;
   };
   // A step's picture waits to load until it is near the window. Shown by a pick or by
   // cooking mode, it is wanted now.
@@ -137,34 +155,59 @@ function initRecipeCard(card: HTMLElement): void {
     for (const picture of stages[stage]?.querySelectorAll('img') ?? []) picture.loading = 'eager';
   };
 
+  const cellOf = (stage: number) => cells.find((item) => Number(item.dataset.stage) === stage);
+
+  // Where the table scrolls sideways, a step's column has to be in full view between the
+  // pinned ingredient column and the right edge (short of the fade over that edge, while
+  // more follows). A column that is there already stays where it is; one that is not
+  // moves no further than it has to. At once, not smoothly: a scroll of the page that
+  // follows would cut a smooth one short.
+  const showColumn = (stage: number) => {
+    const cell = cellOf(stage);
+    if (!wrap || !cell) return;
+    // Getting ready is the ingredient column itself.
+    if (!cell.matches('.rc-step')) {
+      wrap.scrollTo({ left: 0 });
+      return;
+    }
+    const pinned = card.querySelector<HTMLElement>('.rc-ingredient')?.offsetWidth ?? 0;
+    const column = cell.getBoundingClientRect();
+    const view = wrap.getBoundingClientRect();
+    const tableEnd = view.left - wrap.scrollLeft + wrap.scrollWidth;
+    const fade = column.right < tableEnd - 2 ? parseFloat(getComputedStyle(wrap).fontSize) * 3 : 0;
+    const clear = column.left - (view.left + pinned);
+    const past = column.right - (view.right - fade);
+    if (clear < 0) wrap.scrollBy({ left: clear });
+    else if (past > 0) wrap.scrollBy({ left: Math.min(past, clear) });
+  };
+
   // Brings a step into view. In the list it goes to the top of the window, so a step
   // taller than the room above the cooking bar still shows its number, its name and what
-  // goes in. In the table its column goes just right of the pinned ingredient column,
-  // never under it.
+  // goes in. In the table its column comes into view.
   const reveal = (stage: number) => {
     if (!tableShown()) {
       stages[stage]?.scrollIntoView({ block: 'start', behavior: scrolling() });
       return;
     }
-    const cell = cells.find((item) => Number(item.dataset.stage) === stage);
-    if (!cell) return;
-    const pinned = card.querySelector<HTMLElement>('.rc-ingredient')?.offsetWidth ?? 0;
-    if (wrap && cell.matches('.rc-step')) {
-      const left = cell.getBoundingClientRect().left - wrap.getBoundingClientRect().left;
-      // At once, not smoothly: the scroll below would cut a smooth one short and leave
-      // the column under the pinned one.
-      wrap.scrollBy({ left: left - pinned - 8 });
-    }
-    cell.scrollIntoView({ block: 'center', inline: 'nearest', behavior: scrolling() });
+    showColumn(stage);
+    cellOf(stage)?.scrollIntoView({ block: 'center', inline: 'nearest', behavior: scrolling() });
   };
 
   // ===== The step picked in the table =====
 
-  // Picking a step in the table shows it under the table, as the list has it. Focus stays
-  // on the step's name in the table, so the next pick is one key away; picking the step
-  // that shows puts it away.
+  // Focus goes where the reader was sent, and the page follows it there.
+  const focusStep = (stage: number, block: ScrollLogicalPosition) => {
+    stages[stage]?.querySelector<HTMLElement>('.rc-steps-do')?.focus({ preventScroll: true });
+    stages[stage]?.scrollIntoView({ block, behavior: scrolling() });
+  };
+
+  // Picking a step in the table shows it under the table, as the list has it, and takes
+  // the reader there; "Back to the table" under it then leads back to the step's name. Picking
+  // the step that shows puts it away. The table opens with its first step shown, so the
+  // method is on the page before anything is picked: that one is `quiet`.
   let picked = -1;
-  const pick = (stage: number) => {
+  const toTable = card.querySelector<HTMLElement>('.rc-to-table');
+  const pick = (stage: number, quiet = false) => {
     picked = stage === picked ? -1 : stage;
     for (const item of [...stages, ...cells]) {
       const shown = Number(item.dataset.stage) === picked;
@@ -173,15 +216,25 @@ function initRecipeCard(card: HTMLElement): void {
       if (shown) link?.setAttribute('aria-current', 'true');
       else link?.removeAttribute('aria-current');
     }
+    if (toTable) toTable.hidden = quiet || picked < 0;
     if (picked < 0) return;
     loadPictures(picked);
+    if (quiet) return;
+    showColumn(picked);
     say(`Step ${picked + 1}, ${nameOf(picked)}, is shown under the table.`);
-    stages[picked]?.scrollIntoView({ block: 'nearest', behavior: scrolling() });
+    focusStep(picked, 'nearest');
   };
+
+  card.querySelector('[data-rc-to-table]')?.addEventListener('click', () => {
+    const name = cellOf(Math.max(picked, 0))?.querySelector<HTMLElement>('a');
+    showColumn(Math.max(picked, 0));
+    name?.focus({ preventScroll: true });
+    name?.scrollIntoView({ block: 'center', inline: 'nearest', behavior: scrolling() });
+  });
 
   card.querySelector('[data-rc-all]')?.addEventListener('click', () => {
     setView('steps');
-    stages[0]?.querySelector<HTMLElement>('.rc-steps-do')?.focus({ preventScroll: true });
+    focusStep(0, 'start');
   });
 
   card.addEventListener('change', (event) => {
@@ -195,6 +248,7 @@ function initRecipeCard(card: HTMLElement): void {
       setView(input.value);
       if (current >= 0) show(current);
     }
+    keep();
   });
 
   // ===== Cooking =====
@@ -205,6 +259,7 @@ function initRecipeCard(card: HTMLElement): void {
   const timers: Timer[] = [];
   const chips = new Map<number, HTMLButtonElement>();
   let ticking = 0;
+  let stopAsked = 0;
 
   const keepAwake = async () => {
     try {
@@ -252,13 +307,26 @@ function initRecipeCard(card: HTMLElement): void {
     JSON.parse(stages[stage]?.dataset.timers ?? '[]');
   const lower = (text: string) => text.charAt(0).toLowerCase() + text.slice(1);
 
-  // Running timers are kept with the step, so a reload in the middle of a bake loses neither.
-  const keepTimers = () => {
-    remember(() =>
-      timers.length > 0
-        ? sessionStorage.setItem(timersKey, JSON.stringify(timers))
-        : sessionStorage.removeItem(timersKey)
-    );
+  const running = () => timers.filter((timer) => !timer.done).length;
+
+  // While cooking, the step is kept with its timers, the amount, the view and what has
+  // been gathered, so a reload in the middle of a bake comes back to the same card.
+  const keep = () => {
+    remember(() => {
+      if (current < 0) {
+        sessionStorage.removeItem(cookingKey);
+        return;
+      }
+      const cooking: Cooking = {
+        step: current,
+        timers,
+        amount:
+          card.querySelector<HTMLInputElement>('input[name="rc-scale"]:checked')?.value ?? '1',
+        view: card.dataset.view ?? 'steps',
+        gathered: ticks.flatMap((tick, index) => (tick.checked ? [index] : [])),
+      };
+      sessionStorage.setItem(cookingKey, JSON.stringify(cooking));
+    });
   };
 
   const renderTimers = () => {
@@ -266,13 +334,12 @@ function initRecipeCard(card: HTMLElement): void {
     const own = timers.find((timer) => timer.stage === current);
     const phases = phasesOf(current);
     // The last step's button ends cooking, and says so when that stops a timer.
-    const running = timers.filter((timer) => !timer.done).length;
     if (next) {
       next.textContent =
         current < stages.length - 1
           ? 'Next'
-          : running > 0
-            ? `Done, and stop the ${running > 1 ? 'timers' : 'timer'}`
+          : running() > 0
+            ? `Done, and stop the ${running() > 1 ? 'timers' : 'timer'}`
             : 'Done';
     }
     if (cancel) cancel.hidden = !own || own.done;
@@ -292,9 +359,14 @@ function initRecipeCard(card: HTMLElement): void {
         countdownLabel.textContent = then ? `then ${lower(then)}` : 'left on this step';
       }
     }
-    if (cue) {
-      cue.hidden = !own?.cue || own.done;
-      cue.textContent = own?.cue ? `Now: ${lower(own.cue)}` : '';
+    // What a finished stage asks for goes with its timer to whatever step the cook is
+    // on, and stays until the cook says it is done.
+    const asked = timers.find((timer) => timer.cue && !timer.done);
+    if (cue && cueText) {
+      cue.hidden = !asked;
+      cueText.textContent = asked
+        ? `${asked.stage === current ? 'Now' : `${asked.label}, now`}: ${lower(asked.cue)}`
+        : '';
     }
     const progress = own ? Math.min(1, (now - own.start) / (own.end - own.start)) : 0;
     inner.style.setProperty('--rc-progress', String(progress));
@@ -337,12 +409,14 @@ function initRecipeCard(card: HTMLElement): void {
           timer.phase += 1;
           timer.start = timer.end;
           timer.end += following.minutes * 60_000;
-          say(`${timer.label}: ${timer.cue || 'next stage'}. ${following.minutes} minutes to go.`);
+          sound(
+            `${timer.label}: ${timer.cue || 'next stage'}. ${following.minutes} minutes to go.`
+          );
         } else {
           timer.done = true;
-          say(`Time's up: ${timer.label}.`);
+          sound(`Time's up: ${timer.label}.`);
         }
-        keepTimers();
+        keep();
       }
     }
     renderTimers();
@@ -370,7 +444,7 @@ function initRecipeCard(card: HTMLElement): void {
       done: false,
     });
     if (!ticking) ticking = window.setInterval(tick, 1000);
-    keepTimers();
+    keep();
     renderTimers();
     // The button that was pressed is gone; the way on takes the focus.
     next?.focus();
@@ -386,25 +460,37 @@ function initRecipeCard(card: HTMLElement): void {
     const own = timers.findIndex((timer) => timer.stage === current);
     if (own < 0) return;
     timers.splice(own, 1);
-    keepTimers();
+    keep();
     renderTimers();
     timerButton?.focus();
     say('Timer cancelled.');
   };
 
-  // The bar says what the step you're on says, at the amount chosen.
+  // The cook has done what a finished stage asked for.
+  cueDone?.addEventListener('click', () => {
+    for (const timer of timers) timer.cue = '';
+    keep();
+    renderTimers();
+    next?.focus();
+  });
+
+  // The bar says what the step you're on says, at the amount chosen. Over the table,
+  // which hides the step list, it also keeps the step's notes and its picture, folded.
   const describe = () => {
     const item = stages[current];
-    const list = item?.querySelector('.rc-uses');
-    uses?.replaceChildren(...(list ? [list.cloneNode(true)] : []));
     if (detail) detail.textContent = textOf(item?.querySelector('.rc-steps-detail:not([hidden])'));
     const asides = item?.querySelector('.rc-notes');
+    const picture = item?.querySelector('.rc-photo');
     if (notes instanceof HTMLDetailsElement) {
-      notes.hidden = !asides;
+      const more = [asides, picture].flatMap((part) => (part ? [part.cloneNode(true)] : []));
+      const summary = notes.querySelector('summary');
+      if (summary) {
+        summary.textContent =
+          asides && picture ? 'Notes and a picture' : picture ? 'A picture' : 'Notes';
+      }
+      notes.hidden = more.length === 0;
       notes.open = false;
-      notes
-        .querySelector('[data-rc-notes-body]')
-        ?.replaceChildren(...(asides ? [asides.cloneNode(true)] : []));
+      notes.querySelector('[data-rc-notes-body]')?.replaceChildren(...more);
     }
     if (meanwhile) {
       const task = textOf(item?.querySelector('.rc-steps-meanwhile'));
@@ -416,7 +502,7 @@ function initRecipeCard(card: HTMLElement): void {
 
   const show = (stage: number) => {
     current = Math.max(0, Math.min(stages.length - 1, stage));
-    remember(() => sessionStorage.setItem(storageKey, String(current)));
+    unask();
 
     for (const item of [...stages, ...cells]) {
       const at = Number(item.dataset.stage);
@@ -436,7 +522,7 @@ function initRecipeCard(card: HTMLElement): void {
       const timer = timers[index];
       if (timer && timer.done && timer.stage < current) timers.splice(index, 1);
     }
-    keepTimers();
+    keep();
 
     const name = nameOf(current);
     if (count) count.textContent = `Step ${current + 1} of ${stages.length}`;
@@ -451,7 +537,7 @@ function initRecipeCard(card: HTMLElement): void {
   };
 
   const start = (stage = 0) => {
-    if (picked >= 0) pick(picked);
+    if (picked >= 0) pick(picked, true);
     card.classList.add('is-cooking');
     document.documentElement.classList.add('rc-cooking');
     bar.hidden = false;
@@ -463,28 +549,56 @@ function initRecipeCard(card: HTMLElement): void {
   };
 
   const stop = () => {
+    const last = current;
+    unask();
     card.classList.remove('is-cooking', 'is-gathering');
     document.documentElement.classList.remove('rc-cooking');
     document.documentElement.style.removeProperty('--rc-bar');
     bar.hidden = true;
     current = -1;
-    remember(() => sessionStorage.removeItem(storageKey));
     for (const item of [...stages, ...cells, ...rows]) {
       item.classList.remove('is-current', 'is-done', 'is-used');
     }
     timers.length = 0;
-    keepTimers();
+    keep();
     renderTimers();
     say('');
+    sound('');
     clearInterval(ticking);
     ticking = 0;
     void wakeLock?.release();
     wakeLock = null;
+    // Under the table, the step the cook stopped at.
+    pick(last, true);
     card.querySelector<HTMLButtonElement>('[data-rc-start]')?.focus();
   };
 
+  // Stopping drops every running timer, so with one running it takes two presses: the
+  // first says what will go. Anything else the cook does takes the question back.
+  const unask = () => {
+    clearTimeout(stopAsked);
+    stopAsked = 0;
+    if (stopButton) stopButton.textContent = 'Stop cooking';
+    stopButton?.classList.remove('is-asking');
+  };
+  const askToStop = () => {
+    const count = running();
+    if (count === 0 || stopAsked) {
+      stop();
+      return;
+    }
+    const what =
+      count > 1 ? `${count} timers` : `${lower(timers.find((t) => !t.done)?.label ?? '')} timer`;
+    if (stopButton) stopButton.textContent = `Drop the ${count > 1 ? 'timers' : 'timer'} and stop?`;
+    stopButton?.classList.add('is-asking');
+    say(`The ${what} would be dropped. Press Stop again to stop cooking.`);
+    stopAsked = window.setTimeout(unask, 8000);
+  };
+
   card.querySelector('[data-rc-start]')?.addEventListener('click', () => start());
-  part('[data-rc-stop]')?.addEventListener('click', stop);
+  stopButton?.addEventListener('click', askToStop);
+  stopButton?.addEventListener('blur', unask);
+  for (const tick of ticks) tick.addEventListener('change', keep);
   back?.addEventListener('click', () => show(current - 1));
   next?.addEventListener('click', () =>
     current === stages.length - 1 ? stop() : show(current + 1)
@@ -509,7 +623,11 @@ function initRecipeCard(card: HTMLElement): void {
       return;
     if (event.key === 'ArrowRight') show(current + 1);
     if (event.key === 'ArrowLeft') show(current - 1);
-    if (event.key === 'Escape') stop();
+    // Escape leaves cooking, but never takes a running timer with it.
+    if (event.key === 'Escape') {
+      if (running() === 0) stop();
+      else say('A timer is running. Press Stop cooking to end and drop it.');
+    }
   });
 
   // The screen lock is dropped whenever the tab is hidden; take it back on return.
@@ -517,21 +635,35 @@ function initRecipeCard(card: HTMLElement): void {
     if (current >= 0 && document.visibilityState === 'visible') void keepAwake();
   });
 
-  // A reload in the middle of cooking comes back to the step, with its timers still
-  // running. Time that passed meanwhile has passed for them too.
-  const saved = remember(() => sessionStorage.getItem(storageKey)) ?? null;
-  if (saved !== null) {
-    // Only keepTimers writes this entry, so what comes back is what it put there.
-    const kept: Timer[] =
-      remember(() => JSON.parse(sessionStorage.getItem(timersKey) ?? '[]')) ?? [];
-    timers.push(...kept);
-    start(Number(saved));
+  // A reload in the middle of cooking comes back to the card as it was: the amount, the
+  // view and what was gathered first, then the step with its timers still running. Time
+  // that passed meanwhile has passed for them too. Only `keep` writes this entry.
+  const saved = remember((): Cooking | null =>
+    JSON.parse(sessionStorage.getItem(cookingKey) ?? 'null')
+  );
+  if (saved) {
+    const amount = card.querySelector<HTMLInputElement>(
+      `input[name="rc-scale"][value="${saved.amount}"]`
+    );
+    if (amount) {
+      amount.checked = true;
+      scale(Number(saved.amount));
+    }
+    setView(saved.view);
+    for (const index of saved.gathered) {
+      const tick = ticks[index];
+      if (tick) tick.checked = true;
+    }
+    timers.push(...saved.timers);
+    start(saved.step);
     if (timers.length > 0) {
       tick();
-      if (timers.some((timer) => !timer.done)) ticking = window.setInterval(tick, 1000);
+      if (running() > 0) ticking = window.setInterval(tick, 1000);
       // The chime needs a sound context, and a browser only grants one on a press.
       card.addEventListener('click', () => (audio ??= new AudioContext()), { once: true });
     }
+  } else {
+    pick(0, true);
   }
 }
 

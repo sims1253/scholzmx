@@ -61,7 +61,7 @@ const carded = steps !== undefined && recipe.data.makes !== undefined;
           {steps ? (
             <>
               <meta itemprop="totalTime" content={isoDuration} />
-              {timeSentence(steps, prepMinutes)}
+              {timeSentence(steps, prepMinutes)}{' '}
               <a class="recipe-jump" href="#recipe-card-title">Go to the recipe</a>
             </>
           ) : (
@@ -152,8 +152,9 @@ const carded = steps !== undefined && recipe.data.makes !== undefined;
     font-variant-numeric: oldstyle-nums;
   }
 
+  /* Kept whole. The space before it is a real one, so on a narrow screen the link
+     starts its own line flush with the text. */
   .recipe-jump {
-    margin-left: 0.4em;
     white-space: nowrap;
   }
 
