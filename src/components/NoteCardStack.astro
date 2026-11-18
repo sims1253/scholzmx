@@ -60,13 +60,14 @@ const {
   material = 'paper',
 } = Astro.props;
 
-// A print keeps its picture's own proportions, between square and 16:9, so a screenshot is
-// not cut to a slice. One the post zooms into or shifts is cut to 4:3 around that spot; so
-// is a picture from a URL, whose proportions are not known.
+// A print keeps its picture's own proportions, between 4:3 and 16:9, so a screenshot is not
+// cut to a slice. The card keeps room in its corner for a 4:3 print (stacked-card.css), so
+// a taller picture is cut to that. One the post zooms into or shifts is cut to 4:3 around
+// that spot; so is a picture from a URL, whose proportions are not known.
 function printRatio(hero: NonNullable<CardItem['hero']>): string {
   const cut = (hero.scale ?? 1) !== 1 || Boolean(hero.posX) || Boolean(hero.posY);
   if (cut || hero.kind === 'url') return '4/3';
-  const ratio = Math.min(16 / 9, Math.max(1, hero.src.width / hero.src.height));
+  const ratio = Math.min(16 / 9, Math.max(4 / 3, hero.src.width / hero.src.height));
   return `${ratio.toFixed(3)}/1`;
 }
 
