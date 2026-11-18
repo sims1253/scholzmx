@@ -38,10 +38,13 @@ export interface RecipeStep {
   heat?: string;
   /** What the step produces, used when later steps refer to it, e.g. "squash purée". */
   result?: string;
-  /** The why, the tips and the latitude. Amounts in braces scale: "around {180 ml}". */
+  /**
+   * The why, the tips and the latitude. Amounts in braces scale: "around {180 ml}".
+   * An account of what was tried stays as it happened: write those amounts without braces.
+   */
   notes?: string[];
-  /** What the step looks like when it is right. The caption is shown under the picture. */
-  photo?: { src: ImageMetadata; caption: string };
+  /** What the step looks like when it is right. `alt` says what the picture shows; the caption is shown under it. */
+  photo?: { src: ImageMetadata; alt: string; caption: string };
   /**
    * A step timed in stages, e.g. 8 minutes, then turn the oven down, then 15 more.
    * The stages add up to `minutes`. Without it the step has one timer of `minutes`.

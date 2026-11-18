@@ -1,4 +1,5 @@
-// Recipe cards: scaling, table or steps, and a cooking mode that walks through the steps.
+// Recipe cards: scaling, table or steps, the step picked in the table, and a cooking mode
+// that walks through the steps.
 // Everything reads from the server-rendered card, so the page works without this script.
 import { formatAmount, formatYield, type RecipeTimer } from '../lib/recipe';
 
@@ -20,7 +21,8 @@ const wide = matchMedia('(min-width: 48rem)');
 const still = matchMedia('(prefers-reduced-motion: reduce)');
 
 const pad = (n: number) => String(n).padStart(2, '0');
-// Saving the step is a convenience: with storage blocked, cooking carries on unsaved.
+// Saving the step and its timers is a convenience: with storage blocked, cooking carries
+// on unsaved.
 const remember = <T>(use: () => T): T | undefined => {
   try {
     return use();
@@ -78,10 +80,12 @@ function initRecipeCard(card: HTMLElement): void {
   const countdown = part('[data-rc-countdown]');
   const countdownTime = part('[data-rc-countdown-time]');
   const timerList = part('[data-rc-timers]');
-  const announce = part('[data-rc-announce]');
+  const cancel = part<HTMLButtonElement>('[data-rc-cancel]');
+  const announce = card.querySelector('[data-rc-announce]');
   const back = part<HTMLButtonElement>('[data-rc-back]');
   const next = part<HTMLButtonElement>('[data-rc-next]');
   const storageKey = `recipe-step:${location.pathname}`;
+  const timersKey = `recipe-timers:${location.pathname}`;
 
   // ===== Scaling and view =====
 
@@ -123,11 +127,23 @@ function initRecipeCard(card: HTMLElement): void {
   const tableShown = () => wide.matches && card.dataset.view === 'table';
 
   const scrolling = (): ScrollBehavior => (still.matches ? 'auto' : 'smooth');
-  // Brings a step into view. In the table its column goes just right of the pinned
-  // ingredient column, never under it.
+  const nameOf = (stage: number) => textOf(stages[stage]?.querySelector('.rc-steps-do'));
+  const say = (message: string) => {
+    if (announce) announce.textContent = message;
+  };
+  // A step's picture waits to load until it is near the window. Shown by a pick or by
+  // cooking mode, it is wanted now.
+  const loadPictures = (stage: number) => {
+    for (const picture of stages[stage]?.querySelectorAll('img') ?? []) picture.loading = 'eager';
+  };
+
+  // Brings a step into view. In the list it goes to the top of the window, so a step
+  // taller than the room above the cooking bar still shows its number, its name and what
+  // goes in. In the table its column goes just right of the pinned ingredient column,
+  // never under it.
   const reveal = (stage: number) => {
     if (!tableShown()) {
-      stages[stage]?.scrollIntoView({ block: 'center', behavior: scrolling() });
+      stages[stage]?.scrollIntoView({ block: 'start', behavior: scrolling() });
       return;
     }
     const cell = cells.find((item) => Number(item.dataset.stage) === stage);
@@ -139,6 +155,32 @@ function initRecipeCard(card: HTMLElement): void {
     }
     cell.scrollIntoView({ block: 'center', inline: 'nearest', behavior: scrolling() });
   };
+
+  // ===== The step picked in the table =====
+
+  // Picking a step in the table shows it under the table, as the list has it. Focus stays
+  // on the step's name in the table, so the next pick is one key away; picking the step
+  // that shows puts it away.
+  let picked = -1;
+  const pick = (stage: number) => {
+    picked = stage === picked ? -1 : stage;
+    for (const item of [...stages, ...cells]) {
+      const shown = Number(item.dataset.stage) === picked;
+      item.classList.toggle('is-picked', shown);
+      const link = item.querySelector('a[href^="#rc-step-"]');
+      if (shown) link?.setAttribute('aria-current', 'true');
+      else link?.removeAttribute('aria-current');
+    }
+    if (picked < 0) return;
+    loadPictures(picked);
+    say(`Step ${picked + 1}, ${nameOf(picked)}, is shown under the table.`);
+    stages[picked]?.scrollIntoView({ block: 'nearest', behavior: scrolling() });
+  };
+
+  card.querySelector('[data-rc-all]')?.addEventListener('click', () => {
+    setView('steps');
+    stages[0]?.querySelector<HTMLElement>('.rc-steps-do')?.focus({ preventScroll: true });
+  });
 
   card.addEventListener('change', (event) => {
     const input = event.target;
@@ -191,10 +233,6 @@ function initRecipeCard(card: HTMLElement): void {
     navigator.vibrate?.([200, 100, 200]);
   };
 
-  const say = (message: string) => {
-    if (announce) announce.textContent = message;
-  };
-
   // The bar lines up with the card on wide screens, and the page keeps room for it.
   const placeBar = () => {
     if (current < 0) return;
@@ -212,10 +250,30 @@ function initRecipeCard(card: HTMLElement): void {
     JSON.parse(stages[stage]?.dataset.timers ?? '[]');
   const lower = (text: string) => text.charAt(0).toLowerCase() + text.slice(1);
 
+  // Running timers are kept with the step, so a reload in the middle of a bake loses neither.
+  const keepTimers = () => {
+    remember(() =>
+      timers.length > 0
+        ? sessionStorage.setItem(timersKey, JSON.stringify(timers))
+        : sessionStorage.removeItem(timersKey)
+    );
+  };
+
   const renderTimers = () => {
     const now = Date.now();
     const own = timers.find((timer) => timer.stage === current);
     const phases = phasesOf(current);
+    // The last step's button ends cooking, and says so when that stops a timer.
+    const running = timers.filter((timer) => !timer.done).length;
+    if (next) {
+      next.textContent =
+        current < stages.length - 1
+          ? 'Next'
+          : running > 0
+            ? `Done, and stop the ${running > 1 ? 'timers' : 'timer'}`
+            : 'Done';
+    }
+    if (cancel) cancel.hidden = !own || own.done;
     if (timerButton) {
       timerButton.hidden = phases.length === 0 || Boolean(own);
       const [first, ...rest] = phases.map((phase) => phase.minutes);
@@ -282,6 +340,7 @@ function initRecipeCard(card: HTMLElement): void {
           timer.done = true;
           say(`Time's up: ${timer.label}.`);
         }
+        keepTimers();
       }
     }
     renderTimers();
@@ -300,7 +359,7 @@ function initRecipeCard(card: HTMLElement): void {
     const now = Date.now();
     timers.push({
       stage: current,
-      label: textOf(stages[current]?.querySelector('.rc-steps-do')),
+      label: nameOf(current),
       phases,
       phase: 0,
       start: now,
@@ -309,12 +368,26 @@ function initRecipeCard(card: HTMLElement): void {
       done: false,
     });
     if (!ticking) ticking = window.setInterval(tick, 1000);
+    keepTimers();
     renderTimers();
+    // The button that was pressed is gone; the way on takes the focus.
+    next?.focus();
     say(
       first.cue
         ? `${first.minutes}-minute timer started. Then ${lower(first.cue)}.`
         : `${first.minutes}-minute timer started.`
     );
+  };
+
+  // For a timer started too early, or rolls that come out before their time.
+  const cancelTimer = () => {
+    const own = timers.findIndex((timer) => timer.stage === current);
+    if (own < 0) return;
+    timers.splice(own, 1);
+    keepTimers();
+    renderTimers();
+    timerButton?.focus();
+    say('Timer cancelled.');
   };
 
   // The bar says what the step you're on says, at the amount chosen.
@@ -361,12 +434,13 @@ function initRecipeCard(card: HTMLElement): void {
       const timer = timers[index];
       if (timer && timer.done && timer.stage < current) timers.splice(index, 1);
     }
+    keepTimers();
 
-    const name = textOf(stages[current]?.querySelector('.rc-steps-do'));
+    const name = nameOf(current);
     if (count) count.textContent = `Step ${current + 1} of ${stages.length}`;
     if (title) title.textContent = name;
     if (back) back.disabled = current === 0;
-    if (next) next.textContent = current === stages.length - 1 ? 'Done' : 'Next';
+    loadPictures(current);
     renderTimers();
     describe();
     // Focus stays on Next, so the new step is said aloud.
@@ -375,6 +449,7 @@ function initRecipeCard(card: HTMLElement): void {
   };
 
   const start = (stage = 0) => {
+    if (picked >= 0) pick(picked);
     card.classList.add('is-cooking');
     document.documentElement.classList.add('rc-cooking');
     bar.hidden = false;
@@ -396,7 +471,9 @@ function initRecipeCard(card: HTMLElement): void {
       item.classList.remove('is-current', 'is-done', 'is-used');
     }
     timers.length = 0;
+    keepTimers();
     renderTimers();
+    say('');
     clearInterval(ticking);
     ticking = 0;
     void wakeLock?.release();
@@ -411,21 +488,16 @@ function initRecipeCard(card: HTMLElement): void {
     current === stages.length - 1 ? stop() : show(current + 1)
   );
   timerButton?.addEventListener('click', startTimer);
+  cancel?.addEventListener('click', cancelTimer);
 
   // A step in the table leads to how it is done. While cooking that is the step itself;
-  // otherwise it is the same step in the list, with its notes and pictures.
+  // otherwise the step is shown under the table, with its notes and its picture.
   for (const cell of cells) {
     cell.addEventListener('click', (event) => {
+      event.preventDefault();
       const stage = Number(cell.dataset.stage);
-      if (current >= 0) {
-        event.preventDefault();
-        show(stage);
-      } else if (event.target instanceof Element && event.target.closest('a')) {
-        event.preventDefault();
-        setView('steps');
-        stages[stage]?.scrollIntoView({ block: 'start', behavior: scrolling() });
-        stages[stage]?.querySelector<HTMLElement>('.rc-steps-do')?.focus();
-      }
+      if (current >= 0) show(stage);
+      else pick(stage);
     });
   }
 
@@ -443,8 +515,22 @@ function initRecipeCard(card: HTMLElement): void {
     if (current >= 0 && document.visibilityState === 'visible') void keepAwake();
   });
 
+  // A reload in the middle of cooking comes back to the step, with its timers still
+  // running. Time that passed meanwhile has passed for them too.
   const saved = remember(() => sessionStorage.getItem(storageKey)) ?? null;
-  if (saved !== null) start(Number(saved));
+  if (saved !== null) {
+    // Only keepTimers writes this entry, so what comes back is what it put there.
+    const kept: Timer[] =
+      remember(() => JSON.parse(sessionStorage.getItem(timersKey) ?? '[]')) ?? [];
+    timers.push(...kept);
+    start(Number(saved));
+    if (timers.length > 0) {
+      tick();
+      if (timers.some((timer) => !timer.done)) ticking = window.setInterval(tick, 1000);
+      // The chime needs a sound context, and a browser only grants one on a press.
+      card.addEventListener('click', () => (audio ??= new AudioContext()), { once: true });
+    }
+  }
 }
 
 for (const card of document.querySelectorAll<HTMLElement>('[data-recipe-card]')) {

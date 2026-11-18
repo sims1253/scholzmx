@@ -3,7 +3,8 @@
  * The recipe card is the whole recipe: one description shown as Michael Chu's table (an
  * overview, on screens it fits), as numbered steps with their notes, pictures and a list
  * to gather from, and as a cooking mode that walks through the steps with timers.
- * Table and steps are two views of the same thing, one at a time. See src/lib/recipe.ts.
+ * Table and steps are two views of the same thing, one at a time. Under the table, the
+ * step picked in it is shown as the list has it. See src/lib/recipe.ts.
  */
 import { Image } from 'astro:assets';
 import Series from './Series.astro';
@@ -113,10 +114,12 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
       <p class="rc-summary">
         {makes && (
           <>Makes
-            <span class="rc-qty" data-amount={makes.amount} data-yield
-              >{formatYield(makes.amount)}</span
-            >
-            {makes.unit}.
+            <span itemprop="recipeYield">
+              <span class="rc-qty" data-amount={makes.amount} data-yield
+                >{formatYield(makes.amount)}</span
+              >
+              {makes.unit}</span
+            >.
           </>
         )}
         {equipment.length > 0 && <span data-scale-except={gearChanges ? '2' : undefined}>
@@ -151,7 +154,7 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
             <span class="rc-legend">
               <span class="rc-read">
                 Read left to right: each step combines the rows it spans. Pick a step to read how it
-                is done.
+                is done, under the table.
               </span>
               <span class="rc-key"><span class="rc-swatch"></span>Hands on</span>
               <span class="rc-key"><span class="rc-swatch rc-swatch--wait"></span>Hands off</span>
@@ -164,7 +167,7 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
             <tr>
               <td class="rc-corner" data-stage={getReady ? 0 : undefined}>
                 {getReady && <span class="rc-num">1</span>}
-                {getReady && 'Get ready'}
+                {getReady && <a class="rc-ready" href="#rc-step-0">Get ready</a>}
               </td>
               {columnTasks.map((tasks) => <td class="rc-above">
                 {tasks.length > 0 && <span class="rc-slip">
@@ -235,6 +238,14 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     </div>
 
     <div class="rc-steps-view">
+      {/* Under the table, until a step is picked: where the method is. */}
+      <p class="rc-pick-hint" data-pagefind-ignore>
+        Pick a step in the table to read here how it is done, with my notes and pictures. Or
+        <button type="button" class="rc-link" data-rc-all>
+          read all {steps.length + offset} steps in order
+        </button
+        >.
+      </p>
       <aside class="rc-gather" aria-labelledby="rc-gather-title">
         <h3 class="rc-gather-title" id="rc-gather-title">Gather</h3>
         <ul class="rc-gather-list">
@@ -270,8 +281,8 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
       </aside>
 
       <ol class="rc-steps" itemprop="recipeInstructions">
-        {getReady && <li class="rc-steps-item" id="rc-step-0" data-stage="0">
-          <h3 class="rc-steps-do">Get ready</h3>
+        {getReady && <li class="rc-steps-item" id="rc-step-0" data-stage="0" data-number="1">
+          <h3 class="rc-steps-do" tabindex="-1">Get ready</h3>
           <div class="rc-steps-detail">
             {equipment.length > 0 && <p data-scale-except={gearChanges ? '2' : undefined}>
               Set out <Series items={tools} last="and" />.
@@ -291,62 +302,68 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
           class:list={['rc-steps-item', { 'rc-steps-item--wait': step.wait }]}
           id={`rc-step-${index + offset}`}
           data-stage={index + offset}
+          data-number={number(index)}
           data-timers={timersOf(step).length > 0 ? JSON.stringify(timersOf(step)) : undefined}
         >
-          <h3 class="rc-steps-do" tabindex="-1">{step.do}</h3>
-          <ul class="rc-uses">
-            {inputsOf(step).map((input) => <li>
-              <span class="rc-uses-qty">
-                {input.ingredient?.amount !== undefined && <span
-                  class="rc-qty"
-                  data-amount={input.ingredient.amount}
-                  data-unit={input.ingredient.unit}
-                  data-fixed={input.ingredient.scales === false ? '' : undefined}
-                  >{amountOf(input.ingredient)}</span
-                >}
-              </span>
-              <span class:list={['rc-uses-name', { 'rc-uses-result': !input.ingredient }]}
-                >{input.text}</span
-              >
-            </li>)}
-          </ul>
-          {versionsOf(step).map((version) => <p
-            class="rc-steps-detail"
-            data-scale-only={version.only}
-            data-scale-except={version.except || undefined}
-            hidden={version.only !== undefined}
-          >
-            {version.text}
-          </p>)}
-          {(when(step) || step.wait) && <p
-            class:list={['rc-steps-when', { 'rc-steps-when--wait': step.wait }]}
-          >
-            {[when(step), step.wait ? 'hands off' : ''].filter(Boolean).join(', ')}
-          </p>}
-          {tasksDuring(step).map((task) => <p class="rc-steps-meanwhile">
-            <span>Meanwhile:</span>
-            {task}
-          </p>)}
-          {step.notes && <div class="rc-notes">
-            {step.notes.map((note) => <p>
-              {splitAmounts(note).map((part) =>
-                part.kind === 'text' ? (
-                  part.text
-                ) : (
-                  <span class="rc-qty" data-amount={part.amount} data-unit={part.unit}
-                    >{formatAmount(part.amount, part.unit)}</span
-                  >
-                )
-              )}
+          <div class="rc-steps-text">
+            <h3 class="rc-steps-do" tabindex="-1">{step.do}</h3>
+            <ul class="rc-uses">
+              {inputsOf(step).map((input) => <li>
+                <span class="rc-uses-qty">
+                  {input.ingredient?.amount !== undefined && <span
+                    class="rc-qty"
+                    data-amount={input.ingredient.amount}
+                    data-unit={input.ingredient.unit}
+                    data-fixed={input.ingredient.scales === false ? '' : undefined}
+                    >{amountOf(input.ingredient)}</span
+                  >}
+                </span>
+                <span class:list={['rc-uses-name', { 'rc-uses-result': !input.ingredient }]}
+                  >{input.text}</span
+                >
+              </li>)}
+            </ul>
+            {versionsOf(step).map((version) => <p
+              class="rc-steps-detail"
+              data-scale-only={version.only}
+              data-scale-except={version.except || undefined}
+              hidden={version.only !== undefined}
+            >
+              {version.text}
             </p>)}
-          </div>}
-          {step.photo && <figure class="rc-photo">
+            {(when(step) || step.wait) && <p
+              class:list={['rc-steps-when', { 'rc-steps-when--wait': step.wait }]}
+            >
+              {[when(step), step.wait ? 'hands off' : ''].filter(Boolean).join(', ')}
+            </p>}
+            {tasksDuring(step).map((task) => <p class="rc-steps-meanwhile">
+              <span>Meanwhile:</span>
+              {task}
+            </p>)}
+            {step.notes && <div class="rc-notes">
+              {step.notes.map((note) => <p>
+                {splitAmounts(note).map((part) =>
+                  part.kind === 'text' ? (
+                    part.text
+                  ) : (
+                    <span class="rc-qty" data-amount={part.amount} data-unit={part.unit}
+                      >{formatAmount(part.amount, part.unit)}</span
+                    >
+                  )
+                )}
+              </p>)}
+            </div>}
+          </div>
+          {step.photo && <figure
+            class="rc-photo"
+            style={`--shape: ${(step.photo.src.width / step.photo.src.height).toFixed(3)}`}
+          >
             <Image
               src={step.photo.src}
-              alt=""
+              alt={step.photo.alt}
               width={640}
-              widths={[320, 480, 640, 960]}
-              sizes="(min-width: 48rem) 16rem, 70vw"
+              widths={[320, 480, 640, 960, 1280]}
+              sizes="(min-width: 48rem) 27rem, 85vw"
               format="avif"
               loading="lazy"
             />
@@ -380,6 +397,7 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
           <span class="rc-countdown-time" data-rc-countdown-time></span>
           <span class="rc-countdown-label" data-rc-countdown-label>left on this step</span>
         </p>
+        <button type="button" class="rc-link rc-cancel" data-rc-cancel hidden>Cancel timer</button>
       </div>
       <div class="rc-cook-nav">
         <button type="button" class="rc-link" data-rc-back>Back</button>
@@ -387,8 +405,9 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
         <button type="button" class="rc-link" data-rc-stop>Stop cooking</button>
       </div>
     </div>
-    <p class="sr-only" aria-live="assertive" data-rc-announce></p>
   </div>
+  {/* Says the step picked or reached, and what the timers do. */}
+  <p class="sr-only" aria-live="assertive" data-rc-announce data-pagefind-ignore></p>
 </section>
 
 {/* Open with the table where it fits the window's width, and with the steps where it
@@ -787,6 +806,18 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     text-align: left;
   }
 
+  .rc-ready {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .rc-ready:hover {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, currentcolor 45%, transparent);
+    text-underline-offset: 0.18em;
+  }
+
   .rc-corner .rc-num {
     display: inline;
     margin-right: 0.3rem;
@@ -956,18 +987,21 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     margin: 0;
     padding: 0;
     list-style: none;
-    counter-reset: rc-step;
   }
 
+  /* A step brought into view starts a little under the window's top, so its number and
+     name are the first thing read. */
   .rc-steps-item {
     position: relative;
     margin: 0 0 var(--space-md);
     padding: 0 0 0 2.6rem;
-    counter-increment: rc-step;
+    scroll-margin-top: var(--space-md);
   }
 
+  /* The number is written into the step, not counted: under the table one step shows
+     alone and keeps its number. */
   .rc-steps-item::before {
-    content: counter(rc-step);
+    content: attr(data-number);
     position: absolute;
     left: 0;
     top: -0.1rem;
@@ -1074,9 +1108,10 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     font-weight: inherit;
   }
 
-  /* What the step looks like when it is right: a small print, kept beside its step. */
+  /* What the step looks like when it is right: a print kept with its step. An upright
+     picture and a wide one get the same height at most, so neither crowds the text. */
   .rc-photo {
-    width: min(100%, 16rem);
+    width: min(100%, 21rem * var(--shape, 1.5));
     margin: 0.8rem 0 0.2rem;
     padding: 0.45rem 0.45rem 0.35rem;
     background: var(--print-sheet);
@@ -1108,10 +1143,68 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     display: none;
   }
 
+  .rc-pick-hint {
+    display: none;
+    max-width: 44rem;
+    margin: 0;
+    font-style: italic;
+    color: var(--color-text-secondary);
+  }
+
+  .rc-pick-hint .rc-link {
+    padding: 0;
+    font-size: inherit;
+    font-style: inherit;
+  }
+
+  /* Under the table: the step picked in it, as the list has it, with its notes and its
+     picture beside them. Until one is picked, a line says so. The table has the
+     ingredients, so the list to gather from stays away. While cooking the bar says what
+     the step says. */
   @media (min-width: 48rem) {
     .recipe-card[data-view='table'] .rc-steps-view {
+      display: block;
+      margin-top: var(--space-md);
+      padding-top: var(--space-md);
+      border-top: 1px solid var(--rc-rule);
+    }
+
+    .recipe-card.is-cooking[data-view='table'] .rc-steps-view,
+    .recipe-card[data-view='table'] .rc-gather,
+    .recipe-card[data-view='table'] .rc-steps-item:not(.is-picked) {
       display: none;
     }
+
+    .recipe-card[data-view='table']:not(:has(.rc-steps-item.is-picked)) .rc-pick-hint {
+      display: block;
+    }
+
+    .recipe-card[data-view='table'] .rc-steps {
+      max-width: none;
+    }
+
+    .recipe-card[data-view='table'] .rc-steps-item {
+      display: grid;
+      grid-template-columns: minmax(0, 30rem) minmax(0, auto);
+      column-gap: var(--space-xl);
+      align-items: start;
+      margin-bottom: 0;
+    }
+
+    .recipe-card[data-view='table'] .rc-photo {
+      margin-top: 0.3rem;
+    }
+
+    /* The step shown under the table is marked in it, in the ink of a chosen option. */
+    .recipe-card[data-view='table']:not(.is-cooking) :is(.rc-step, .rc-corner).is-picked {
+      outline: 2px solid var(--color-walnut);
+      outline-offset: -2px;
+    }
+  }
+
+  /* With the script there, a step in the table is something to pick. */
+  .recipe-card[data-view] .rc-table [data-stage] {
+    cursor: pointer;
   }
 
   /* A phone shows one column of the table at a time, so it has the steps only. */
@@ -1190,15 +1283,10 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
       center / contain no-repeat;
   }
 
-  .recipe-card.is-cooking .rc-table [data-stage] {
-    cursor: pointer;
-  }
-
   .rc-cook {
     position: fixed;
     inset: auto 0 0;
     z-index: 1100;
-    padding: 0 0 var(--space-sm);
     pointer-events: none;
   }
 
@@ -1221,6 +1309,7 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     background: var(--paper-sheet);
     border: 1px solid color-mix(in srgb, var(--color-ink-dark) 12%, transparent);
     border-top: 3px solid color-mix(in srgb, var(--color-tansy) 45%, var(--paper-sheet));
+    border-bottom: 0;
     box-shadow: 0 -12px 30px -14px color-mix(in srgb, var(--color-ink-dark) 45%, transparent);
     pointer-events: auto;
   }
@@ -1296,9 +1385,22 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     overflow-y: auto;
   }
 
-  /* In the step list the highlighted step already shows what goes in and what to do. */
+  /* In the step list the highlighted step already shows what goes in and what to do, so
+     the bar is one low row: the step, its timer, and the way on. */
   .recipe-card:not([data-view='table']) :is(.rc-cook-uses, .rc-cook-detail, .rc-cook-notes) {
     display: none;
+  }
+
+  @media (min-width: 48.001rem) {
+    .recipe-card:not([data-view='table']) .rc-cook-inner {
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      grid-template-areas: 'step clock nav';
+      align-items: center;
+    }
+
+    .recipe-card:not([data-view='table']) .rc-cook-nav {
+      align-self: center;
+    }
   }
 
   @media (max-width: 47.999rem) {
@@ -1330,8 +1432,19 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
 
   .rc-cook-clock {
     grid-area: clock;
+    display: flex;
+    align-items: center;
+    gap: 0.2rem 0.9rem;
     justify-self: end;
     text-align: right;
+  }
+
+  .rc-cook-clock [hidden] {
+    display: none;
+  }
+
+  .rc-cook-clock:has([data-rc-timer][hidden]):has([data-rc-countdown][hidden]) {
+    display: none;
   }
 
   .rc-countdown {
@@ -1364,8 +1477,9 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     align-self: end;
   }
 
+  /* The chips are made by the script, so they carry no scope of their own. */
   .rc-timer,
-  .rc-timers button {
+  .rc-timers :global(button) {
     padding: 0.35rem 0.85rem;
     border: 1px solid var(--color-ochre);
     border-radius: 999px;
@@ -1412,21 +1526,17 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     margin: 0;
   }
 
-  .rc-timers button {
+  .rc-timers :global(button) {
     padding: 0.15rem 0.7rem;
     font-size: var(--text-xs);
     font-variant-numeric: tabular-nums;
   }
 
-  .rc-timers button.is-done {
+  .rc-timers :global(button.is-done) {
     background: color-mix(in srgb, var(--color-tansy) 40%, var(--paper-sheet));
   }
 
   @media (max-width: 48rem) {
-    .rc-cook {
-      padding: 0;
-    }
-
     .rc-cook-inner {
       grid-template-columns: minmax(0, 1fr);
       grid-template-areas:
@@ -1434,10 +1544,10 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
         'clock'
         'nav';
       border-inline: 0;
-      border-bottom: 0;
     }
 
     .rc-cook-clock {
+      flex-wrap: wrap;
       justify-self: start;
       text-align: left;
     }
@@ -1448,8 +1558,9 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
       font-size: 2rem;
     }
 
-    .rc-cook-clock:has([data-rc-timer][hidden]):has([data-rc-countdown][hidden]) {
-      display: none;
+    .rc-countdown {
+      display: flex;
+      align-items: baseline;
     }
 
     /* Next is the button you reach for; Back and Stop sit either side as words. */

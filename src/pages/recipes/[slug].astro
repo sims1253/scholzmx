@@ -30,6 +30,8 @@ const isoDuration = `PT${Math.floor(minutes / 60)}H${minutes % 60}M`;
 const tags = recipe.data.tags ?? [];
 const tagLinks = tags.map((text) => ({ text, href: `/recipes?tag=${encodeURIComponent(text)}` }));
 const pictured = recipe.data.heroImage !== undefined;
+// A recipe with steps and a yield has a card, and the card says what it makes.
+const carded = steps !== undefined && recipe.data.makes !== undefined;
 ---
 
 <BaseLayout
@@ -41,44 +43,37 @@ const pictured = recipe.data.heroImage !== undefined;
   prose={true}
 >
   <article class="recipe-content" itemscope itemtype="https://schema.org/Recipe">
-    {/* The page opens with what the recipe is and a few words about it. Everything about
-        making it is in the card: the method is told once. */}
+    {/* The page opens with what the recipe is, the picture, and a few words about it.
+        Everything about making it is in the card: the method is told once. The picture
+        comes second, so on a phone the food and the way to the method share the first
+        screen; on a wide screen it stands beside the words. */}
     <div class:list={['recipe-top', { 'recipe-top--pictured': pictured }]}>
-      <div class="recipe-opening">
-        <header class="recipe-header">
-          <h1 class="recipe-title" itemprop="name" data-pagefind-meta="title">
-            {recipe.data.title}
-          </h1>
-          <p class="recipe-description" itemprop="description" data-pagefind-meta="description">
-            {recipe.data.description}
-          </p>
-          <p class="recipe-facts">
-            Makes <span itemprop="recipeYield">{recipe.data.servings}</span>.
-            {steps ? (
-              <>
-                <meta itemprop="totalTime" content={isoDuration} />
-                {timeSentence(steps, prepMinutes)}
-                <a class="recipe-jump" href="#recipe-card-title">Go to the recipe</a>
-              </>
-            ) : (
-              <>Takes <span itemprop="totalTime">{recipe.data.time}</span>.</>
-            )}
-          </p>
-        </header>
-
-        <section class="recipe-body prose" data-pagefind-body data-pagefind-filter="type:recipe">
-          <Content components={{ DropCap }} />
-        </section>
-
-        {tags.length > 0 && <p class="recipe-meta" data-pagefind-meta={`tags:${tags.join(', ')}`}>
-          Filed under <Series items={tagLinks} />.
-        </p>}
-      </div>
+      <header class="recipe-header">
+        <h1 class="recipe-title" itemprop="name" data-pagefind-meta="title">
+          {recipe.data.title}
+        </h1>
+        <p class="recipe-description" itemprop="description" data-pagefind-meta="description">
+          {recipe.data.description}
+        </p>
+        <p class="recipe-facts">
+          {/* A card says what it makes beside the control that changes it. */}
+          {!carded && <>Makes <span itemprop="recipeYield">{recipe.data.servings}</span>.</>}
+          {steps ? (
+            <>
+              <meta itemprop="totalTime" content={isoDuration} />
+              {timeSentence(steps, prepMinutes)}
+              <a class="recipe-jump" href="#recipe-card-title">Go to the recipe</a>
+            </>
+          ) : (
+            <>Takes <span itemprop="totalTime">{recipe.data.time}</span>.</>
+          )}
+        </p>
+      </header>
 
       {recipe.data.heroImage && <div class="recipe-hero pasted">
         <ImageFrame
           src={recipe.data.heroImage}
-          alt={recipe.data.title}
+          alt={recipe.data.heroAlt ?? recipe.data.title}
           style="hero"
           aspectRatio="3/2"
           scale={recipe.data.heroImageScale}
@@ -88,6 +83,14 @@ const pictured = recipe.data.heroImage !== undefined;
           width={800}
         />
       </div>}
+
+      <section class="recipe-body prose" data-pagefind-body data-pagefind-filter="type:recipe">
+        <Content components={{ DropCap }} />
+      </section>
+
+      {tags.length > 0 && <p class="recipe-meta" data-pagefind-meta={`tags:${tags.join(', ')}`}>
+        Filed under <Series items={tagLinks} />.
+      </p>}
     </div>
 
     {recipe.data.steps && (
@@ -108,16 +111,21 @@ const pictured = recipe.data.heroImage !== undefined;
 </BaseLayout>
 
 <style>
-  .recipe-content {
-    position: relative;
-  }
-
+  /* The top of the page keeps the header's edges: the title starts under the wordmark and
+     the picture ends under the light switch. The card below is a wider sheet laid on the
+     page. */
   .recipe-top {
-    margin: var(--page-top) 0 var(--space-lg);
+    --top-width: min(var(--site-width) - 2 * var(--space-md), 100cqi - 2 * var(--space-md));
+
+    display: grid;
+    gap: var(--space-md);
+    width: var(--top-width);
+    margin: var(--page-top) calc((100% - var(--top-width)) / 2) var(--space-lg);
   }
 
-  .recipe-header {
-    margin: 0 0 var(--space-md);
+  .recipe-top > * {
+    min-width: 0;
+    margin: 0;
   }
 
   .recipe-title {
@@ -129,14 +137,16 @@ const pictured = recipe.data.heroImage !== undefined;
   }
 
   .recipe-description {
+    max-width: 34rem;
     margin: 0 0 0.6em;
     font-size: var(--text-lg);
     font-style: italic;
     line-height: 1.45;
     color: var(--color-text-secondary);
+    text-wrap: pretty;
   }
 
-  /* What a cook asks first: how many, and how long. */
+  /* What a cook asks first: how long, and where the method is. */
   .recipe-facts {
     margin: 0;
     font-variant-numeric: oldstyle-nums;
@@ -147,12 +157,15 @@ const pictured = recipe.data.heroImage !== undefined;
     white-space: nowrap;
   }
 
+  .recipe-body {
+    max-width: var(--measure-prose);
+  }
+
   .recipe-body :global(p:last-child) {
     margin-bottom: 0;
   }
 
   .recipe-meta {
-    margin: var(--space-sm) 0 0;
     font-size: var(--text-sm);
     font-style: italic;
     color: var(--color-text-muted);
@@ -164,7 +177,7 @@ const pictured = recipe.data.heroImage !== undefined;
   }
 
   .recipe-hero {
-    margin: var(--space-lg) 0 0;
+    max-width: 34rem;
   }
 
   .recipe-hero :global(.image-frame) {
@@ -181,36 +194,28 @@ const pictured = recipe.data.heroImage !== undefined;
     filter: var(--print-dim);
   }
 
-  /* On a wide screen the words and the picture share the top of the page, as wide
-     together as the card under them, so the card starts on the first screen. The
-     picture is pasted in a little askew. */
-  @media (min-width: 64rem) {
+  /* On a wide screen the words and the picture share the top of the page, so the card
+     starts on the first screen. The picture is pasted in a little askew, and whatever
+     height it has over the words goes under them. */
+  @media (min-width: 60rem) {
     .recipe-top--pictured {
-      --top-width: min(64rem, 100cqi - 2 * var(--space-md));
-
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 25rem);
-      gap: var(--space-xl);
-      align-items: start;
-      width: var(--top-width);
-      margin-inline: calc((100% - var(--top-width)) / 2);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 24rem);
+      grid-template-rows: auto auto 1fr;
+      column-gap: var(--space-xl);
     }
 
     .recipe-top--pictured .recipe-hero {
+      grid-column: 2;
+      grid-row: 1 / -1;
       margin-top: 0.6rem;
       rotate: 1.2deg;
     }
-
-    /* The card is on the screen already. */
-    .recipe-top--pictured .recipe-jump {
-      display: none;
-    }
   }
 
+  /* Under the card, on the card's axis. */
   .recipe-footer {
-    margin-top: var(--space-xxl);
-    padding-top: var(--space-lg);
-    border-top: 1px solid var(--rule-ink);
+    margin-top: var(--space-xl);
+    text-align: center;
   }
 
   .recipe-footer p {

@@ -32,7 +32,8 @@ const recipes = defineCollection({
         description: z.string(),
         servings: z.string(),
         time: z.string(),
-        date: z.coerce.date().optional(),
+        /** When the recipe was added. */
+        date: z.coerce.date(),
         tags: z.array(z.string()).optional(),
         /** Scaling multiplies this, e.g. { amount: 15, unit: 'rolls' }. */
         makes: z.object({ amount: z.number().positive(), unit: z.string() }).optional(),
@@ -75,7 +76,8 @@ const recipes = defineCollection({
               result: z.string().optional(),
               /** The why and the tips; amounts in braces scale with the recipe. */
               notes: z.array(z.string()).optional(),
-              photo: z.object({ src: image(), caption: z.string() }).optional(),
+              /** `alt` says what the picture shows; `caption` what it tells the cook. */
+              photo: z.object({ src: image(), alt: z.string(), caption: z.string() }).optional(),
               /** Stages of a timed step; they add up to `minutes`. */
               timers: z
                 .array(z.object({ minutes: z.number().positive(), cue: z.string().optional() }))
@@ -88,6 +90,8 @@ const recipes = defineCollection({
           .optional(),
         meanwhile: z.array(z.object({ do: z.string(), during: z.string() })).optional(),
         heroImage: image().optional(),
+        /** What the hero picture shows, for whoever cannot see it. */
+        heroAlt: z.string().optional(),
         heroImagePositionX: z.number().optional(),
         heroImagePositionY: z.number().optional(),
         heroImageScale: z.number().optional(),

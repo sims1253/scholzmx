@@ -5,6 +5,8 @@ servings: '15 rolls'
 time: '3 hours (2h rising)'
 tags: ['Snack', 'Bread', 'Vegetarian']
 heroImage: '../../assets/images/recipes/hokkaido-dinner-rolls/stack.jpg'
+heroAlt: Torn-apart rolls stacked two rows high on a board, with dark brown tops over a bright yellow, fluffy crumb.
+date: 2025-12-04
 draft: false
 makes: { amount: 15, unit: rolls }
 prepMinutes: 10
@@ -82,7 +84,7 @@ steps:
     result: dough
     detail: Combine the squash purée with the flour, sugar, soft butter, yeast and spices. Don't forget the salt! Knead the dough well until smooth.
     notes:
-      - For our group of murder mystery grandmas, below {50 g} sugar didn't give us the sweet-ish snack taste and above {100 g} started to enter full dessert territory. {75 g} hit the balance of slightly sweet but still rolls rather than cake. The molasses notes from raw cane sugar pair nicely with the squash.
+      - For our group of murder mystery grandmas, below 50 g sugar didn't give us the sweet-ish snack taste and above 100 g started to enter full dessert territory. 75 g hit the balance of slightly sweet but still rolls rather than cake. The molasses notes from raw cane sugar pair nicely with the squash.
       - Freshly grated lime, lemon or orange zest works wonderfully as well, especially combined with the cardamom.
   - id: rise
     uses: [knead]
@@ -104,6 +106,7 @@ steps:
       - With higher hydration the dough gets clingy. Instead of fighting it with your hands you can use a bench scraper.
     photo:
       src: '../../assets/images/recipes/hokkaido-dinner-rolls/small_balls.jpg'
+      alt: Fifteen pale yellow dough balls in three rows of five on parchment paper, with gaps between them.
       caption: Fifteen dough balls in a baking dish, before the second rise
   - id: proof
     uses: [shape]
@@ -116,6 +119,7 @@ steps:
       - As the cover I use a larger 40 × 32 cm IKEA form. It perfectly fits over the baking dish and has enough headroom for the rolls to rise.
     photo:
       src: '../../assets/images/recipes/hokkaido-dinner-rolls/large_balls.jpg'
+      alt: The same dough balls, about twice the size, pressed against each other and filling the dish.
       caption: The dough balls after the second rise, puffed up and touching
   - id: bake
     uses: [proof]
@@ -125,7 +129,7 @@ steps:
     wait: true
     result: softies
     timers:
-      - { minutes: 8, cue: 'Turn the oven down to 200 °C (400 °F)' }
+      - { minutes: 8, cue: 'Turn the oven down to 200 °C (400 °F), or to 180 °C (350 °F) with convection' }
       - { minutes: 15 }
     detail: Put the softies in the oven at 220 °C (425 °F). After 8 minutes reduce the temperature to 200 °C (400 °F) and bake until golden brown on top, around 23 minutes in total. With convection, use 200 °C (400 °F), then 180 °C (350 °F).
     notes:
@@ -138,9 +142,10 @@ steps:
       - I find that the rolls store well in the (cooled) oven over night and make for a great weekend breakfast treat.
     photo:
       src: '../../assets/images/recipes/hokkaido-dinner-rolls/total.jpg'
+      alt: The baked rolls in the dish, grown together into one sheet, with dark brown tops and golden yellow seams.
       caption: The golden, cottony crumb of the finished softies
 meanwhile:
-  - do: Preheat the oven to 220 °C (425 °F)
+  - do: Preheat the oven to 220 °C (425 °F), or to 200 °C (400 °F) with convection
     during: proof
 ---
 
