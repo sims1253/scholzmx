@@ -73,17 +73,12 @@ try {
           portraits.every((portrait) => portrait.coversFrame),
           `Portrait gap at ${width}px`
         );
-        // Painted bounds measured on the live homepage; allow one pixel for image resize rounding.
-        const liveFraming =
-          width === 390
-            ? [
-                [-5.2, -13.328, 130.4, 173.6],
-                [-18.71, -3.5, 139.419, 210],
-              ]
-            : [
-                [-12.35, -28.808, 224.7, 299.6],
-                [-30, -5.75, 230, 345],
-              ];
+        // Painted bounds measured on the live homepage; allow one pixel for image resize
+        // rounding. A phone shows the portrait at the same size as a desk does.
+        const liveFraming = [
+          [-12.35, -28.808, 224.7, 299.6],
+          [-30, -5.75, 230, 345],
+        ];
         for (const [index, portrait] of portraits.entries()) {
           for (const [dimension, value] of portrait.paintedBounds.entries()) {
             assert.ok(
@@ -112,6 +107,18 @@ try {
   assert.notEqual(await page.$eval('html', (element) => element.dataset.theme), theme);
   await page.reload({ waitUntil: 'networkidle0' });
   assert.notEqual(await page.$eval('html', (element) => element.dataset.theme), theme);
+  // A link reached with the keyboard shows a ring that can be seen.
+  await page.focus('.niche-door');
+  await page.keyboard.press('Tab');
+  const ring = await page.evaluate(() => {
+    const style = getComputedStyle(document.activeElement);
+    return {
+      tag: document.activeElement.tagName,
+      style: style.outlineStyle,
+      width: style.outlineWidth,
+    };
+  });
+  assert.deepEqual(ring, { tag: 'A', style: 'solid', width: '2px' }, 'Link focus ring');
   // The portrait has a second photo on its back; the button under it turns it over.
   await page.click('.frame-turn');
   assert.equal(
@@ -165,7 +172,8 @@ try {
       const shown = (selector) => card.querySelector(selector).getClientRects().length > 0;
       return {
         table: shown('.rc-table-frame'),
-        steps: shown('.rc-steps-view'),
+        // Under the table only a picked step shows; the list has all of them.
+        steps: shown('#rc-step-1'),
         hidden:
           card.querySelector('.rc-table-wrap').scrollWidth -
           card.querySelector('.rc-table-wrap').clientWidth,
@@ -175,11 +183,43 @@ try {
     assert.equal(opened.steps, view === 'steps', `Recipe steps at ${width}px`);
     if (view === 'table') assert.ok(opened.hidden <= 1, 'The opening table must not scroll');
   }
-  // Half a batch makes whole rolls, and the bake is timed in its two stages.
+  // Half a batch makes whole rolls. Doubling leaves the story of what was tried alone.
   await page.click('input[name="rc-scale"][value="0.5"]');
   assert.equal(await page.$eval('[data-yield]', (element) => element.textContent), '7 or 8');
+  await page.click('input[name="rc-scale"][value="2"]');
+  assert.match(
+    await page.$eval('#rc-step-3 .rc-notes', (element) => element.textContent),
+    /below 50 g sugar.*above 100 g.*75 g hit/s
+  );
+  await page.click('input[name="rc-scale"][value="1"]');
+  // Every picture says what it shows.
+  assert.ok(
+    await page.$$eval('.rc-photo img, .recipe-hero img', (images) =>
+      images.every((image) => image.alt.length > 20)
+    ),
+    'Recipe pictures need alt text'
+  );
+
+  // Cooking on a phone: a step taller than the screen starts at its number and name.
   await page.click('[data-rc-start]');
-  for (let step = 0; step < 7; step++) await page.click('[data-rc-next]');
+  for (let step = 0; step < 3; step++) await page.click('[data-rc-next]');
+  const knead = await page.$eval('#rc-step-3', (step) => step.getBoundingClientRect().top);
+  assert.ok(knead >= 0 && knead < 120, `Knead starts at ${knead}px, not at the top`);
+  // Starting a timer leaves the focus on the way on, and other steps' timers are chips
+  // in the card's own dress. A timer can be cancelled.
+  await page.click('[data-rc-timer]');
+  assert.ok(await page.$eval('[data-rc-next]', (next) => next === document.activeElement));
+  await page.click('[data-rc-next]');
+  assert.equal(
+    await page.$eval('.rc-timers button', (chip) => getComputedStyle(chip).borderRadius),
+    '999px'
+  );
+  await page.click('.rc-timers button');
+  await page.click('[data-rc-cancel]');
+  assert.equal(await page.$('.rc-timers button'), null);
+  assert.ok(await page.$eval('[data-rc-timer]', (start) => start === document.activeElement));
+  // The bake is timed in its two stages, and its cue is right for both kinds of oven.
+  for (let step = 0; step < 4; step++) await page.click('[data-rc-next]');
   assert.match(
     await page.$eval('[data-rc-timer]', (element) => element.textContent),
     /8 min, then 15 min/
@@ -188,7 +228,37 @@ try {
     await page.$eval('[data-rc-announce]', (element) => element.textContent),
     /^Step 8 of 9: Bake/
   );
+  await page.click('[data-rc-timer]');
+  assert.match(
+    await page.$eval('[data-rc-countdown-label]', (element) => element.textContent),
+    /200 °C.*180 °C.*with convection/
+  );
+  // A reload in the middle of the bake keeps the step and its timer.
+  await page.reload({ waitUntil: 'networkidle0' });
+  assert.match(
+    await page.$eval('[data-rc-countdown-time]', (element) => element.textContent),
+    /^0[78]:\d\d$/
+  );
   await page.click('[data-rc-stop]');
+
+  // On a desk the table is complete on its own: a picked step shows under it, alone.
+  await page.setViewport({ width: 1440, height: 844 });
+  await page.reload({ waitUntil: 'networkidle0' });
+  await page.click('.rc-step[data-stage="5"] a');
+  const pickedStep = await page.$eval('[data-recipe-card]', (card) => ({
+    table: card.querySelector('.rc-table-frame').getClientRects().length > 0,
+    shown: [...card.querySelectorAll('.rc-steps-item')]
+      .filter((step) => step.getClientRects().length > 0)
+      .map((step) => step.id),
+    number: getComputedStyle(card.querySelector('#rc-step-5'), '::before').content,
+    said: card.querySelector('[data-rc-announce]').textContent,
+  }));
+  assert.deepEqual(pickedStep, {
+    table: true,
+    shown: ['rc-step-5'],
+    number: '"6"',
+    said: 'Step 6, Shape into balls, is shown under the table.',
+  });
   // Force lazy images to load before checking their decoded dimensions.
   await page.$$eval('img', async (images) => {
     for (const image of images) {

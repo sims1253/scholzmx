@@ -25,9 +25,9 @@ Blog, recipes, research and projects are desks of cards, each shelf in one mater
 Images that stand alone in a paragraph or figure in posts, recipes and notes are pasted in as prints automatically. Wrap other photos in `.pasted` for the same two paper strips.
 
 ## Recipes
-Recipes describe their ingredients and steps in frontmatter, and the card is the whole recipe: the method is told once. `RecipeCard.astro` shows it as Michael Chu's recipe table (ingredients down the left in the order they go in, each step spanning what it combines, with a clock row of start times underneath), as a numbered step list with a list to gather from, and as a cooking mode with timers. Table and steps are two views of the same thing, one at a time, switched with "Show as". In windows of 48rem (768px) and wider, a recipe opens with the table if the table fits the window's width, and with the steps if it would scroll sideways. Narrower windows have the steps only. Without JavaScript the steps show. A step's name in the table leads to that step in the list. The table, the list and cooking mode number the steps the same way; "Get ready" is step 1 and the table's ingredient column.
+Recipes describe their ingredients and steps in frontmatter, and the card is the whole recipe: the method is told once. `RecipeCard.astro` shows it as Michael Chu's recipe table (ingredients down the left in the order they go in, each step spanning what it combines, with a clock row of start times underneath), as a numbered step list with a list to gather from, and as a cooking mode with timers. Table and steps are two views of the same thing, one at a time, switched with "Show as". In windows of 48rem (768px) and wider, a recipe opens with the table if the table fits the window's width, and with the steps if it would scroll sideways. Narrower windows have the steps only. Without JavaScript the steps show. Picking a step in the table shows that step under the table, as the list has it, with its notes and its picture. The table, the list and cooking mode number the steps the same way; "Get ready" is step 1 and the table's ingredient column.
 
-What a step's instruction leaves out goes into the step, not into prose under the card: `notes` for the why, the tips and the latitude, and `photo` for what the step looks like when it is right. The Markdown body is a short introduction; it stands at the top of the page beside the hero picture, with yield and time.
+What a step's instruction leaves out goes into the step, not into prose under the card: `notes` for the why, the tips and the latitude, and `photo` for what the step looks like when it is right. The Markdown body is a short introduction; it stands at the top of the page beside the hero picture, with the time. The card says what the recipe makes, beside the control that scales it. `heroAlt` says what the hero picture shows, and `date` when the recipe was added.
 
 ```yaml
 makes: { amount: 15, unit: rolls } # what Half and Double scale
@@ -53,17 +53,18 @@ steps:
     wait: true # hands-off time, drawn in leaf shade
     heat: 160 °C
     result: roasted squash # how later steps refer to it
-    notes: # asides under the step; amounts in braces scale with the recipe
+    notes: # asides under the step; amounts in braces scale with the recipe. An account of what you tried stays as it happened: write those amounts without braces
       - You can't really over-roast the squash, as you can blend it with more water, up to {180 ml}.
-    photo: # a small print under the step, served at the size shown
+    photo: # a print kept with the step
       src: '../../assets/images/recipes/rolls/roasted.jpg'
+      alt: Orange squash cubes on a baking sheet, browned at the edges # what the picture shows
       caption: The cubes when they are soft enough
   - id: bake
     uses: [roast]
     do: Bake
     minutes: 23
     timers: # stages of a timed step; they add up to `minutes`
-      - { minutes: 8, cue: 'Turn the oven down to 200 °C' } # said and shown when the stage ends
+      - { minutes: 8, cue: 'Turn the oven down to 200 °C, or to 180 °C with convection' } # said and shown when the stage ends; it must be right for every oven the step allows
       - { minutes: 15 }
     detail: Line the dish and set 15 balls in it.
     halved: Line the dish and set 7 or 8 balls in it. # the instruction for Half, where `detail` would be wrong
