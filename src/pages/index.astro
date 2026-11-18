@@ -16,7 +16,7 @@ const newestPost = (await getCollection('blog', ({ data }) => !data.draft)).sort
   (a, b) => b.data.date.getTime() - a.data.date.getTime()
 )[0];
 const newestRecipe = (await getCollection('recipes', ({ data }) => !data.draft)).sort(
-  (a, b) => (b.data.date?.getTime() ?? 0) - (a.data.date?.getTime() ?? 0)
+  (a, b) => b.data.date.getTime() - a.data.date.getTime()
 )[0];
 const newestProject = projects[0];
 const newestPaper = publications[0];
@@ -47,7 +47,7 @@ const niches = [
     kept: newestRecipe && {
       href: `/recipes/${newestRecipe.id}`,
       title: newestRecipe.data.title,
-      when: newestRecipe.data.date ? yearOf(newestRecipe.data.date) : undefined,
+      when: yearOf(newestRecipe.data.date),
     },
   },
   {
@@ -98,12 +98,11 @@ const niches = [
       {/* The grotto as a place: four niches in the wall, each keeping what a part of the
           site is made at, and under it the newest thing made there. Something lives in each. */}
       <section class="niches" aria-labelledby="niches-title">
-        <h2 class="niches-title" id="niches-title">
-          There are four niches in the wall. Each keeps the newest thing I made there.
-        </h2>
+        <h2 class="sr-only" id="niches-title">The four niches in the wall</h2>
         <ul class="niche-row">
           {niches.map((niche) => <li><Niche {...niche} /></li>)}
         </ul>
+        <p class="wall-note">Under each niche is the newest thing I made there.</p>
       </section>
     </div>
 
@@ -128,7 +127,7 @@ const niches = [
 
       <div class="bio prose">
         <p>
-          I'm Maximilian. My best friend once painted me a t-shirt that read
+          My best friend once painted me a t-shirt that read
           <em lang="de">verspielt und liebenswürdig</em> (playful and endearing) and I've yet to
           find a better description. The best feedback I've ever gotten described me as a
           <em>herder of cat herders</em> and my music taste has been characterized as being
@@ -142,9 +141,8 @@ const niches = [
           on the mats failing triangle escapes, or somewhere between a barbell and a book.
         </p>
         <p>
-          Somewhere along the way I collected a B.Sc. in <em>Computer Science in Engineering</em>, a
-          M.Sc. in <em>Software Engineering and Technology</em>, and a PhD in
-          <em>Bayesian Statistics</em>.
+          On the way to the PhD I collected a B.Sc. in <em>Computer Science in Engineering</em> and
+          a M.Sc. in <em>Software Engineering and Technology</em>.
         </p>
       </div>
 
@@ -158,45 +156,50 @@ const niches = [
 <style>
   /*
    * The first screen is the wall: the name and a welcome above it, then the four niches in
-   * one course, as large as the window allows. The portrait, the bio and the quote of the
-   * day come after it, for whoever wants to know more.
+   * one course, as large as the window allows, and a line under them that says what they
+   * keep. The first screen ends with the window: nothing of the rest shows half. The
+   * portrait, the bio and the quote of the day come after it, on the same two edges as
+   * the name and the welcome.
    *
    * One rule sizes the niches from the window's width and height (--niche-size); the type
    * around them follows from it. Nothing else is fitted to the screen.
    */
   .home {
     --gap: clamp(1.5rem, 3vw, 3rem);
+    /* The page header, and the room main-content leaves above its first child */
+    --above: 6.25rem;
     /* Four niches and their gaps: the width the first screen is set to */
-    --niche-size: clamp(6.5rem, min(16.5vw, (100svh - 25rem) * 0.45), 19rem);
+    --niche-size: clamp(6.5rem, min(16.5vw, (100svh - 22rem) * 0.5), 19rem);
     --wall-width: min(100%, max(54rem, var(--niche-size) * 5.6));
+    /* The name's column and the welcome's, which the portrait and the bio keep */
+    --columns: minmax(0, 4fr) minmax(0, 5fr);
 
     display: grid;
     justify-items: center;
   }
 
-  /* The header is about 5.5rem high. The first screen stops short of the window's foot,
-     so the top of the portrait shows under it and says that the page goes on. */
   .first-screen {
     display: grid;
     align-content: center;
-    gap: clamp(1.25rem, 4svh, 3.5rem);
+    gap: clamp(1.25rem, 4svh, 3rem);
     width: var(--wall-width);
-    min-height: calc(100svh - 11rem);
+    min-height: calc(100svh - var(--above));
+    padding-bottom: clamp(1rem, 3svh, 2rem);
   }
 
   /* ===== Who, and the welcome ===== */
 
   .intro {
     display: grid;
-    grid-template-columns: minmax(0, 4fr) minmax(0, 5fr);
+    grid-template-columns: var(--columns);
     gap: var(--gap);
-    align-items: center;
+    align-items: end;
   }
 
   .name {
     margin: 0 0 0.25em;
     font-family: var(--font-heading);
-    font-size: clamp(2rem, var(--niche-size) * 0.26, 3.667rem);
+    font-size: clamp(2rem, var(--niche-size) * 0.3, 3.667rem);
     font-weight: 400;
     line-height: 1.05;
     text-wrap: balance;
@@ -209,32 +212,19 @@ const niches = [
     text-wrap: pretty;
   }
 
-  /* The welcome is the place speaking: italic, and quieter than the name. */
+  /* The welcome is the place speaking: italic, at the size of the text, and quieter
+     than the name, which leads. */
   .welcome {
-    max-width: 36rem;
+    max-width: 32rem;
     margin: 0;
-    justify-self: end;
-    font-family: var(--font-heading);
-    font-size: var(--text-lg);
     font-style: italic;
-    line-height: 1.45;
+    line-height: 1.5;
     color: var(--color-text-secondary);
     text-wrap: pretty;
     hyphens: manual;
   }
 
   /* ===== The niches ===== */
-
-  /* The drawings and their captions say what the niches are; the sentence is for
-     screen readers. */
-  .niches-title {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
 
   .niche-row {
     --niche-name-size: clamp(var(--text-lg), var(--niche-size) * 0.13, 1.667rem);
@@ -253,21 +243,29 @@ const niches = [
     margin: 0;
   }
 
-  /* ===== Below the wall: the portrait, the bio, the quote ===== */
+  /* The wall's caption: what the line under each niche is. */
+  .wall-note {
+    margin: clamp(0.9rem, 2.5svh, 1.6rem) 0 0;
+    font-size: var(--text-sm);
+    font-style: italic;
+    color: var(--color-text-muted);
+    text-align: center;
+  }
+
+  /* ===== Below the wall: the portrait and the quote, the bio ===== */
 
   .about {
     display: grid;
-    grid-template-columns: auto minmax(0, var(--measure-prose));
+    grid-template-columns: var(--columns);
     column-gap: var(--gap);
-    justify-content: center;
     align-items: start;
-    width: 100%;
-    margin-top: clamp(2rem, 6svh, 4rem);
+    width: var(--wall-width);
+    margin-top: var(--space-lg);
   }
 
   .portrait {
     grid-column: 1;
-    grid-row: 1 / span 2;
+    grid-row: 1;
     width: fit-content;
     margin-top: 0.5rem;
   }
@@ -320,16 +318,18 @@ const niches = [
 
   .bio {
     grid-column: 2;
+    grid-row: 1 / span 2;
   }
 
   .bio p:last-child {
     margin-bottom: 0;
   }
 
-  /* The quote of the day closes the page, under the bio. */
+  /* The quote of the day goes under the portrait, in the name's column. */
   .quote {
-    grid-column: 2;
-    max-width: 28rem;
+    grid-column: 1;
+    grid-row: 2;
+    max-width: 26rem;
     margin-top: var(--space-xl);
   }
 
@@ -339,6 +339,7 @@ const niches = [
     .home {
       --niche-size: clamp(8rem, 20vw, 11rem);
       --wall-width: min(100%, 46rem);
+      --columns: minmax(0, 1fr);
     }
 
     .first-screen {
@@ -348,19 +349,44 @@ const niches = [
     }
 
     .intro {
-      grid-template-columns: minmax(0, 1fr);
       gap: var(--space-sm);
     }
 
-    .welcome {
-      justify-self: start;
+    .about {
+      grid-template-columns: auto minmax(0, 1fr);
+      margin-top: var(--space-md);
+    }
+
+    .bio {
+      grid-row: 1;
+    }
+
+    .quote {
+      grid-column: 2;
     }
   }
 
-  /* Phones: the niches stand two by two, and the portrait goes above the bio. */
+  /* Phones: the name leads straight to the niches, which stand two by two; the welcome
+     follows the wall. The portrait goes above the bio. */
   @media (max-width: 40rem) {
     .home {
       --niche-size: min(9.5rem, 38vw);
+    }
+
+    .first-screen {
+      gap: var(--space-md);
+    }
+
+    .intro {
+      display: contents;
+    }
+
+    .niches {
+      order: 1;
+    }
+
+    .welcome {
+      order: 2;
     }
 
     .niche-row {
