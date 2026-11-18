@@ -25,7 +25,9 @@ Blog, recipes, research and projects are desks of cards, each shelf in one mater
 Images that stand alone in a paragraph or figure in posts, recipes and notes are pasted in as prints automatically. Wrap other photos in `.pasted` for the same two paper strips.
 
 ## Recipes
-Recipes describe their ingredients and steps in frontmatter. `RecipeCard.astro` turns that into Michael Chu's recipe table (ingredients down the left in the order they go in, each step spanning what it combines, with a clock row of start times underneath), a numbered step list with a list to gather from for phones and screen readers, and a cooking mode with timers. The step list is the recipe and is always shown; the table is an overview above it. In windows of 48rem (768px) and wider, a recipe opens with the table if the table fits the window's width, and without it if it would scroll sideways. Narrower windows always open without it. The Table control hides it or shows it. The table, the list and cooking mode number the steps the same way; "Get ready" is step 1 and the table's ingredient column. The prose below stays the long version: stories, tips and margin notes. The page header leaves yield and time to the card.
+Recipes describe their ingredients and steps in frontmatter, and the card is the whole recipe: the method is told once. `RecipeCard.astro` shows it as Michael Chu's recipe table (ingredients down the left in the order they go in, each step spanning what it combines, with a clock row of start times underneath), as a numbered step list with a list to gather from, and as a cooking mode with timers. Table and steps are two views of the same thing, one at a time, switched with "Show as". In windows of 48rem (768px) and wider, a recipe opens with the table if the table fits the window's width, and with the steps if it would scroll sideways. Narrower windows have the steps only. Without JavaScript the steps show. A step's name in the table leads to that step in the list. The table, the list and cooking mode number the steps the same way; "Get ready" is step 1 and the table's ingredient column.
+
+What a step's instruction leaves out goes into the step, not into prose under the card: `notes` for the why, the tips and the latitude, and `photo` for what the step looks like when it is right. The Markdown body is a short introduction; it stands at the top of the page beside the hero picture, with yield and time.
 
 ```yaml
 makes: { amount: 15, unit: rolls } # what Half and Double scale
@@ -51,12 +53,27 @@ steps:
     wait: true # hands-off time, drawn in leaf shade
     heat: 160 °C
     result: roasted squash # how later steps refer to it
+    notes: # asides under the step; amounts in braces scale with the recipe
+      - You can't really over-roast the squash, as you can blend it with more water, up to {180 ml}.
+    photo: # a small print under the step, served at the size shown
+      src: '../../assets/images/recipes/rolls/roasted.jpg'
+      caption: The cubes when they are soft enough
+  - id: bake
+    uses: [roast]
+    do: Bake
+    minutes: 23
+    timers: # stages of a timed step; they add up to `minutes`
+      - { minutes: 8, cue: 'Turn the oven down to 200 °C' } # said and shown when the stage ends
+      - { minutes: 15 }
+    detail: Line the dish and set 15 balls in it.
+    halved: Line the dish and set 7 or 8 balls in it. # the instruction for Half, where `detail` would be wrong
+    doubled: Line both dishes and set 15 balls in each. # the same for Double
 meanwhile:
   - do: Preheat the oven to 220 °C
     during: proof # shown above that step's column
 ```
 
-Rules the build checks, so the table can't mislead: every id is unique, steps come in cooking order, each ingredient and each intermediate result goes into exactly one later step (list an ingredient twice if it's split), and every `meanwhile` names a real step. Hands-on and total time are computed from `minutes`; untimed steps count as zero, so time what matters. The clock row only appears when every step but the last is timed.
+Rules the build checks, so the table can't mislead: every id is unique, steps come in cooking order, each ingredient and each intermediate result goes into exactly one later step (list an ingredient twice if it's split), every `meanwhile` names a real step, and a step's `timers` add up to its `minutes`. A scaled yield is given in whole things (half of 15 rolls is "7 or 8"). Hands-on and total time are computed from `minutes`; untimed steps count as zero, so time what matters. The clock row only appears when every step but the last is timed.
 
 ## Series.astro
 Inline, comma-separated lists of words or links (tags, authors). Use it instead of mapping inside running text, which would add stray spaces before commas.

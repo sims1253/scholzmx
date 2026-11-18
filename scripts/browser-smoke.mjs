@@ -112,10 +112,17 @@ try {
   assert.notEqual(await page.$eval('html', (element) => element.dataset.theme), theme);
   await page.reload({ waitUntil: 'networkidle0' });
   assert.notEqual(await page.$eval('html', (element) => element.dataset.theme), theme);
-  await page.click('.image-frame.clickable');
+  // The portrait has a second photo on its back; the button under it turns it over.
+  await page.click('.frame-turn');
   assert.equal(
-    await page.$eval('.image-frame.clickable', (element) => element.getAttribute('aria-pressed')),
+    await page.$eval('.frame-turn', (element) => element.getAttribute('aria-pressed')),
     'true'
+  );
+  assert.equal(
+    await page.$eval('.image-frame.clickable .alternate-image', (element) =>
+      element.getAttribute('aria-hidden')
+    ),
+    'false'
   );
 
   for (const [path, term, prefix] of [
@@ -146,27 +153,42 @@ try {
     );
   }
 
-  // A recipe opens with the table where the table fits, and with the steps alone elsewhere.
-  // The steps are the recipe: they show in both views.
+  // A recipe opens with the table where the table fits, and with the steps elsewhere:
+  // two views of one recipe, one at a time.
   for (const [width, view] of [
     [1440, 'table'],
     [390, 'steps'],
   ]) {
     await page.setViewport({ width, height: 844 });
     await page.goto(`${baseURL}/recipes/hokkaido-dinner-rolls/`, { waitUntil: 'networkidle0' });
-    const opened = await page.$eval('[data-recipe-card]', (card) => ({
-      view: card.dataset.view,
-      checked: card.querySelector('input[name="rc-view"]:checked')?.value,
-      steps: card.querySelector('.rc-steps-view').getClientRects().length > 0,
-      hidden:
-        card.querySelector('.rc-table-wrap').scrollWidth -
-        card.querySelector('.rc-table-wrap').clientWidth,
-    }));
-    assert.equal(opened.view, view, `Recipe view at ${width}px`);
-    assert.equal(opened.checked, view, `Recipe view control at ${width}px`);
+    const opened = await page.$eval('[data-recipe-card]', (card) => {
+      const shown = (selector) => card.querySelector(selector).getClientRects().length > 0;
+      return {
+        table: shown('.rc-table-frame'),
+        steps: shown('.rc-steps-view'),
+        hidden:
+          card.querySelector('.rc-table-wrap').scrollWidth -
+          card.querySelector('.rc-table-wrap').clientWidth,
+      };
+    });
+    assert.equal(opened.table, view === 'table', `Recipe table at ${width}px`);
+    assert.equal(opened.steps, view === 'steps', `Recipe steps at ${width}px`);
     if (view === 'table') assert.ok(opened.hidden <= 1, 'The opening table must not scroll');
-    assert.ok(opened.steps, `The step list must show at ${width}px`);
   }
+  // Half a batch makes whole rolls, and the bake is timed in its two stages.
+  await page.click('input[name="rc-scale"][value="0.5"]');
+  assert.equal(await page.$eval('[data-yield]', (element) => element.textContent), '7 or 8');
+  await page.click('[data-rc-start]');
+  for (let step = 0; step < 7; step++) await page.click('[data-rc-next]');
+  assert.match(
+    await page.$eval('[data-rc-timer]', (element) => element.textContent),
+    /8 min, then 15 min/
+  );
+  assert.match(
+    await page.$eval('[data-rc-announce]', (element) => element.textContent),
+    /^Step 8 of 9: Bake/
+  );
+  await page.click('[data-rc-stop]');
   // Force lazy images to load before checking their decoded dimensions.
   await page.$$eval('img', async (images) => {
     for (const image of images) {
