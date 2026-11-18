@@ -288,15 +288,6 @@
     text-underline-offset: 0.15em;
   }
 
-  a:focus {
-    box-shadow:
-      0 0 0 1px color-mix(in srgb, var(--color-moss) 40%, transparent),
-      0 0 8px color-mix(in srgb, var(--color-sage) 20%, transparent);
-    background: color-mix(in srgb, var(--color-parchment-light) 60%, transparent);
-    border-radius: 3px;
-    outline: none;
-  }
-
   /* External link indicator - adds ↗ arrow after off-site links */
   .prose
     a[href^='http']:not([href*='scholzmx.com']):not([href*='localhost']):not(
