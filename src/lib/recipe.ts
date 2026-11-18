@@ -8,6 +8,8 @@
  * the finished dish.
  */
 
+import type { ImageMetadata } from 'astro';
+
 export interface RecipeIngredient {
   id: string;
   name: string;
@@ -36,6 +38,24 @@ export interface RecipeStep {
   heat?: string;
   /** What the step produces, used when later steps refer to it, e.g. "squash purée". */
   result?: string;
+  /** The why, the tips and the latitude. Amounts in braces scale: "around {180 ml}". */
+  notes?: string[];
+  /** What the step looks like when it is right. The caption is shown under the picture. */
+  photo?: { src: ImageMetadata; caption: string };
+  /**
+   * A step timed in stages, e.g. 8 minutes, then turn the oven down, then 15 more.
+   * The stages add up to `minutes`. Without it the step has one timer of `minutes`.
+   */
+  timers?: RecipeTimer[];
+  /** The instruction when the recipe is halved or doubled, where `detail` would be wrong. */
+  halved?: string;
+  doubled?: string;
+}
+
+export interface RecipeTimer {
+  minutes: number;
+  /** What to do when this stage is over, e.g. "Turn the oven down to 200 °C". */
+  cue?: string;
 }
 
 export interface RecipeEquipment {
@@ -85,6 +105,14 @@ export function checkRecipe(
       takenBy.set(input, step.id);
     }
     available.add(step.id);
+    if (step.timers) {
+      const staged = step.timers.reduce((sum, timer) => sum + timer.minutes, 0);
+      if (staged !== longest(step.minutes)) {
+        problems.push(
+          `The timers of "${step.id}" add up to ${staged} minutes, the step takes ${longest(step.minutes)}.`
+        );
+      }
+    }
   }
 
   for (const { id } of ingredients) {
@@ -195,8 +223,16 @@ export function rowEntries(grid: RecipeGrid, row: number): GridEntry[] {
   return entries;
 }
 
-const longest = (minutes?: number | [number, number]) =>
-  minutes === undefined ? 0 : Array.isArray(minutes) ? minutes[1] : minutes;
+function longest(minutes?: number | [number, number]): number {
+  return minutes === undefined ? 0 : Array.isArray(minutes) ? minutes[1] : minutes;
+}
+
+/** The timers a step offers in cooking mode: its stages, or one for the whole step. */
+export function timersOf(step: RecipeStep): RecipeTimer[] {
+  if (step.timers) return step.timers;
+  const minutes = longest(step.minutes);
+  return minutes > 0 ? [{ minutes }] : [];
+}
 
 /**
  * When each step can start, in minutes from the moment you begin: after the prep, once
@@ -271,6 +307,27 @@ export function formatDuration(minutes: number): string {
   const glyph = QUARTERS[quarters % 4] ?? '';
   const plural = hours > 1 || (hours === 1 && glyph) ? 'hours' : 'hour';
   return `about ${hours}${glyph} ${plural}`;
+}
+
+/**
+ * "40 minutes of work, ready in about 3½ hours." Says only what the data supports: no
+ * "0 minutes of work" when the steps aren't timed.
+ */
+export function timeSentence(steps: RecipeStep[], prepMinutes = 0): string {
+  const { active, total } = timing(steps, prepMinutes);
+  const sentence = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
+  if (active > 0 && total > active) {
+    return `${sentence(formatDuration(active))} of work, ready in ${formatDuration(total)}.`;
+  }
+  return total > 0 ? `Ready in ${formatDuration(total)}.` : '';
+}
+
+/** What a scaled recipe makes, in whole things: half of 15 rolls is "7 or 8", not 7½. */
+export function formatYield(amount: number): string {
+  if (Number.isInteger(amount)) return String(amount);
+  if (amount < 1) return formatAmount(amount);
+  const fewer = Math.floor(amount);
+  return `${fewer} or ${fewer + 1}`;
 }
 
 const METRIC = new Set(['g', 'kg', 'ml', 'l']);

@@ -5,7 +5,7 @@ import DropCap from '../../components/DropCap.astro';
 import ImageFrame from '../../components/ImageFrame.astro';
 import Series from '../../components/Series.astro';
 import RecipeCard from '../../components/RecipeCard.astro';
-import { timing } from '../../lib/recipe';
+import { timeSentence, timing } from '../../lib/recipe';
 
 /* Note: Content markdown cannot render Astro components by default.
    To allow components inside markdown, pass them via the 'components' prop on <Content />. */
@@ -22,13 +22,14 @@ export async function getStaticPaths() {
 const { recipe } = Astro.props;
 const { Content } = await render(recipe);
 
-// With a recipe card the card states yield and time, computed from the steps; the header
-// only files the recipe. Search engines still get both.
+// Yield and time open the page, where a cook sees them without scrolling. The time is
+// computed from the steps when there are any.
 const { steps, prepMinutes } = recipe.data;
 const minutes = steps ? timing(steps, prepMinutes).total : 0;
 const isoDuration = `PT${Math.floor(minutes / 60)}H${minutes % 60}M`;
 const tags = recipe.data.tags ?? [];
 const tagLinks = tags.map((text) => ({ text, href: `/recipes?tag=${encodeURIComponent(text)}` }));
+const pictured = recipe.data.heroImage !== undefined;
 ---
 
 <BaseLayout
@@ -40,47 +41,54 @@ const tagLinks = tags.map((text) => ({ text, href: `/recipes?tag=${encodeURIComp
   prose={true}
 >
   <article class="recipe-content" itemscope itemtype="https://schema.org/Recipe">
-    <header class="recipe-header">
-      <h1 class="recipe-title" itemprop="name" data-pagefind-meta="title">
-        {recipe.data.title}
-      </h1>
-      <p class="recipe-description" itemprop="description" data-pagefind-meta="description">
-        {recipe.data.description}
-      </p>
-      {steps ? (
-        <p
-          class="recipe-meta"
-          data-pagefind-meta={tags.length > 0 ? `tags:${tags.join(', ')}` : undefined}
-        >
-          <meta itemprop="recipeYield" content={recipe.data.servings} />
-          <meta itemprop="totalTime" content={isoDuration} />
-          {tags.length > 0 && <>Filed under <Series items={tagLinks} />.</>}
-        </p>
-      ) : (
-        <p
-          class="recipe-meta"
-          data-pagefind-meta={tags.length > 0 ? `tags:${tags.join(', ')}` : undefined}
-        >
-          Makes <span itemprop="recipeYield">{recipe.data.servings}</span>, takes
-          <span itemprop="totalTime">{recipe.data.time}</span
-          >{tags.length > 0 && <>. Filed under <Series items={tagLinks} /></>}.
-        </p>
-      )}
-    </header>
+    {/* The page opens with what the recipe is and a few words about it. Everything about
+        making it is in the card: the method is told once. */}
+    <div class:list={['recipe-top', { 'recipe-top--pictured': pictured }]}>
+      <div class="recipe-opening">
+        <header class="recipe-header">
+          <h1 class="recipe-title" itemprop="name" data-pagefind-meta="title">
+            {recipe.data.title}
+          </h1>
+          <p class="recipe-description" itemprop="description" data-pagefind-meta="description">
+            {recipe.data.description}
+          </p>
+          <p class="recipe-facts">
+            Makes <span itemprop="recipeYield">{recipe.data.servings}</span>.
+            {steps ? (
+              <>
+                <meta itemprop="totalTime" content={isoDuration} />
+                {timeSentence(steps, prepMinutes)}
+                <a class="recipe-jump" href="#recipe-card-title">Go to the recipe</a>
+              </>
+            ) : (
+              <>Takes <span itemprop="totalTime">{recipe.data.time}</span>.</>
+            )}
+          </p>
+        </header>
 
-    {recipe.data.heroImage && <div class="recipe-hero pasted">
-      <ImageFrame
-        src={recipe.data.heroImage}
-        alt={recipe.data.title}
-        style="hero"
-        aspectRatio="3/2"
-        scale={recipe.data.heroImageScale}
-        positionX={recipe.data.heroImagePositionX ? recipe.data.heroImagePositionX * 100 : 0}
-        positionY={recipe.data.heroImagePositionY ? recipe.data.heroImagePositionY * 100 : 0}
-        loading="eager"
-        width={800}
-      />
-    </div>}
+        <section class="recipe-body prose" data-pagefind-body data-pagefind-filter="type:recipe">
+          <Content components={{ DropCap }} />
+        </section>
+
+        {tags.length > 0 && <p class="recipe-meta" data-pagefind-meta={`tags:${tags.join(', ')}`}>
+          Filed under <Series items={tagLinks} />.
+        </p>}
+      </div>
+
+      {recipe.data.heroImage && <div class="recipe-hero pasted">
+        <ImageFrame
+          src={recipe.data.heroImage}
+          alt={recipe.data.title}
+          style="hero"
+          aspectRatio="3/2"
+          scale={recipe.data.heroImageScale}
+          positionX={recipe.data.heroImagePositionX ? recipe.data.heroImagePositionX * 100 : 0}
+          positionY={recipe.data.heroImagePositionY ? recipe.data.heroImagePositionY * 100 : 0}
+          loading="eager"
+          width={800}
+        />
+      </div>}
+    </div>
 
     {recipe.data.steps && (
       <RecipeCard
@@ -93,15 +101,6 @@ const tagLinks = tags.map((text) => ({ text, href: `/recipes?tag=${encodeURIComp
       />
     )}
 
-    <section
-      class="recipe-body prose"
-      itemprop="recipeInstructions"
-      data-pagefind-body
-      data-pagefind-filter="type:recipe"
-    >
-      <Content components={{ DropCap }} />
-    </section>
-
     <footer class="recipe-footer">
       <p><a href="/recipes">All recipes</a></p>
     </footer>
@@ -113,8 +112,12 @@ const tagLinks = tags.map((text) => ({ text, href: `/recipes?tag=${encodeURIComp
     position: relative;
   }
 
-  .recipe-header {
+  .recipe-top {
     margin: var(--page-top) 0 var(--space-lg);
+  }
+
+  .recipe-header {
+    margin: 0 0 var(--space-md);
   }
 
   .recipe-title {
@@ -133,12 +136,26 @@ const tagLinks = tags.map((text) => ({ text, href: `/recipes?tag=${encodeURIComp
     color: var(--color-text-secondary);
   }
 
-  .recipe-meta {
+  /* What a cook asks first: how many, and how long. */
+  .recipe-facts {
     margin: 0;
+    font-variant-numeric: oldstyle-nums;
+  }
+
+  .recipe-jump {
+    margin-left: 0.4em;
+    white-space: nowrap;
+  }
+
+  .recipe-body :global(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .recipe-meta {
+    margin: var(--space-sm) 0 0;
     font-size: var(--text-sm);
     font-style: italic;
     color: var(--color-text-muted);
-    font-variant-numeric: oldstyle-nums;
   }
 
   .recipe-meta a {
@@ -147,7 +164,7 @@ const tagLinks = tags.map((text) => ({ text, href: `/recipes?tag=${encodeURIComp
   }
 
   .recipe-hero {
-    margin: 0 0 var(--space-xl);
+    margin: var(--space-lg) 0 0;
   }
 
   .recipe-hero :global(.image-frame) {
@@ -159,9 +176,35 @@ const tagLinks = tags.map((text) => ({ text, href: `/recipes?tag=${encodeURIComp
       0 14px 28px -16px color-mix(in srgb, var(--color-ink-dark) 40%, transparent);
   }
 
-  .recipe-body :global(strong) {
-    font-weight: 700;
-    color: var(--color-text-primary);
+  /* By torchlight a daylit photograph glares; it dims like every other print. */
+  .recipe-hero :global(img) {
+    filter: var(--print-dim);
+  }
+
+  /* On a wide screen the words and the picture share the top of the page, as wide
+     together as the card under them, so the card starts on the first screen. The
+     picture is pasted in a little askew. */
+  @media (min-width: 64rem) {
+    .recipe-top--pictured {
+      --top-width: min(64rem, 100cqi - 2 * var(--space-md));
+
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 25rem);
+      gap: var(--space-xl);
+      align-items: start;
+      width: var(--top-width);
+      margin-inline: calc((100% - var(--top-width)) / 2);
+    }
+
+    .recipe-top--pictured .recipe-hero {
+      margin-top: 0.6rem;
+      rotate: 1.2deg;
+    }
+
+    /* The card is on the screen already. */
+    .recipe-top--pictured .recipe-jump {
+      display: none;
+    }
   }
 
   .recipe-footer {

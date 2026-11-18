@@ -73,6 +73,16 @@ const recipes = defineCollection({
               wait: z.boolean().optional(),
               heat: z.string().optional(),
               result: z.string().optional(),
+              /** The why and the tips; amounts in braces scale with the recipe. */
+              notes: z.array(z.string()).optional(),
+              photo: z.object({ src: image(), caption: z.string() }).optional(),
+              /** Stages of a timed step; they add up to `minutes`. */
+              timers: z
+                .array(z.object({ minutes: z.number().positive(), cue: z.string().optional() }))
+                .optional(),
+              /** The instruction when halved or doubled, where `detail` would be wrong. */
+              halved: z.string().optional(),
+              doubled: z.string().optional(),
             })
           )
           .optional(),

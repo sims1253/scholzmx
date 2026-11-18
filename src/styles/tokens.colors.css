@@ -91,6 +91,8 @@
   /* Prints stay paper-white, even by torchlight, where they are warm and dim like the
      paper around them */
   --print-sheet: var(--by-day, #fbfaf5) var(--by-torch, #e2dacb);
+  /* Words written on a print. The print stays light by torchlight, so its ink stays dark. */
+  --print-ink: #3b4436;
   --print-dim: var(--by-day, none) var(--by-torch, brightness(0.8) sepia(0.15));
 
   /* Prints as plates: the keyline round the picture and the pressed mark the plate

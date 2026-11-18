@@ -1,21 +1,22 @@
 ---
 /**
- * The recipe card: one recipe description rendered as Michael Chu's table (wide screens),
- * as numbered steps with a list to gather from (phones, screen readers, anyone who wants
- * the details), and as a cooking mode that walks through the steps with timers.
- * See src/lib/recipe.ts.
+ * The recipe card is the whole recipe: one description shown as Michael Chu's table (an
+ * overview, on screens it fits), as numbered steps with their notes, pictures and a list
+ * to gather from, and as a cooking mode that walks through the steps with timers.
+ * Table and steps are two views of the same thing, one at a time. See src/lib/recipe.ts.
  */
+import { Image } from 'astro:assets';
 import Series from './Series.astro';
 import {
   formatAmount,
   formatClock,
-  formatDuration,
   formatStepTime,
+  formatYield,
   layOut,
   rowEntries,
   splitAmounts,
   startTimes,
-  timing,
+  timersOf,
   type RecipeEquipment,
   type RecipeIngredient,
   type RecipeMeanwhile,
@@ -34,7 +35,6 @@ interface Props {
 const { ingredients, steps, meanwhile = [], makes, prepMinutes = 0, equipment = [] } = Astro.props;
 
 const grid = layOut(ingredients, steps);
-const { active, total } = timing(steps, prepMinutes);
 const starts = startTimes(steps, prepMinutes);
 const ingredientById = new Map(ingredients.map((ingredient) => [ingredient.id, ingredient]));
 const stepIndex = new Map(steps.map((step, index) => [step.id, index]));
@@ -51,14 +51,18 @@ const tools = equipment.map((item) => ({ text: item.name }));
 const toolsDoubled = equipment.map((item) => ({ text: item.doubled ?? item.name }));
 const gearChanges = equipment.some((item) => item.doubled);
 
-// Only say what the data supports: no "0 minutes of work" when steps aren't timed.
-const sentence = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
-const timeSentence =
-  active > 0 && total > active
-    ? `${sentence(formatDuration(active))} of work, ready in ${formatDuration(total)}.`
-    : total > 0
-      ? `Ready in ${formatDuration(total)}.`
-      : '';
+// A step can read differently when the recipe is halved or doubled. Every version
+// renders; the script shows the one for the chosen amount.
+const versionsOf = (step: RecipeStep) => {
+  const others = [
+    { factor: '0.5', text: step.halved },
+    { factor: '2', text: step.doubled },
+  ].filter((version) => version.text);
+  return [
+    { text: step.detail, only: undefined, except: others.map((other) => other.factor).join(' ') },
+    ...others.map((other) => ({ text: other.text, only: other.factor, except: '' })),
+  ].filter((version) => version.text);
+};
 
 const amountOf = (ingredient: RecipeIngredient) =>
   ingredient.amount === undefined ? '' : formatAmount(ingredient.amount, ingredient.unit);
@@ -69,8 +73,6 @@ const tasksDuring = (step: RecipeStep) =>
 const columnTasks = Array.from({ length: grid.columns }, (_, index) =>
   grid.cells.filter((cell) => cell.col === index + 1).flatMap((cell) => tasksDuring(cell.step))
 );
-const longest = (step: RecipeStep) =>
-  step.minutes === undefined ? 0 : Array.isArray(step.minutes) ? step.minutes[1] : step.minutes;
 // Heat stays on one line, so "220 → 200 °C" never breaks at the arrow.
 const when = (step: RecipeStep) =>
   [formatStepTime(step.minutes), step.heat?.replaceAll(' ', ' ')].filter(Boolean).join(', ');
@@ -111,14 +113,16 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
       <p class="rc-summary">
         {makes && (
           <>Makes
-            <span class="rc-qty" data-amount={makes.amount}>{formatAmount(makes.amount)}</span>
+            <span class="rc-qty" data-amount={makes.amount} data-yield
+              >{formatYield(makes.amount)}</span
+            >
             {makes.unit}.
           </>
-        )}{timeSentence}
-        {equipment.length > 0 && <span data-hide-doubled={gearChanges ? '' : undefined}>
+        )}
+        {equipment.length > 0 && <span data-scale-except={gearChanges ? '2' : undefined}>
           You'll need <Series items={tools} last="and" />.
         </span>}
-        {gearChanges && <span data-show-doubled hidden>
+        {gearChanges && <span data-scale-only="2" hidden>
           You'll need <Series items={toolsDoubled} last="and" />.
         </span>}
       </p>
@@ -130,10 +134,10 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
           <label><input type="radio" name="rc-scale" value="1" checked />As written</label>
           <label><input type="radio" name="rc-scale" value="2" />Double</label>
         </fieldset>
-        <fieldset class="rc-choice">
-          <legend>Table</legend>
-          <label><input type="radio" name="rc-view" value="steps" checked />Hide</label>
-          <label><input type="radio" name="rc-view" value="table" />Show</label>
+        <fieldset class="rc-choice rc-choice--view">
+          <legend>Show as</legend>
+          <label><input type="radio" name="rc-view" value="table" />Table</label>
+          <label><input type="radio" name="rc-view" value="steps" checked />Steps</label>
         </fieldset>
         <button type="button" class="rc-start" data-rc-start>Start cooking</button>
       </div>
@@ -145,7 +149,10 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
         <table class="rc-table">
           <caption id="rc-caption">
             <span class="rc-legend">
-              <span class="rc-read">Read left to right: each step combines the rows it spans.</span>
+              <span class="rc-read">
+                Read left to right: each step combines the rows it spans. Pick a step to read how it
+                is done.
+              </span>
               <span class="rc-key"><span class="rc-swatch"></span>Hands on</span>
               <span class="rc-key"><span class="rc-swatch rc-swatch--wait"></span>Hands off</span>
               {meanwhile.length > 0 && <span class="rc-key">
@@ -208,7 +215,9 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
                     data-stage={entry.cell.index + offset}
                   >
                     <span class="rc-num">{number(entry.cell.index)}</span>
-                    <span class="rc-do">{entry.cell.step.do}</span>
+                    <a class="rc-do" href={`#rc-step-${entry.cell.index + offset}`}
+                      >{entry.cell.step.do}</a
+                    >
                     {when(entry.cell.step) && <span class="rc-when">{when(entry.cell.step)}</span>}
                   </td>
                 )
@@ -229,7 +238,7 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
       <aside class="rc-gather" aria-labelledby="rc-gather-title">
         <h3 class="rc-gather-title" id="rc-gather-title">Gather</h3>
         <ul class="rc-gather-list">
-          {grid.rows.map((ingredient) => <li>
+          {grid.rows.map((ingredient) => <li itemprop="recipeIngredient">
             <label>
               <input type="checkbox" />
               <span class="rc-gather-qty">
@@ -260,14 +269,14 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
         </ul>
       </aside>
 
-      <ol class="rc-steps">
-        {getReady && <li class="rc-steps-item" data-stage="0" data-minutes="0">
+      <ol class="rc-steps" itemprop="recipeInstructions">
+        {getReady && <li class="rc-steps-item" id="rc-step-0" data-stage="0">
           <h3 class="rc-steps-do">Get ready</h3>
           <div class="rc-steps-detail">
-            {equipment.length > 0 && <p data-hide-doubled={gearChanges ? '' : undefined}>
+            {equipment.length > 0 && <p data-scale-except={gearChanges ? '2' : undefined}>
               Set out <Series items={tools} last="and" />.
             </p>}
-            {gearChanges && <p data-show-doubled hidden>
+            {gearChanges && <p data-scale-only="2" hidden>
               Set out <Series items={toolsDoubled} last="and" />.
             </p>}
             {prepWork.length > 0 && <ul class="rc-prep">
@@ -280,10 +289,11 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
         </li>}
         {steps.map((step, index) => <li
           class:list={['rc-steps-item', { 'rc-steps-item--wait': step.wait }]}
+          id={`rc-step-${index + offset}`}
           data-stage={index + offset}
-          data-minutes={longest(step)}
+          data-timers={timersOf(step).length > 0 ? JSON.stringify(timersOf(step)) : undefined}
         >
-          <h3 class="rc-steps-do">{step.do}</h3>
+          <h3 class="rc-steps-do" tabindex="-1">{step.do}</h3>
           <ul class="rc-uses">
             {inputsOf(step).map((input) => <li>
               <span class="rc-uses-qty">
@@ -300,7 +310,14 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
               >
             </li>)}
           </ul>
-          {step.detail && <p class="rc-steps-detail">{step.detail}</p>}
+          {versionsOf(step).map((version) => <p
+            class="rc-steps-detail"
+            data-scale-only={version.only}
+            data-scale-except={version.except || undefined}
+            hidden={version.only !== undefined}
+          >
+            {version.text}
+          </p>)}
           {(when(step) || step.wait) && <p
             class:list={['rc-steps-when', { 'rc-steps-when--wait': step.wait }]}
           >
@@ -310,6 +327,31 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
             <span>Meanwhile:</span>
             {task}
           </p>)}
+          {step.notes && <div class="rc-notes">
+            {step.notes.map((note) => <p>
+              {splitAmounts(note).map((part) =>
+                part.kind === 'text' ? (
+                  part.text
+                ) : (
+                  <span class="rc-qty" data-amount={part.amount} data-unit={part.unit}
+                    >{formatAmount(part.amount, part.unit)}</span
+                  >
+                )
+              )}
+            </p>)}
+          </div>}
+          {step.photo && <figure class="rc-photo">
+            <Image
+              src={step.photo.src}
+              alt=""
+              width={640}
+              widths={[320, 480, 640, 960]}
+              sizes="(min-width: 48rem) 16rem, 70vw"
+              format="avif"
+              loading="lazy"
+            />
+            <figcaption>{step.photo.caption}</figcaption>
+          </figure>}
         </li>)}
       </ol>
     </div>
@@ -324,14 +366,19 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
         </p>
         <div class="rc-cook-uses" data-rc-uses></div>
         <p class="rc-cook-detail" data-rc-detail></p>
+        <details class="rc-cook-notes" data-rc-notes hidden>
+          <summary>Notes on this step</summary>
+          <div data-rc-notes-body></div>
+        </details>
         <p class="rc-cook-meanwhile" data-rc-meanwhile hidden></p>
+        <p class="rc-cook-cue" data-rc-cue hidden></p>
         <ul class="rc-timers" data-rc-timers aria-label="Other timers"></ul>
       </div>
       <div class="rc-cook-clock">
         <button type="button" class="rc-timer" data-rc-timer hidden>Start timer</button>
         <p class="rc-countdown" data-rc-countdown hidden>
           <span class="rc-countdown-time" data-rc-countdown-time></span>
-          <span class="rc-countdown-label">left on this step</span>
+          <span class="rc-countdown-label" data-rc-countdown-label>left on this step</span>
         </p>
       </div>
       <div class="rc-cook-nav">
@@ -344,11 +391,11 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
   </div>
 </section>
 
-{/* Open with the table above the steps where the table fits the window's width, and
-    with the steps alone where it would scroll sideways. Decided here, while the page is still being read in, so the card
-    never changes shape after it is shown. Phones are not asked: a table never fits one,
-    and measuring it would make the browser lay the page out early for nothing. Without
-    JavaScript the step list stays: it is the complete recipe. */}
+{/* Open with the table where it fits the window's width, and with the steps where it
+    would scroll sideways. Decided here, while the page is still being read in, so the
+    card never changes shape after it is shown. Phones are not asked: a table never fits
+    one, so they have the steps only. Without JavaScript the step list stays: it is the
+    complete recipe. */}
 <script is:inline>
   (() => {
     const card = document.currentScript.previousElementSibling;
@@ -382,7 +429,7 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
 
   .rc-sheet {
     width: fit-content;
-    min-width: min(100%, 44rem);
+    min-width: min(100%, 40rem);
     max-width: 100%;
     margin-inline: auto;
     padding: var(--space-lg) var(--space-lg) var(--space-md);
@@ -680,10 +727,20 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     font-variant-numeric: oldstyle-nums;
   }
 
+  /* A step's name leads to how it is done: the same step in the other view. */
   .rc-do {
     display: block;
     font-family: var(--font-heading);
     font-size: var(--text-sm);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .rc-do:hover {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, currentcolor 45%, transparent);
+    text-underline-offset: 0.18em;
   }
 
   .rc-when {
@@ -790,7 +847,7 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
   /* On wide cards the list to gather from stays in view beside the steps. */
   @media (min-width: 56rem) {
     .rc-steps-view {
-      grid-template-columns: minmax(0, 40rem) minmax(13rem, 17rem);
+      grid-template-columns: minmax(0, 30rem) minmax(13rem, 17rem);
     }
 
     .rc-gather {
@@ -837,7 +894,7 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     font-family: var(--font-body-personal);
     font-size: var(--text-xs);
     font-style: italic;
-    color: var(--color-text-muted);
+    color: var(--color-text-secondary);
   }
 
   .rc-gather-list label {
@@ -845,17 +902,19 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     grid-template-columns: auto 3.6rem minmax(0, 1fr);
     gap: 0.5rem;
     align-items: baseline;
-    padding-block: 0.15rem;
+    padding-block: 0.3rem;
     cursor: pointer;
   }
 
-  /* Tick boxes drawn in the card's ink, so they belong to the page in both lights. */
+  /* Tick boxes drawn in the card's ink, so they belong to the page in both lights.
+     Large enough for a floury finger. */
   .rc-gather-list input {
     display: grid;
     place-content: center;
-    width: 1em;
-    height: 1em;
-    margin: 0;
+    align-self: start;
+    width: 1.2rem;
+    height: 1.2rem;
+    margin: 0.15rem 0 0;
     border: 1px solid color-mix(in srgb, var(--color-ink-dark) 45%, transparent);
     border-radius: 2px;
     background: var(--paper-sheet);
@@ -891,8 +950,9 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     opacity: 0.5;
   }
 
+  /* A measure a cook can read at arm's length: about 65 characters. */
   .rc-steps {
-    max-width: 40rem;
+    max-width: 30rem;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -991,28 +1051,76 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     color: var(--color-ochre);
   }
 
-  /* The step list is the recipe and is always there. The table is an overview that sits
-     above it: the inline script after the card opens it where it fits, and the Table
-     control puts it away or brings it back. */
-  .recipe-card:not([data-view]) .rc-table-frame {
+  /* What a step's text leaves out: the why, the tips, the latitude. Set as a pencilled
+     aside, upright and at a size to read from the counter. */
+  .rc-notes {
+    margin: 0.5rem 0 0;
+    padding-left: 0.8rem;
+    border-left: 1px solid color-mix(in srgb, var(--color-moss) 55%, transparent);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    color: var(--color-text-secondary);
+  }
+
+  .rc-notes p {
+    margin: 0 0 0.45rem;
+  }
+
+  .rc-notes p:last-child {
+    margin-bottom: 0;
+  }
+
+  .rc-notes .rc-qty {
+    font-weight: inherit;
+  }
+
+  /* What the step looks like when it is right: a small print, kept beside its step. */
+  .rc-photo {
+    width: min(100%, 16rem);
+    margin: 0.8rem 0 0.2rem;
+    padding: 0.45rem 0.45rem 0.35rem;
+    background: var(--print-sheet);
+    box-shadow:
+      0 1px 2px color-mix(in srgb, var(--color-ink-dark) 14%, transparent),
+      0 10px 20px -14px color-mix(in srgb, var(--color-ink-dark) 40%, transparent);
+  }
+
+  .rc-photo img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 0;
+    filter: var(--print-dim);
+  }
+
+  .rc-photo figcaption {
+    margin: 0.35rem 0 0;
+    font-size: var(--text-xs);
+    font-style: italic;
+    line-height: 1.35;
+    color: var(--print-ink);
+  }
+
+  /* Table and steps are two views of one recipe, one at a time. Without JavaScript the
+     card has no view and shows the steps, which are the complete recipe. The inline
+     script after the card opens the table where it fits; "Show as" switches. */
+  .recipe-card:not([data-view='table']) .rc-table-frame {
     display: none;
   }
 
-  /* Put away, the table still lends the sheet its width (the sheet is as wide as what
-     it holds), so switching views does not move the sheet. */
-  .recipe-card[data-view='steps'] .rc-table-frame {
-    height: 0;
-    overflow: hidden;
-    visibility: hidden;
+  @media (min-width: 48rem) {
+    .recipe-card[data-view='table'] .rc-steps-view {
+      display: none;
+    }
   }
 
-  .recipe-card[data-view='table'] .rc-steps-view {
-    margin-top: var(--space-xl);
-    padding-top: var(--space-lg);
-    border-top: 1px solid var(--rc-rule);
-  }
+  /* A phone shows one column of the table at a time, so it has the steps only. */
+  @media (max-width: 47.999rem) {
+    .recipe-card .rc-table-frame,
+    .rc-choice--view {
+      display: none;
+    }
 
-  @media (max-width: 48rem) {
     .rc-sheet {
       padding: var(--space-md) var(--space-sm);
     }
@@ -1169,10 +1277,49 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     margin: 0.25rem 0 0;
   }
 
+  /* The step's notes wait folded in the bar, so the bar stays low over the table. */
+  .rc-cook-notes {
+    max-width: 44rem;
+    margin-top: 0.3rem;
+    font-size: var(--text-sm);
+  }
+
+  .rc-cook-notes summary {
+    width: fit-content;
+    color: var(--color-link);
+    cursor: pointer;
+  }
+
+  .rc-cook-notes .rc-notes {
+    max-height: 30svh;
+    margin-top: 0.3rem;
+    overflow-y: auto;
+  }
+
   /* In the step list the highlighted step already shows what goes in and what to do. */
-  .recipe-card[data-view='steps'] .rc-cook-uses,
-  .recipe-card[data-view='steps'] .rc-cook-detail {
+  .recipe-card:not([data-view='table']) :is(.rc-cook-uses, .rc-cook-detail, .rc-cook-notes) {
     display: none;
+  }
+
+  @media (max-width: 47.999rem) {
+    .recipe-card :is(.rc-cook-uses, .rc-cook-detail, .rc-cook-notes) {
+      display: none;
+    }
+  }
+
+  .rc-cook-notes[hidden] {
+    display: none;
+  }
+
+  /* What a timer's stage asks for when it ends, e.g. "turn the oven down". It stays
+     until the step changes. */
+  .rc-cook-cue {
+    width: fit-content;
+    margin: 0.35rem 0 0;
+    padding: 0.1rem 0.6rem;
+    background: color-mix(in srgb, var(--color-tansy) 38%, var(--paper-sheet));
+    box-shadow: inset 3px 0 0 var(--color-ochre);
+    font-weight: 600;
   }
 
   .rc-cook-meanwhile {
@@ -1201,6 +1348,8 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
   }
 
   .rc-countdown-label {
+    display: inline-block;
+    max-width: 16rem;
     font-size: var(--text-xs);
     font-style: italic;
     color: var(--color-text-muted);
@@ -1319,23 +1468,32 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     padding-bottom: calc(var(--rc-bar, 10rem) + 2rem);
   }
 
-  :global(html.rc-cooking .back-to-top) {
+  /* The bar lives in the page's content, which the footer is otherwise drawn over. */
+  :global(html.rc-cooking .main-content) {
+    z-index: 3;
+  }
+
+  /* The card is the page, and a short one: it needs no way back to the top, least of
+     all one that sits on the card's edge. */
+  :global(body:has(.recipe-card) .back-to-top) {
     display: none;
   }
 
+  /* On paper: the table as the overview, then the steps with their notes. */
   @media print {
     .rc-controls,
     .rc-cook,
-    .rc-steps-view,
     .rc-more {
       display: none !important;
     }
 
     .rc-table-frame {
       display: block !important;
-      height: auto !important;
-      overflow: visible !important;
-      visibility: visible !important;
+      margin-bottom: var(--space-lg);
+    }
+
+    .rc-steps-view {
+      display: grid !important;
     }
 
     .rc-table-wrap {
