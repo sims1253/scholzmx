@@ -41,6 +41,41 @@ try {
         await client.detach();
       }
       if (path === '/') {
+        // The header, the wall and what follows it share two edges, and the bio keeps
+        // a reading measure.
+        const edges = await page.evaluate(() => {
+          const box = (selector) => document.querySelector(selector).getBoundingClientRect();
+          const bio = document.querySelector('.bio p');
+          return {
+            wordmark: box('.site-logo').left,
+            wall: box('.first-screen').left,
+            about: box('.about').left,
+            measure: box('.bio').width / parseFloat(getComputedStyle(bio).fontSize),
+          };
+        });
+        assert.ok(Math.abs(edges.wordmark - edges.wall) < 2, `Wall edge at ${width}px`);
+        assert.ok(Math.abs(edges.wordmark - edges.about) < 2, `About edge at ${width}px`);
+        assert.ok(edges.measure <= 27, `Bio measure at ${width}px: ${edges.measure}em`);
+        // What a niche keeps is named in whole words; a shortened title is read out whole,
+        // and a link that leaves the site says so.
+        const kept = await page.$$eval('.kept a', (links) =>
+          links.map((link) => ({
+            text: link.textContent.trim(),
+            name: link.getAttribute('aria-label'),
+            clipped: link.scrollHeight > link.clientHeight + 1,
+            leaves: link.origin !== location.origin,
+          }))
+        );
+        assert.equal(kept.length, 4);
+        for (const link of kept) {
+          assert.equal(link.clipped, false, `Kept title clipped: ${link.text}`);
+          if (link.leaves) assert.match(link.name, /leaves this site/);
+          if (link.text.endsWith('…')) {
+            assert.match(link.text, /[a-z]…$/);
+            assert.ok(link.name.startsWith(link.text.slice(0, -1)), link.name);
+            assert.ok(link.name.length > link.text.length + 20, link.name);
+          }
+        }
         const portraits = await page.$eval('.image-frame.clickable', async (frame) => {
           const bounds = frame.getBoundingClientRect();
           const results = [];
@@ -66,15 +101,16 @@ try {
                 top + paintedHeight >= bounds.bottom - 1,
             });
           }
-          return results;
+          // The frame is 200px wide on a phone and wider on a desk; its framing scales.
+          return results.map((result) => ({ ...result, scale: bounds.width / 200 }));
         });
         assert.equal(portraits.length, 2);
         assert.ok(
           portraits.every((portrait) => portrait.coversFrame),
           `Portrait gap at ${width}px`
         );
-        // Painted bounds measured on the live homepage; allow one pixel for image resize
-        // rounding. A phone shows the portrait at the same size as a desk does.
+        // Painted bounds measured on the live homepage at 200px; allow one pixel there for
+        // image resize rounding. A wider frame shows the same framing, larger.
         const liveFraming = [
           [-12.35, -28.808, 224.7, 299.6],
           [-30, -5.75, 230, 345],
@@ -82,7 +118,7 @@ try {
         for (const [index, portrait] of portraits.entries()) {
           for (const [dimension, value] of portrait.paintedBounds.entries()) {
             assert.ok(
-              Math.abs(value - liveFraming[index][dimension]) < 1,
+              Math.abs(value / portrait.scale - liveFraming[index][dimension]) < 1,
               `Portrait ${index} framing differs from live at ${width}px`
             );
           }
@@ -233,17 +269,70 @@ try {
     await page.$eval('[data-rc-countdown-label]', (element) => element.textContent),
     /200 °C.*180 °C.*with convection/
   );
-  // A reload in the middle of the bake keeps the step and its timer.
+  // A reload in the middle of the bake keeps the step and its timer, and the card as it
+  // was: the amount, and what was ticked off.
+  await page.click('input[name="rc-scale"][value="2"]');
+  await page.$eval('.rc-gather-list input', (tick) => tick.click());
   await page.reload({ waitUntil: 'networkidle0' });
   assert.match(
     await page.$eval('[data-rc-countdown-time]', (element) => element.textContent),
     /^0[78]:\d\d$/
   );
+  assert.equal(await page.$eval('[data-yield]', (element) => element.textContent), '30');
+  assert.ok(await page.$eval('.rc-gather-list input', (tick) => tick.checked));
+  // When the first stage ends on another step, what it asks for goes there with the
+  // timer, and stays until the cook has done it.
+  await page.click('[data-rc-back]');
+  await page.evaluate(() => {
+    const now = Date.now;
+    Date.now = () => now() + 9 * 60_000;
+  });
+  await page.waitForSelector('[data-rc-cue]:not([hidden])');
+  assert.match(
+    await page.$eval('[data-rc-cue-text]', (element) => element.textContent),
+    /^Bake, now: turn the oven down to 200 °C/
+  );
+  assert.match(
+    await page.$eval('[data-rc-alarm]', (element) => element.textContent),
+    /^Bake: Turn the oven down/
+  );
+  await page.click('[data-rc-cue-done]');
+  assert.equal(await page.$('[data-rc-cue]:not([hidden])'), null);
+  // Stopping would drop the running timer, so it asks first; Escape leaves it alone.
+  // Back and Stop are large enough for a finger.
+  await page.keyboard.press('Escape');
+  assert.ok(await page.$eval('[data-rc-cook]', (bar) => !bar.hidden), 'Escape kept the timer');
+  for (const control of ['[data-rc-back]', '[data-rc-stop]']) {
+    const box = await page.$eval(control, (element) => {
+      const { width, height } = element.getBoundingClientRect();
+      return { width, height };
+    });
+    assert.ok(box.width >= 44 && box.height >= 44, `${control} is ${box.width}×${box.height}`);
+  }
   await page.click('[data-rc-stop]');
+  assert.match(
+    await page.$eval('[data-rc-stop]', (element) => element.textContent),
+    /Drop the timer and stop\?/
+  );
+  assert.ok(await page.$eval('[data-rc-cook]', (bar) => !bar.hidden), 'One press does not stop');
+  await page.click('[data-rc-stop]');
+  assert.ok(await page.$eval('[data-rc-cook]', (bar) => bar.hidden));
 
-  // On a desk the table is complete on its own: a picked step shows under it, alone.
+  // On a desk the table is complete on its own. It opens with the first step under it,
+  // so the method is on the page before anything is picked, and its steps' names look
+  // like the links they are. A picked step shows under it, alone.
   await page.setViewport({ width: 1440, height: 844 });
   await page.reload({ waitUntil: 'networkidle0' });
+  assert.deepEqual(
+    await page.$$eval('.rc-steps-item', (steps) =>
+      steps.filter((step) => step.getClientRects().length > 0).map((step) => step.id)
+    ),
+    ['rc-step-0']
+  );
+  assert.equal(
+    await page.$eval('.rc-do', (name) => getComputedStyle(name).textDecorationLine),
+    'underline'
+  );
   await page.click('.rc-step[data-stage="5"] a');
   const pickedStep = await page.$eval('[data-recipe-card]', (card) => ({
     table: card.querySelector('.rc-table-frame').getClientRects().length > 0,
@@ -259,6 +348,57 @@ try {
     number: '"6"',
     said: 'Step 6, Shape into balls, is shown under the table.',
   });
+  // Focus goes to the step that was picked, on screen, and there is a way back from it
+  // to the table. Reading all the steps lands on the first one, on screen too.
+  const focused = () =>
+    page.evaluate(() => {
+      const { top, bottom } = document.activeElement.getBoundingClientRect();
+      return {
+        text: document.activeElement.textContent.trim(),
+        onScreen: top >= 0 && bottom <= innerHeight,
+      };
+    });
+  await page.waitForFunction(() => {
+    const { top, bottom } = document.activeElement.getBoundingClientRect();
+    return top >= 0 && bottom <= innerHeight;
+  });
+  assert.deepEqual(await focused(), { text: 'Shape into balls', onScreen: true });
+  await page.click('[data-rc-to-table]');
+  assert.equal(
+    await page.evaluate(() => document.activeElement.closest('.rc-step')?.dataset.stage),
+    '5'
+  );
+  await page.click('[data-rc-all]');
+  await page.waitForFunction(
+    () => Math.abs(document.activeElement.getBoundingClientRect().top) < 200
+  );
+  assert.deepEqual(await focused(), { text: 'Get ready', onScreen: true });
+
+  // Where the table scrolls sideways, cooking brings a step's column into view between
+  // the pinned ingredients and the right edge, and leaves a column that fits alone.
+  await page.setViewport({ width: 820, height: 1180 });
+  await page.reload({ waitUntil: 'networkidle0' });
+  await page.click('input[name="rc-view"][value="table"]');
+  await page.click('[data-rc-start]');
+  const column = () =>
+    page.$eval('[data-recipe-card]', (card) => {
+      const wrap = card.querySelector('.rc-table-wrap');
+      const cell = card.querySelector('.rc-step.is-current').getBoundingClientRect();
+      return {
+        scrolled: Math.round(wrap.scrollLeft),
+        clear:
+          cell.left >= card.querySelector('.rc-ingredient').getBoundingClientRect().right - 1 &&
+          cell.right <= wrap.getBoundingClientRect().right + 1,
+      };
+    });
+  for (let step = 0; step < 3; step++) await page.click('[data-rc-next]');
+  assert.deepEqual(await column(), { scrolled: 0, clear: true }, 'Knead fits and stays');
+  for (let step = 0; step < 4; step++) await page.click('[data-rc-next]');
+  const bake = await column();
+  assert.ok(bake.clear && bake.scrolled > 0, 'Bake comes into view');
+  await page.click('[data-rc-back]');
+  assert.deepEqual(await column(), bake, 'Rise again was in view and stays');
+  await page.click('[data-rc-stop]');
   // Force lazy images to load before checking their decoded dimensions.
   await page.$$eval('img', async (images) => {
     for (const image of images) {
