@@ -71,6 +71,8 @@ function initRecipeCard(card: HTMLElement): void {
   const sheet = card.querySelector<HTMLElement>('.rc-sheet');
   const frame = card.querySelector<HTMLElement>('[data-rc-frame]');
   const wrap = card.querySelector<HTMLElement>('.rc-table-wrap');
+  const table = card.querySelector<HTMLElement>('.rc-table');
+  const heads = [...card.querySelectorAll<HTMLElement>('.rc-above')];
   const stages = [...card.querySelectorAll<HTMLElement>('.rc-steps-item')];
   const cells = [...card.querySelectorAll<HTMLElement>('.rc-table [data-stage]')];
   const rows = [...card.querySelectorAll<HTMLElement>('tr[data-taken-at]')];
@@ -121,14 +123,38 @@ function initRecipeCard(card: HTMLElement): void {
     }
   };
 
+  // Where the table scrolls sideways it stops with a step's column starting at the pinned
+  // ingredient column, so nothing of a half-hidden column shows beside it. These are the
+  // scroll positions that do that, one per column.
+  const pinnedWidth = () => card.querySelector<HTMLElement>('.rc-ingredient')?.offsetWidth ?? 0;
+  const columnStops = () => {
+    const origin = (table?.getBoundingClientRect().left ?? 0) + pinnedWidth();
+    return heads.map((head) => head.getBoundingClientRect().left - origin);
+  };
+
   // While part of the table hides to the right, the frame fades its edge and says so.
   const showMore = () => {
-    if (!frame || !wrap) return;
-    frame.classList.toggle('has-more', wrap.scrollWidth - wrap.clientWidth - wrap.scrollLeft > 2);
+    if (!frame || !wrap || !table) return;
+    frame.classList.toggle('has-more', table.offsetWidth - wrap.clientWidth - wrap.scrollLeft > 2);
+  };
+  // The last stop may lie past the table's end. The table then gets that much room after
+  // its last column, or it could not come to rest there.
+  const fitTable = () => {
+    if (!wrap || !table) return;
+    const hidden = table.offsetWidth - wrap.clientWidth;
+    const last = hidden > 2 ? columnStops().find((stop) => stop >= hidden - 1) : undefined;
+    wrap.style.setProperty('--rc-pinned', `${pinnedWidth()}px`);
+    wrap.style.setProperty('--rc-run', last ? `${Math.ceil(last) + wrap.clientWidth - 1}px` : '0');
+    showMore();
   };
   wrap?.addEventListener('scroll', showMore, { passive: true });
-  // Also runs when the table is first shown or a view is chosen: its size changes then.
-  if (wrap) new ResizeObserver(showMore).observe(wrap);
+  // Also runs when the table is first shown, a view is chosen or the amount changes: its
+  // size changes then.
+  if (wrap && table) {
+    const resized = new ResizeObserver(fitTable);
+    resized.observe(wrap);
+    resized.observe(table);
+  }
 
   const setView = (view: string) => {
     card.dataset.view = view;
@@ -155,30 +181,38 @@ function initRecipeCard(card: HTMLElement): void {
     for (const picture of stages[stage]?.querySelectorAll('img') ?? []) picture.loading = 'eager';
   };
 
+  // Paper has every step, so every picture is wanted before the page is printed.
+  window.addEventListener('beforeprint', () => stages.forEach((_, stage) => loadPictures(stage)));
+
   const cellOf = (stage: number) => cells.find((item) => Number(item.dataset.stage) === stage);
 
   // Where the table scrolls sideways, a step's column has to be in full view between the
   // pinned ingredient column and the right edge (short of the fade over that edge, while
-  // more follows). A column that is there already stays where it is; one that is not
-  // moves no further than it has to. At once, not smoothly: a scroll of the page that
-  // follows would cut a smooth one short.
+  // more follows). Of the stops that show it so, the table takes the nearest: a column
+  // that is there already stays where it is, and one that is not moves no further than it
+  // has to. At once, not smoothly: a scroll of the page that follows would cut a smooth
+  // one short.
   const showColumn = (stage: number) => {
     const cell = cellOf(stage);
-    if (!wrap || !cell) return;
+    if (!wrap || !table || !cell) return;
     // Getting ready is the ingredient column itself.
     if (!cell.matches('.rc-step')) {
       wrap.scrollTo({ left: 0 });
       return;
     }
-    const pinned = card.querySelector<HTMLElement>('.rc-ingredient')?.offsetWidth ?? 0;
+    const origin = table.getBoundingClientRect().left;
     const column = cell.getBoundingClientRect();
-    const view = wrap.getBoundingClientRect();
-    const tableEnd = view.left - wrap.scrollLeft + wrap.scrollWidth;
-    const fade = column.right < tableEnd - 2 ? parseFloat(getComputedStyle(wrap).fontSize) * 3 : 0;
-    const clear = column.left - (view.left + pinned);
-    const past = column.right - (view.right - fade);
-    if (clear < 0) wrap.scrollBy({ left: clear });
-    else if (past > 0) wrap.scrollBy({ left: Math.min(past, clear) });
+    const fade =
+      column.right - origin < table.offsetWidth - 2
+        ? parseFloat(getComputedStyle(wrap).fontSize) * 3
+        : 0;
+    const most = column.left - origin - pinnedWidth();
+    const least = column.right - origin - (wrap.clientWidth - fade);
+    const at = wrap.scrollLeft;
+    const [nearest = most] = columnStops()
+      .filter((stop) => stop >= least - 1 && stop <= most + 1)
+      .sort((a, b) => Math.abs(a - at) - Math.abs(b - at));
+    wrap.scrollTo({ left: nearest });
   };
 
   // Brings a step into view. In the list it goes to the top of the window, so a step
@@ -203,12 +237,13 @@ function initRecipeCard(card: HTMLElement): void {
 
   // Picking a step in the table shows it under the table, as the list has it, and takes
   // the reader there; "Back to the table" under it then leads back to the step's name. Picking
-  // the step that shows puts it away. The table opens with its first step shown, so the
-  // method is on the page before anything is picked: that one is `quiet`.
+  // the step that shows already takes the reader to it too: a pick never puts a step away.
+  // The table opens with its first step shown, so the method is on the page before
+  // anything is picked: that one is `quiet`. Cooking puts the picked step away (-1).
   let picked = -1;
   const toTable = card.querySelector<HTMLElement>('.rc-to-table');
   const pick = (stage: number, quiet = false) => {
-    picked = stage === picked ? -1 : stage;
+    picked = stage;
     for (const item of [...stages, ...cells]) {
       const shown = Number(item.dataset.stage) === picked;
       item.classList.toggle('is-picked', shown);
@@ -348,7 +383,7 @@ function initRecipeCard(card: HTMLElement): void {
       const [first, ...rest] = phases.map((phase) => phase.minutes);
       timerButton.textContent =
         rest.length > 0
-          ? `Start timer: ${first} min, then ${rest.join(', then ')} min`
+          ? `Start timer: ${first}\u00a0min, then ${rest.join('\u00a0min, then ')}\u00a0min`
           : `Start ${first}-minute timer`;
     }
     if (countdown && countdownTime) {
@@ -360,8 +395,8 @@ function initRecipeCard(card: HTMLElement): void {
       }
     }
     // What a finished stage asks for goes with its timer to whatever step the cook is
-    // on, and stays until the cook says it is done.
-    const asked = timers.find((timer) => timer.cue && !timer.done);
+    // on, and stays until the cook says it is done, also after the timer has ended.
+    const asked = timers.find((timer) => timer.cue);
     if (cue && cueText) {
       cue.hidden = !asked;
       cueText.textContent = asked
@@ -405,7 +440,7 @@ function initRecipeCard(card: HTMLElement): void {
         const following = timer.phases[timer.phase + 1];
         chime();
         if (following) {
-          timer.cue = finished?.cue ?? '';
+          timer.cue = finished?.cue || timer.cue;
           timer.phase += 1;
           timer.start = timer.end;
           timer.end += following.minutes * 60_000;
@@ -517,10 +552,11 @@ function initRecipeCard(card: HTMLElement): void {
       row.classList.toggle('is-used', takenAt < current);
     }
 
-    // Finished timers for steps you've moved past are put away.
+    // Finished timers for steps you've moved past are put away, unless one still asks
+    // for something.
     for (let index = timers.length - 1; index >= 0; index--) {
       const timer = timers[index];
-      if (timer && timer.done && timer.stage < current) timers.splice(index, 1);
+      if (timer && timer.done && !timer.cue && timer.stage < current) timers.splice(index, 1);
     }
     keep();
 
@@ -537,7 +573,7 @@ function initRecipeCard(card: HTMLElement): void {
   };
 
   const start = (stage = 0) => {
-    if (picked >= 0) pick(picked, true);
+    pick(-1, true);
     card.classList.add('is-cooking');
     document.documentElement.classList.add('rc-cooking');
     bar.hidden = false;
@@ -621,12 +657,18 @@ function initRecipeCard(card: HTMLElement): void {
     if (current < 0 || event.altKey || event.ctrlKey || event.metaKey) return;
     if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement)
       return;
-    if (event.key === 'ArrowRight') show(current + 1);
-    if (event.key === 'ArrowLeft') show(current - 1);
-    // Escape leaves cooking, but never takes a running timer with it.
+    // In the table's scroller the arrows scroll the table.
+    const scrolls = event.target instanceof Element && event.target.closest('.rc-table-wrap');
+    if (event.key === 'ArrowRight' && !scrolls) show(current + 1);
+    if (event.key === 'ArrowLeft' && !scrolls) show(current - 1);
+    // Escape leaves cooking, but never takes a running timer with it: it asks, as a press
+    // on "Stop cooking" does, and leaves the answer to that button.
     if (event.key === 'Escape') {
       if (running() === 0) stop();
-      else say('A timer is running. Press Stop cooking to end and drop it.');
+      else {
+        stopButton?.focus();
+        if (!stopAsked) askToStop();
+      }
     }
   });
 

@@ -238,8 +238,12 @@ const niches = [
     --kept-size: clamp(var(--text-sm), var(--niche-size) * 0.085, var(--text-md));
     --kept-width: 100%;
 
+    /* Each column is as wide as its niche, and the room left over goes between them, so
+       the outer niches stand on the wall's two edges however small the window's height
+       makes them. What a niche keeps is set to its width. */
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, var(--niche-size)));
+    justify-content: space-between;
     gap: var(--space-lg) clamp(0.75rem, 2vw, 2rem);
     margin: 0;
     padding: 0;
@@ -383,6 +387,11 @@ const niches = [
       min-height: 0;
       gap: var(--space-lg);
       padding-top: var(--page-top);
+    }
+
+    /* Here the niches share the wall's width evenly. */
+    .niche-row {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 
     .intro {

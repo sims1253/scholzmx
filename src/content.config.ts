@@ -1,7 +1,10 @@
 import { defineCollection } from 'astro:content';
 import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
-import { checkRecipe } from './lib/recipe';
+import { checkRecipe, tie } from './lib/recipe';
+
+/** A recipe's running text: a number in it stays on the line of its unit. */
+const text = () => z.string().transform(tie);
 
 const blog = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/blog' }),
@@ -43,8 +46,8 @@ const recipes = defineCollection({
         equipment: z
           .array(
             z.union([
-              z.string().transform((name) => ({ name })),
-              z.object({ name: z.string(), doubled: z.string().optional() }),
+              text().transform((name) => ({ name })),
+              z.object({ name: text(), doubled: text().optional() }),
             ])
           )
           .optional(),
@@ -55,8 +58,8 @@ const recipes = defineCollection({
               name: z.string(),
               amount: z.number().positive().optional(),
               unit: z.string().optional(),
-              prep: z.string().optional(),
-              note: z.string().optional(),
+              prep: text().optional(),
+              note: text().optional(),
               scales: z.boolean().optional(),
             })
           )
@@ -67,7 +70,7 @@ const recipes = defineCollection({
               id: z.string(),
               uses: z.array(z.string()).min(1),
               do: z.string(),
-              detail: z.string().optional(),
+              detail: text().optional(),
               minutes: z
                 .union([z.number().positive(), z.tuple([z.number(), z.number()])])
                 .optional(),
@@ -75,20 +78,20 @@ const recipes = defineCollection({
               heat: z.string().optional(),
               result: z.string().optional(),
               /** The why and the tips; amounts in braces scale with the recipe. */
-              notes: z.array(z.string()).optional(),
+              notes: z.array(text()).optional(),
               /** `alt` says what the picture shows; `caption` what it tells the cook. */
-              photo: z.object({ src: image(), alt: z.string(), caption: z.string() }).optional(),
+              photo: z.object({ src: image(), alt: z.string(), caption: text() }).optional(),
               /** Stages of a timed step; they add up to `minutes`. */
               timers: z
-                .array(z.object({ minutes: z.number().positive(), cue: z.string().optional() }))
+                .array(z.object({ minutes: z.number().positive(), cue: text().optional() }))
                 .optional(),
               /** The instruction when halved or doubled, where `detail` would be wrong. */
-              halved: z.string().optional(),
-              doubled: z.string().optional(),
+              halved: text().optional(),
+              doubled: text().optional(),
             })
           )
           .optional(),
-        meanwhile: z.array(z.object({ do: z.string(), during: z.string() })).optional(),
+        meanwhile: z.array(z.object({ do: text(), during: z.string() })).optional(),
         heroImage: image().optional(),
         /** What the hero picture shows, for whoever cannot see it. */
         heroAlt: z.string().optional(),

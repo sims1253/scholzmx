@@ -290,6 +290,14 @@ export function splitAmounts(text: string): TextPart[] {
   return parts;
 }
 
+/**
+ * Keeps a number on the line of its unit, so "200 °C", "50 g", "8 minutes" and
+ * "34 × 24 cm" never break in two.
+ */
+export function tie(text: string): string {
+  return text.replace(/(\d) (?=[°×\p{L}])/gu, '$1\u00a0').replace(/× (?=\d)/g, '×\u00a0');
+}
+
 /** "25 min", "8–10 min", "1 h", "1 h 30 min". */
 export function formatStepTime(minutes?: number | [number, number]): string {
   if (minutes === undefined) return '';
