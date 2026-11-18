@@ -1,85 +1,42 @@
-# Doodad System
+# Card dressing
 
-The decorative elements you see on cards throughout the site. Makes things feel more organic and hand-placed instead of sterile and templated.
+Every listing card is a sheet of paper lying on a desk, and no two sheets are the same.
+`src/lib/cardDressing.ts` decides, from the card's seed, how a sheet lies and what has
+happened to it. The same seed always gives the same card, so nothing flickers on load.
 
-## How it works
+## What varies
 
-Cards get seeded randomization that picks from different categories of doodads:
+- **Where it lies:** tilt, a shift off its grid cell, which neighbour it lies on. The
+  desk's gaps (`--desk-row-gap`, `--desk-col-gap` in `src/styles/stacked-card.css`) are
+  sized so an overlap only reaches a neighbour's padding.
+- **The paper:** tint (plain, cream, sage, aged with foxing, grey), ruling (plain, margin
+  line, ruled, squared, ring binder with punched holes), edge (cut, torn off a pad,
+  deckled) and sometimes a dog-eared corner.
+- **What holds it down:** one or two strips of tape (stock, angle, length and torn ends
+  vary), a drawing pin, a paperclip, a staple, or nothing.
+- **One mark, or none:** drawn in `src/components/CardMark.astro`, in the footer ledge's
+  doodle hand.
 
-- **SVG doodles** - Small decorative graphics that get positioned around cards
-- **Background effects** - A coffee ring where a mug was set down near the edge (drawn by `scripts/draw-coffee-rings.mjs`).
-- **Element doodles** - HTML elements like tape, tabs, etc. The bookmark ribbon is off unless a card passes `allowBookmark`, since a random ribbon reads as "pinned".
+Each shelf has its own weights: a cup ring turns up more on recipe cards, a library date
+stamp only on catalogue cards, and tags hang from their strings instead of being taped.
 
-The system uses weighted selection within categories and can handle conflicts (so you don't get clashing elements).
+## Marks never cover words
 
-## Adding SVG Doodles
+A mark has a home that the card keeps clear for it:
 
-1. Drop the SVG in `/public/doodles/`
-2. Add to `svgDoodles` category in `src/config/doodadConfig.ts`:
+- **Corner marks** (`ring`, `blot`, `thumb`, `stamp`, `pencil`, `tansy`, `mouse`) sit in
+  the bottom-right corner. The card sets `data-zone`, and the footer line makes room.
+  A card whose corner holds a taped photo gets no corner mark.
+- **Edge marks** (`ants`, `inchworm`, `ladybird`) walk along the top edge, in the strip
+  above the title, clear of a pin or a centre strip of tape.
 
-```js
-{
-  id: 'my-doodle',
-  probability: 0.3,        // weight for selection (higher = more likely)
-  layerTypes: ['all'],     // or ['single'], ['multi'] to restrict to card types
-  kind: 'svg',
-  src: '/doodles/my-doodle.svg',
-  defaultSize: '2rem',
-  positions: ['topLeft', 'topRight'],
-  generate: ({ pick, map }) => ({
-    position: pick(0.5) ? 'topLeft' : 'topRight',
-    rotation: Math.round(map(-15, 15))
-  })
-}
-```
+Every mark is `aria-hidden` and ignores the pointer.
 
-The `generate` function lets you customize positioning and rotation based on the seeded RNG.
+## Adding a mark
 
-## CSS Mask Rendering
-
-SVG doodles use CSS masks instead of `<img>` tags. This means:
-
-- Perfect transparency and cutout effects
-- Doodles can be recolored with CSS variables without touching the SVG
-- Fallback to colored rectangles in old browsers
-
-The implementation is in `src/styles/stacked-card.css` around line 270:
-
-```css
-.sc-doodle {
-  /* Color comes from CSS variable, not SVG fill */
-  background-color: var(--doodle-color /* fallback */);
-
-  /* SVG loaded as mask */
-  mask-image: var(--doodle-src);
-  mask-size: contain;
-  mask-repeat: no-repeat;
-}
-```
-
-## Theming Doodles
-
-Override colors per page or section:
-
-```css
-.my-special-page {
-  --doodle-color: var(--color-sage);
-}
-```
-
-## Key Files
-
-- `src/config/doodadConfig.ts` - Where all doodads are defined
-- `src/styles/stacked-card.css` - CSS for rendering (search for "sc-doodle")
-- `src/components/StackedCard.astro` - Sets the CSS variables
-
-## Debugging
-
-Each card gets deterministic randomization based on its seed. If you want to see what doodads a specific card will get, you can log the results in `StackedCard.astro` or use the browser dev tools to check the CSS variables.
-
-## Probability System
-
-- **Category gates:** Each category has a probability that acts as a gate (0.8 = 80% chance the category is active)
-- **Exclusive categories:** Only one item can be selected, probabilities are weights for selection
-- **Non-exclusive categories:** Each item has independent chance to be selected
-- **Conflicts:** Items can block other items from being selected (processed in order)
+1. Add its name to `CornerMark` or `EdgeMark` and give it a weight per material in
+   `MARK_WEIGHTS` (`src/lib/cardDressing.ts`).
+2. Draw it in `CardMark.astro` (a small inline SVG; `ink`, `thin` and `fill` take the
+   current colour, so it follows the torch theme).
+3. Size and colour it in the marks section of `stacked-card.css`. A corner mark must fit
+   in 3.6rem by 2.4rem; an edge mark walks the top edge and must reach no more than 0.4rem onto the sheet.

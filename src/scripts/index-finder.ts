@@ -6,7 +6,7 @@
 function initIndexFinder(finder: HTMLElement): void {
   const noun = finder.dataset.noun ?? 'entries';
   const status = finder.querySelector<HTMLElement>('[data-filter-status]');
-  const tagPanel = finder.querySelector<HTMLDetailsElement>('details');
+  const tagPanel = finder.querySelector<HTMLDetailsElement>('details.finder-tags');
   let activeTag = new URLSearchParams(location.search).get('tag') ?? '';
   let searching = false;
 

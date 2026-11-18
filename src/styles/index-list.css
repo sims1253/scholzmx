@@ -39,7 +39,7 @@
 }
 
 .index-group {
-  margin: 0 0 var(--space-xl);
+  margin: 0 0 var(--space-lg);
 }
 
 .index-group[hidden] {
@@ -105,6 +105,15 @@
   }
 }
 
+/* A shelf whose cards carry their own divider tabs needs no margin column: header
+   and cards share one centred column, the width of the research and project shelves. */
+.index-page[data-tabbed] {
+  display: block;
+  width: 100%;
+  max-width: 60rem;
+  margin-inline: auto;
+}
+
 /* ===== Photographs pasted into the notebook with two paper strips ===== */
 
 .pasted {
@@ -141,6 +150,52 @@
 .index-finder {
   margin: 0 0 var(--space-xl);
   font-family: var(--font-ui);
+}
+
+/* A long index opens with its search field; the summary has nothing to say. */
+.index-finder:not(.is-short) .finder-search > summary {
+  display: none;
+}
+
+/* A short index is one quiet line under the lede: the year jumps, then the search
+   folded away. Opened, the field takes a line of its own. */
+.index-finder.is-short {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 2rem;
+  margin-top: calc(var(--space-sm) * -1);
+  font-size: var(--text-sm);
+}
+
+.index-finder.is-short .finder-row {
+  margin-top: 0;
+}
+
+.index-finder.is-short .finder-search {
+  order: 1;
+}
+
+.index-finder.is-short .finder-search[open] {
+  flex-basis: 100%;
+}
+
+.index-finder.is-short .finder-filter {
+  flex-basis: 100%;
+  order: 2;
+}
+
+.finder-search > summary {
+  color: var(--color-link);
+  cursor: pointer;
+}
+
+.finder-search > summary::marker {
+  color: var(--color-moss);
+}
+
+.finder-search[open] > summary {
+  margin-bottom: 0.4rem;
 }
 
 .finder-row {
@@ -217,14 +272,25 @@
   color: var(--color-text-primary);
 }
 
-.finder-status {
+.finder-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
   margin: 0.5rem 0 0;
   font-size: var(--text-sm);
+}
+
+.finder-status {
   font-style: italic;
   color: var(--color-text-muted);
 }
 
-.finder-status:empty {
+/* The way back appears only while a tag filters the index. */
+.finder-filter:has(.finder-status:empty) {
+  margin: 0;
+}
+
+.finder-status:empty + .finder-clear {
   display: none;
 }
 

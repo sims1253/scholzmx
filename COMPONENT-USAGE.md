@@ -3,25 +3,23 @@
 Quick reference for the shared pieces and where they belong.
 
 ## Page shells
-`BaseLayout.astro` draws the canopy, navigation and footer. Pick a `tone` (`personal` sets text in Alegreya, `serious` in ET Book) and a `layout` (`prose`, `listing`, `wide`, `full`).
+`BaseLayout.astro` draws the canopy, navigation and footer. Pick a `tone` (`personal` sets text in Alegreya, `serious` in ET Book) and a `layout` (`prose`, `listing`, `cards`, `wide`, `full`).
 
 ## Index pages
-Blog, recipes, research and notes share `src/styles/index-list.css`: a page header, then groups whose label (a year or an initial) hangs in the left margin on wide screens.
+Blog, recipes, research and projects are desks of cards, each shelf in one material: writing paper (blog), recipe cards, library catalogue cards (research) and manila workshop tags (projects). Cards lie at their natural heights, a little off their cells, and overlap at their margins. Every card's tilt, paper, fastener and mark comes from its seed (see `DOODAD_GUIDE.md`).
 
 ```astro
-<div class="index-page">
+<div class="index-page" data-tabbed>
   <header class="page-header">
     <h1 class="page-title">Blog</h1>
     <p class="page-lede">One sentence about the section.</p>
   </header>
-  <section class="index-group" data-index-group>
-    <h2 class="index-label">2025</h2>
-    <NoteCardStack columns="auto" itemMinWidth="26rem" media="thumb" headingLevel={3} items={posts} />
-  </section>
+  <IndexFinder type="blog" noun="posts" count={posts.length} tags={tags} jumps={yearJumps} />
+  <NoteCardStack media="thumb" headingLevel={3} items={posts} />
 </div>
 ```
 
-`NoteCardStack` renders the seeded note cards (see `DOODAD_GUIDE.md`); use `StackedCard` directly for custom card content. With `columns="auto"` and `itemMinWidth`, cards fill rows of equal width; `media="thumb"` tapes the hero image into the card's corner instead of running it across the top. On index pages the cards sit in a centred column: one card wide where `.index-page` sets `--index-content: var(--card-max-width)` (recipes, research, notes), or the full `layout="cards"` width on the blog, which runs two cards to a row on wide screens and centres a row's lone card. Add `IndexFinder.astro` for search and tag filters; it filters `.nc-item` cards by `data-tags`.
+`NoteCardStack` renders one desk of cards. An item's `tab` (a year, an initial) becomes a divider tab standing up behind the first card of its run, and the year jumps link to it. `media="thumb"` tapes the hero image into the card's bottom corner, so the title keeps the sheet's full width; `material="recipe"` makes recipe cards. Use `StackedCard` directly for custom card content, with `material` and `class="sc-desk"` on the grid around it (research, projects). `IndexFinder` filters `.nc-item` cards by `data-tags`; past 12 entries it opens with search and the tag browser, below that it is one quiet line.
 
 ## Photographs and plots
 Images that stand alone in a paragraph or figure in posts, recipes and notes are pasted in as prints automatically. Wrap other photos in `.pasted` for the same two paper strips.
