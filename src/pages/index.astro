@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import DropCap from '../components/DropCap.astro';
 import ImageFrame from '../components/ImageFrame.astro';
 import Niche from '../components/Niche.astro';
 import QuoteOfTheDay from '../components/QuoteOfTheDay.astro';
@@ -38,7 +37,6 @@ const niches = [
     kind: 'bench' as const,
     kept: newestProject && {
       href: newestProject.links[0]!.url,
-      // A short lowercase name alone ("ry") reads as the tail of a cut-off word.
       name: projectName(newestProject.title).name,
       title: projectName(newestProject.title).common,
       when: String(newestProject.year),
@@ -70,138 +68,208 @@ const niches = [
   layout="wide"
 >
   <div class="home">
-    <h1 class="welcome">
-      <span class="welcome-greeting">Welcome to my Grotto,</span>
-      <span class="welcome-line">
-        a place where I try to cultivate the feeling of watching the shadows dance through vines,
-        while insects are humming and tansy is making everything smell like summer.
-      </span>
-    </h1>
+    {/* The first screen: who this is, and the wall. The niches are the way into the site
+        and lead the page; everything else waits below them. */}
+    <div class="first-screen">
+      <header class="intro">
+        <div class="who">
+          <h1 class="name">Maximilian Scholz</h1>
+          <p class="who-line">
+            I make software, cook, and hold a PhD in Bayesian statistics. You can find me on
+            <a href="https://github.com/sims1253" rel="noopener me" class="no-external-indicator"
+              >GitHub</a
+            >
+            and
+            <a
+              href="https://bsky.app/profile/scholzmx.bsky.social"
+              rel="noopener me"
+              class="no-external-indicator"
+              >Bluesky</a
+            >.
+          </p>
+        </div>
+        <p class="welcome">
+          Welcome to my Grotto, a place where I try to cultivate the feeling of watching the shadows
+          dance through vines, while insects are humming and tansy is making everything smell like
+          summer.
+        </p>
+      </header>
 
-    <div class="portrait pasted">
-      <ImageFrame
-        src={portraitImage}
-        alt="Professional portrait of me"
-        alternateSrc={selfImage}
-        alternateAlt="More cool portrait of me"
-        style="watercolor"
-        size="large"
-        loading="eager"
-        positionX={0}
-        positionY={2}
-        scale={1.4}
-        alternatePositionX={-6.5}
-        alternatePositionY={15}
-        alternateScale={1.5}
-      />
+      {/* The grotto as a place: four niches in the wall, each keeping what a part of the
+          site is made at, and under it the newest thing made there. Something lives in each. */}
+      <section class="niches" aria-labelledby="niches-title">
+        <h2 class="niches-title" id="niches-title">
+          There are four niches in the wall. Each keeps the newest thing I made there.
+        </h2>
+        <ul class="niche-row">
+          {niches.map((niche) => <li><Niche {...niche} /></li>)}
+        </ul>
+      </section>
     </div>
 
-    <div class="about prose">
-      <p>
-        <DropCap letter="I" variant="personal" color="moss" />'m Maximilian. My best friend once
-        painted me a t-shirt that read <em>verspielt und liebenswürdig</em> (playful and endearing)
-        and I've yet to find a better description. The best feedback I've ever gotten described me
-        as a <em>herder of cat herders</em> and my music taste has been characterized as being
-        <em>an atmospheric futurist with a nostalgic heart</em>.
-      </p>
-      <p>
-        I tend to make things. Software infrastructure that hopefully helps others, harsh vocals and
-        guitar covers, a concept Call of Cthulhu campaign for a deathcore album (much to my players'
-        confusion), and kitchen experiments where I try something new each month. I'm easy to
-        nerdsnipe, if you couldn't tell. When I'm not building something, you'll find me on the mats
-        failing triangle escapes, or somewhere between a barbell and a book.
-      </p>
-      <p>
-        Somewhere along the way I collected a B.Sc. in <em>Computer Science in Engineering</em>, a
-        M.Sc. in <em>Software Engineering and Technology</em>, and a PhD in
-        <em>Bayesian Statistics</em>.
-      </p>
-    </div>
+    <section class="about" aria-labelledby="about-title">
+      <h2 class="sr-only" id="about-title">About me</h2>
+      <div class="portrait pasted">
+        <ImageFrame
+          src={portraitImage}
+          alt="Maximilian in a dark suit and tie, with shoulder-length dark hair, glasses and a beard, laughing at something to his left."
+          alternateSrc={selfImage}
+          alternateAlt="Maximilian in the same kind of suit and round sunglasses, the wind in his hair, with other guests behind him in the sun."
+          style="watercolor"
+          size="large"
+          positionX={0}
+          positionY={2}
+          scale={1.4}
+          alternatePositionX={-6.5}
+          alternatePositionY={15}
+          alternateScale={1.5}
+        />
+      </div>
 
-    <div class="quote">
-      <QuoteOfTheDay />
-    </div>
+      <div class="bio prose">
+        <p>
+          I'm Maximilian. My best friend once painted me a t-shirt that read
+          <em lang="de">verspielt und liebenswürdig</em> (playful and endearing) and I've yet to
+          find a better description. The best feedback I've ever gotten described me as a
+          <em>herder of cat herders</em> and my music taste has been characterized as being
+          <em>an atmospheric futurist with a nostalgic heart</em>.
+        </p>
+        <p>
+          I tend to make things. Software infrastructure that hopefully helps others, harsh vocals
+          and guitar covers, a concept Call of Cthulhu campaign for a deathcore album (much to my
+          players' confusion), and kitchen experiments where I try something new each month. I'm
+          easy to nerdsnipe, if you couldn't tell. When I'm not building something, you'll find me
+          on the mats failing triangle escapes, or somewhere between a barbell and a book.
+        </p>
+        <p>
+          Somewhere along the way I collected a B.Sc. in <em>Computer Science in Engineering</em>, a
+          M.Sc. in <em>Software Engineering and Technology</em>, and a PhD in
+          <em>Bayesian Statistics</em>.
+        </p>
+      </div>
 
-    {/* The grotto as a place: four niches in the wall, each keeping what a part of the
-        site is made at, and under it the newest thing made there. Something lives in each. */}
-    <section class="niches" aria-labelledby="niches-title">
-      <h2 class="niches-title" id="niches-title">
-        There are four niches in the wall. Each keeps the newest thing I made there.
-      </h2>
-      <ul class="niche-row">
-        {niches.map((niche) => <li><Niche {...niche} /></li>)}
-      </ul>
+      <div class="quote">
+        <QuoteOfTheDay />
+      </div>
     </section>
   </div>
 </BaseLayout>
 
 <style>
   /*
-   * Desktop, one screen:
-   *   [portrait, then the quote] [welcome, then the bio] [the niches, cut into the margin]
-   * In a tall window the quote moves under the bio (see the min-height rule below).
-   * Height the window has to spare loosens the page: the text grows back to full size
-   * (--room), and the page stands a little above the middle of what is then left.
-   * The greeting starts on the reading column's left edge, so one axis runs down the page.
-   * The margins run the full height beside the greeting and the bio, so the bio decides
-   * where the page ends.
+   * The first screen is the wall: the name and a welcome above it, then the four niches in
+   * one course, as large as the window allows. The portrait, the bio and the quote of the
+   * day come after it, for whoever wants to know more.
+   *
+   * One rule sizes the niches from the window's width and height (--niche-size); the type
+   * around them follows from it. Nothing else is fitted to the screen.
    */
-  /* The two side columns are equally wide, so the reading column is centred; they take
-     what the reading column leaves, so the text keeps its measure. */
   .home {
     --gap: clamp(1.5rem, 3vw, 3rem);
-    /* A little wider than the measure, as the bio sets a little smaller here */
-    --text-col: calc(var(--measure-prose) + 2rem);
-    --side-col: clamp(11rem, (100% - var(--text-col) - 2 * var(--gap)) / 2, 18rem);
-    /* The portrait's frame (ImageFrame, size large) and its top margin: the quote hangs under it */
-    --portrait-height: calc(230px + 0.5rem);
-    /* Height the window has beyond what the compact page needs (--fits-from): the text
-       grows back to full size with it. On the wide layout only. */
-    --room: 0px;
+    /* Four niches and their gaps: the width the first screen is set to */
+    --niche-size: clamp(6.5rem, min(16.5vw, (100svh - 25rem) * 0.45), 19rem);
+    --wall-width: min(100%, max(54rem, var(--niche-size) * 5.6));
 
     display: grid;
-    grid-template-columns:
-      [portrait] var(--side-col)
-      [text] minmax(0, var(--text-col))
-      [aside] var(--side-col);
-    grid-template-rows: auto 1fr;
-    column-gap: var(--gap);
-    justify-content: center;
-    align-items: start;
+    justify-items: center;
   }
 
-  /* The welcome is one sentence, and reads as one: it opens large and runs on in italic
-     into the lede, the way a chapter's first words are set. The bio starts right under it. */
-  .welcome {
-    grid-column: text;
-    grid-row: 1;
-    max-width: none;
-    margin: -0.6rem 0 calc(0.6rem + var(--room) * 0.08);
+  /* The header is about 5.5rem high. The first screen stops short of the window's foot,
+     so the top of the portrait shows under it and says that the page goes on. */
+  .first-screen {
+    display: grid;
+    align-content: center;
+    gap: clamp(1.25rem, 4svh, 3.5rem);
+    width: var(--wall-width);
+    min-height: calc(100svh - 11rem);
+  }
+
+  /* ===== Who, and the welcome ===== */
+
+  .intro {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 5fr);
+    gap: var(--gap);
+    align-items: center;
+  }
+
+  .name {
+    margin: 0 0 0.25em;
     font-family: var(--font-heading);
-    font-size: min(var(--text-lg), var(--text-md) + var(--room) * 0.022);
+    font-size: clamp(2rem, var(--niche-size) * 0.26, 3.667rem);
     font-weight: 400;
-    line-height: 1.4;
+    line-height: 1.05;
+    text-wrap: balance;
+  }
+
+  .who-line {
+    max-width: 30rem;
+    margin: 0;
+    line-height: 1.5;
+    text-wrap: pretty;
+  }
+
+  /* The welcome is the place speaking: italic, and quieter than the name. */
+  .welcome {
+    max-width: 36rem;
+    margin: 0;
+    justify-self: end;
+    font-family: var(--font-heading);
+    font-size: var(--text-lg);
+    font-style: italic;
+    line-height: 1.45;
+    color: var(--color-text-secondary);
     text-wrap: pretty;
     hyphens: manual;
   }
 
-  .welcome-greeting {
-    margin-right: 0.15em;
-    font-size: var(--text-2xl);
-    line-height: 1;
+  /* ===== The niches ===== */
+
+  /* The drawings and their captions say what the niches are; the sentence is for
+     screen readers. */
+  .niches-title {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 
-  .welcome-line {
-    font-style: italic;
-    color: var(--color-text-secondary);
+  .niche-row {
+    --niche-name-size: clamp(var(--text-lg), var(--niche-size) * 0.13, 1.667rem);
+    --kept-size: clamp(var(--text-sm), var(--niche-size) * 0.085, var(--text-md));
+    --kept-width: 100%;
+
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-lg) clamp(0.75rem, 2vw, 2rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .niche-row li {
+    margin: 0;
+  }
+
+  /* ===== Below the wall: the portrait, the bio, the quote ===== */
+
+  .about {
+    display: grid;
+    grid-template-columns: auto minmax(0, var(--measure-prose));
+    column-gap: var(--gap);
+    justify-content: center;
+    align-items: start;
+    width: 100%;
+    margin-top: clamp(2rem, 6svh, 4rem);
   }
 
   .portrait {
-    grid-column: portrait;
+    grid-column: 1;
     grid-row: 1 / span 2;
     width: fit-content;
     margin-top: 0.5rem;
-    justify-self: end;
   }
 
   /* A photograph pasted in, not a cut-out blob. The frame's geometry stays untouched, and
@@ -250,230 +318,64 @@ const niches = [
     }
   }
 
-  .about {
-    grid-column: text;
-    grid-row: 2;
+  .bio {
+    grid-column: 2;
   }
 
-  .about p {
-    margin-bottom: calc(0.65em + var(--room) * 0.05);
-  }
-
-  .about p:last-child {
+  .bio p:last-child {
     margin-bottom: 0;
   }
 
-  /* The quote of the day hangs under the portrait. Its top margin keeps it clear of the
-     photograph however the rows fall, and a long quote makes the page longer, not crowded. */
+  /* The quote of the day closes the page, under the bio. */
   .quote {
-    grid-column: portrait;
-    grid-row: 1 / span 2;
-    width: 100%;
-    margin-top: calc(var(--portrait-height) + 0.75rem);
+    grid-column: 2;
+    max-width: 28rem;
+    margin-top: var(--space-xl);
   }
 
-  /* ===== The niches ===== */
-
-  /* In the margin they are cut into the wall two abreast, the right-hand ones lower,
-     so they read as stones laid in a course rather than a column of cards. */
-  .niches {
-    --stagger: 1.25rem;
-
-    grid-column: aside;
-    grid-row: 1 / span 2;
-    margin-top: -0.4rem;
-  }
-
-  /* The drawings say what the niches are; the sentence is for screen readers here. */
-  .niches-title {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-
-  .niche-row {
-    /* As large as the screen's height allows without scrolling */
-    --niche-size: clamp(6rem, 6rem + (100vh - 800px) * 0.35, 8.5rem);
-    --niche-name-size: var(--text-sm);
-    --kept-size: var(--text-xs);
-    --kept-lines: 2;
-
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: calc(var(--space-sm) + var(--room) * 0.12) 0.75rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .niche-row li {
-    margin: 0;
-  }
-
-  .niche-row li:nth-child(2) {
-    margin-top: var(--stagger);
-  }
-
-  .niche-row li:nth-child(3) {
-    margin-top: calc(var(--space-sm) - var(--stagger));
-  }
-
-  /* A narrow column carries the name and the newest thing; the caption and year wait
-     for the wider layouts. */
-  .niche-row :global(:is(.niche-caption, .kept-when)) {
-    display: none;
-  }
-
-  /* The whole page fits a laptop's screen: the bio sets a size smaller (never under 18px)
-     and a little closer.
-
-     A taller window has height to spare, and the page takes it instead of leaving it
-     empty at its foot:
-     - the text grows back to the size and leading the rest of the site reads at, by rule
-       (--room). The rule keeps 2rem back, as growing text can wrap onto one more line
-       at once.
-     - the page stands a little above the middle of the height then really left. The two
-       spacers are flex items with no size of their own, so they only ever take height
-       that is free, and no quote can push the page past the screen. */
-  @media (min-width: 72.001rem) {
-    :global(.main-content:has(.home)) {
-      display: flex;
-      flex-direction: column;
-    }
-
-    :global(.main-content:has(.home))::before,
-    :global(.main-content:has(.home))::after {
-      content: '';
-      flex: 2 1 0;
-    }
-
-    :global(.main-content:has(.home))::after {
-      flex-grow: 3;
-    }
-
+  /* Narrower than name and welcome side by side: they stack, and the wall follows at
+     once. The window's height no longer decides anything. */
+  @media (max-width: 60rem) {
     .home {
-      --fits-from: 800px;
-      --room: clamp(0px, 100vh - var(--fits-from) - 2rem, 160px);
+      --niche-size: clamp(8rem, 20vw, 11rem);
+      --wall-width: min(100%, 46rem);
     }
 
-    .about {
-      font-size: min(1rem, max(18px, 0.905rem) + var(--room) * 0.0125);
+    .first-screen {
+      min-height: 0;
+      gap: var(--space-lg);
+      padding-top: var(--page-top);
     }
 
-    /* On the paragraph, so the length is worked out at the bio's own size */
-    .about p {
-      line-height: min(1.6em, 1.5em + var(--room) * 0.0135);
-    }
-  }
-
-  /* A narrower text column runs longer, so the compact page needs a taller window. */
-  @media (min-width: 72.001rem) and (max-width: 89.999rem) {
-    .home {
-      --fits-from: 880px;
-    }
-  }
-
-  /* A tall window has room under the bio, so the quote stands there and closes the text.
-     A short window keeps the quote under the portrait, where it costs no height. The
-     heights are those at which the longest quote still fits under the bio at the small
-     size; a narrower text column runs longer and needs more. The text starts small again
-     there and grows from that height on. */
-  @media (min-width: 90rem) and (min-height: 1080px),
-    (min-width: 72.001rem) and (min-height: 1184px) {
-    .home {
-      --fits-from: 1080px;
-
-      grid-template-rows: auto auto 1fr;
-    }
-
-    .portrait,
-    .niches {
-      grid-row: 1 / -1;
-    }
-
-    .quote {
-      grid-column: text;
-      grid-row: 3;
-      justify-self: center;
-      width: auto;
-      margin-top: calc(var(--space-lg) + var(--room) * 0.2);
-    }
-  }
-
-  @media (min-width: 72.001rem) and (max-width: 89.999rem) and (min-height: 1184px) {
-    .home {
-      --fits-from: 1184px;
-    }
-  }
-
-  /* Tablets: no room for two margins, so the portrait hangs above the niches in the
-     right one, and the quote follows the bio. */
-  @media (max-width: 72rem) {
-    .home {
-      --side-col: clamp(12rem, 100% - var(--measure-prose) - var(--gap), 18rem);
-
-      grid-template-columns: [text] minmax(0, var(--measure-prose)) [aside] var(--side-col);
-      grid-template-rows: auto auto auto 1fr;
+    .intro {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-sm);
     }
 
     .welcome {
-      grid-column: 1 / -1;
-      margin: var(--page-top) 0 var(--space-md);
-      font-size: var(--text-lg);
-    }
-
-    .welcome-greeting {
-      font-size: clamp(var(--text-xl), 1.1rem + 2vw, var(--text-2xl));
-    }
-
-    .portrait {
-      grid-column: aside;
-      grid-row: 2;
-      justify-self: center;
-      margin: 0.4rem 0 var(--space-lg);
-    }
-
-    .about {
-      grid-row: 2 / 4;
-    }
-
-    .quote {
-      grid-column: text;
-      grid-row: 4;
-      max-width: 28rem;
-      margin: var(--space-lg) 0 0;
-    }
-
-    .niches {
-      grid-row: 3 / span 2;
-      margin-top: 0;
+      justify-self: start;
     }
   }
 
-  /* Below the width where the niches fit beside the text: one centred reading column,
-     the portrait between greeting and text, the quote and the niches after it. */
-  @media (max-width: 54rem) {
+  /* Phones: the niches stand two by two, and the portrait goes above the bio. */
+  @media (max-width: 40rem) {
     .home {
-      grid-template-columns: minmax(0, var(--measure-prose));
-      grid-template-rows: none;
+      --niche-size: min(9.5rem, 38vw);
     }
 
-    .welcome,
+    .niche-row {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .about {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
     .portrait,
-    .about,
-    .quote,
-    .niches {
+    .bio,
+    .quote {
       grid-column: 1;
       grid-row: auto;
-    }
-
-    /* One column is too narrow to run the greeting on; it stands above the lede. */
-    .welcome-greeting {
-      display: block;
-      margin-bottom: 0.2em;
     }
 
     .portrait {
@@ -483,59 +385,6 @@ const niches = [
 
     .quote {
       justify-self: center;
-    }
-
-    .niches {
-      margin-top: var(--space-xl);
-    }
-
-    .niches-title {
-      position: static;
-      width: auto;
-      height: auto;
-      overflow: visible;
-      clip-path: none;
-      white-space: normal;
-      margin: 0 auto var(--space-md);
-      font-family: var(--font-heading);
-      font-size: var(--text-lg);
-      font-style: italic;
-      font-weight: 400;
-      line-height: 1.4;
-      text-align: center;
-      color: var(--color-text-secondary);
-    }
-
-    .niche-row {
-      --niche-size: 8.5rem;
-      --niche-name-size: var(--text-lg);
-      --kept-size: var(--text-sm);
-      --kept-lines: 3;
-
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-
-    .niche-row li:nth-child(n) {
-      margin-top: 0;
-    }
-
-    .niche-row :global(:is(.niche-caption, .kept-when)) {
-      display: block;
-    }
-  }
-
-  /* Phones: the niches sit two by two, and say only what they keep. */
-  @media (max-width: 40rem) {
-    .niche-row {
-      --niche-size: 7rem;
-      --kept-lines: 2;
-
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      row-gap: var(--space-lg);
-    }
-
-    .niche-row :global(:is(.niche-caption, .kept-when)) {
-      display: none;
     }
   }
 </style>

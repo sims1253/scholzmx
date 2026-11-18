@@ -1,37 +1,20 @@
-// Image frame toggle functionality
+// A frame with a second photo on its back: the button under it turns it over, and so
+// does a click on the photo. The button carries the state; each photo keeps its own
+// description, and only the one that shows is read out.
 document.addEventListener('DOMContentLoaded', function () {
-  const clickableFrames = document.querySelectorAll('.image-frame.clickable');
+  document.querySelectorAll('.image-frame.clickable').forEach(function (frame) {
+    const button = frame.nextElementSibling;
+    if (!button || !button.matches('.frame-turn')) return;
+    button.hidden = false;
 
-  clickableFrames.forEach(function (frame) {
-    const toggleImage = function () {
-      const isNowAlt = frame.classList.toggle('show-alternate');
-      const pressed = frame.getAttribute('aria-pressed');
-      if (pressed !== null) {
-        frame.setAttribute('aria-pressed', isNowAlt ? 'true' : 'false');
-      }
-      // Toggle aria-hidden on layers for screen readers
-      const primary = frame.querySelector('.primary-image');
-      const alternate = frame.querySelector('.alternate-image');
-      if (primary && alternate) {
-        if (isNowAlt) {
-          primary.setAttribute('aria-hidden', 'true');
-          alternate.setAttribute('aria-hidden', 'false');
-        } else {
-          primary.setAttribute('aria-hidden', 'false');
-          alternate.setAttribute('aria-hidden', 'true');
-        }
-      }
+    const turn = function () {
+      const turned = frame.classList.toggle('show-alternate');
+      button.setAttribute('aria-pressed', String(turned));
+      frame.querySelector('.primary-image')?.setAttribute('aria-hidden', String(turned));
+      frame.querySelector('.alternate-image')?.setAttribute('aria-hidden', String(!turned));
     };
 
-    // Click handler
-    frame.addEventListener('click', toggleImage);
-
-    // Keyboard handler for accessibility
-    frame.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        toggleImage();
-      }
-    });
+    button.addEventListener('click', turn);
+    frame.addEventListener('click', turn);
   });
 });

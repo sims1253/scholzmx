@@ -22,7 +22,7 @@
 interface Kept {
   href: string;
   title: string;
-  /** A short name set before the title, e.g. a project's own name. */
+  /** A short name set before the title, e.g. a project's own name: "ry: Static Checker for R". */
   name?: string;
   when?: string;
 }
@@ -637,7 +637,7 @@ const { href, name, caption, sceneMs } = { ...ROOMS[kind], ...overrides };
     </a>
   </div>
   {kept && <p class="kept">
-    <a href={kept.href}> {kept.name && <><em>{kept.name}</em>, </>}{kept.title} </a>
+    <a href={kept.href}> {kept.name && <><em>{kept.name}</em>: </>}{kept.title} </a>
     {kept.when && <span class="kept-when">{kept.when}</span>}
   </p>}
 </div>
@@ -779,7 +779,7 @@ const { href, name, caption, sceneMs } = { ...ROOMS[kind], ...overrides };
 
   /* What the niche keeps: its newest thing, and when it was made. */
   .kept {
-    max-width: min(13rem, 100%);
+    max-width: min(var(--kept-width, 13rem), 100%);
     margin: 0.35rem 0 0;
     font-size: var(--kept-size, var(--text-sm));
     line-height: 1.4;
