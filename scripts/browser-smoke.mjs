@@ -26,6 +26,26 @@ try {
       const response = await page.goto(`${baseURL}${path}`, { waitUntil: 'networkidle0' });
       assert.equal(response.status(), 200, path);
       assert.ok(await page.title(), `Missing title: ${path}`);
+      // The canopy's far layer, and every stem and every leaf of the near one, is a cell
+      // of a sheet placed on its own. A cell left without a box, or with its sheet and
+      // the fade unsized (a custom property it lacks leaves `auto`), was not placed, and
+      // does not cast the shadow it was drawn for.
+      const placed = await page.$$eval('.canopy-part', (parts) =>
+        parts.map((part) => {
+          const { width, height } = part.getBoundingClientRect();
+          return (
+            width > 0 &&
+            height > 0 &&
+            getComputedStyle(part)
+              .maskSize.split(',')
+              .every((size) => size.includes('px'))
+          );
+        })
+      );
+      assert.ok(
+        placed.length === 20 && placed.every(Boolean),
+        `Canopy cells placed on ${path} at ${width}px: ${placed.filter(Boolean).length} of ${placed.length}`
+      );
       if (path === '/' && width === 1440) {
         const client = await page.createCDPSession();
         const { root } = await client.send('DOM.getDocument');

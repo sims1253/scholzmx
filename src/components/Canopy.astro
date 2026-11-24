@@ -3,15 +3,28 @@
  * The vine canopy over the top of every page.
  *
  * By day it casts leaf shadows that move in the wind; after dark the same leaves stand
- * in front of a torch. The leaves are SVG masks drawn by scripts/draw-canopy.mjs, so
- * their colour comes from --canopy-shade and the effect costs a few cached images and
- * compositor-only animation: transform, translate and rotate, nothing that repaints.
+ * in front of a torch. The leaves are masks drawn by scripts/draw-canopy.mjs. The far
+ * canopy is heavy, and is one sheet that sways as a whole. The near canopy is a sheet of
+ * cells, one per bough and one per leaf, and the page shows each cell as a layer that
+ * moves by itself. src/styles/canopy-parts.css, written by the same script, says where
+ * each cell lies and how it moves.
+ *
+ * The motion is transform, translate and rotate on small masked layers, nothing that
+ * repaints, and it stops under `prefers-reduced-motion`. Placing a cell takes container
+ * units; a browser without them lays the cells out at no size, so it shows no leaves.
  */
+import '../styles/canopy-parts.css';
+import { boughs } from '../data/canopy';
 ---
 
 <div class="canopy" aria-hidden="true" data-canopy>
-  <div class="canopy-leaves canopy-leaves--high"></div>
-  <div class="canopy-leaves canopy-leaves--low"></div>
+  <i class="canopy-part canopy-far"></i>
+  {boughs.map((leaves, bough) => <i class:list={['canopy-bough', `canopy-bough-${bough}`]}>
+    <i class:list={['canopy-part', 'canopy-stem', `canopy-stem-${bough}`]} />
+    {leaves.map((leaf) => (
+      <i class:list={['canopy-part', 'canopy-leaf', `canopy-leaf-${leaf}`]} />
+    ))}
+  </i>)}
 </div>
 
 <script>
@@ -25,10 +38,13 @@
 </script>
 
 <style>
-  /* Two masked leaf layers, each carrying the canopy's fade in its own mask. A masked
-     parent around them would be composited again on every frame of the sway. */
   .canopy {
     --canopy-fade: linear-gradient(to bottom, #000 28%, transparent 96%);
+    /* One unit of the drawing, in pixels. The drawing covers a sheet a little larger
+       than the canopy on every side, and hangs from a point above it, as it did when
+       each layer was one image. */
+    --unit: max(calc(100cqw + 14rem) / 1600, calc(100cqh + 3rem) / 900);
+    --canopy-ease: cubic-bezier(0.37, 0, 0.63, 1);
 
     position: absolute;
     inset: 0 0 auto;
@@ -37,6 +53,7 @@
     overflow: hidden;
     pointer-events: none;
     z-index: 0;
+    container-type: size;
   }
 
   /* Torchlight sits behind the leaves and flickers on its own. */
@@ -49,58 +66,79 @@
     animation: var(--canopy-flicker);
   }
 
-  /* One slow sway per layer, eased like a branch: no stacked gusts, whose sudden
-     changes of direction read as stutter on layers this large. Leaves hang from the top,
-     so the rotation moves the lower ones furthest. */
-  .canopy-leaves {
+  /* One cell of the drawing, shown through its sheet and coloured by the light. It
+     carries the canopy's fade in its own mask: a masked parent would be composited
+     again on every frame of the sway. */
+  .canopy-part {
     position: absolute;
-    inset: -3rem -7rem 0;
+    width: calc(var(--w) * var(--unit));
+    height: calc(var(--h) * var(--unit));
     background-color: var(--canopy-shade);
-    mask:
-      url('/grotto/canopy-high.svg') top center / cover no-repeat,
-      var(--canopy-fade);
+    mask-image: var(--sheet), var(--canopy-fade);
+    mask-size:
+      calc(var(--sheet-w) * var(--unit)) calc(var(--sheet-h) * var(--unit)),
+      calc(100cqw + 14rem) calc(100cqh + 3rem);
+    mask-position:
+      calc(var(--cx) * var(--unit) * -1) calc(var(--cy) * var(--unit) * -1),
+      calc(-7rem - 50cqw - (var(--ax) - 800) * var(--unit)) calc(var(--ay) * var(--unit) * -1);
+    mask-repeat: no-repeat;
     mask-composite: intersect;
-    transform-origin: 50% 0;
+  }
+
+  /* What hangs from the top of the drawing stands where it was drawn, and sways about
+     the point it hangs from: its far end moves most. */
+  .canopy-far,
+  .canopy-bough {
+    position: absolute;
+    left: calc(50cqw + (var(--ax) - 800) * var(--unit));
+    top: calc(var(--ay) * var(--unit) - 3rem);
+    transform-origin: calc(var(--ox) * var(--unit)) calc(var(--oy) * var(--unit));
+    animation: canopy-sway var(--period) var(--canopy-ease) var(--phase) infinite alternate;
     will-change: transform;
   }
 
-  /* The high canopy is far away and heavy: it moves least. */
-  .canopy-leaves--high {
-    animation: sway-high 19s cubic-bezier(0.37, 0, 0.63, 1) infinite alternate;
+  /* A near bough is a group with no size and no mask of its own (a mask would take in
+     everything inside it): it sways, and its stem and its leaves go with it. */
+  .canopy-stem,
+  .canopy-leaf {
+    left: calc(var(--x) * var(--unit));
+    top: calc(var(--y) * var(--unit));
+    background-color: var(--canopy-shade-near);
   }
 
-  /* The crisp, near leaves move more than the far ones. */
-  .canopy-leaves--low {
-    mask:
-      url('/grotto/canopy-low.svg') top center / cover no-repeat,
-      var(--canopy-fade);
-    mask-composite: intersect;
-    animation: sway-low 11s cubic-bezier(0.37, 0, 0.63, 1) -3s infinite alternate;
+  /* A leaf rocks on its stalk and turns in the light besides, so its shadow opens and
+     narrows. */
+  .canopy-leaf {
+    transform-origin: calc(var(--ox) * var(--unit)) calc(var(--oy) * var(--unit));
+    animation: canopy-turn var(--period) var(--canopy-ease) var(--phase) infinite alternate;
+    will-change: transform;
   }
 
   /* Out of view, the wind stops (see the script above). */
   .canopy[data-still]::before,
-  .canopy[data-still] .canopy-leaves {
+  .canopy[data-still] :is(.canopy-far, .canopy-bough, .canopy-leaf) {
     animation-play-state: paused;
   }
 
-  @keyframes sway-high {
+  @keyframes canopy-sway {
     from {
-      transform: translate3d(-0.4%, 0, 0) rotate(-0.25deg);
+      transform: translate3d(calc(var(--drift) * var(--unit) * -1), 0, 0)
+        rotate(calc(var(--swing) * -1));
     }
 
     to {
-      transform: translate3d(0.4%, 0.2%, 0) rotate(0.25deg);
+      transform: translate3d(calc(var(--drift) * var(--unit)), calc(var(--drop) * var(--unit)), 0)
+        rotate(var(--swing));
     }
   }
 
-  @keyframes sway-low {
+  @keyframes canopy-turn {
     from {
-      transform: translate3d(0.6%, 0, 0) rotate(0.6deg);
+      transform: rotate(calc(var(--swing) * -1)) scaleX(var(--shut));
     }
 
     to {
-      transform: translate3d(-0.6%, 0.4%, 0) rotate(-0.6deg);
+      transform: rotate(var(--swing)) scaleX(var(--open));
     }
   }
 
@@ -112,7 +150,9 @@
 
   @media (prefers-reduced-motion: reduce) {
     .canopy::before,
-    .canopy-leaves {
+    .canopy-far,
+    .canopy-bough,
+    .canopy-leaf {
       animation: none;
     }
   }

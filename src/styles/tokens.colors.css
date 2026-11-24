@@ -107,9 +107,13 @@
     var(--by-torch, none);
 
   /* The canopy: leaf shadows by day, following the sun (set by BaseLayout's head
-     script); by night the torch, lit from one corner */
+     script); by night the torch, lit from one corner. The far canopy carries its share
+     of a shade in its own sheet; the near one, whose every leaf is a sheet of its own,
+     carries it here. */
   --canopy-shade: var(--by-day, rgb(var(--sun-shade, 58 78 26) / 0.2))
     var(--by-torch, rgb(14 10 6 / 0.88));
+  --canopy-shade-near: var(--by-day, rgb(var(--sun-shade, 58 78 26) / 0.17))
+    var(--by-torch, rgb(14 10 6 / 0.75));
   --canopy-glow: var(--by-day, var(--sun-glow, none))
     var(
       --by-torch,
