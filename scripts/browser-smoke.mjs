@@ -152,9 +152,10 @@ function critterState(marks, moves) {
       stiff,
       idle,
       lost,
-      // The observer watches a fifth of the window's width beyond each edge
-      // (card-critters.ts); the card wholly above that strip is out of its reach.
-      gone: card.getBoundingClientRect().bottom < -0.2 * innerWidth,
+      // The observer's margin is a percentage: above and below the window a share of its
+      // height, either side a share of its width (card-critters.ts). A card wholly above
+      // the window by a fifth of its height is out of its reach.
+      gone: card.getBoundingClientRect().bottom < -0.2 * innerHeight,
     };
   });
 }
@@ -202,10 +203,54 @@ async function checkCritters(page, path, width) {
     `One critter for cards near each other on ${path} at ${width}px: ${JSON.stringify(shared)}`
   );
 
-  // On a phone the cards stack, so the ones at the top are scrolled out of view for good:
-  // one that was moving has come to rest. A page whose critters all stay near the foot of
-  // the page cannot show it; the research and project shelves always have one that leaves.
+  // On a phone the cards stack, so the ones at the top can be scrolled to any distance above
+  // the window. What the rest below takes for granted is tried first: the observer's reach,
+  // a fifth of the window's height. A card a little inside it is still watched and moving,
+  // one a little beyond it is at rest. The first card that moves stands for all.
   if (width !== 390) return;
+  const first = atTop.findIndex((critter) => critter.running > 0);
+  if (first !== -1) {
+    for (const { inside, moving } of [
+      { inside: true, moving: true },
+      { inside: false, moving: false },
+    ]) {
+      const reached = await page.evaluate(
+        ([index, inside]) => {
+          const mark = document.querySelectorAll('.sc-mark-edge, .sc-mark-mouse')[index];
+          const to =
+            window.scrollY +
+            mark.closest('.sc-card').getBoundingClientRect().bottom +
+            0.2 * innerHeight +
+            (inside ? -12 : 12);
+          if (to > document.documentElement.scrollHeight - innerHeight) return false;
+          window.scrollTo({ top: to, behavior: 'instant' });
+          return true;
+        },
+        [first, inside]
+      );
+      // A page too short to bring its card so far above the window cannot show it.
+      if (!reached) {
+        assert.ok(
+          !['/research/', '/projects/'].includes(path),
+          `No critter can be brought to the observer's reach on ${path}`
+        );
+        break;
+      }
+      for (let waited = 0; ; waited += 50) {
+        const now = (await critters())[first];
+        if (moving ? !now.still && now.running > 0 : now.still && !now.running) break;
+        assert.ok(
+          waited < 2000,
+          `A critter ${inside ? 'inside' : 'beyond'} the observer's reach is not ${moving ? 'moving' : 'at rest'} on ${path}: ${JSON.stringify(now)}`
+        );
+        await new Promise((resolve) => setTimeout(resolve, 50));
+      }
+    }
+  }
+
+  // Scrolled out of view for good, one that was moving has come to rest. A page whose
+  // critters all stay near the foot of the page cannot show it; the research and project
+  // shelves always have one that leaves.
   await page.evaluate(() =>
     window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' })
   );
