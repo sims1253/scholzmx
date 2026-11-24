@@ -832,7 +832,7 @@
     transform: rotate(calc(var(--mark-turn) / 3));
   }
 
-  /* A pencilled tick and a doodle in the margin */
+  /* A pencilled doodle in the margin: a tick and a curl, a star, a flower */
   .sc-mark-pencil {
     width: 2.4rem;
     height: 1.65rem;
@@ -845,29 +845,52 @@
     stroke-width: 1;
   }
 
-  /* A tansy flower, pressed and taped on, hanging over the edge */
-  .sc-mark-tansy {
-    right: -0.7rem;
-    bottom: -0.55rem;
-    width: 2.5rem;
-    height: 2.95rem;
-    transform: rotate(calc(var(--mark-turn) / 2));
+  /* A sprig of tansy, pressed and taped on, hanging over the edge: a flat-topped
+     cluster of button heads, each on its own stalk, and feathery leaves. It stands
+     taller than the other corner marks, so its footer line keeps more room. */
+  .sc-card[data-mark='tansy'] .sc-meta {
+    min-height: 3rem;
   }
 
-  .sc-mark-tansy .moss {
+  .sc-mark-tansy {
+    right: -0.85rem;
+    bottom: -0.7rem;
+    width: 3rem;
+    height: 3.6rem;
+    transform: rotate(calc(var(--mark-turn) / 2.5));
+  }
+
+  .sc-mark-tansy .stem {
     stroke: var(--color-moss);
-    stroke-width: 1.3;
+    stroke-width: 1.4;
+  }
+
+  .sc-mark-tansy .stalk {
+    stroke: var(--color-moss);
+    stroke-width: 0.8;
+  }
+
+  .sc-mark-tansy .leaf {
+    stroke: color-mix(in srgb, var(--color-moss) 82%, var(--sc-sheet));
+    stroke-width: 1;
   }
 
   .sc-mark-tansy .flower {
     fill: var(--color-tansy);
-    stroke: var(--color-ochre);
-    stroke-width: 0.6;
+    stroke: color-mix(in srgb, var(--color-ochre) 75%, var(--color-ink-dark));
+    stroke-width: 0.55;
   }
 
+  /* The dimple at the middle of a button, and the light on its rim */
   .sc-mark-tansy .flower-eye {
     fill: var(--color-ochre);
     stroke: none;
+    opacity: 0.45;
+  }
+
+  .sc-mark-tansy .flower-light {
+    stroke: #fff;
+    stroke-width: 0.6;
     opacity: 0.55;
   }
 
@@ -879,26 +902,62 @@
 
   /* A field mouse at work on the corner, a scrap of it in its paws */
   .sc-mark-mouse {
-    right: 0.75rem;
-    bottom: 0.2rem;
-    width: 2.6rem;
-    height: 1.95rem;
+    --mouse-fur: color-mix(in srgb, var(--color-ochre) 32%, var(--color-ink-light));
+
+    right: 0.7rem;
+    bottom: 0.15rem;
+    width: 3.05rem;
+    height: 1.96rem;
     color: var(--color-ink-dark);
     transform: scaleX(-1);
   }
 
   .sc-mark-mouse .fur {
-    fill: color-mix(in srgb, var(--color-ink-light) 35%, var(--sc-sheet));
-    stroke-width: 1.2;
-  }
-
-  .sc-mark-mouse .ear {
-    fill: color-mix(in srgb, var(--color-clay) 30%, var(--sc-sheet));
+    fill: color-mix(in srgb, var(--mouse-fur) 50%, var(--sc-sheet));
     stroke-width: 1.1;
   }
 
-  .sc-mark-mouse .tail {
+  .sc-mark-mouse .belly {
+    fill: color-mix(in srgb, var(--sc-sheet) 80%, var(--mouse-fur));
+    stroke: none;
+  }
+
+  .sc-mark-mouse .hatch {
+    stroke-width: 0.7;
+    opacity: 0.5;
+  }
+
+  .sc-mark-mouse .ear {
+    fill: color-mix(in srgb, var(--mouse-fur) 50%, var(--sc-sheet));
     stroke-width: 1;
+  }
+
+  .sc-mark-mouse .ear.far {
+    fill: color-mix(in srgb, var(--mouse-fur) 70%, var(--sc-sheet));
+  }
+
+  .sc-mark-mouse .ear-in,
+  .sc-mark-mouse .nose {
+    fill: color-mix(in srgb, var(--color-clay) 55%, var(--sc-sheet));
+    stroke: none;
+  }
+
+  .sc-mark-mouse .nose {
+    fill: color-mix(in srgb, var(--color-clay) 70%, var(--color-ink-dark));
+  }
+
+  .sc-mark-mouse .eye {
+    fill: var(--sc-shade);
+    stroke: none;
+  }
+
+  .sc-mark-mouse .glint {
+    fill: #fff;
+  }
+
+  .sc-mark-mouse .tail {
+    stroke: color-mix(in srgb, var(--color-clay) 45%, var(--color-ink-medium));
+    stroke-width: 1.1;
   }
 
   .sc-mark-mouse .scrap {
@@ -906,7 +965,9 @@
     stroke-width: 0.7;
   }
 
-  /* Critters walking the top edge itself, clear of the title below */
+  /* Critters on the top edge itself, clear of the title below. Each is a few layers
+     (CardMark.astro): `.roam` is the creature and carries what moves with it, `.feel`
+     its feelers. The glint in an eye is the sheet showing through. */
   .sc-mark-edge {
     top: -0.3rem;
     left: var(--mark-along, 40%);
@@ -919,10 +980,66 @@
     left: max(var(--mark-along, 40%), 10.5rem);
   }
 
+  .sc-mark .roam {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .sc-mark .roam svg {
+    position: absolute;
+    inset: 0;
+  }
+
+  .sc-mark .glint {
+    fill: var(--sc-sheet);
+    stroke: none;
+  }
+
+  /* A black beetle is black by torchlight too; --bug-line draws round it, in ink that
+     shows on the dark sheet. */
+  .sc-mark-ladybird,
+  .sc-mark-bee,
+  .sc-mark-beetle {
+    --bug-black: #2b2a26;
+    --bug-line: var(--by-day, var(--sc-shade)) var(--by-torch, var(--color-ink-light));
+
+    color: var(--bug-line);
+  }
+
+  .sc-mark .dark {
+    fill: var(--bug-black);
+    stroke-width: 0.6;
+  }
+
+  .sc-mark-edge .hatch {
+    stroke-width: 0.7;
+    opacity: 0.55;
+  }
+
+  /* Seen from the side, a critter stands on the edge and may face either way */
+  .sc-mark-inchworm,
+  .sc-mark-snail,
+  .sc-mark-bee,
+  .sc-mark-beetle {
+    transform: scaleX(var(--mark-way, 1));
+  }
+
+  /* A trail of ants, seen from above, one of them with a crumb of tansy or a leaf */
   .sc-mark-ants {
     width: 3.4rem;
-    height: 0.65rem;
+    height: 0.64rem;
     transform: rotate(calc(var(--mark-turn) / 14));
+  }
+
+  .sc-mark-ants .ant {
+    position: absolute;
+    width: 0.74rem;
+  }
+
+  .sc-mark-ants .feel {
+    transform-origin: 71% 62%;
   }
 
   .sc-mark-ants .crumb {
@@ -931,17 +1048,33 @@
     stroke-width: 0.5;
   }
 
-  /* An inchworm measuring the top edge */
+  .sc-mark-ants .leaf-bit {
+    fill: color-mix(in srgb, var(--color-moss) 75%, var(--sc-sheet));
+    stroke: var(--color-moss);
+    stroke-width: 0.5;
+  }
+
+  /* An inchworm measuring the top edge. Its arch and its head are two layers, so it
+     can flatten out and draw itself up again. */
   .sc-mark-inchworm {
+    --worm: var(--color-moss);
+
     top: -0.95rem;
     width: 1.8rem;
     height: 1.05rem;
-    color: var(--color-moss);
-    transform: scaleX(var(--worm-way, 1));
+    color: var(--worm);
   }
 
   [data-variant='2'].sc-mark-inchworm {
-    --worm-way: -1;
+    --mark-way: -1;
+  }
+
+  [data-variant='3'].sc-mark-inchworm {
+    --worm: color-mix(in srgb, var(--color-tansy) 60%, var(--color-moss));
+  }
+
+  .sc-mark-inchworm .arch {
+    transform-origin: 11.8% 90%;
   }
 
   .sc-mark-inchworm .worm {
@@ -955,17 +1088,707 @@
     stroke-linecap: butt;
   }
 
+  /* A ladybird, seen from above: seven-spot red, a yellow one with many spots, and a
+     black one with two red spots */
   .sc-mark-ladybird {
-    width: 0.85rem;
-    height: 0.85rem;
-    color: var(--sc-shade);
-    transform: rotate(calc(var(--mark-turn) + 90deg));
+    --shell: #b8322a;
+    --spot: var(--sc-shade);
+
+    width: 0.95rem;
+    height: 0.95rem;
+    transform: rotate(calc(var(--mark-turn) / 2 + 90deg));
+  }
+
+  [data-variant='2'].sc-mark-ladybird {
+    --shell: var(--color-tansy);
+  }
+
+  [data-variant='3'].sc-mark-ladybird {
+    --shell: var(--bug-black);
+    --spot: #c8402f;
   }
 
   .sc-mark-ladybird .shell {
-    fill: #b8322a;
-    stroke: var(--sc-shade);
+    fill: var(--shell);
     stroke-width: 0.6;
+  }
+
+  .sc-mark-ladybird .spot {
+    fill: var(--spot);
+    stroke: none;
+  }
+
+  .sc-mark-ladybird .seam {
+    stroke: var(--sc-shade);
+    stroke-width: 0.7;
+    opacity: 0.8;
+  }
+
+  .sc-mark-ladybird .glint {
+    fill: #f4efe2;
+  }
+
+  .sc-mark-ladybird .shine,
+  .sc-mark-beetle .shine {
+    stroke: #fff;
+    stroke-width: 0.8;
+    opacity: 0.5;
+  }
+
+  .sc-mark-ladybird .feel {
+    transform-origin: 50% 14%;
+  }
+
+  /* A snail on the edge, its house in one of three colours */
+  .sc-mark-snail {
+    --shell: color-mix(in srgb, var(--color-tansy) 55%, var(--sc-sheet));
+
+    top: -0.88rem;
+    width: 1.7rem;
+    height: 0.93rem;
+    color: var(--color-ink-medium);
+  }
+
+  [data-variant='2'].sc-mark-snail {
+    --shell: color-mix(in srgb, var(--color-clay) 45%, var(--sc-sheet));
+    --mark-way: -1;
+  }
+
+  [data-variant='3'].sc-mark-snail {
+    --shell: color-mix(in srgb, var(--color-moss) 50%, var(--sc-sheet));
+  }
+
+  .sc-mark-snail .shell {
+    fill: var(--shell);
+    stroke-width: 1.2;
+  }
+
+  .sc-mark-snail .flesh {
+    fill: color-mix(in srgb, var(--color-ink-light) 30%, var(--sc-sheet));
+    stroke-width: 1.1;
+  }
+
+  .sc-mark-snail .feel {
+    transform-origin: 81% 72%;
+  }
+
+  /* A bumblebee resting on the edge: buff-tailed, red-tailed, and one facing the
+     other way. `.fan` is the blur of its wings, shown only while it is in the air. */
+  .sc-mark-bee {
+    --bee-band: var(--color-tansy);
+    --bee-tip: #f4efe2;
+
+    top: -0.84rem;
+    width: 1.15rem;
+    height: 0.88rem;
+  }
+
+  [data-variant='2'].sc-mark-bee {
+    --bee-band: var(--bug-black);
+    --bee-tip: #c8532f;
+  }
+
+  [data-variant='3'].sc-mark-bee {
+    --mark-way: -1;
+  }
+
+  .sc-mark-bee .fuzz {
+    fill: var(--bug-black);
+    stroke-width: 0.8;
+    stroke-dasharray: 0.9 0.6;
+  }
+
+  .sc-mark-bee .band {
+    stroke: var(--bee-band);
+    stroke-width: 2.3;
+    stroke-linecap: butt;
+  }
+
+  .sc-mark-bee .tip {
+    stroke: var(--bee-tip);
+    stroke-width: 1.7;
+    stroke-linecap: butt;
+  }
+
+  .sc-mark-bee .wings {
+    fill: color-mix(in srgb, #fff 55%, transparent);
+    stroke-width: 0.6;
+  }
+
+  .sc-mark-bee .fan {
+    fill: color-mix(in srgb, var(--sc-shade) 16%, transparent);
+    stroke: none;
+    opacity: 0;
+  }
+
+  .sc-mark-bee .roam {
+    transform-origin: 40% 70%;
+  }
+
+  .sc-mark-bee .feel {
+    transform-origin: 80% 54%;
+  }
+
+  /* A beetle on the edge: black, rose-chafer green, or wine red */
+  .sc-mark-beetle {
+    --shell: var(--bug-black);
+
+    top: -0.66rem;
+    width: 1.2rem;
+    height: 0.69rem;
+  }
+
+  [data-variant='2'].sc-mark-beetle {
+    --shell: color-mix(in srgb, var(--color-moss) 80%, #1f5a3a);
+  }
+
+  [data-variant='3'].sc-mark-beetle {
+    --shell: color-mix(in srgb, var(--color-clay) 80%, var(--sc-shade));
+    --mark-way: -1;
+  }
+
+  .sc-mark-beetle .shell {
+    fill: var(--shell);
+    stroke-width: 0.8;
+  }
+
+  .sc-mark-beetle .ridge {
+    stroke: var(--sc-shade);
+    stroke-width: 0.5;
+    opacity: 0.45;
+  }
+
+  .sc-mark-beetle .feel {
+    transform-origin: 85% 52%;
+  }
+
+  /* A moth settled across the edge, wings spread: dusty grey, brimstone yellow, or
+     the rose and moss of a hawk-moth */
+  .sc-mark-moth {
+    --wing: color-mix(in srgb, var(--color-ink-light) 38%, var(--sc-sheet));
+    --wing-hind: color-mix(in srgb, var(--color-ink-light) 22%, var(--sc-sheet));
+    --wing-spot: var(--color-ink-medium);
+
+    top: -0.55rem;
+    width: 1.4rem;
+    height: 1.1rem;
+    color: var(--color-ink-medium);
+    transform: rotate(calc(var(--mark-turn) / 3));
+  }
+
+  [data-variant='2'].sc-mark-moth {
+    --wing: color-mix(in srgb, var(--color-tansy) 75%, var(--sc-sheet));
+    --wing-hind: color-mix(in srgb, var(--color-tansy) 50%, var(--sc-sheet));
+    --wing-spot: var(--color-ochre);
+  }
+
+  [data-variant='3'].sc-mark-moth {
+    --wing: color-mix(in srgb, var(--color-clay) 50%, var(--sc-sheet));
+    --wing-hind: color-mix(in srgb, var(--color-moss) 55%, var(--sc-sheet));
+    --wing-spot: var(--color-moss);
+  }
+
+  .sc-mark-moth .wing {
+    fill: var(--wing);
+    stroke-width: 0.7;
+  }
+
+  .sc-mark-moth .wing.hind {
+    fill: var(--wing-hind);
+  }
+
+  .sc-mark-moth .vein {
+    stroke-width: 0.5;
+    opacity: 0.45;
+  }
+
+  .sc-mark-moth .eye-spot {
+    fill: var(--wing-spot);
+    stroke: none;
+    opacity: 0.8;
+  }
+
+  .sc-mark-moth .hatch {
+    stroke: var(--sc-sheet);
+  }
+
+  .sc-mark-moth .feel {
+    transform-origin: 50% 21%;
+  }
+
+  /* The critters stir, a little: mostly they sit, and now and then one goes a few
+     steps along the edge and comes back to where the seed put it. Each waits its own
+     --mark-wait first, so no two on a page move together. Only translate, rotate, scale
+     and opacity move, each on a layer of its own, so nothing is painted again; and
+     without motion every critter simply stays where it is. */
+  @media (prefers-reduced-motion: no-preference) {
+    .sc-mark .roam,
+    .sc-mark .roam svg {
+      animation-delay: var(--mark-wait, 0s);
+      animation-iteration-count: infinite;
+    }
+
+    .sc-mark .feel {
+      animation-name: mark-twitch;
+      animation-duration: 11s;
+    }
+
+    .sc-mark-ants .ant {
+      --amble: 1.3rem;
+
+      animation-name: mark-amble;
+      animation-duration: 38s;
+      animation-delay: calc(var(--mark-wait, 0s) + var(--lag, 0s));
+    }
+
+    .sc-mark-ants .feel {
+      animation-duration: 7s;
+      animation-delay: calc(var(--mark-wait, 0s) + var(--lag, 0s) * 2);
+    }
+
+    .sc-mark-beetle .roam {
+      --amble: 1.7rem;
+
+      animation-name: mark-amble;
+      animation-duration: 46s;
+    }
+
+    .sc-mark-ladybird .roam {
+      animation-name: ladybird-patrol;
+      animation-duration: 30s;
+    }
+
+    .sc-mark-ladybird .feel {
+      animation-duration: 8s;
+    }
+
+    .sc-mark-inchworm .roam {
+      animation-name: inchworm-roam;
+    }
+
+    .sc-mark-inchworm .arch {
+      animation-name: inchworm-arch;
+    }
+
+    .sc-mark-inchworm .head {
+      animation-name: inchworm-head;
+    }
+
+    .sc-mark-inchworm :is(.roam, .arch, .head) {
+      animation-duration: 32s;
+      animation-timing-function: ease-in-out;
+    }
+
+    .sc-mark-snail .roam {
+      animation-name: snail-creep;
+      animation-duration: 90s;
+      animation-timing-function: linear;
+    }
+
+    .sc-mark-snail .feel {
+      animation-name: snail-peer;
+      animation-duration: 17s;
+    }
+
+    .sc-mark-bee .roam {
+      animation-name: bee-hop;
+    }
+
+    .sc-mark-bee .wings {
+      animation-name: bee-wings;
+    }
+
+    .sc-mark-bee .fan {
+      animation-name: bee-fan;
+    }
+
+    .sc-mark-bee :is(.roam, .wings, .fan) {
+      animation-duration: 26s;
+    }
+
+    .sc-mark-moth .wings {
+      animation-name: moth-fold;
+      animation-duration: 18s;
+      animation-timing-function: ease-in-out;
+    }
+  }
+
+  /* A few steps, a stop, a few more; turn round at the far end, and the same home */
+  @keyframes mark-amble {
+    0%,
+    3% {
+      translate: 0;
+      scale: 1 1;
+    }
+
+    10%,
+    14% {
+      translate: calc(var(--amble) * 0.35);
+    }
+
+    21%,
+    24% {
+      translate: calc(var(--amble) * 0.7);
+    }
+
+    30%,
+    44% {
+      translate: var(--amble);
+      scale: 1 1;
+    }
+
+    45.5%,
+    48% {
+      translate: var(--amble);
+      scale: -1 1;
+    }
+
+    55%,
+    59% {
+      translate: calc(var(--amble) * 0.6);
+    }
+
+    66%,
+    69% {
+      translate: calc(var(--amble) * 0.25);
+    }
+
+    75%,
+    95% {
+      translate: 0;
+      scale: -1 1;
+    }
+
+    96.5%,
+    100% {
+      translate: 0;
+      scale: 1 1;
+    }
+  }
+
+  @keyframes mark-twitch {
+    0%,
+    7%,
+    100% {
+      rotate: 0deg;
+    }
+
+    1.5% {
+      rotate: 13deg;
+    }
+
+    3.2% {
+      rotate: -10deg;
+    }
+
+    5% {
+      rotate: 7deg;
+    }
+  }
+
+  /* The ladybird is seen from above, so it turns round on the spot */
+  @keyframes ladybird-patrol {
+    0%,
+    5% {
+      translate: 0 0;
+      rotate: 0deg;
+    }
+
+    8%,
+    12% {
+      translate: 0 -0.22rem;
+    }
+
+    15%,
+    20% {
+      translate: 0 -0.48rem;
+    }
+
+    23%,
+    38% {
+      translate: 0 -0.72rem;
+      rotate: 0deg;
+    }
+
+    44%,
+    50% {
+      translate: 0 -0.72rem;
+      rotate: 180deg;
+    }
+
+    53%,
+    58% {
+      translate: 0 -0.44rem;
+    }
+
+    61%,
+    65% {
+      translate: 0 -0.2rem;
+    }
+
+    68%,
+    90% {
+      translate: 0 0;
+      rotate: 180deg;
+    }
+
+    96%,
+    100% {
+      translate: 0 0;
+      rotate: 360deg;
+    }
+  }
+
+  /* One inch is two beats. First the arch flattens from its hind feet and the head
+     goes forward (0.37rem: the arch's span times its stretch). Then the hind feet come
+     up to the head: the whole worm moves on by that much while arch and head go back
+     to rest, so the head holds still. Four inches out, turn, four inches home. */
+  @keyframes inchworm-arch {
+    0%,
+    6%,
+    10%,
+    14%,
+    18%,
+    22%,
+    54%,
+    58%,
+    62%,
+    66%,
+    70%,
+    100% {
+      scale: 1 1;
+    }
+
+    8%,
+    12%,
+    16%,
+    20%,
+    56%,
+    60%,
+    64%,
+    68% {
+      scale: 1.32 0.5;
+    }
+  }
+
+  @keyframes inchworm-head {
+    0%,
+    6%,
+    10%,
+    14%,
+    18%,
+    22%,
+    54%,
+    58%,
+    62%,
+    66%,
+    70%,
+    100% {
+      translate: 0;
+    }
+
+    8%,
+    12%,
+    16%,
+    20%,
+    56%,
+    60%,
+    64%,
+    68% {
+      translate: 0.37rem;
+    }
+  }
+
+  @keyframes inchworm-roam {
+    0%,
+    8% {
+      translate: 0;
+      scale: 1 1;
+    }
+
+    10%,
+    12% {
+      translate: 0.37rem;
+    }
+
+    14%,
+    16% {
+      translate: 0.74rem;
+    }
+
+    18%,
+    20% {
+      translate: 1.11rem;
+    }
+
+    22%,
+    44% {
+      translate: 1.48rem;
+      scale: 1 1;
+    }
+
+    46%,
+    56% {
+      translate: 1.48rem;
+      scale: -1 1;
+    }
+
+    58%,
+    60% {
+      translate: 1.11rem;
+    }
+
+    62%,
+    64% {
+      translate: 0.74rem;
+    }
+
+    66%,
+    68% {
+      translate: 0.37rem;
+    }
+
+    70%,
+    94% {
+      translate: 0;
+      scale: -1 1;
+    }
+
+    96%,
+    100% {
+      translate: 0;
+      scale: 1 1;
+    }
+  }
+
+  @keyframes snail-creep {
+    0%,
+    4% {
+      translate: 0;
+      scale: 1 1;
+    }
+
+    36%,
+    46% {
+      translate: 1.2rem;
+      scale: 1 1;
+    }
+
+    47%,
+    50% {
+      translate: 1.2rem;
+      scale: -1 1;
+    }
+
+    82%,
+    96% {
+      translate: 0;
+      scale: -1 1;
+    }
+
+    97%,
+    100% {
+      translate: 0;
+      scale: 1 1;
+    }
+  }
+
+  /* It draws its horns in, and puts them out again */
+  @keyframes snail-peer {
+    0%,
+    62%,
+    84%,
+    100% {
+      scale: 1 1;
+    }
+
+    66%,
+    76% {
+      scale: 0.8 0.4;
+    }
+  }
+
+  /* The bee lifts off, hangs over the edge a moment and settles where it sat */
+  @keyframes bee-hop {
+    0%,
+    36% {
+      translate: 0 0;
+      rotate: 0deg;
+    }
+
+    40% {
+      translate: 0.06rem -0.3rem;
+      rotate: -10deg;
+    }
+
+    46% {
+      translate: 0.5rem -0.44rem;
+      rotate: -5deg;
+    }
+
+    52% {
+      translate: 0.75rem -0.26rem;
+      rotate: -12deg;
+    }
+
+    58% {
+      translate: 0.3rem -0.46rem;
+      rotate: -5deg;
+    }
+
+    63% {
+      translate: 0.03rem -0.22rem;
+      rotate: -8deg;
+    }
+
+    66%,
+    100% {
+      translate: 0 0;
+      rotate: 0deg;
+    }
+  }
+
+  @keyframes bee-wings {
+    0%,
+    36%,
+    66%,
+    100% {
+      opacity: 1;
+    }
+
+    37%,
+    65% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes bee-fan {
+    0%,
+    36%,
+    66%,
+    100% {
+      opacity: 0;
+    }
+
+    37%,
+    65% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes moth-fold {
+    0%,
+    58%,
+    66%,
+    74%,
+    100% {
+      scale: 1 1;
+    }
+
+    62%,
+    70% {
+      scale: 0.45 1;
+    }
   }
 
   /* ===== Materials: one per shelf, each one printed detail on the same sheet ===== */
