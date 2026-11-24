@@ -168,12 +168,12 @@ try {
         `Horizontal overflow: ${path} at ${width}px`
       );
       // On a sheet with lines to write on, the writing sits on them: every baseline a pixel
-      // above a rule, the sheet a whole number of pitches tall, nothing past its foot. The
-      // blog draws such sheets; a post's related cards are checked here too. Last of all,
-      // since the probe marks the cards up.
+      // above a rule, the sheet a whole number of pitches tall, nothing past its foot. Each
+      // listing draws such sheets; a post's related cards are checked here too. Last of
+      // all, since the probe marks the cards up.
       const lined = await page.$$eval('.sc-card[data-lined]', linesOnRules);
       assert.ok(
-        (path !== '/blog/' || lined.length > 0) &&
+        (!['/blog/', '/recipes/', '/research/'].includes(path) || lined.length > 0) &&
           lined.every(
             (sheet) => sheet.off <= 0.75 && sheet.heightOff <= 0.6 && sheet.overflow <= 0
           ),

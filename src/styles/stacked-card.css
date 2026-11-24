@@ -602,7 +602,8 @@
      way the date line at its foot lands on a rule. */
   .sc-card[data-lined] {
     --sc-pitch: 1.4rem;
-    --sc-top: 0.7rem;
+    /* The writing starts half a pitch down; the squared sheet counts on that. */
+    --sc-top: calc(var(--sc-pitch) / 2);
     /* Alegreya at --text-lg, the title, lays its baseline in half the pitch plus its share
        of its font size (tokens.typography.css); a rule lies a pixel under that. */
     --sc-rule-at: calc(var(--sc-pitch) / 2 + var(--baseline-personal) * var(--text-lg) + 1px);
