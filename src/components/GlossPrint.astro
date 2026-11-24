@@ -267,9 +267,38 @@ const fit = Math.min(1, image.width / image.height);
     if (moving) frame = requestAnimationFrame(step);
   };
 
+  // Fetches a sticker's relief and makes its lamp: only once the reader has scrolled or
+  // moved the pointer, so a page that is merely opened loads no relief at all.
+  const kindle = (print: Print) => {
+    const relief = print.sticker.dataset.relief;
+    if (!woken || !print.seen || print.draw || still.matches || !relief) return;
+    const map = new Image();
+    map.src = relief;
+    delete print.sticker.dataset.relief;
+    void map
+      .decode()
+      .then(() => {
+        print.draw = lamp(print.sticker, map);
+        // A browser may take the canvas's context back (a tab left in the
+        // background on a phone): the still sheen returns.
+        print.sticker.querySelector('canvas')?.addEventListener('webglcontextlost', () => {
+          print.draw = undefined;
+          delete print.sticker.dataset.lit;
+        });
+        print.at = rest(print);
+        wake();
+      })
+      .catch(() => {
+        // No relief, no lamp: the still sheen stays.
+      });
+  };
+
   const wake = () => {
     if (still.matches) return;
-    woken = true;
+    if (!woken) {
+      woken = true;
+      prints.forEach(kindle);
+    }
     frame ||= requestAnimationFrame(step);
   };
 
@@ -297,26 +326,7 @@ const fit = Math.min(1, image.width / image.height);
       for (const entry of entries) {
         const print = prints.find(({ sticker }) => sticker === entry.target)!;
         print.seen = entry.isIntersecting;
-        if (!print.seen || print.draw || still.matches || !print.sticker.dataset.relief) continue;
-        const map = new Image();
-        map.src = print.sticker.dataset.relief;
-        delete print.sticker.dataset.relief;
-        void map
-          .decode()
-          .then(() => {
-            print.draw = lamp(print.sticker, map);
-            // A browser may take the canvas's context back (a tab left in the
-            // background on a phone): the still sheen returns.
-            print.sticker.querySelector('canvas')?.addEventListener('webglcontextlost', () => {
-              print.draw = undefined;
-              delete print.sticker.dataset.lit;
-            });
-            print.at = rest(print);
-            if (woken) wake();
-          })
-          .catch(() => {
-            // No relief, no lamp: the still sheen stays.
-          });
+        kindle(print);
       }
     },
     { rootMargin: '200px' }
