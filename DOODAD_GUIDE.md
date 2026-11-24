@@ -29,24 +29,26 @@ its writing to it:
 - **Every line is one pitch tall.** The content sets the line height and its blocks
   inherit it. A block that sets its own takes the lines below it off the rules.
 - **Each block starts where the last one ended.** The card zeroes the margins of the
-  blocks in its content. A page's own styles outrank the card's layer, so text a page
+  blocks in its content, and of the date line, wherever a page's styles give its
+  paragraphs one. A page's own styles outrank the card's layer, so other text a page
   slots into a lined card is the page's to set: no margins between its blocks, and
   writing smaller than the title moved down to the title's baseline with
   `top: var(--sc-nudge)`. Text in another voice than the page's sets `--sc-slope` first
   (the research page shows both).
 - **A sheet is a whole number of pitches tall.** The padding above the first line and
-  below the last come to one pitch, so a sheet's words add up to whole pitches. One
-  stretched to its row is cut down to whole pitches, and never below its words. So the
-  date line at its foot lands on a rule however tall the row is.
+  below the last, with the face's border, come to one pitch, so a sheet's words add up to
+  whole pitches. One stretched to its row is cut down to whole pitches by `round()` (a
+  browser that does not know it stretches the sheet whole, as before), and never below
+  its words. So the date line at its foot lands on a rule however tall the row is.
 - **A rule lies a pixel under the baseline.** Where a voice lays its baseline is a share
   of its font size on top of half the line box (`--baseline-personal` and
   `--baseline-serious` in `src/styles/tokens.typography.css`), measured once for each.
 
 The squared sheet keeps its squares, half a pitch: a line of writing takes two.
 
-The smoke test measures all of it on every lined card the listing pages draw: each
-baseline within three quarters of a pixel of a rule, the sheet a whole number of pitches
-tall, and nothing cut off at its foot.
+The smoke test measures all of it on every lined card the pages it visits draw, a post's
+related cards included: each baseline within three quarters of a pixel of a rule, the
+sheet a whole number of pitches tall, and nothing cut off at its foot.
 
 ## Marks never cover words
 

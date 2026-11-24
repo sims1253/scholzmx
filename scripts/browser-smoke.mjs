@@ -25,10 +25,10 @@ function linesOnRules(lined) {
     const pitch = Number.parseFloat(getComputedStyle(content).lineHeight);
     // Squared paper has a line to half a pitch: the writing sits on every other one.
     const period = card.dataset.ruling === 'squared' ? pitch / 2 : pitch;
-    // The sheet's colour is the last layer painted on its face; its lines come just before.
+    // The sheet's colour is the last layer painted on its face; its lines come just before,
+    // a tile that starts at its first line. The face has a 1px border above it.
     const lines = getComputedStyle(face).backgroundPosition.split(',').at(-2);
-    const fromTop = Number.parseFloat(lines.trim().split(' ')[1]);
-    const firstRule = 1 + fromTop + period - 1; // the face has a 1px border
+    const firstRule = 1 + Number.parseFloat(lines.trim().split(' ')[1]);
     const texts = [];
     const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT);
     for (let node = walker.nextNode(); node; node = walker.nextNode()) texts.push(node);
@@ -91,18 +91,6 @@ try {
       const response = await page.goto(`${baseURL}${path}`, { waitUntil: 'networkidle0' });
       assert.equal(response.status(), 200, path);
       assert.ok(await page.title(), `Missing title: ${path}`);
-      if (path === '/blog/' || path === '/recipes/' || path === '/research/') {
-        // On a sheet with lines to write on, the writing sits on them: every baseline a
-        // pixel above a rule, the sheet a whole number of pitches tall, nothing past its foot.
-        const lined = await page.$$eval('.sc-card[data-lined]', linesOnRules);
-        assert.ok(
-          lined.length > 0 &&
-            lined.every(
-              (sheet) => sheet.off <= 0.75 && sheet.heightOff <= 0.6 && sheet.overflow <= 0
-            ),
-          `Writing off its lines on ${path} at ${width}px: ${JSON.stringify(lined)}`
-        );
-      }
       if (path === '/' && width === 1440) {
         const client = await page.createCDPSession();
         const { root } = await client.send('DOM.getDocument');
@@ -178,6 +166,18 @@ try {
         await page.evaluate(() => document.documentElement.scrollWidth > innerWidth),
         false,
         `Horizontal overflow: ${path} at ${width}px`
+      );
+      // On a sheet with lines to write on, the writing sits on them: every baseline a pixel
+      // above a rule, the sheet a whole number of pitches tall, nothing past its foot. The
+      // blog draws such sheets; a post's related cards are checked here too. Last of all,
+      // since the probe marks the cards up.
+      const lined = await page.$$eval('.sc-card[data-lined]', linesOnRules);
+      assert.ok(
+        (path !== '/blog/' || lined.length > 0) &&
+          lined.every(
+            (sheet) => sheet.off <= 0.75 && sheet.heightOff <= 0.6 && sheet.overflow <= 0
+          ),
+        `Writing off its lines on ${path} at ${width}px: ${JSON.stringify(lined)}`
       );
     }
   }
