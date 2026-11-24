@@ -243,8 +243,8 @@ try {
     for (const path of paths) {
       const response = await page.goto(`${baseURL}${path}`, { waitUntil: 'networkidle0' });
       assert.equal(response.status(), 200, path);
-      assert.ok(await page.title(), `Missing title: ${path}`);
       await checkCritters(page, path, width);
+      assert.ok(await page.title(), `Missing title: ${path}`);
       if (path === '/' && width === 1440) {
         const client = await page.createCDPSession();
         const { root } = await client.send('DOM.getDocument');
