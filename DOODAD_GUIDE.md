@@ -52,7 +52,9 @@ only while its card is on screen (`src/scripts/card-critters.ts` marks the other
 2. Draw it in `CardMark.astro` (a small inline SVG; `ink`, `thin` and `fill` take the
    current colour, so it follows the torch theme).
 3. Size and colour it in the marks section of `stacked-card.css`. A corner mark must fit
-   in 3.6rem by 2.4rem; an edge mark walks the top edge and must reach no more than 0.4rem onto the sheet.
+   in 3.6rem by 2.4rem; an edge mark walks the top edge and must reach no more than 0.4rem
+   onto the sheet, at either end of its turn and through its motion. Measure it rather
+   than judge it by eye: `bun run test:browser` measures the marks the listing pages draw.
 4. If it moves, give each part that moves its own group in the drawing and animate that
    group (`transform-box: fill-box`, so it turns about its own middle or edge). The "What
    the critters do" section of `stacked-card.css` has the loops; keep them small and slow.

@@ -8,6 +8,79 @@ const browser = await puppeteer.launch({
   headless: true,
   args: ['--no-sandbox'],
 });
+// How far each mark reaches over its sheet, in rem, at either end of its turn and through
+// the whole of its motion: an edge mark `onto` the sheet from its top edge; a corner mark
+// `up` the sheet from its foot and `left` from its right edge. Runs in the page.
+function reachOf(marks) {
+  return marks.map((mark) => {
+    const card = mark.closest('.sc-card');
+    const face = card.querySelector('.sc-face');
+    const svg = mark.querySelector('svg');
+    const rem = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
+    // A blank sheet laid over the card, to read the drawing in the card's own frame,
+    // whatever way the card lies on the desk.
+    const sheet = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    sheet.style.cssText = 'position:absolute;inset:0;width:100%;height:100%';
+    card.append(sheet);
+    try {
+      const toCard = sheet.getScreenCTM().inverse();
+      const animations = mark.getAnimations({ subtree: true });
+      // A loop that runs backwards takes twice its duration to come round.
+      const periods = animations.map((animation) => {
+        const { duration, direction } = animation.effect.getComputedTiming();
+        return direction.startsWith('alternate') ? 2 * duration : duration;
+      });
+      const horizon = 2 * Math.max(1000, ...periods);
+      const step = Math.min(1000, ...periods) / 12;
+      // The widest pen stroke; half of it lies outside the drawing's box.
+      const strokeOf = (element) => {
+        const style = getComputedStyle(element);
+        return style.stroke === 'none' ? 0 : Number.parseFloat(style.strokeWidth) || 0;
+      };
+      const stroke = Math.max(strokeOf(svg), ...[...svg.querySelectorAll('*')].map(strokeOf));
+      const edge = mark.classList.contains('sc-mark-edge');
+      const worst = { onto: -Infinity, up: -Infinity, left: -Infinity };
+      for (const turn of [-40, 40]) {
+        mark.style.setProperty('--mark-turn', `${turn}deg`);
+        for (let time = 0; time <= horizon; time += step) {
+          for (const animation of animations) animation.currentTime = time;
+          const box = svg.getBBox();
+          const matrix = toCard.multiply(svg.getScreenCTM());
+          const points = [
+            [box.x, box.y],
+            [box.x + box.width, box.y],
+            [box.x, box.y + box.height],
+            [box.x + box.width, box.y + box.height],
+          ].map(([x, y]) => new DOMPoint(x, y).matrixTransform(matrix));
+          const xs = points.map((point) => point.x);
+          const ys = points.map((point) => point.y);
+          const pad = (stroke * Math.hypot(matrix.a, matrix.b)) / 2;
+          if (edge) {
+            worst.onto = Math.max(worst.onto, (Math.max(...ys) + pad - face.offsetTop) / rem);
+          } else {
+            worst.up = Math.max(
+              worst.up,
+              (face.offsetTop + face.offsetHeight - Math.min(...ys) + pad) / rem
+            );
+            worst.left = Math.max(
+              worst.left,
+              (face.offsetLeft + face.offsetWidth - Math.min(...xs) + pad) / rem
+            );
+          }
+        }
+      }
+      const rounded = Object.fromEntries(
+        Object.entries(edge ? { onto: worst.onto } : { up: worst.up, left: worst.left }).map(
+          ([key, value]) => [key, Math.round(value * 1000) / 1000]
+        )
+      );
+      return { kind: card.dataset.mark, ...rounded };
+    } finally {
+      sheet.remove();
+    }
+  });
+}
+
 const errors = [];
 try {
   const page = await browser.newPage();
@@ -36,31 +109,50 @@ try {
               running: mark
                 .getAnimations({ subtree: true })
                 .filter((animation) => animation.playState === 'running').length,
+              // The observer watches a fifth of the window beyond each edge
+              // (card-critters.ts); the card wholly above that strip is out of its reach.
+              gone: mark.closest('.sc-card').getBoundingClientRect().bottom < -0.2 * innerHeight,
             }))
           );
-        const consistent = (list) =>
-          list.every((critter) => (critter.still ? critter.running === 0 : critter.running > 0));
         const atTop = await critters();
         assert.ok(
-          atTop.length > 0 && consistent(atTop) && atTop.some((critter) => critter.running > 0),
+          atTop.length > 0 &&
+            atTop.every((critter) =>
+              critter.still ? critter.running === 0 : critter.running > 0
+            ) &&
+            atTop.some((critter) => critter.running > 0),
           `Critters moving on ${path} at ${width}px: ${JSON.stringify(atTop)}`
         );
-        // The page scrolls smoothly, so jump: the cards leave the screen at once.
-        await page.evaluate(() =>
-          window.scrollTo({
-            top: document.documentElement.scrollHeight,
-            behavior: 'instant',
-          })
-        );
-        await new Promise((resolve) => setTimeout(resolve, 400));
-        const below = await critters();
-        // On a phone the cards stack, so the first ones have left the screen for good.
-        const stacked = width === 390;
+        // A critter keeps to the strip above the title, the tansy and the mouse to the
+        // room the footer line leaves them.
+        const reach = await page.$$eval('.sc-mark-edge, .sc-mark-tansy, .sc-mark-mouse', reachOf);
         assert.ok(
-          consistent(below) && (!stacked || below.some((critter) => critter.still)),
-          `Critters still once scrolled past on ${path} at ${width}px: ${JSON.stringify(below)}`
+          reach.every((mark) =>
+            mark.onto !== undefined ? mark.onto <= 0.4 : mark.up <= 2.4 && mark.left <= 3.6
+          ),
+          `A mark leaves its room on ${path} at ${width}px: ${JSON.stringify(reach)}`
         );
-        await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+        // On a phone the cards stack, so the ones at the top are scrolled out of view
+        // for good: one that was moving has come to rest.
+        if (width === 390) {
+          await page.evaluate(() =>
+            window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' })
+          );
+          let below;
+          for (let waited = 0; ; waited += 50) {
+            below = await critters();
+            const left = below.filter((critter, i) => atTop[i].running > 0 && critter.gone);
+            if (left.length > 0 && left.every((critter) => critter.still && !critter.running)) {
+              break;
+            }
+            assert.ok(
+              waited < 2000,
+              `Critters at rest once scrolled past on ${path}: ${JSON.stringify({ atTop, below })}`
+            );
+            await new Promise((resolve) => setTimeout(resolve, 50));
+          }
+          await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+        }
       }
       if (path === '/' && width === 1440) {
         const client = await page.createCDPSession();
@@ -219,7 +311,7 @@ try {
   }
   assert.deepEqual(errors, [], 'Browser errors or failed asset requests');
   console.log(
-    'Browser smoke checks passed: routes, mobile layout, theme, images, search, RSS, sitemap.'
+    'Browser smoke checks passed: routes, mobile layout, theme, images, search, RSS, sitemap, card critters.'
   );
 } finally {
   await browser.close();

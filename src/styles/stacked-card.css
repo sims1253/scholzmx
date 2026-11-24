@@ -890,10 +890,10 @@
      deeply toothed leaves, and a flat head of yellow buttons. */
   .sc-mark-tansy {
     right: -0.7rem;
-    bottom: -0.55rem;
-    width: 2.7rem;
-    height: 3.4rem;
-    transform: rotate(calc(var(--mark-turn) / 3));
+    bottom: -0.62rem;
+    width: 2.35rem;
+    height: 2.95rem;
+    transform: rotate(calc(var(--mark-turn) / 6));
   }
 
   .sc-mark-tansy .stem {
@@ -1014,13 +1014,14 @@
   /* ===== Critters ===== */
 
   /* Critters walk the top edge itself, clear of the title below: they straddle it, and
-     reach no more than 0.4rem onto the sheet. */
+     reach no more than 0.4rem onto the sheet. Each one's `top` was set by measuring that
+     at either end of its turn and through its motion; the smoke test measures it again. */
   .sc-mark-edge {
     top: -0.3rem;
     left: var(--mark-along, 40%);
     z-index: 5;
     color: var(--color-ink-dark);
-    /* A critter keeps its feet: it takes only a third of the turn the marks on the
+    /* A critter keeps its feet: it takes only a twelfth of the turn the marks on the
        sheet are given. */
     transform: rotate(calc(var(--mark-turn) / 12));
   }
@@ -1068,6 +1069,7 @@
 
   /* Ants in a line, the last with a crumb */
   .sc-mark-ants {
+    top: -0.38rem;
     width: 3.4rem;
     height: 0.65rem;
   }
@@ -1140,7 +1142,7 @@
 
   /* A bumblebee hovering over the edge, its wings a blur */
   .sc-mark-bee {
-    top: -0.95rem;
+    top: -1.16rem;
     width: 1.62rem;
     height: 1.33rem;
   }
@@ -1196,7 +1198,7 @@
 
   /* A butterfly perched on the edge, opening and closing its wings */
   .sc-mark-butterfly {
-    top: -0.82rem;
+    top: -0.94rem;
     width: 1.86rem;
     height: 1.2rem;
   }
@@ -1256,7 +1258,7 @@
 
   /* A spider let itself down on a thread, and swings */
   .sc-mark-spider {
-    top: -1.28rem;
+    top: -1.32rem;
     width: 1rem;
     height: 1.66rem;
   }
@@ -1278,7 +1280,7 @@
 
   /* A banded snail out on the edge after rain */
   .sc-mark-snail {
-    top: -0.84rem;
+    top: -0.94rem;
     width: 1.75rem;
     height: 1.22rem;
   }
@@ -1358,7 +1360,7 @@
 
   /* A cricket with its antennae back along the edge */
   .sc-mark-cricket {
-    top: -0.86rem;
+    top: -0.9rem;
     width: 1.9rem;
     height: 1.24rem;
   }
