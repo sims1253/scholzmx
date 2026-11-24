@@ -392,7 +392,8 @@
   .sc-card[data-tint='cream'] {
     /* By torchlight less tansy: the bright yellow lightens the dark paper, and pale ink on
        it loses contrast, most of all over its ruling and its tooth. At four parts the words
-       keep 4.6:1 even on the darkest and lightest one percent of the sheet. */
+       of the squared cream card keep 4.6:1 against the paper right behind them, at its
+       darkest and lightest one percent. */
     --sc-sheet: var(--by-day, color-mix(in srgb, var(--sc-base) 91%, var(--color-tansy)))
       var(--by-torch, color-mix(in srgb, var(--sc-base) 96%, var(--color-tansy)));
   }
