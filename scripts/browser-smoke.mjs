@@ -37,10 +37,19 @@ try {
       const pitch = Number.parseFloat(getComputedStyle(content).lineHeight);
       // Squared paper has a line to half a pitch: the writing sits on every other one.
       const period = card.dataset.ruling === 'squared' ? pitch / 2 : pitch;
-      // The sheet's colour is the last layer painted on its face; its lines come just before,
-      // a tile that starts at its first line. The face has a 1px border above it.
-      const lines = getComputedStyle(face).backgroundPosition.split(',').at(-2);
-      const firstRule = 1 + Number.parseFloat(lines.trim().split(' ')[1]);
+      // The lines are the one tile as wide as the sheet that starts below its top at its left
+      // edge, wherever it comes in the list of layers. The face has a 1px border above it.
+      const painted = getComputedStyle(face);
+      const positions = painted.backgroundPosition.split(',');
+      const widths = painted.backgroundSize.split(',').map((size) => size.trim().split(/\s+/)[0]);
+      const lines = positions.flatMap((position, at) => {
+        const [x, y] = position.trim().split(/\s+/).map(Number.parseFloat);
+        return x === 0 && y > 0 && widths[at] === '100%' ? [y] : [];
+      });
+      if (lines.length !== 1) {
+        throw new Error(`${card.dataset.ruling}: ${lines.length} tiles start a line, not one`);
+      }
+      const firstRule = 1 + lines[0];
       const texts = [];
       const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT);
       for (let node = walker.nextNode(); node; node = walker.nextNode()) texts.push(node);
