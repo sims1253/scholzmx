@@ -76,7 +76,11 @@
 .nav-link {
   position: relative;
   display: inline-block;
+  /* The focus ring wraps the word with air on every side. The side padding is
+     given back as negative margins, so the links keep their places. */
   padding-block: 0.45rem;
+  padding-inline: 0.6em;
+  margin-inline: -0.6em;
   color: var(--color-text-secondary);
   text-decoration: none;
 }
@@ -121,6 +125,12 @@
     flex-wrap: nowrap;
     font-size: 0.875rem;
     letter-spacing: 0.02em;
+  }
+
+  /* Links sit close here, so the ring takes less air at their sides. */
+  .nav-link {
+    padding-inline: 0.35em;
+    margin-inline: -0.35em;
   }
 }
 
