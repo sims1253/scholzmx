@@ -260,7 +260,7 @@ try {
   }
   assert.deepEqual(errors, [], 'Browser errors or failed asset requests');
   console.log(
-    'Browser smoke checks passed: routes, mobile layout, theme, images, search, RSS, sitemap, lined cards.'
+    'Browser smoke checks passed: routes, mobile layout, theme, images, search, RSS, sitemap.'
   );
 } finally {
   await browser.close();
