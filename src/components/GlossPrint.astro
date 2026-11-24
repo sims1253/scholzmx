@@ -284,6 +284,8 @@ const fit = Math.min(1, image.width / image.height);
         print.sticker.querySelector('canvas')?.addEventListener('webglcontextlost', () => {
           print.draw = undefined;
           delete print.sticker.dataset.lit;
+          print.sticker.style.removeProperty('--gloss-tilt-x');
+          print.sticker.style.removeProperty('--gloss-tilt-y');
         });
         print.at = rest(print);
         wake();
@@ -327,6 +329,8 @@ const fit = Math.min(1, image.width / image.height);
         const print = prints.find(({ sticker }) => sticker === entry.target)!;
         print.seen = entry.isIntersecting;
         kindle(print);
+        // A lamp kept from before reduced motion was turned on and off again.
+        if (woken && print.seen && print.draw) wake();
       }
     },
     { rootMargin: '200px' }
