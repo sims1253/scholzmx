@@ -40,6 +40,10 @@ its writing to it:
   whole pitches. One stretched to its row is cut down to whole pitches by `round()` (a
   browser that does not know it stretches the sheet whole, as before), and never below
   its words. So the date line at its foot lands on a rule however tall the row is.
+- **Nothing else stands in the flow with a height of its own.** A picture across the top
+  of a card (the strip) takes the lines below it off their rules; the shelves that draw
+  lined sheets tape their pictures into a corner instead. A block that must stand in the
+  flow takes a whole number of pitches.
 - **A rule lies a pixel under the baseline.** Where a voice lays its baseline is a share
   of its font size on top of half the line box (`--baseline-personal` and
   `--baseline-serious` in `src/styles/tokens.typography.css`), measured once for each.
