@@ -111,9 +111,27 @@ try {
   // and one with its leading loose enough that the frame stops at the fourth line instead.
   // A post opens in the other face, with a top of its own, so a post is measured too.
   const opening = (path) => readFileSync(`dist${path}index.html`, 'utf8');
-  const postWithInitial = blogPaths.find(
+  // A post whose opening paragraph runs to a fourth line, so that the fourth can be seen
+  // to run free: among the posts that open with an initial, the first that does, or else
+  // the first of all.
+  await page.setViewport({ width: 1440, height: 844 });
+  let postWithInitial;
+  for (const path of blogPaths.filter(
     (path) => opening(path).includes('class="dropcap') && !opening(path).includes('dropcap--word')
-  );
+  )) {
+    await page.goto(`${baseURL}${path}`, { waitUntil: 'networkidle0' });
+    const fourLines = await page.$eval('.dropcap', (element) => {
+      const box = element.parentElement.getBoundingClientRect();
+      return (
+        box.height >= 4 * Number.parseFloat(getComputedStyle(element.parentElement).lineHeight)
+      );
+    });
+    postWithInitial ??= path;
+    if (fourLines) {
+      postWithInitial = path;
+      break;
+    }
+  }
   // A paragraph that opens with a one-letter word ("I always...") is a case of its own.
   const postWithOneLetterWord = blogPaths.find((path) => opening(path).includes('dropcap--word'));
   assert.ok(postWithInitial, 'No post opens with an initial');
@@ -173,6 +191,8 @@ try {
         gap,
         space,
         oneLetter: element.classList.contains('dropcap--word'),
+        // How many lines the paragraph has. A short opening has no fourth line to run free.
+        lines: Math.round(box.height / pitch),
         beside: [1, 2, 3].map(atLeftEdge),
         fourth: atLeftEdge(4),
       };
@@ -201,12 +221,16 @@ try {
       initial.fromFrame >= nearest - 1 && initial.fromFrame <= initial.gap + 1,
       `Words beside the initial at ${where}: ${initial.fromFrame} from it, gap ${initial.gap}`
     );
+    const beside = initial.beside.slice(0, Math.min(3, initial.lines));
     assert.deepEqual(
-      initial.beside,
-      [false, false, false],
+      beside,
+      beside.map(() => false),
       `Lines beside the initial at ${where}: ${initial.beside}`
     );
-    assert.ok(initial.fourth, `The fourth line does not run free at ${where}`);
+    assert.ok(
+      initial.lines < 4 || initial.fourth,
+      `The fourth line does not run free at ${where}: ${JSON.stringify(initial)}`
+    );
   }
 
   await page.goto(baseURL, { waitUntil: 'networkidle0' });
