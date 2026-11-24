@@ -70,6 +70,8 @@ Decorative first letter for long posts only.
 
 Use exactly once per post, only for long essays (600+ words). Skip for short posts, lists, or titles.
 
+The initial measures its own paragraph, in that paragraph's font size and leading (`src/styles/dropcap.css`): its frame is three lines tall less a gap, three lines run beside it, the fourth runs free, and the words keep that gap from the frame (with very loose leading the frame stops short at the fourth line instead). A page may set a paragraph's size and leading as it likes; the initial follows.
+
 ## Margin notes
 ```markdown
 > margin: This appears in the margin

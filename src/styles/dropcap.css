@@ -8,150 +8,162 @@
      technology, and paints both layers from data-first-letter: the letter (::after) and
      the ornament behind it (::before). One box draws both, so they always register.
 
-   The initial is a square three lines tall: its top on the capitals of the first line,
-   its bottom on the baseline of the third. Both follow from the text face, in units of
-   the paragraph's font size (1rem in .prose):
+   The initial is measured by its own paragraph, in that paragraph's font size and line
+   pitch: .dropcap inherits both, so on it 1em is the paragraph's font size and 1lh its
+   line pitch, however the paragraph is set.
+   - Its frame is three lines tall, less a gap at its foot.
+   - Its top is on the capitals of the first line and its foot that gap above the
+     capitals of the fourth line, so three lines run beside it and the fourth runs free.
+     Where the leading is so loose that the top lies further down the first line than
+     the gap, the frame is shorter still, and stops at the fourth line's box.
+   - The words beside it start that gap to the right of the frame: as far from it as the
+     fourth line is below it.
+   The ornament is a square em, so the frame is square, and the letter inside keeps the
+   proportions it was drawn with.
 
-     size       = 2 line-heights + cap height
-     margin-top = first baseline - cap height, from the paragraph's top
+      side       = 3 line heights - the larger of the gap and margin-top
+      margin-top = half a line height + (ascent - descent) / 2 - cap height
 
-   Alegreya at line-height 1.6: capitals 0.646, first baseline 1.135.
-   ET Book at line-height 1.55: capitals 0.653, first baseline 1.068. */
+   Alegreya: capitals 0.646, ascent 1.016, descent 0.345.
+   ET Book: capitals 0.653, ascent 0.896, descent 0.3086.
 
-/* The line height too, as a paragraph may set it as a length, which the letter would
-   inherit as it stands and so make the first line taller. */
-p:has(> .dropcap)::first-letter {
-  font-size: 0;
-  line-height: 0;
-}
+   Measuring the frame takes the lh unit and sizing the letter container units. The
+   whole initial is an enhancement: a browser with neither leaves the paragraph as it is,
+   with its plain first letter. */
 
-/* A one-letter first word ("A story") keeps its space, which would open a gap between
-   the initial and the next word: the space after a zero-size letter is not at the start
-   of the line, so it does not collapse. Pull the first line back by the width of that
-   space, a metric of the text face like the ones above: ET Book 0.2446, Alegreya 0.198. */
-p:has(> .dropcap--word.dropcap--serious) {
-  text-indent: -0.2446em;
-}
-p:has(> .dropcap--word.dropcap--personal) {
-  text-indent: -0.198em;
-}
-/* text-indent is inherited, and an inline-block inside the paragraph (the ↗ of an
-   external link, the initial itself) would indent its own first line too. */
-p:has(> .dropcap--word) * {
-  text-indent: 0;
-}
-
-.dropcap {
-  float: left;
-  display: inline-block;
-  vertical-align: top;
-  shape-outside: margin-box;
-  user-select: none;
-  position: relative;
-  font-weight: 600;
-
-  /* Modern shape optimization for better text wrapping */
-  shape-margin: clamp(0.02em, 0.5vw, 0.05em);
-}
-
-.dropcap::after {
-  content: attr(data-first-letter);
-}
-
-/* Personal variant - set beside Alegreya (welcome, recipes, notes) */
-.dropcap--personal {
-  font-size: 3.846rem; /* 2 x 1.6 + 0.646 */
-  line-height: 1;
-  margin-right: 0.06em;
-  margin-top: 0.127em; /* (1.135 - 0.646) / 3.846 */
-  font-weight: 500;
-}
-
-/* Serious variant - set beside ET Book (blog) */
-.dropcap--serious {
-  font-size: 3.753rem; /* 2 x 1.55 + 0.653 */
-  line-height: 1;
-  margin-right: 0.06em;
-  margin-top: 0.111em; /* (1.068 - 0.653) / 3.753 */
-  font-weight: 500;
-}
-
-/* Simple */
-.dropcap--simple {
-  font-family: var(--font-heading);
-}
-
-/* Ornate layered */
-
-/* The ornament is one font file per letter, each limited to its letter by unicode-range,
-   so none of them can supply the line's metrics (a font must cover the space character
-   for that). The letter's font follows it in the list and has the same metrics; without
-   it the text face would set the baseline and the ornament would sit a sixth of its
-   height above the letter. */
-.dropcap--ornate {
-  font-family: var(--font-dropcap-foreground), var(--font-heading), serif;
-  color: var(--dropcap-color-foreground);
-}
-.dropcap--ornate::before {
-  content: attr(data-first-letter);
-  position: absolute;
-  font-family:
-    var(--font-dropcap-background), var(--font-dropcap-foreground), var(--font-heading), serif;
-  color: var(--dropcap-color-background);
-  z-index: -1;
-  left: 0;
-  top: 0;
-}
-
-/* Botanical layered */
-.dropcap--botanical {
-  font-family: var(--font-dropcap-foreground), var(--font-heading), serif;
-}
-.dropcap--botanical::before {
-  content: attr(data-first-letter);
-  position: absolute;
-  font-family:
-    var(--font-dropcap-background), var(--font-dropcap-foreground), var(--font-heading), serif;
-  color: var(--dropcap-color-foreground);
-  z-index: -1;
-  left: 0;
-  top: 0;
-}
-
-/* Color variants apply to swirls (::before) only */
-.dropcap--gold::before {
-  color: var(--color-tansy);
-}
-.dropcap--walnut::before {
-  color: var(--color-walnut);
-}
-.dropcap--moss::before {
-  color: var(--color-moss);
-}
-.dropcap--ochre::before {
-  color: var(--color-ochre);
-}
-.dropcap--sage::before {
-  color: var(--color-sage);
-}
-
-/* Responsive shape adjustments for very small screens */
-@media (max-width: 400px) {
-  .dropcap {
-    /* Disable complex shape wrapping on very small screens for better performance */
-    shape-outside: none;
+@supports (width: 1lh) and (font-size: 1cqw) {
+  /* The line height too, as a paragraph may set it as a length, which the letter would
+     inherit as it stands and so make the first line taller. */
+  p:has(> .dropcap)::first-letter {
+    font-size: 0;
+    line-height: 0;
   }
-}
 
-/* An opening quotation mark before the initial hangs in the margin beside it. */
-p:has(> .dropcap) {
-  position: relative;
-}
-.dropcap-quote {
-  position: absolute;
-  top: 0;
-  right: 100%;
-  padding-right: 0.1em;
-  font-size: 2em;
-  line-height: 1;
+  /* A one-letter first word ("A story") keeps its space, which would open a gap between
+     the initial and the next word: the space after a zero-size letter is not at the start
+     of the line, so it does not collapse. Pull the first line back by the width of that
+     space, a metric of the text face like the ones above: ET Book 0.2446, Alegreya 0.198. */
+  p:has(> .dropcap--word.dropcap--serious) {
+    text-indent: -0.2446em;
+  }
+  p:has(> .dropcap--word.dropcap--personal) {
+    text-indent: -0.198em;
+  }
+  /* text-indent is inherited, and an inline-block inside the paragraph (the ↗ of an
+     external link, the initial itself) would indent its own first line too. */
+  p:has(> .dropcap--word) * {
+    text-indent: 0;
+  }
+
+  .dropcap {
+    /* How far the words keep from the frame, at its side and below it. */
+    --initial-gap: 0.6em;
+    /* Where the leading is so loose that the top of the frame lies further down the
+       first line than the gap, the frame stops at the fourth line instead: its foot is
+       then further from that line's capitals, never nearer. */
+    --initial-side: calc(3lh - max(var(--initial-gap), var(--initial-top)));
+
+    float: left;
+    position: relative;
+    container-type: size;
+    width: var(--initial-side);
+    height: var(--initial-side);
+    margin-right: var(--initial-gap);
+    /* A pixel short of the fourth line's box, which the last pixel of the frame may
+       touch where the leading is loose. */
+    margin-block: var(--initial-top) -1px;
+    font-weight: 500;
+    text-indent: 0;
+    user-select: none;
+  }
+
+  /* Where the top of the frame is, below the top of the first line. */
+  .dropcap--personal {
+    --initial-top: calc(0.5lh - 0.3105em);
+  }
+
+  .dropcap--serious {
+    --initial-top: calc(0.5lh - 0.3593em);
+  }
+
+  /* The letter, as large as the frame. The initials' ascent and descent make their line
+     box their em square, so the ornament fills the frame. */
+  .dropcap::before,
+  .dropcap::after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-size: 100cqw;
+    line-height: 1.014;
+  }
+
+  .dropcap::after {
+    content: attr(data-first-letter);
+  }
+
+  /* Simple */
+  .dropcap--simple {
+    font-family: var(--font-heading);
+  }
+
+  /* Ornate layered */
+
+  /* The ornament is one font file per letter, each limited to its letter by unicode-range,
+     so none of them can supply the line's metrics (a font must cover the space character
+     for that). The letter's font follows it in the list and has the same metrics; without
+     it the text face would set the baseline and the ornament would sit a sixth of its
+     height above the letter. */
+  .dropcap--ornate {
+    font-family: var(--font-dropcap-foreground), var(--font-heading), serif;
+    color: var(--dropcap-color-foreground);
+  }
+  .dropcap--ornate::before {
+    content: attr(data-first-letter);
+    font-family:
+      var(--font-dropcap-background), var(--font-dropcap-foreground), var(--font-heading), serif;
+    color: var(--dropcap-color-background);
+    z-index: -1;
+  }
+
+  /* Botanical layered */
+  .dropcap--botanical {
+    font-family: var(--font-dropcap-foreground), var(--font-heading), serif;
+  }
+  .dropcap--botanical::before {
+    content: attr(data-first-letter);
+    font-family:
+      var(--font-dropcap-background), var(--font-dropcap-foreground), var(--font-heading), serif;
+    color: var(--dropcap-color-foreground);
+    z-index: -1;
+  }
+
+  /* Color variants apply to swirls (::before) only */
+  .dropcap--gold::before {
+    color: var(--color-tansy);
+  }
+  .dropcap--walnut::before {
+    color: var(--color-walnut);
+  }
+  .dropcap--moss::before {
+    color: var(--color-moss);
+  }
+  .dropcap--ochre::before {
+    color: var(--color-ochre);
+  }
+  .dropcap--sage::before {
+    color: var(--color-sage);
+  }
+
+  /* An opening quotation mark before the initial hangs in the margin beside it. */
+  p:has(> .dropcap) {
+    position: relative;
+  }
+  .dropcap-quote {
+    position: absolute;
+    top: 0;
+    right: 100%;
+    padding-right: 0.1em;
+    font-size: 2em;
+    line-height: 1;
+  }
 }

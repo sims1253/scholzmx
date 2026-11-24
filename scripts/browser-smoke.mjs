@@ -105,6 +105,88 @@ try {
     }
   }
 
+  // The initial is measured by its paragraph: three lines run beside it, the fourth runs
+  // free, and its frame is three lines tall less the gap at its foot. The homepage sets
+  // its bio smaller and closer in a short window, so a short and a tall window are tried,
+  // and one with its leading loose enough that the frame stops at the fourth line instead.
+  for (const { height, leading } of [
+    { height: 844 },
+    { height: 1300 },
+    { height: 844, leading: '2em' },
+  ]) {
+    await page.setViewport({ width: 1440, height });
+    await page.goto(`${baseURL}/`, { waitUntil: 'networkidle0' });
+    if (leading) {
+      await page.addStyleTag({
+        content: `.about p:has(> .dropcap) { line-height: ${leading} !important; }`,
+      });
+    }
+    const initial = await page.evaluate(() => {
+      const element = document.querySelector('.dropcap');
+      const paragraph = element.parentElement;
+      const style = getComputedStyle(paragraph);
+      const pitch = Number.parseFloat(style.lineHeight);
+      const size = Number.parseFloat(style.fontSize);
+      const gap = 0.6 * size;
+      // How far the top of the frame lies below the top of the first line (Alegreya:
+      // capitals 0.646, ascent 1.016, descent 0.345).
+      const top = 0.5 * pitch + (0.3355 - 0.646) * size;
+      const box = paragraph.getBoundingClientRect();
+      const frame = element.getBoundingClientRect();
+      const words = [...paragraph.childNodes].find(
+        (node) => node.nodeType === Node.TEXT_NODE && node.textContent.trim()
+      );
+      const firstWord = document.createRange();
+      firstWord.selectNodeContents(words);
+      // Whether the paragraph's words are written at its left edge on a line (they are
+      // not, beside the initial).
+      const atLeftEdge = (line) => {
+        const range = document.caretRangeFromPoint(box.left + 1, box.top + (line - 0.5) * pitch);
+        const node = range?.startContainer;
+        return Boolean(
+          node?.nodeType === Node.TEXT_NODE && paragraph.contains(node) && !element.contains(node)
+        );
+      };
+      return {
+        side: frame.height,
+        threeLines: 3 * pitch - Math.max(gap, top),
+        top: frame.top,
+        capLine: box.top + top,
+        foot: frame.bottom,
+        fourthLine: box.top + 3 * pitch,
+        fromFrame: firstWord.getClientRects()[0].left - frame.right,
+        gap,
+        beside: [1, 2, 3].map(atLeftEdge),
+        fourth: atLeftEdge(4),
+      };
+    });
+    const close = (a, b) => Math.abs(a - b) <= 1;
+    const where = `${height}px${leading ? ` with ${leading} leading` : ''}`;
+    assert.ok(
+      close(initial.side, initial.threeLines),
+      `Initial height at ${where}: ${initial.side}, three lines less the larger of the gap and the top ${initial.threeLines}`
+    );
+    assert.ok(
+      close(initial.top, initial.capLine),
+      `Initial top at ${where}: ${initial.top}, the first line's capitals ${initial.capLine}`
+    );
+    // The last pixel of the frame may touch the fourth line's box.
+    assert.ok(
+      initial.foot <= initial.fourthLine + 1,
+      `Initial reaches into the fourth line at ${where}: ${initial.foot} over ${initial.fourthLine}`
+    );
+    assert.ok(
+      close(initial.fromFrame, initial.gap),
+      `Words beside the initial at ${where}: ${initial.fromFrame} from it, gap ${initial.gap}`
+    );
+    assert.deepEqual(
+      initial.beside,
+      [false, false, false],
+      `Lines beside the initial at ${where}: ${initial.beside}`
+    );
+    assert.ok(initial.fourth, `The fourth line does not run free at ${where}`);
+  }
+
   await page.goto(baseURL, { waitUntil: 'networkidle0' });
   await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);
   const theme = await page.$eval('html', (element) => element.dataset.theme);
