@@ -273,9 +273,16 @@ const fit = Math.min(1, image.width / image.height);
     frame ||= requestAnimationFrame(step);
   };
 
-  // Reduced motion turned on mid-visit: back to the still sheen.
+  // Reduced motion turned on mid-visit: back to the still sheen. Turned off: observing
+  // a sticker again reports where it is, so the ones in view get their lamps.
   still.addEventListener('change', () => {
-    if (!still.matches) return;
+    if (!still.matches) {
+      for (const { sticker } of prints) {
+        watcher.unobserve(sticker);
+        watcher.observe(sticker);
+      }
+      return;
+    }
     cancelAnimationFrame(frame);
     frame = 0;
     for (const { sticker } of prints) {
@@ -298,6 +305,12 @@ const fit = Math.min(1, image.width / image.height);
           .decode()
           .then(() => {
             print.draw = lamp(print.sticker, map);
+            // A browser may take the canvas's context back (a tab left in the
+            // background on a phone): the still sheen returns.
+            print.sticker.querySelector('canvas')?.addEventListener('webglcontextlost', () => {
+              print.draw = undefined;
+              delete print.sticker.dataset.lit;
+            });
             print.at = rest(print);
             if (woken) wake();
           })
