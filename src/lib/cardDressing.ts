@@ -18,6 +18,10 @@ export type Material = 'paper' | 'index' | 'tag' | 'recipe';
 
 export type Tint = 'plain' | 'cream' | 'sage' | 'aged' | 'grey';
 export type Ruling = 'plain' | 'margin' | 'ruled' | 'squared' | 'binder';
+
+/** A sheet with lines to write on. Its words keep to them (`.sc-card[data-lined]`). */
+export const isLined = (ruling: Ruling): boolean =>
+  ruling === 'ruled' || ruling === 'squared' || ruling === 'binder';
 export type Edge = 'cut' | 'torn' | 'deckle';
 export type Fold = 'tr' | 'bl' | 'br';
 

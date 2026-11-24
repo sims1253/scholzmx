@@ -20,6 +20,34 @@ happened to it. The same seed always gives the same card, so nothing flickers on
 Each shelf has its own weights: a cup ring turns up more on recipe cards, a library date
 stamp only on catalogue cards, and tags hang from their strings instead of being taped.
 
+## Words on the lines
+
+A sheet with lines to write on (ruled, squared, torn from a ring binder) carries
+`data-lined`, keeps one pitch (`--sc-pitch` in `src/styles/stacked-card.css`) and keeps
+its writing to it:
+
+- **Every line is one pitch tall.** The content sets the line height and its blocks
+  inherit it. A block that sets its own takes the lines below it off the rules.
+- **Each block starts where the last one ended.** The card zeroes the margins of the
+  blocks in its content. A page's own styles outrank the card's layer, so text a page
+  slots into a lined card is the page's to set: no margins between its blocks, and
+  writing smaller than the title moved down to the title's baseline with
+  `top: var(--sc-nudge)`. Text in another voice than the page's sets `--sc-slope` first
+  (the research page shows both).
+- **A sheet is a whole number of pitches tall.** The padding above the first line and
+  below the last come to one pitch, so a sheet's words add up to whole pitches. One
+  stretched to its row is cut down to whole pitches, and never below its words. So the
+  date line at its foot lands on a rule however tall the row is.
+- **A rule lies a pixel under the baseline.** Where a voice lays its baseline is a share
+  of its font size on top of half the line box (`--baseline-personal` and
+  `--baseline-serious` in `src/styles/tokens.typography.css`), measured once for each.
+
+The squared sheet keeps its squares, half a pitch: a line of writing takes two.
+
+The smoke test measures all of it on every lined card the listing pages draw: each
+baseline within three quarters of a pixel of a rule, the sheet a whole number of pitches
+tall, and nothing cut off at its foot.
+
 ## Marks never cover words
 
 A mark has a home that the card keeps clear for it:

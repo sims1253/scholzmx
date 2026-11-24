@@ -15,6 +15,12 @@
   --font-label: var(--font-body-personal);
   --font-mono: 'Fira Code', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
 
+  /* Where each voice lays its baseline in a line box: half the line box, plus this share
+     of the font size. The same for every weight and style of a face, and for the local
+     stand-in. A ruled card sets its rules by it (stacked-card.css). */
+  --baseline-personal: 0.335;
+  --baseline-serious: 0.293;
+
   /* Font weights */
   --font-weight-normal: 400;
   --font-weight-medium: 500;

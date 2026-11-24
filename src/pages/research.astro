@@ -118,4 +118,37 @@ const linkLabel = (kind: string) => (kind === 'pdf' || kind === 'doi' ? kind.toU
     font-style: italic;
     color: var(--color-text-muted);
   }
+
+  /* On a lined card the heading line is one pitch tall and its printed clay rule lies on
+     the card's own rule; the kind of work, the authors and the venue are writing smaller
+     than the title, so they are set down to the title's baseline (--sc-nudge, from
+     stacked-card.css). The kind is in the personal voice whatever the page's. */
+  :global(.sc-card[data-lined]) .pub-call {
+    --sc-slope: var(--baseline-personal);
+
+    position: relative;
+    align-items: flex-start;
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  :global(.sc-card[data-lined]) .pub-call::after {
+    content: '';
+    position: absolute;
+    inset: var(--sc-rule-at) 0 auto;
+    height: 1px;
+    background: var(--color-clay);
+    opacity: 0.45;
+  }
+
+  :global(.sc-card[data-lined]) .pub-call > span:not(.pub-year),
+  :global(.sc-card[data-lined]) :is(.pub-authors, .pub-venue) {
+    position: relative;
+    top: var(--sc-nudge);
+  }
+
+  /* Each block starts on the next rule, with nothing between. */
+  :global(.sc-card[data-lined]) :is(.pub-call, .pub-authors, .pub-venue) {
+    margin-block: 0;
+  }
 </style>

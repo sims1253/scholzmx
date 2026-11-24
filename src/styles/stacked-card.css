@@ -421,11 +421,6 @@
     --sc-margin-ink: color-mix(in srgb, var(--color-clay) 24%, transparent);
     --sc-margin-line: linear-gradient(var(--sc-margin-ink), var(--sc-margin-ink))
       calc(var(--space-md) - 0.6rem) 0 / 1px 100% no-repeat;
-    --sc-ruled-lines: repeating-linear-gradient(
-        transparent 0 calc(1.6rem - 1px),
-        var(--sc-ruled-ink) calc(1.6rem - 1px) 1.6rem
-      )
-      0 0.9rem / 100% 100% no-repeat;
   }
 
   .sc-card[data-ruling='margin'] {
@@ -441,18 +436,23 @@
     --sc-rule: var(--sc-ruled-lines);
   }
 
-  /* Squared paper from a maths pad */
+  /* Squared paper from a maths pad. A lined sheet writes across two of its squares (the
+     title would not fit one), so its lines are half a pitch apart and the first lies
+     under the title's first line (Words on the lines, below). */
   .sc-card[data-ruling='squared'] {
+    --sc-square: calc(var(--sc-pitch) / 2);
+    --sc-square-ink: color-mix(in srgb, var(--color-iron) 11%, transparent);
     --sc-rule:
       repeating-linear-gradient(
         90deg,
-        transparent 0 calc(0.7rem - 1px),
-        color-mix(in srgb, var(--color-iron) 11%, transparent) calc(0.7rem - 1px) 0.7rem
+        transparent 0 calc(var(--sc-square) - 1px),
+        var(--sc-square-ink) calc(var(--sc-square) - 1px) var(--sc-square)
       ),
       repeating-linear-gradient(
-        transparent 0 calc(0.7rem - 1px),
-        color-mix(in srgb, var(--color-iron) 11%, transparent) calc(0.7rem - 1px) 0.7rem
-      );
+          transparent 0 calc(var(--sc-square) - 1px),
+          var(--sc-square-ink) calc(var(--sc-square) - 1px) var(--sc-square)
+        )
+        0 calc(var(--sc-top) + var(--sc-rule-at) - var(--sc-square) + 1px);
   }
 
   /* Torn from a ring binder: three punched holes down the left, ruled, and the words
@@ -588,6 +588,105 @@
     right: 0;
     top: 0;
     clip-path: polygon(0 0, 100% 100%, 0 100%);
+  }
+
+  /* ===== Words on the lines ===== */
+
+  /* A sheet with lines to write on (data-lined) keeps one pitch, and its writing keeps to
+     it: every line box is one pitch tall, and each block starts where the last one ended,
+     so every line of writing has a rule of its own to sit on. The pitch is within a hair
+     of the leading the title and the body have on a plain sheet (1.25 and 1.6 times their
+     sizes), so a lined sheet reads no looser than a plain one. The padding above the first
+     line and below the last come to one pitch between them, so a sheet's words add up to
+     whole pitches. A sheet stretched to its row is cut down to whole pitches too, and
+     never below its words (its least height is its content; the automatic minimum would
+     be clamped by the maximum). Either way the date line at its foot lands on a rule. */
+  .sc-card[data-lined] {
+    --sc-pitch: 1.4rem;
+    --sc-top: 0.7rem;
+    /* Alegreya at --text-lg, the title, lays its baseline in half the pitch plus its share
+       of its font size (tokens.typography.css); a rule lies a pixel under that. */
+    --sc-rule-at: calc(var(--sc-pitch) / 2 + var(--baseline-personal) * var(--text-lg) + 1px);
+    /* Where the voice of the page lays its baseline: a share of the font size on top of
+       half the line box. Text in another voice sets its own (the date line does). */
+    --sc-slope: var(--baseline-personal);
+    min-height: min-content;
+    max-height: round(down, calc(100% - var(--short, 0rem) * var(--desk-scatter)), var(--sc-pitch));
+  }
+
+  .serious-content .sc-card[data-lined] {
+    --sc-slope: var(--baseline-serious);
+  }
+
+  /* Writing smaller than the title is set down to the title's baseline: by the difference
+     between where its voice lays its baseline and where the title's does. Declared on
+     each element, since a custom property takes its var() values from the element that
+     declares it: this way each element gets its own voice and its own font size. Slotted
+     text may use it too (top: var(--sc-nudge)). */
+  .sc-card[data-lined] .sc-content * {
+    --sc-nudge: calc(var(--baseline-personal) * var(--text-lg) - var(--sc-slope) * 1em);
+  }
+
+  /* The ruled sheet's lines: the first lies under the title's first line, the rest a
+     pitch apart. A line is the last pixel of each pitch of the gradient. */
+  .sc-card:is([data-ruling='ruled'], [data-ruling='binder']) {
+    --sc-ruled-lines: repeating-linear-gradient(
+        transparent 0 calc(var(--sc-pitch) - 1px),
+        var(--sc-ruled-ink) calc(var(--sc-pitch) - 1px) var(--sc-pitch)
+      )
+      0 calc(var(--sc-top) + var(--sc-rule-at) - var(--sc-pitch) + 1px) / 100% 100% no-repeat;
+  }
+
+  /* The padding below the last line gives the face's border, top and bottom, its due */
+  .sc-card[data-lined] .sc-content {
+    padding-block: var(--sc-top) calc(var(--sc-pitch) - var(--sc-top) - 2px);
+    line-height: var(--sc-pitch);
+  }
+
+  /* The blocks follow one another with nothing between, each on its own rule. A page's
+     own styles outrank this layer: text it slots in is theirs to set, the same way. */
+  .sc-card[data-lined] .sc-content > :not(.sc-meta) {
+    margin-block: 0;
+  }
+
+  .sc-card[data-lined] .sc-title {
+    padding-top: 0;
+  }
+
+  .sc-card[data-lined] :is(.sc-title, .sc-dates) {
+    line-height: var(--sc-pitch);
+  }
+
+  .sc-card[data-lined] :is(.sc-subtitle, .sc-dates, .sc-chip) {
+    position: relative;
+    top: var(--sc-nudge);
+  }
+
+  /* The date line and the tags wrap from one rule to the next. Each is a line box one
+     pitch tall set at the top of its row: the nudge, not the flex line, lines their
+     baselines up (the date is in the personal voice, whatever the page's). */
+  .sc-card[data-lined] .sc-meta {
+    align-content: flex-start;
+    align-items: flex-start;
+    gap: 0 0.9rem;
+    padding-top: 0;
+  }
+
+  .sc-card[data-lined] .sc-dates {
+    --sc-slope: var(--baseline-personal);
+  }
+
+  /* The room kept for a corner mark or a taped print is whole rules */
+  .sc-card[data-lined][data-zone] .sc-meta {
+    min-height: round(up, 2.4rem, var(--sc-pitch));
+  }
+
+  .sc-card[data-lined]:has(.nc-thumb) .sc-meta {
+    min-height: round(up, calc(var(--sc-thumb) * 0.75 + 1.4rem), var(--sc-pitch));
+  }
+
+  .sc-card[data-lined]:has(.nc-thumb) .sc-media.nc-thumb {
+    bottom: calc(var(--sc-pitch) - var(--sc-top) - 2px);
   }
 
   /* ===== What holds it down ===== */

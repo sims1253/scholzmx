@@ -1,7 +1,7 @@
 ---
 import '../styles/stacked-card.css';
 import CardMark from './CardMark.astro';
-import { dressCard, type Material } from '../lib/cardDressing';
+import { dressCard, isLined, type Material } from '../lib/cardDressing';
 /**
  * StackedCard: a sheet of paper lying on a desk, on a small stack or alone, held down
  * by tape, a pin, a clip or a staple, or by nothing at all.
@@ -11,6 +11,8 @@ import { dressCard, type Material } from '../lib/cardDressing';
  * - Everything else (tilt, where it lies, tint, ruling, edge, dog-ear, fastener and the
  *   one mark on it) comes from `seed` via src/lib/cardDressing.ts, so a card always
  *   looks the same and nothing moves on load.
+ * - A sheet with lines to write on carries `data-lined`, and its words keep to them
+ *   ("Words on the lines" in DOODAD_GUIDE.md).
  * - With `href`, the whole card is one link (its title); links in the body stay
  *   separately clickable above it.
  * - Slots: `media` above the title; `aside` for a small print taped into the bottom
@@ -67,6 +69,7 @@ const cardStyle = `--rot-c: ${dress.tilt.face}deg; --rot-a: ${dress.tilt.a}deg; 
     data-layers={String(dress.layers)}
     data-tint={dress.tint}
     data-ruling={dress.ruling}
+    data-lined={isLined(dress.ruling) ? '' : undefined}
     data-edge={dress.edge}
     data-fold={dress.fold ?? undefined}
     data-mark={mark?.kind}
