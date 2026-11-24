@@ -8,9 +8,11 @@ const browser = await puppeteer.launch({
   headless: true,
   args: ['--no-sandbox'],
 });
-// How far each mark reaches over its sheet, in rem, at either end of its turn and through
-// the whole of its motion: an edge mark `onto` the sheet from its top edge; a corner mark
-// `up` the sheet from its foot and `left` from its right edge. Runs in the page.
+// How far each mark reaches over its sheet, in rem: an edge mark `onto` the sheet from its
+// top edge; a corner mark `up` the sheet from its foot and `left` from its right edge.
+// Measured at either end of its turn and at moments sampled through its motion (loops
+// with no period in common are never seen in every combination, so it comes close to the
+// furthest reach without proving it). Runs in the page.
 function reachOf(marks) {
   return marks.map((mark) => {
     const card = mark.closest('.sc-card');
@@ -54,17 +56,18 @@ function reachOf(marks) {
           ].map(([x, y]) => new DOMPoint(x, y).matrixTransform(matrix));
           const xs = points.map((point) => point.x);
           const ys = points.map((point) => point.y);
-          const pad = (stroke * Math.hypot(matrix.a, matrix.b)) / 2;
+          const padY = (stroke * Math.hypot(matrix.b, matrix.d)) / 2;
+          const padX = (stroke * Math.hypot(matrix.a, matrix.c)) / 2;
           if (edge) {
-            worst.onto = Math.max(worst.onto, (Math.max(...ys) + pad - face.offsetTop) / rem);
+            worst.onto = Math.max(worst.onto, (Math.max(...ys) + padY - face.offsetTop) / rem);
           } else {
             worst.up = Math.max(
               worst.up,
-              (face.offsetTop + face.offsetHeight - Math.min(...ys) + pad) / rem
+              (face.offsetTop + face.offsetHeight - Math.min(...ys) + padY) / rem
             );
             worst.left = Math.max(
               worst.left,
-              (face.offsetLeft + face.offsetWidth - Math.min(...xs) + pad) / rem
+              (face.offsetLeft + face.offsetWidth - Math.min(...xs) + padX) / rem
             );
           }
         }
@@ -109,9 +112,9 @@ try {
               running: mark
                 .getAnimations({ subtree: true })
                 .filter((animation) => animation.playState === 'running').length,
-              // The observer watches a fifth of the window beyond each edge
+              // The observer watches a fifth of the window's width beyond each edge
               // (card-critters.ts); the card wholly above that strip is out of its reach.
-              gone: mark.closest('.sc-card').getBoundingClientRect().bottom < -0.2 * innerHeight,
+              gone: mark.closest('.sc-card').getBoundingClientRect().bottom < -0.2 * innerWidth,
             }))
           );
         const atTop = await critters();

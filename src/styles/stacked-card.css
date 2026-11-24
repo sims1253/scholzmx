@@ -1015,7 +1015,8 @@
 
   /* Critters walk the top edge itself, clear of the title below: they straddle it, and
      reach no more than 0.4rem onto the sheet. Each one's `top` was set by measuring that
-     at either end of its turn and through its motion; the smoke test measures it again. */
+     at either end of its turn and at sampled moments of its motion; the smoke test
+     measures it again. */
   .sc-mark-edge {
     top: -0.3rem;
     left: var(--mark-along, 40%);
