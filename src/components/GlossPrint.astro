@@ -276,6 +276,8 @@ const fit = Math.min(1, image.width / image.height);
   // Reduced motion turned on mid-visit: back to the still sheen.
   still.addEventListener('change', () => {
     if (!still.matches) return;
+    cancelAnimationFrame(frame);
+    frame = 0;
     for (const { sticker } of prints) {
       delete sticker.dataset.lit;
       sticker.style.removeProperty('--gloss-tilt-x');
