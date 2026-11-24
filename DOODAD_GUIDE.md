@@ -27,8 +27,10 @@ A mark has a home that the card keeps clear for it:
 - **Corner marks** (`ring`, `blot`, `thumb`, `stamp`, `pencil`, `tansy`, `mouse`) sit in
   the bottom-right corner. The card sets `data-zone`, and the footer line makes room.
   A card whose corner holds a taped photo gets no corner mark.
-- **Edge marks** (`ants`, `inchworm`, `ladybird`) walk along the top edge, in the strip
-  above the title, clear of a pin or a centre strip of tape.
+- **Edge marks** (`ants`, `inchworm`, `ladybird`, `snail`, `bee`, `beetle`, `moth`) walk
+  along the top edge, in the strip above the title, clear of a pin or a centre strip of
+  tape. Each waits a seeded while, does one small thing and comes back to its place;
+  nothing moves under reduced motion.
 
 Every mark is `aria-hidden` and ignores the pointer.
 
@@ -39,4 +41,4 @@ Every mark is `aria-hidden` and ignores the pointer.
 2. Draw it in `CardMark.astro` (a small inline SVG; `ink`, `thin` and `fill` take the
    current colour, so it follows the torch theme).
 3. Size and colour it in the marks section of `stacked-card.css`. A corner mark must fit
-   in 3.6rem by 2.4rem; an edge mark walks the top edge and must reach no more than 0.4rem onto the sheet.
+   in 3.6rem by 2.4rem, or reserve a taller footer line as the tansy does; an edge mark walks the top edge and must reach no more than 0.4rem onto the sheet.

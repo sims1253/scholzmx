@@ -953,6 +953,7 @@
 
   .sc-mark-mouse .glint {
     fill: #fff;
+    stroke: none;
   }
 
   .sc-mark-mouse .tail {
@@ -992,7 +993,7 @@
     inset: 0;
   }
 
-  .sc-mark .glint {
+  .sc-mark-edge .glint {
     fill: var(--sc-sheet);
     stroke: none;
   }
