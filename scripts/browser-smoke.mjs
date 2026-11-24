@@ -8,6 +8,8 @@ const browser = await puppeteer.launch({
   headless: true,
   args: ['--no-sandbox'],
 });
+const errors = [];
+
 // Each project's badge as laid out, without its set or its turn: whether it is a regular
 // hexagon with its point up and is cut to that hexagon, whether its picture is sized to
 // cover its face and keeps its own proportions, and whether any paper is left behind it.
@@ -52,7 +54,6 @@ function badgeState(badges) {
   });
 }
 
-const errors = [];
 try {
   const page = await browser.newPage();
   await page.setCacheEnabled(false);
@@ -141,11 +142,6 @@ try {
         assert.ok(Math.abs(portraits[1].ratio - 1066 / 1600) < 0.01);
       }
 
-      assert.equal(
-        await page.evaluate(() => document.documentElement.scrollWidth > innerWidth),
-        false,
-        `Horizontal overflow: ${path} at ${width}px`
-      );
       if (path === '/projects/') {
         // A project's mark is a badge: cut to one regular hexagon, its picture sized to
         // its face in its own proportions, with no paper behind it. The pictures are lazy:
@@ -214,6 +210,11 @@ try {
         await page.mouse.move(2, 2, { steps: 4 });
         await page.emulateMediaFeatures([]);
       }
+      assert.equal(
+        await page.evaluate(() => document.documentElement.scrollWidth > innerWidth),
+        false,
+        `Horizontal overflow: ${path} at ${width}px`
+      );
     }
   }
 
