@@ -84,9 +84,28 @@ function reachOf(marks) {
   });
 }
 
+// What moves in each critter besides its body (the "What the critters do" section of
+// stacked-card.css): a selector inside its drawing, or null where only the body moves.
+// The test holds it, so that a loop deleted from the stylesheet is missed here and not.
+const MOVES = {
+  ants: '.legs',
+  inchworm: null,
+  ladybird: '.legs',
+  bee: '.wing',
+  butterfly: '.wing',
+  dragonfly: null,
+  spider: '.legs',
+  snail: '.feelers',
+  beetle: '.legs',
+  cricket: '.feelers',
+  mouse: '.mouse-body, .tail',
+};
+
 // Each critter on a page, and its card. `stiff` counts its animations that never change
-// what their target paints: a loop written so that it does nothing. Runs in the page.
-function critterState(marks) {
+// what their target paints: a loop written so that it does nothing. `idle` counts the parts
+// that should move (MOVES) that nothing animates. `lost` counts animations the card has that
+// its copy does not. Runs in the page.
+function critterState(marks, moves) {
   const cards = [...document.querySelectorAll('.sc-card')];
   const pose = (element) => {
     const style = getComputedStyle(element);
@@ -104,7 +123,8 @@ function critterState(marks) {
     copy.style.cssText += ';position:fixed;left:-9999px;top:0';
     document.body.append(copy);
     let stiff = 0;
-    for (const animation of copy.getAnimations({ subtree: true })) {
+    const copyAnimations = copy.getAnimations({ subtree: true });
+    for (const animation of copyAnimations) {
       animation.pause();
       const target = animation.effect.target;
       const { duration } = animation.effect.getComputedTiming();
@@ -116,14 +136,22 @@ function critterState(marks) {
       }
       if (poses.size < 2) stiff += 1;
     }
+    const kind = card.dataset.mark;
+    const animated = new Set(copyAnimations.map((animation) => animation.effect.target));
+    // A critter the table does not know is one nobody said what moves in.
+    const parts = kind in moves && moves[kind] ? [...copy.querySelectorAll(moves[kind])] : [];
+    const idle = kind in moves ? parts.filter((element) => !animated.has(element)).length : 1;
+    const lost = mark.getAnimations({ subtree: true }).length - copyAnimations.length;
     copy.remove();
     return {
-      kind: card.dataset.mark,
+      kind,
       edge: mark.classList.contains('sc-mark-edge'),
       card: cards.indexOf(card),
       still: card.hasAttribute('data-still'),
       running,
       stiff,
+      idle,
+      lost,
       // The observer watches a fifth of the window's width beyond each edge
       // (card-critters.ts); the card wholly above that strip is out of its reach.
       gone: card.getBoundingClientRect().bottom < -0.2 * innerWidth,
@@ -131,23 +159,12 @@ function critterState(marks) {
   });
 }
 
-// The critters on a page: that they move, every part of each one, and only while their
-// card is on screen; that each keeps to its room; that a shelf deals them so that cards
-// near each other never share one.
+// The marks on a page keep to their room. The critters move, every part of each one, and
+// only while their card is on screen, and a shelf deals them so that cards near each other
+// never share one.
 async function checkCritters(page, path, width) {
-  const critters = () => page.$$eval('.sc-mark-edge, .sc-mark-mouse', critterState);
+  const critters = () => page.$$eval('.sc-mark-edge, .sc-mark-mouse', critterState, MOVES);
   const atTop = await critters();
-  assert.ok(
-    atTop.every(
-      (critter) =>
-        critter.stiff === 0 && (critter.still ? critter.running === 0 : critter.running > 0)
-    ) &&
-      (atTop.some((critter) => critter.running > 0) ||
-        !['/research/', '/projects/'].includes(path)),
-    `Critters moving, every part of each, on ${path} at ${width}px: ${JSON.stringify(atTop)}`
-  );
-  if (!atTop.length) return;
-
   // A critter keeps to the strip above the title, the tansy and the mouse to the room the
   // footer line leaves them.
   const reach = await page.$$eval('.sc-mark-edge, .sc-mark-tansy, .sc-mark-mouse', reachOf);
@@ -156,6 +173,20 @@ async function checkCritters(page, path, width) {
       mark.onto !== undefined ? mark.onto <= 0.4 : mark.up <= 2.4 && mark.left <= 3.6
     ),
     `A mark leaves its room on ${path} at ${width}px: ${JSON.stringify(reach)}`
+  );
+  if (!atTop.length) return;
+
+  assert.ok(
+    atTop.every(
+      (critter) =>
+        critter.stiff === 0 &&
+        critter.idle === 0 &&
+        critter.lost === 0 &&
+        (critter.still ? critter.running === 0 : critter.running > 0)
+    ) &&
+      (atTop.some((critter) => critter.running > 0) ||
+        !['/research/', '/projects/'].includes(path)),
+    `Critters moving, every part of each, on ${path} at ${width}px: ${JSON.stringify(atTop)}`
   );
 
   // The shelf deals its critters (cardDressing.ts): cards within three places of each

@@ -3,9 +3,15 @@ import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import StackedCard from '../components/StackedCard.astro';
 import { projects, projectName } from '../data/projects';
+import { critterPlaces, dealAt } from '../lib/cardDressing';
 
 // A tag's seed, and the board's: the board deals its critters from its first tag.
 const seedOf = (project: (typeof projects)[number]) => `project/${project.title}`;
+const seeds = projects.map(seedOf);
+const critterDeal = critterPlaces(
+  seeds.map((seed) => ({ seed })),
+  { material: 'tag' }
+);
 ---
 
 <BaseLayout title="Projects" description="Selected projects" tone="serious" layout="cards">
@@ -27,7 +33,7 @@ const seedOf = (project: (typeof projects)[number]) => `project/${project.title}
           subtitle={common}
           href={project.links[0]!.url}
           material="tag"
-          deal={{ index, shelf: seedOf(projects[0]!) }}
+          deal={dealAt(critterDeal, index, seeds[0]!)}
           layout="side"
           class="project-card"
         >

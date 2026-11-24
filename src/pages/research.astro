@@ -3,11 +3,17 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Series from '../components/Series.astro';
 import StackedCard from '../components/StackedCard.astro';
 import { publications } from '../data/publications';
+import { critterPlaces, dealAt } from '../lib/cardDressing';
 
 const SELF = 'Maximilian Scholz';
 // A card's seed, and the shelf's: the drawer deals its critters from its first card.
 const seedOf = (pub: (typeof publications)[number], index: number) =>
   `pub/${pub.year}/${index}/${pub.title}`;
+const seeds = publications.map(seedOf);
+const critterDeal = critterPlaces(
+  seeds.map((seed) => ({ seed })),
+  { material: 'index' }
+);
 const kindOf = (type: string) => (type === 'Journal' ? 'Journal article' : type);
 const linkLabel = (kind: string) => (kind === 'pdf' || kind === 'doi' ? kind.toUpperCase() : kind);
 ---
@@ -40,7 +46,7 @@ const linkLabel = (kind: string) => (kind === 'pdf' || kind === 'doi' ? kind.toU
         title={pub.title}
         href={pub.links.pdf ?? pub.links.doi ?? pub.links.code}
         material="index"
-        deal={{ index, shelf: seedOf(publications[0]!, 0) }}
+        deal={dealAt(critterDeal, index, seeds[0]!)}
         headingLevel={2}
       >
         <p class="pub-call" slot="media">

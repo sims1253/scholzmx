@@ -1,6 +1,7 @@
 ---
 import type { ImageMetadata } from 'astro';
 import StackedCard from './StackedCard.astro';
+import { critterPlaces, dealAt } from '../lib/cardDressing';
 import ImageFrame from './ImageFrame.astro';
 
 interface CardItem {
@@ -80,6 +81,13 @@ const tabStarts = (index: number) => {
   return tab !== undefined && tab !== items[index - 1]?.tab;
 };
 
+// The shelf deals its critters along itself: a card that draws one has its place among the
+// cards that do. A card with a photo taped to its corner takes no corner mark.
+const critterDeal = critterPlaces(
+  items.map((it) => ({ seed: `stack/${it.id}`, cornerTaken: Boolean(it.hero) })),
+  { material }
+);
+
 const inWords = (isoDay: string) =>
   new Date(`${isoDay}T00:00:00Z`).toLocaleDateString('en-GB', {
     day: 'numeric',
@@ -105,7 +113,7 @@ const inWords = (isoDay: string) =>
       href={it.href}
       material={material}
       layers={layers}
-      deal={{ index, shelf: `stack/${items[0]!.id}` }}
+      deal={dealAt(critterDeal, index, `stack/${items[0]!.id}`)}
       headingLevel={headingLevel}
     >
       {tabStarts(index) && <TabTag class="nc-tab" id={`tab-${it.tab}`} slot="tab">{it.tab}</TabTag>}

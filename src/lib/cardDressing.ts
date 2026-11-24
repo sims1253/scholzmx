@@ -83,9 +83,9 @@ export interface DressOptions {
   /** True when the bottom-right corner is taken (by a taped photo). */
   cornerTaken?: boolean;
   /**
-   * The card's place among the cards of its shelf, from 0, and the seed of the shelf's
-   * first card: between them they settle which critter a card that draws one carries
-   * (see dealCritter). Left out, the card's own seed settles it.
+   * For a card that draws a critter, its place among the shelf's cards that draw one, from
+   * 0, and the seed of the shelf's first card: between them they settle which critter it
+   * carries (see dealCritter). Left out, the card's own seed settles it.
    */
   deal?: { index: number; shelf: string };
 }
@@ -297,25 +297,32 @@ function fastenerOf(rng: Rng, material: Material): Fastener {
   return { kind };
 }
 
+const greatestCommonDivisor = (a: number, b: number): number =>
+  b === 0 ? a : greatestCommonDivisor(b, a % b);
+
 /**
  * A shelf deals its critters along itself. A card's seed still says whether it carries one;
- * which one is the shelf's to say: the card at `index` has the critter three places along
- * the shelf's from the one before it, from a start the shelf's first card's seed sets. So
- * two cards near each other never share one, and a shelf that deals as many critters as
- * there are kinds shows them all. (A card's own seed cannot do this: shifted or not, two
- * independent draws agree as often as ever.) Three places, or the next count that shares
- * no divisor with the number of critters, so that the deal comes round to each of them.
+ * which one is the shelf's to say. The cards that draw one take them in order: each has the
+ * critter three places along the shelf's list from the card that drew one before it, from
+ * a start the shelf's first card's seed sets. So a shelf shows as many kinds as it has
+ * cards that draw a critter, up to the number of kinds, and two such cards never share one
+ * until the deal has come round to every kind. (A card's own seed cannot do this: shifted
+ * or not, two independent draws agree as often as ever.) Three places, or the next count
+ * that shares no divisor with the number of critters, so that the deal does come round.
  */
-function dealCritter(material: Material, deal: { index: number; shelf: string }): EdgeMark {
+function dealCritter(
+  material: Material,
+  deal: { index: number; shelf: string },
+  drawn: EdgeMark
+): EdgeMark {
   const critters = MARK_WEIGHTS[material].flatMap(([mark]) =>
     mark !== 'none' && !isCorner(mark) ? [mark] : []
   );
-  const first = critters[0];
-  if (!first || critters.length < 2) return first ?? 'ants';
+  if (critters.length < 2) return drawn;
   let stride = 3;
-  while (critters.length % stride === 0) stride += 1;
+  while (greatestCommonDivisor(stride, critters.length) > 1) stride += 1;
   const start = createSeededRng(deal.shelf, 'card-v4:deal').betweenInt(0, critters.length - 1);
-  return critters[(start + stride * deal.index) % critters.length] ?? first;
+  return critters[(start + stride * deal.index) % critters.length] ?? drawn;
 }
 
 export function dressCard(seed: string, options: DressOptions = {}): Dressing {
@@ -353,7 +360,8 @@ export function dressCard(seed: string, options: DressOptions = {}): Dressing {
   if (marks) {
     const pool = MARK_WEIGHTS[material].filter(([kind]) => !(cornerTaken && isCorner(kind)));
     const drawn = weighted(marking, pool, 'none');
-    const kind = drawn !== 'none' && !isCorner(drawn) && deal ? dealCritter(material, deal) : drawn;
+    const kind =
+      drawn !== 'none' && !isCorner(drawn) && deal ? dealCritter(material, deal, drawn) : drawn;
     if (kind !== 'none') {
       let along = Math.round(marking.between(30, 60));
       // A pin or a centre strip of tape holds the middle of the top edge
@@ -394,4 +402,33 @@ export function dressCard(seed: string, options: DressOptions = {}): Dressing {
     fastener,
     mark,
   };
+}
+
+/**
+ * For a shelf's cards, in order, each one's place among the cards that draw a critter
+ * (undefined for the others), to pass to the card as its `deal.index` (see dealAt). A card
+ * is described as StackedCard dresses it: by its seed, and by whether its corner is taken.
+ */
+export function critterPlaces(
+  cards: readonly { seed: string; cornerTaken?: boolean }[],
+  options: { material?: Material } = {}
+): (number | undefined)[] {
+  let place = 0;
+  return cards.map((card) => {
+    const drawn = dressCard(card.seed, { ...options, cornerTaken: card.cornerTaken });
+    if (drawn.mark?.home !== 'edge') return undefined;
+    const at = place;
+    place += 1;
+    return at;
+  });
+}
+
+/** The `deal` for the card at `index` of a shelf, from the shelf's places (critterPlaces). */
+export function dealAt(
+  places: readonly (number | undefined)[],
+  index: number,
+  shelf: string
+): { index: number; shelf: string } | undefined {
+  const at = places[index];
+  return at === undefined ? undefined : { index: at, shelf };
 }
