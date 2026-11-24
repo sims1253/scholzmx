@@ -73,10 +73,16 @@
   margin: 0;
 }
 
+/* A pressed or focused link shows as a small plate (a:focus in base.css). The padding
+   gives the plate room beside the word; the margin takes the same room back out of the
+   row, so the words stay where the gap puts them. */
 .nav-link {
+  --nav-pad: min(0.6em, var(--nav-gap) / 2);
+
   position: relative;
   display: inline-block;
-  padding-block: 0.45rem;
+  margin-inline: calc(var(--nav-pad) * -1);
+  padding: 0.45rem var(--nav-pad);
   color: var(--color-text-secondary);
   text-decoration: none;
 }
