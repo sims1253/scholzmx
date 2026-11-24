@@ -30,20 +30,35 @@ function deskOf() {
   return { tooth: style.backgroundImage, faint: style.getPropertyValue('--paper-tooth-faint') };
 }
 
-// What a tile of noise is, wherever it was written: how fine it is, and the matrix that
-// makes grain of the noise. The last row of the matrix is the grain's strength.
-function grainOf(image) {
-  const tile = /baseFrequency='([^']*)'[\s\S]*?values='([^']*)'/.exec(image);
-  return tile ? `${tile[1]} ${tile[2]}` : null;
+// A tile of noise as text: the SVG of its data URI, decoded, its whitespace made one. Two
+// tiles are the same when all of them is, not only their frequency and their matrix.
+function tileOf(image) {
+  const data = /url\((["']?)(data:image\/svg\+xml,[\s\S]*?)\1\)/.exec(image ?? '');
+  if (!data) return null;
+  try {
+    return decodeURIComponent(data[2]).replace(/\s+/g, ' ');
+  } catch {
+    return null;
+  }
 }
 
-// Whether one tile is another at half the strength: all as the other but its last row.
+// A tile's matrix, the twenty numbers that turn its noise into grain, and the tile without
+// it. The last row of the matrix is the grain's strength.
+function matrixOf(tile) {
+  const cut = / values='([^']*)'/.exec(tile ?? '');
+  const matrix = cut?.[1].split(' ').map(Number);
+  return matrix?.length === 20 ? { matrix, rest: tile.replace(cut[0], '') } : null;
+}
+
+// Whether one tile is another at half the strength: the same tile in every other part.
 function halfStrength(one, other) {
-  const a = one.split(' ').map(Number);
-  const b = other.split(' ').map(Number);
+  const a = matrixOf(one);
+  const b = matrixOf(other);
   return (
-    a.length === b.length &&
-    a.every((value, at) => Math.abs(value - b[at] * (at >= a.length - 5 ? 0.5 : 1)) < 1e-9)
+    !!a &&
+    !!b &&
+    a.rest === b.rest &&
+    a.matrix.every((value, at) => Math.abs(value - b.matrix[at] * (at >= 15 ? 0.5 : 1)) < 1e-9)
   );
 }
 
@@ -93,7 +108,7 @@ try {
       const MOTTLE = "baseFrequency='.012'";
       const toothOf = (sheet) => {
         const teeth = sheet.images.flatMap((image, at) =>
-          image.includes(TOOTH) ? [[grainOf(image), sheet.sizes[at]]] : []
+          image.includes(TOOTH) ? [[tileOf(image), sheet.sizes[at]]] : []
         );
         return teeth.length === 1 ? teeth[0] : null;
       };
@@ -132,8 +147,8 @@ try {
         );
         const desk = await page.$eval('body', deskOf);
         const paper = await page.$$eval('.sc-card', paperOf);
-        const whole = grainOf(desk.tooth);
-        const faint = grainOf(desk.faint);
+        const whole = tileOf(desk.tooth);
+        const faint = tileOf(desk.faint);
         assert.ok(
           whole && faint,
           `A tile of the desk's noise is missing on ${path} at ${width}px, ${theme} by choice: ${JSON.stringify({ whole, faint })}`
