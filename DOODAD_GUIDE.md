@@ -11,7 +11,11 @@ happened to it. The same seed always gives the same card, so nothing flickers on
   sized so an overlap only reaches a neighbour's padding.
 - **The paper:** tint (plain, cream, sage, aged with foxing, grey), ruling (plain, margin
   line, ruled, squared, ring binder with punched holes), edge (cut, torn off a pad,
-  deckled) and sometimes a dog-eared corner.
+  deckled) and sometimes a dog-eared corner. Every sheet, and the sheets under it, has the
+  tooth of the desk it lies on (`--sc-tooth`: the desk's own tile from
+  `src/styles/paper.css`, by day at the desk's strength and by torchlight at half of it,
+  where light grain under pale ink costs most). An aged sheet is uneven too: broad, soft
+  patches of the foxing's ochre over about half of it, so that it keeps its colour.
 - **What holds it down:** one or two strips of tape (stock, angle, length and torn ends
   vary), a drawing pin, a paperclip, a staple, or nothing.
 - **One mark, or none:** drawn in `src/components/CardMark.astro`, in the footer ledge's

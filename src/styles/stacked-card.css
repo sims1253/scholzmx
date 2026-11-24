@@ -112,7 +112,15 @@
     flex: 1;
     flex-direction: column;
     border-radius: 2px;
-    background: var(--sc-print, none), var(--sc-age, none), var(--sc-rule, none), var(--sc-sheet);
+    /* Each layer carries its own place and size: the ruling may be one layer or two. The
+       tooth is the desk's own (src/styles/paper.css), so a sheet is the paper it lies on,
+       and its ruling lies in that tooth as printed ink would. */
+    background:
+      var(--sc-print, none),
+      var(--sc-age, none),
+      var(--sc-rule, none),
+      var(--sc-tooth) 0 0 / 256px 256px repeat,
+      var(--sc-sheet);
     border: 1px solid var(--sc-edge);
     box-shadow: var(--shadow-md);
     overflow: hidden; /* stains clip to the sheet */
@@ -136,7 +144,10 @@
     position: absolute;
     inset: -2px;
     border-radius: 2px;
-    background: var(--sc-sheet-back);
+    /* The sheets under the top one are paper too, and carry no words. */
+    background:
+      var(--sc-tooth) 0 0 / 256px 256px repeat,
+      var(--sc-sheet-back);
     border: 1px solid var(--sc-edge);
     box-shadow: var(--shadow-sm);
     z-index: -2;
@@ -395,10 +406,23 @@
     --sc-sheet: color-mix(in srgb, var(--sc-base) 92%, var(--color-iron));
   }
 
-  /* Aged paper: yellowed, with foxing spots */
+  /* The mottle of a sheet left long in the light: broad, soft patches of the foxing's own
+     ochre, a shade deeper than the rest of the sheet, over half of it at most, so that the
+     sheet keeps its colour. (The noise's alpha is one everywhere: its red channel is what
+     varies, and only where that runs above its middle does a patch show.) By torchlight the
+     patches are the ember of the ochre, and fainter. */
   .sc-card[data-tint='aged'] {
+    --sc-mottle: var(
+        --by-day,
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .23 0 0 0 0 .1 0 0 0 0 0 .55 0 0 0 -.3'/%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23m)'/%3E%3C/svg%3E")
+      )
+      var(
+        --by-torch,
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .91 0 0 0 0 .32 0 0 0 0 .06 .35 0 0 0 -.19'/%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23m)'/%3E%3C/svg%3E")
+      );
     --sc-sheet: color-mix(in srgb, var(--sc-base) 91%, var(--color-ochre));
     --sc-age:
+      var(--sc-mottle) 0 0 / 320px 320px repeat,
       radial-gradient(
         circle at 82% 22%,
         color-mix(in srgb, var(--color-ochre) 14%, transparent) 0 0.2rem,
@@ -417,6 +441,14 @@
   }
 
   .sc-card {
+    /* The tooth of a sheet is the desk's own (src/styles/paper.css): by day at the desk's
+       strength. By torchlight, where light grain under pale ink costs most, it is the same
+       tile at half the desk's strength. */
+    --sc-tooth: var(--by-day, var(--paper-tooth, none))
+      var(
+        --by-torch,
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 .1 0 0 0 -.035'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)'/%3E%3C/svg%3E")
+      );
     --sc-ruled-ink: color-mix(in srgb, var(--color-iron) 11%, transparent);
     --sc-margin-ink: color-mix(in srgb, var(--color-clay) 24%, transparent);
     --sc-margin-line: linear-gradient(var(--sc-margin-ink), var(--sc-margin-ink))

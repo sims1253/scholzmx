@@ -3,6 +3,26 @@ import { globSync } from 'node:fs';
 import puppeteer from 'puppeteer';
 import { site } from './address-check.mjs';
 
+// What each card is papered with, as the browser computed it: for the sheet on top and for
+// the one under it, the image of every layer of background and that layer's size. A data
+// URI holds commas of its own, so layers are split where a new one begins. Runs in the page.
+function paperOf(cards) {
+  const layers = (style) => ({
+    images: style.backgroundImage.split(
+      /,\s*(?=(?:url\("|(?:repeating-)?(?:linear|radial|conic)-gradient\(|none\b))/
+    ),
+    sizes: style.backgroundSize.split(', '),
+  });
+  return cards.map((card) => {
+    return {
+      tint: card.dataset.tint,
+      top: layers(getComputedStyle(card.querySelector('.sc-face'))),
+      // A card that is one sheet has only a shadow under it, not paper.
+      under: card.dataset.layers === '1' ? null : layers(getComputedStyle(card, '::before')),
+    };
+  });
+}
+
 const baseURL = process.env.SITE_TEST_URL || 'http://127.0.0.1:4321';
 const browser = await puppeteer.launch({
   headless: true,
@@ -40,6 +60,35 @@ try {
         assert.equal(button.description?.value, 'Activate to display another quote.');
         await client.detach();
       }
+      // A sheet is the desk's own rag paper: it carries the desk's tooth, one layer of it
+      // at its own size, whatever else is printed on the sheet; an aged one its mottle
+      // too; and so does the sheet under it. None of it is fetched.
+      const paper = await page.$$eval('.sc-card', paperOf);
+      const TOOTH = "baseFrequency='.7'";
+      const MOTTLE = "baseFrequency='.012'";
+      const toothed = (sheet) => {
+        const at = sheet.images.findIndex((image) => image.includes(TOOTH));
+        return at !== -1 && sheet.sizes[at] === '256px 256px';
+      };
+      assert.ok(
+        paper.every(
+          (card) =>
+            toothed(card.top) &&
+            card.top.sizes.filter((size) => size === '256px 256px').length === 1 &&
+            (!card.under ||
+              (toothed(card.under) &&
+                card.under.sizes.filter((size) => size === '256px 256px').length === 1)) &&
+            [...card.top.images, ...(card.under?.images ?? [])].every(
+              (image) => !/^url\(["']?(https?:|\/)/.test(image)
+            ) &&
+            (card.tint !== 'aged' ||
+              (() => {
+                const at = card.top.images.findIndex((image) => image.includes(MOTTLE));
+                return at !== -1 && card.top.sizes[at] === '320px 320px';
+              })())
+        ),
+        `A sheet off the desk's paper on ${path} at ${width}px: ${JSON.stringify(paper)}`
+      );
       if (path === '/') {
         const portraits = await page.$eval('.image-frame.clickable', async (frame) => {
           const bounds = frame.getBoundingClientRect();
