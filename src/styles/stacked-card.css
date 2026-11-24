@@ -450,13 +450,10 @@
 
   .sc-card {
     /* The tooth of a sheet is the desk's own (src/styles/paper.css): by day at the desk's
-       strength. By torchlight, where light grain under pale ink costs most, it is the same
-       tile at half the desk's strength. */
+       strength; by torchlight, where light grain under pale ink costs most, the desk's faint
+       tile, half of it. */
     --sc-tooth: var(--by-day, var(--paper-tooth, none))
-      var(
-        --by-torch,
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 .1 0 0 0 -.035'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)'/%3E%3C/svg%3E")
-      );
+      var(--by-torch, var(--paper-tooth-faint, none));
     --sc-ruled-ink: color-mix(in srgb, var(--color-iron) 11%, transparent);
     --sc-margin-ink: color-mix(in srgb, var(--color-clay) 24%, transparent);
     --sc-margin-line: linear-gradient(var(--sc-margin-ink), var(--sc-margin-ink))

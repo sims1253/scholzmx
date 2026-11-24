@@ -12,8 +12,9 @@ happened to it. The same seed always gives the same card, so nothing flickers on
 - **The paper:** tint (plain, cream, sage, aged with foxing, grey), ruling (plain, margin
   line, ruled, squared, ring binder with punched holes), edge (cut, torn off a pad,
   deckled) and sometimes a dog-eared corner. Every sheet, and the sheets under it, has the
-  tooth of the desk it lies on (`--sc-tooth`: the desk's own tile from
-  `src/styles/paper.css`, by day at the desk's strength and by torchlight at half of it,
+  tooth of the desk it lies on (`--sc-tooth`: by day the desk's own tile, by torchlight its
+  faint tile, `--paper-tooth-faint`; both are kept with the desk's in
+  `src/styles/paper.css`, and the faint one is the torchlit tile at half its strength,
   where light grain under pale ink costs most). An aged sheet is uneven too: broad, soft
   patches of the foxing's ochre over about half of it, so that it keeps its colour.
 - **What holds it down:** one or two strips of tape (stock, angle, length and torn ends

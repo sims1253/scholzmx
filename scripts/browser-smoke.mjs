@@ -23,6 +23,30 @@ function paperOf(cards) {
   });
 }
 
+// The desk's own tiles of noise, as the browser holds them in the theme at hand: the tooth
+// it is papered with, and its faint tile. Runs in the page.
+function deskOf() {
+  const style = getComputedStyle(document.body);
+  return { tooth: style.backgroundImage, faint: style.getPropertyValue('--paper-tooth-faint') };
+}
+
+// What a tile of noise is, wherever it was written: how fine it is, and the matrix that
+// makes grain of the noise. The last row of the matrix is the grain's strength.
+function grainOf(image) {
+  const tile = /baseFrequency='([^']*)'[\s\S]*?values='([^']*)'/.exec(image);
+  return tile ? `${tile[1]} ${tile[2]}` : null;
+}
+
+// Whether one tile is another at half the strength: all as the other but its last row.
+function halfStrength(one, other) {
+  const a = one.split(' ').map(Number);
+  const b = other.split(' ').map(Number);
+  return (
+    a.length === b.length &&
+    a.every((value, at) => Math.abs(value - b[at] * (at >= a.length - 5 ? 0.5 : 1)) < 1e-9)
+  );
+}
+
 const baseURL = process.env.SITE_TEST_URL || 'http://127.0.0.1:4321';
 const browser = await puppeteer.launch({
   headless: true,
@@ -60,33 +84,80 @@ try {
         assert.equal(button.description?.value, 'Activate to display another quote.');
         await client.detach();
       }
-      // A sheet is the desk's own rag paper: it carries the desk's tooth, one layer of it
-      // at its own size, whatever else is printed on the sheet; an aged one its mottle
-      // too; and so does the sheet under it. None of it is fetched.
-      const paper = await page.$$eval('.sc-card', paperOf);
+      // A sheet is the desk's own rag paper, in either theme: it carries the desk's tooth,
+      // one layer of it and no other, at its own size, whatever else is printed on the
+      // sheet; an aged one its mottle too; and so does the sheet under it. None of it is
+      // fetched. Both themes are tried by choice: left to the clock, a run by day would
+      // never see a broken torchlit sheet, nor one by torchlight a broken day sheet.
       const TOOTH = "baseFrequency='.7'";
       const MOTTLE = "baseFrequency='.012'";
-      const toothed = (sheet) => {
+      const toothOf = (sheet) => {
         const teeth = sheet.images.flatMap((image, at) =>
-          image.includes(TOOTH) ? [[image, sheet.sizes[at]]] : []
+          image.includes(TOOTH) ? [[grainOf(image), sheet.sizes[at]]] : []
         );
-        return teeth.length === 1 && teeth[0][1] === '256px 256px';
+        return teeth.length === 1 ? teeth[0] : null;
       };
-      assert.ok(
-        paper.every(
-          (card) =>
-            toothed(card.top) &&
-            (!card.under || toothed(card.under)) &&
-            [...card.top.images, ...(card.under?.images ?? [])].every(
-              (image) => !/^url\(["']?(https?:|\/)/.test(image)
-            ) &&
-            (card.tint !== 'aged' ||
-              (() => {
-                const at = card.top.images.findIndex((image) => image.includes(MOTTLE));
-                return at !== -1 && card.top.sizes[at] === '320px 320px';
-              })())
-        ),
-        `A sheet off the desk's paper on ${path} at ${width}px: ${JSON.stringify(paper)}`
+      const fetched = (card) =>
+        [...card.top.images, ...(card.under?.images ?? [])].filter((image) =>
+          /^url\(["']?(https?:|\/)/.test(image)
+        );
+      const mottleOf = (card) => {
+        const at = card.top.images.findIndex((image) => image.includes(MOTTLE));
+        return at === -1 ? null : card.top.sizes[at];
+      };
+      const papered = (card, tooth) => {
+        const teeth = (card.under ? [card.top, card.under] : [card.top]).map(toothOf);
+        return (
+          teeth.every((own) => own && own[0] === tooth && own[1] === '256px 256px') &&
+          fetched(card).length === 0 &&
+          (card.tint !== 'aged' || mottleOf(card) === '320px 320px')
+        );
+      };
+      // A card as the check reads it, for when it is off.
+      const told = (card, tooth) => ({
+        tint: card.tint,
+        teeth: (card.under ? [card.top, card.under] : [card.top]).map((sheet) => {
+          const own = toothOf(sheet);
+          return own && `${own[0] === tooth ? "the desk's tile" : 'another tile'} at ${own[1]}`;
+        }),
+        mottle: card.tint === 'aged' ? mottleOf(card) : undefined,
+        fetched: fetched(card),
+      });
+      const was = await page.$eval('html', (element) => element.getAttribute('data-theme'));
+      for (const theme of ['light', 'dark']) {
+        await page.$eval(
+          'html',
+          (element, theme) => element.setAttribute('data-theme', theme),
+          theme
+        );
+        const desk = await page.$eval('body', deskOf);
+        const paper = await page.$$eval('.sc-card', paperOf);
+        const whole = grainOf(desk.tooth);
+        const faint = grainOf(desk.faint);
+        assert.ok(
+          whole && faint,
+          `A tile of the desk's noise is missing on ${path} at ${width}px, ${theme} by choice: ${JSON.stringify({ whole, faint })}`
+        );
+        // The faint tile is the desk's torchlit one at half the strength.
+        assert.ok(
+          theme === 'light' || halfStrength(faint, whole),
+          `The desk's faint tile is not its torchlit one at half the strength on ${path} at ${width}px: ${JSON.stringify({ whole, faint })}`
+        );
+        // The tooth a sheet carries is the desk's own: its tile by day, its faint one by
+        // torchlight.
+        const tooth = theme === 'dark' ? faint : whole;
+        assert.ok(
+          paper.every((card) => papered(card, tooth)),
+          `A sheet off the desk's paper on ${path} at ${width}px, ${theme} by choice: ${JSON.stringify(paper.map((card) => told(card, tooth)))}`
+        );
+      }
+      await page.$eval(
+        'html',
+        (element, was) => {
+          if (was === null) element.removeAttribute('data-theme');
+          else element.setAttribute('data-theme', was);
+        },
+        was
       );
       if (path === '/') {
         const portraits = await page.$eval('.image-frame.clickable', async (frame) => {
