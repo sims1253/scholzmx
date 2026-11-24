@@ -8,71 +8,6 @@ const browser = await puppeteer.launch({
   headless: true,
   args: ['--no-sandbox'],
 });
-// How each sheet with lines keeps its writing to them. A zero-height inline-block set after
-// each word has its bottom edge on that line's baseline, which belongs a pixel above the
-// top edge of a rule. Runs in the page.
-function linesOnRules(lined) {
-  const style = document.createElement('style');
-  style.textContent =
-    '* { transition: none !important; animation: none !important } .line-mark { display: inline-block; width: 0; height: 0 }';
-  document.head.append(style);
-  return lined.map((card) => {
-    // Lay the sheet flat, so its own coordinates are the page's.
-    card.style.setProperty('--sc-turn', '0deg');
-    card.style.setProperty('--sc-lift', '0px');
-    const content = card.querySelector('.sc-content');
-    const face = card.querySelector('.sc-face');
-    const pitch = Number.parseFloat(getComputedStyle(content).lineHeight);
-    // Squared paper has a line to half a pitch: the writing sits on every other one.
-    const period = card.dataset.ruling === 'squared' ? pitch / 2 : pitch;
-    // The sheet's colour is the last layer painted on its face; its lines come just before,
-    // a tile that starts at its first line. The face has a 1px border above it.
-    const lines = getComputedStyle(face).backgroundPosition.split(',').at(-2);
-    const firstRule = 1 + Number.parseFloat(lines.trim().split(' ')[1]);
-    const texts = [];
-    const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT);
-    for (let node = walker.nextNode(); node; node = walker.nextNode()) texts.push(node);
-    for (const node of texts) {
-      if (!/\S/.test(node.data)) continue;
-      const words = document.createDocumentFragment();
-      node.data.split(/(\s+)/).forEach((part, index) => {
-        if (index % 2) words.append(part);
-        else if (part) {
-          words.append(part);
-          const mark = document.createElement('i');
-          mark.className = 'line-mark';
-          words.append(mark);
-        }
-      });
-      node.replaceWith(words);
-    }
-    const top = card.getBoundingClientRect().top;
-    const off = [...content.querySelectorAll('.line-mark')].map((mark) => {
-      const baseline = mark.getBoundingClientRect().bottom - top;
-      const distance = (((baseline + 1 - firstRule) % period) + period) % period;
-      return Math.abs(distance > period / 2 ? distance - period : distance);
-    });
-    const height = card.offsetHeight;
-    const remainder = ((height % pitch) + pitch) % pitch;
-    // How much of its words the face cuts off. It keeps stains to the sheet, so it is also
-    // what clips words that do not fit; a stain running off the edge is meant to.
-    const cutOff = () => content.offsetHeight - face.clientHeight;
-    const overflow = cutOff();
-    // Nor when its row allows less than its words: clamped hard, the sheet keeps them.
-    card.style.maxHeight = '1px';
-    const clamped = cutOff();
-    card.style.removeProperty('max-height');
-    return {
-      ruling: card.dataset.ruling,
-      title: content.querySelector('.sc-title')?.textContent.trim().slice(0, 30),
-      lines: off.length,
-      off: Math.round(Math.max(0, ...off) * 100) / 100,
-      heightOff: Math.round(Math.min(remainder, pitch - remainder) * 100) / 100,
-      overflow: Math.round(Math.max(overflow, clamped) * 100) / 100,
-    };
-  });
-}
-
 const errors = [];
 try {
   const page = await browser.newPage();
@@ -85,6 +20,71 @@ try {
     .filter((path) => path !== 'index.html')
     .map((path) => `/blog/${path.replace(/index\.html$/, '')}`);
   const paths = ['/', '/blog/', '/recipes/', '/research/', '/projects/', ...blogPaths];
+  // How each sheet with lines keeps its writing to them. A zero-height inline-block set after
+  // each word has its bottom edge on that line's baseline, which belongs a pixel above the
+  // top edge of a rule. Runs in the page.
+  function linesOnRules(lined) {
+    const style = document.createElement('style');
+    style.textContent =
+      '* { transition: none !important; animation: none !important } .line-mark { display: inline-block; width: 0; height: 0 }';
+    document.head.append(style);
+    return lined.map((card) => {
+      // Lay the sheet flat, so its own coordinates are the page's.
+      card.style.setProperty('--sc-turn', '0deg');
+      card.style.setProperty('--sc-lift', '0px');
+      const content = card.querySelector('.sc-content');
+      const face = card.querySelector('.sc-face');
+      const pitch = Number.parseFloat(getComputedStyle(content).lineHeight);
+      // Squared paper has a line to half a pitch: the writing sits on every other one.
+      const period = card.dataset.ruling === 'squared' ? pitch / 2 : pitch;
+      // The sheet's colour is the last layer painted on its face; its lines come just before,
+      // a tile that starts at its first line. The face has a 1px border above it.
+      const lines = getComputedStyle(face).backgroundPosition.split(',').at(-2);
+      const firstRule = 1 + Number.parseFloat(lines.trim().split(' ')[1]);
+      const texts = [];
+      const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT);
+      for (let node = walker.nextNode(); node; node = walker.nextNode()) texts.push(node);
+      for (const node of texts) {
+        if (!/\S/.test(node.data)) continue;
+        const words = document.createDocumentFragment();
+        node.data.split(/(\s+)/).forEach((part, index) => {
+          if (index % 2) words.append(part);
+          else if (part) {
+            words.append(part);
+            const mark = document.createElement('i');
+            mark.className = 'line-mark';
+            words.append(mark);
+          }
+        });
+        node.replaceWith(words);
+      }
+      const top = card.getBoundingClientRect().top;
+      const off = [...content.querySelectorAll('.line-mark')].map((mark) => {
+        const baseline = mark.getBoundingClientRect().bottom - top;
+        const distance = (((baseline + 1 - firstRule) % period) + period) % period;
+        return Math.abs(distance > period / 2 ? distance - period : distance);
+      });
+      const height = card.offsetHeight;
+      const remainder = ((height % pitch) + pitch) % pitch;
+      // How much of its words the face cuts off. It keeps stains to the sheet, so it is also
+      // what clips words that do not fit; a stain running off the edge is meant to.
+      const cutOff = () => content.offsetHeight - face.clientHeight;
+      const overflow = cutOff();
+      // Nor when its row allows less than its words: clamped hard, the sheet keeps them.
+      card.style.maxHeight = '1px';
+      const clamped = cutOff();
+      card.style.removeProperty('max-height');
+      return {
+        ruling: card.dataset.ruling,
+        title: content.querySelector('.sc-title')?.textContent.trim().slice(0, 30),
+        lines: off.length,
+        off: Math.round(Math.max(0, ...off) * 100) / 100,
+        heightOff: Math.round(Math.min(remainder, pitch - remainder) * 100) / 100,
+        overflow: Math.round(Math.max(overflow, clamped) * 100) / 100,
+      };
+    });
+  }
+
   for (const width of [1440, 1280, 390]) {
     await page.setViewport({ width, height: 844 });
     for (const path of paths) {
