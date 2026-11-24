@@ -26,6 +26,9 @@ interface Props {
   layers?: 1 | 2 | 3 | 4;
   // False leaves the card unmarked (no stains, no critters).
   marks?: boolean;
+  // The card's place among the cards of its shelf, from 0, and the seed of the shelf's
+  // first card: the shelf deals its critters along it. Left out, the card's seed draws one.
+  deal?: { index: number; shelf: string };
   class?: string;
   layout?: 'stacked' | 'side';
   // Heading level for accessibility (defaults to h2 for proper document outline)
@@ -40,6 +43,7 @@ const {
   material = 'paper',
   layers,
   marks = true,
+  deal,
   class: className,
   layout = 'stacked',
   headingLevel = 2,
@@ -49,7 +53,7 @@ const HeadingTag = `h${headingLevel}` as const;
 
 // A slot filled by a false expression still counts as present, so look at what it holds.
 const aside = Astro.slots.has('aside') ? (await Astro.slots.render('aside')).trim() : '';
-const dress = dressCard(seed, { material, layers, marks, cornerTaken: aside !== '' });
+const dress = dressCard(seed, { material, layers, marks, deal, cornerTaken: aside !== '' });
 const { mark, fastener } = dress;
 // Stains lie in the paper; flowers and critters sit on top of it and may overhang.
 const inPaper = mark && ['ring', 'blot', 'thumb', 'stamp', 'pencil'].includes(mark.kind);

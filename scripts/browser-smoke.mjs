@@ -84,6 +84,117 @@ function reachOf(marks) {
   });
 }
 
+// Each critter on a page, and its card. `stiff` counts its animations that never change
+// what their target paints: a loop written so that it does nothing. Runs in the page.
+function critterState(marks) {
+  const cards = [...document.querySelectorAll('.sc-card')];
+  const pose = (element) => {
+    const style = getComputedStyle(element);
+    return [style.transform, style.translate, style.rotate, style.scale].join(' ');
+  };
+  return marks.map((mark) => {
+    const card = mark.closest('.sc-card');
+    const running = mark
+      .getAnimations({ subtree: true })
+      .filter((animation) => animation.playState === 'running').length;
+    // Each loop is tried out on a copy of the drawing, off the page. A pause or a play
+    // called on the card's own animations would leave them deaf to the stylesheet that
+    // stills them.
+    const copy = mark.cloneNode(true);
+    copy.style.cssText += ';position:fixed;left:-9999px;top:0';
+    document.body.append(copy);
+    let stiff = 0;
+    for (const animation of copy.getAnimations({ subtree: true })) {
+      animation.pause();
+      const target = animation.effect.target;
+      const { duration } = animation.effect.getComputedTiming();
+      const back = animation.effect.getTiming().direction.includes('alternate') ? 2 : 1;
+      const poses = new Set();
+      for (let step = 0; step <= 12; step += 1) {
+        animation.currentTime = (duration * back * step) / 12;
+        poses.add(pose(target));
+      }
+      if (poses.size < 2) stiff += 1;
+    }
+    copy.remove();
+    return {
+      kind: card.dataset.mark,
+      edge: mark.classList.contains('sc-mark-edge'),
+      card: cards.indexOf(card),
+      still: card.hasAttribute('data-still'),
+      running,
+      stiff,
+      // The observer watches a fifth of the window's width beyond each edge
+      // (card-critters.ts); the card wholly above that strip is out of its reach.
+      gone: card.getBoundingClientRect().bottom < -0.2 * innerWidth,
+    };
+  });
+}
+
+// The critters on a page: that they move, every part of each one, and only while their
+// card is on screen; that each keeps to its room; that a shelf deals them so that cards
+// near each other never share one.
+async function checkCritters(page, path, width) {
+  const critters = () => page.$$eval('.sc-mark-edge, .sc-mark-mouse', critterState);
+  const atTop = await critters();
+  assert.ok(
+    atTop.every(
+      (critter) =>
+        critter.stiff === 0 && (critter.still ? critter.running === 0 : critter.running > 0)
+    ) &&
+      (atTop.some((critter) => critter.running > 0) ||
+        !['/research/', '/projects/'].includes(path)),
+    `Critters moving, every part of each, on ${path} at ${width}px: ${JSON.stringify(atTop)}`
+  );
+  if (!atTop.length) return;
+
+  // A critter keeps to the strip above the title, the tansy and the mouse to the room the
+  // footer line leaves them.
+  const reach = await page.$$eval('.sc-mark-edge, .sc-mark-tansy, .sc-mark-mouse', reachOf);
+  assert.ok(
+    reach.every((mark) =>
+      mark.onto !== undefined ? mark.onto <= 0.4 : mark.up <= 2.4 && mark.left <= 3.6
+    ),
+    `A mark leaves its room on ${path} at ${width}px: ${JSON.stringify(reach)}`
+  );
+
+  // The shelf deals its critters (cardDressing.ts): cards within three places of each
+  // other never share one.
+  const edge = atTop.filter((critter) => critter.edge);
+  const shared = edge.filter((critter, index) =>
+    edge
+      .slice(index + 1)
+      .some((other) => other.kind === critter.kind && other.card - critter.card <= 3)
+  );
+  assert.ok(
+    shared.length === 0,
+    `One critter for cards near each other on ${path} at ${width}px: ${JSON.stringify(shared)}`
+  );
+
+  // On a phone the cards stack, so the ones at the top are scrolled out of view for good:
+  // one that was moving has come to rest. A page whose critters all stay near the foot of
+  // the page cannot show it; the research and project shelves always have one that leaves.
+  if (width !== 390) return;
+  await page.evaluate(() =>
+    window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' })
+  );
+  let below;
+  for (let waited = 0; ; waited += 50) {
+    below = await critters();
+    const left = below.filter((critter, i) => atTop[i].running > 0 && critter.gone);
+    const canLeave = left.length > 0 || !['/research/', '/projects/'].includes(path);
+    if (canLeave && left.every((critter) => critter.still && !critter.running)) {
+      break;
+    }
+    assert.ok(
+      waited < 2000,
+      `Critters at rest once scrolled past on ${path}: ${JSON.stringify({ atTop, below })}`
+    );
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  }
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+}
+
 const errors = [];
 try {
   const page = await browser.newPage();
@@ -102,61 +213,7 @@ try {
       const response = await page.goto(`${baseURL}${path}`, { waitUntil: 'networkidle0' });
       assert.equal(response.status(), 200, path);
       assert.ok(await page.title(), `Missing title: ${path}`);
-      if (path === '/research/' || path === '/projects/') {
-        // The critters on these shelves move, and only while their card is on screen: a
-        // card the script has marked still has nothing running.
-        const critters = () =>
-          page.$$eval('.sc-mark-edge, .sc-mark-mouse', (marks) =>
-            marks.map((mark) => ({
-              still: mark.closest('.sc-card').hasAttribute('data-still'),
-              running: mark
-                .getAnimations({ subtree: true })
-                .filter((animation) => animation.playState === 'running').length,
-              // The observer watches a fifth of the window's width beyond each edge
-              // (card-critters.ts); the card wholly above that strip is out of its reach.
-              gone: mark.closest('.sc-card').getBoundingClientRect().bottom < -0.2 * innerWidth,
-            }))
-          );
-        const atTop = await critters();
-        assert.ok(
-          atTop.length > 0 &&
-            atTop.every((critter) =>
-              critter.still ? critter.running === 0 : critter.running > 0
-            ) &&
-            atTop.some((critter) => critter.running > 0),
-          `Critters moving on ${path} at ${width}px: ${JSON.stringify(atTop)}`
-        );
-        // A critter keeps to the strip above the title, the tansy and the mouse to the
-        // room the footer line leaves them.
-        const reach = await page.$$eval('.sc-mark-edge, .sc-mark-tansy, .sc-mark-mouse', reachOf);
-        assert.ok(
-          reach.every((mark) =>
-            mark.onto !== undefined ? mark.onto <= 0.4 : mark.up <= 2.4 && mark.left <= 3.6
-          ),
-          `A mark leaves its room on ${path} at ${width}px: ${JSON.stringify(reach)}`
-        );
-        // On a phone the cards stack, so the ones at the top are scrolled out of view
-        // for good: one that was moving has come to rest.
-        if (width === 390) {
-          await page.evaluate(() =>
-            window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' })
-          );
-          let below;
-          for (let waited = 0; ; waited += 50) {
-            below = await critters();
-            const left = below.filter((critter, i) => atTop[i].running > 0 && critter.gone);
-            if (left.length > 0 && left.every((critter) => critter.still && !critter.running)) {
-              break;
-            }
-            assert.ok(
-              waited < 2000,
-              `Critters at rest once scrolled past on ${path}: ${JSON.stringify({ atTop, below })}`
-            );
-            await new Promise((resolve) => setTimeout(resolve, 50));
-          }
-          await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
-        }
-      }
+      await checkCritters(page, path, width);
       if (path === '/' && width === 1440) {
         const client = await page.createCDPSession();
         const { root } = await client.send('DOM.getDocument');

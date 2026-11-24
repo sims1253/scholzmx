@@ -82,6 +82,12 @@ export interface DressOptions {
   marks?: boolean;
   /** True when the bottom-right corner is taken (by a taped photo). */
   cornerTaken?: boolean;
+  /**
+   * The card's place among the cards of its shelf, from 0, and the seed of the shelf's
+   * first card: between them they settle which critter a card that draws one carries
+   * (see dealCritter). Left out, the card's own seed settles it.
+   */
+  deal?: { index: number; shelf: string };
 }
 
 const CORNER_MARKS: readonly CornerMark[] = [
@@ -99,34 +105,36 @@ const isCorner = (kind: MarkKind | 'none'): kind is CornerMark =>
 /** Choices with their weights, drawn with one roll */
 type Weights<K> = readonly (readonly [K, number])[];
 
-/** What turns up on each shelf. A cup ring is likelier on a recipe card, a library's date
- * stamp only on a catalogue card, and things with wings where there is something to eat. */
+/** What turns up on each shelf. Critters are the likeliest mark on writing paper; a cup
+ * ring on a recipe card, a library's date stamp on a catalogue card. A card with a taped
+ * photo takes no corner mark, which makes its critter that much likelier. Whether a card
+ * carries a mark at all is its seed's to say; which critter is the shelf's (dealCritter). */
 const MARK_WEIGHTS: Record<Material, Weights<MarkKind | 'none'>> = {
   paper: [
-    ['ring', 10],
-    ['blot', 8],
-    ['thumb', 6],
-    ['tansy', 10],
-    ['pencil', 6],
-    ['mouse', 9],
+    ['ring', 6],
+    ['blot', 5],
+    ['thumb', 4],
+    ['tansy', 7],
+    ['pencil', 5],
+    ['mouse', 6],
     ['ants', 6],
     ['inchworm', 6],
     ['ladybird', 5],
     ['bee', 6],
     ['butterfly', 5],
-    ['dragonfly', 4],
+    ['dragonfly', 5],
     ['spider', 5],
     ['snail', 5],
     ['beetle', 5],
     ['cricket', 5],
-    ['none', 14],
+    ['none', 10],
   ],
   recipe: [
-    ['ring', 16],
-    ['thumb', 10],
+    ['ring', 14],
+    ['thumb', 8],
     ['blot', 6],
     ['tansy', 9],
-    ['mouse', 13],
+    ['mouse', 12],
     ['ants', 7],
     ['inchworm', 5],
     ['ladybird', 5],
@@ -134,24 +142,24 @@ const MARK_WEIGHTS: Record<Material, Weights<MarkKind | 'none'>> = {
     ['butterfly', 5],
     ['snail', 6],
     ['beetle', 4],
-    ['none', 18],
+    ['none', 16],
   ],
   index: [
-    ['stamp', 28],
-    ['ring', 9],
-    ['pencil', 14],
-    ['thumb', 7],
-    ['ants', 7],
-    ['ladybird', 4],
-    ['spider', 4],
-    ['beetle', 4],
-    ['none', 20],
+    ['stamp', 24],
+    ['ring', 8],
+    ['pencil', 12],
+    ['thumb', 6],
+    ['ants', 8],
+    ['ladybird', 6],
+    ['spider', 6],
+    ['beetle', 6],
+    ['none', 22],
   ],
   tag: [
-    ['ring', 9],
-    ['blot', 7],
-    ['tansy', 9],
-    ['mouse', 9],
+    ['ring', 8],
+    ['blot', 6],
+    ['tansy', 8],
+    ['mouse', 8],
     ['inchworm', 9],
     ['ants', 8],
     ['ladybird', 6],
@@ -159,7 +167,7 @@ const MARK_WEIGHTS: Record<Material, Weights<MarkKind | 'none'>> = {
     ['dragonfly', 6],
     ['cricket', 6],
     ['snail', 5],
-    ['none', 25],
+    ['none', 20],
   ],
 };
 
@@ -289,8 +297,29 @@ function fastenerOf(rng: Rng, material: Material): Fastener {
   return { kind };
 }
 
+/**
+ * A shelf deals its critters along itself. A card's seed still says whether it carries one;
+ * which one is the shelf's to say: the card at `index` has the critter three places along
+ * the shelf's from the one before it, from a start the shelf's first card's seed sets. So
+ * two cards near each other never share one, and a shelf that deals as many critters as
+ * there are kinds shows them all. (A card's own seed cannot do this: shifted or not, two
+ * independent draws agree as often as ever.) Three places, or the next count that shares
+ * no divisor with the number of critters, so that the deal comes round to each of them.
+ */
+function dealCritter(material: Material, deal: { index: number; shelf: string }): EdgeMark {
+  const critters = MARK_WEIGHTS[material].flatMap(([mark]) =>
+    mark !== 'none' && !isCorner(mark) ? [mark] : []
+  );
+  const first = critters[0];
+  if (!first || critters.length < 2) return first ?? 'ants';
+  let stride = 3;
+  while (critters.length % stride === 0) stride += 1;
+  const start = createSeededRng(deal.shelf, 'card-v4:deal').betweenInt(0, critters.length - 1);
+  return critters[(start + stride * deal.index) % critters.length] ?? first;
+}
+
 export function dressCard(seed: string, options: DressOptions = {}): Dressing {
-  const { material = 'paper', marks = true, cornerTaken = false } = options;
+  const { material = 'paper', marks = true, cornerTaken = false, deal } = options;
   const place = createSeededRng(seed, 'card-v4:place');
   const paper = createSeededRng(seed, 'card-v4:paper');
   const marking = createSeededRng(seed, 'card-v4:marks');
@@ -323,7 +352,8 @@ export function dressCard(seed: string, options: DressOptions = {}): Dressing {
   let mark: Mark | null = null;
   if (marks) {
     const pool = MARK_WEIGHTS[material].filter(([kind]) => !(cornerTaken && isCorner(kind)));
-    const kind = weighted(marking, pool, 'none');
+    const drawn = weighted(marking, pool, 'none');
+    const kind = drawn !== 'none' && !isCorner(drawn) && deal ? dealCritter(material, deal) : drawn;
     if (kind !== 'none') {
       let along = Math.round(marking.between(30, 60));
       // A pin or a centre strip of tape holds the middle of the top edge

@@ -1615,12 +1615,12 @@
   @keyframes sc-open-and-shut {
     0%,
     100% {
-      transform: scale(1 1);
+      transform: scale(1, 1);
     }
 
     45%,
     60% {
-      transform: scale(0.2 1);
+      transform: scale(0.2, 1);
     }
   }
 

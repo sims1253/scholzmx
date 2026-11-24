@@ -3,6 +3,9 @@ import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import StackedCard from '../components/StackedCard.astro';
 import { projects, projectName } from '../data/projects';
+
+// A tag's seed, and the board's: the board deals its critters from its first tag.
+const seedOf = (project: (typeof projects)[number]) => `project/${project.title}`;
 ---
 
 <BaseLayout title="Projects" description="Selected projects" tone="serious" layout="cards">
@@ -19,11 +22,12 @@ import { projects, projectName } from '../data/projects';
       {projects.map((project, index) => {
         const { name, common } = projectName(project.title);
         return <StackedCard
-          seed={`project/${project.title}`}
+          seed={seedOf(project)}
           title={name}
           subtitle={common}
           href={project.links[0]!.url}
           material="tag"
+          deal={{ index, shelf: seedOf(projects[0]!) }}
           layout="side"
           class="project-card"
         >

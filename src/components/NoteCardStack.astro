@@ -105,6 +105,7 @@ const inWords = (isoDay: string) =>
       href={it.href}
       material={material}
       layers={layers}
+      deal={{ index, shelf: `stack/${items[0]!.id}` }}
       headingLevel={headingLevel}
     >
       {tabStarts(index) && <TabTag class="nc-tab" id={`tab-${it.tab}`} slot="tab">{it.tab}</TabTag>}

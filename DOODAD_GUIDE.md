@@ -19,8 +19,22 @@ happened to it. The same seed always gives the same card, so nothing flickers on
   down as a naturalist would, with a fine pen line, a wash of colour beneath it and a
   stipple where the fur or the wing is, which reads as texture at the size they sit.
 
-Each shelf has its own weights: a cup ring turns up more on recipe cards, a library date
-stamp only on catalogue cards, and tags hang from their strings instead of being taped.
+Each shelf has its own weights: critters are the likeliest mark on writing paper, a cup
+ring turns up more on recipe cards, a library date stamp only on catalogue cards, and tags
+hang from their strings instead of being taped.
+
+## Which card gets which
+
+A card's seed draws whether it carries a mark, and of what kind, from its shelf's weights
+(`MARK_WEIGHTS` in `src/lib/cardDressing.ts`).
+
+Which critter is not the card's own to draw. A shelf deals its critters along itself
+(`dealCritter`): a card that draws one takes the critter three places along the shelf's
+list from the card before it, from a start the shelf's first card's seed sets. So two
+cards near each other never share a critter, and a shelf with as many critters as there
+are kinds shows them all. (A card's own seed could not: shifted or not, two independent
+draws agree as often as ever.) Each shelf passes its cards' places and its first card's
+seed to the card (`deal`); dressed without them, a card draws its critter from its seed.
 
 ## Marks never cover words
 
@@ -60,3 +74,6 @@ only while its card is on screen or near the edge of the window
 4. If it moves, give each part that moves its own group in the drawing and animate that
    group (`transform-box: fill-box`, so it turns about its own middle or edge). The "What
    the critters do" section of `stacked-card.css` has the loops; keep them small and slow.
+   `bun run test:browser` steps every loop of every critter the pages draw through itself
+   and fails on one that changes nothing. Mind that `scale()` inside `transform` takes a
+   comma between its two values, where the `scale` property takes a space.
