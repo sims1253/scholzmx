@@ -1,7 +1,7 @@
 ---
-import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import StackedCard from '../components/StackedCard.astro';
+import GlossPrint from '../components/GlossPrint.astro';
 import { projects, projectName } from '../data/projects';
 ---
 
@@ -14,7 +14,7 @@ import { projects, projectName } from '../data/projects';
       </p>
     </header>
 
-    {/* Workshop tags on a board: each tool hangs by its string, its print pasted on. */}
+    {/* Workshop tags on a board: each tool hangs by its string, its sticker stuck on. */}
     <div class="project-cards sc-desk">
       {projects.map((project, index) => {
         const { name, common } = projectName(project.title);
@@ -27,16 +27,13 @@ import { projects, projectName } from '../data/projects';
           layout="side"
           class="project-card"
         >
-          <div slot="media" class="project-logo pasted">
-            <Image
-              src={project.banner}
-              alt=""
-              width={160}
-              densities={[1, 2]}
-              loading={index < 4 ? 'eager' : 'lazy'}
-              decoding="async"
-            />
-          </div>
+          <GlossPrint
+            slot="media"
+            image={project.banner}
+            relief={project.relief}
+            turn="calc(var(--rot-b, 1deg) * 1.5)"
+            loading={index < 4 ? 'eager' : 'lazy'}
+          />
           <p class="project-description">{project.description}</p>
           <div class="sc-meta">
             <p class="project-meta">{project.tech.join(', ')}, {project.year}.</p>
@@ -80,46 +77,18 @@ import { projects, projectName } from '../data/projects';
     color: var(--sc-moss);
   }
 
-  /* The print sits at the tag's left, beside the eyelet; the words take the rest. */
+  /* The sticker sits at the tag's left, beside the eyelet; the words take the rest. */
   :global(.project-card .sc-row) {
     grid-template-columns: 7.5rem minmax(0, 1fr);
     gap: var(--space-md);
   }
 
+  :global(.project-card .gloss-print) {
+    margin-top: 0.25rem;
+  }
+
   :global(.project-card .sc-col.media) {
     order: -1;
-  }
-
-  .project-logo {
-    margin-top: 0.5rem;
-    background: var(--print-sheet);
-    box-shadow:
-      0 1px 2px color-mix(in srgb, var(--color-ink-dark) 14%, transparent),
-      0 8px 14px -10px color-mix(in srgb, var(--color-ink-dark) 38%, transparent);
-    transform: rotate(calc(var(--rot-b, 1deg) * 1.5));
-  }
-
-  /* One short strip holds the small print */
-  .project-logo::before {
-    left: 50%;
-    width: 2.2rem;
-    height: 0.85rem;
-    top: -0.45rem;
-    transform: translateX(-50%) rotate(calc(var(--rot-a, -1deg) * 2));
-  }
-
-  .project-logo::after {
-    display: none;
-  }
-
-  .project-logo img {
-    display: block;
-    width: 100%;
-    height: auto;
-    aspect-ratio: 1;
-    object-fit: contain;
-    padding: 0.2rem;
-    border-radius: 0;
   }
 
   .project-description {

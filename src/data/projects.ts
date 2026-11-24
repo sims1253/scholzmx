@@ -3,6 +3,12 @@ import starlingLogo from '../assets/images/projects/starling-logo.webp';
 import janusLogo from '../assets/images/projects/janus-logo.webp';
 import huerdLogo from '../assets/images/projects/huerd-logo.png';
 import hrvesterLogo from '../assets/images/projects/hrvester-logo.png';
+// Each logo's relief, for the light on its sticker (scripts/make-print-reliefs.mjs).
+import ryRelief from '../assets/images/projects/relief/ry.webp?url';
+import starlingRelief from '../assets/images/projects/relief/starling.webp?url';
+import janusRelief from '../assets/images/projects/relief/janus.webp?url';
+import huerdRelief from '../assets/images/projects/relief/huerd.webp?url';
+import hrvesterRelief from '../assets/images/projects/relief/hrvester.webp?url';
 
 /** Software I have built, in the order it should be shown: newest first. */
 export const projects = [
@@ -13,6 +19,7 @@ export const projects = [
     year: 2026,
     status: 'Active',
     banner: ryLogo,
+    relief: ryRelief,
     tech: ['Rust', 'R'],
     links: [
       { type: 'GitHub', url: 'https://github.com/sims1253/ry' },
@@ -26,6 +33,7 @@ export const projects = [
     year: 2026,
     status: 'Active',
     banner: starlingLogo,
+    relief: starlingRelief,
     tech: ['C++', 'ggml', 'TypeScript'],
     links: [
       { type: 'GitHub', url: 'https://github.com/sims1253/starling' },
@@ -39,6 +47,7 @@ export const projects = [
     year: 2026,
     status: 'Active',
     banner: janusLogo,
+    relief: janusRelief,
     tech: ['Python', 'PDF'],
     links: [
       { type: 'GitHub', url: 'https://github.com/sims1253/nebu/tree/main/janus' },
@@ -51,6 +60,7 @@ export const projects = [
     year: 2024,
     status: 'Active',
     banner: huerdLogo,
+    relief: huerdRelief,
     tech: ['R', 'OKLAB', 'nloptr'],
     links: [
       { type: 'GitHub', url: 'https://github.com/sims1253/huerd' },
@@ -63,6 +73,7 @@ export const projects = [
     year: 2024,
     status: 'Active',
     banner: hrvesterLogo,
+    relief: hrvesterRelief,
     tech: ['R', 'Signal Processing'],
     links: [
       { type: 'GitHub', url: 'https://github.com/sims1253/hrvester' },

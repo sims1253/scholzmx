@@ -25,6 +25,7 @@ Built with [Astro](https://astro.build) because it lets me write content in Quar
 - `Canopy.astro` - The vine canopy over every page: leaf shadows that sway and follow the sun by day, a flickering torch after dark
 - `LightSwitch.astro` - The light switch at the end of the navigation: a candle stub in a jam jar on a nail, and the spider that lives beside it
 - `StackedCard.astro` / `NoteCardStack.astro` - The note cards on the listing pages, with the doodad system (more on that below)
+- `GlossPrint.astro` - The glossy stickers on the project tags, lit by a normal map made from each logo (`node scripts/make-print-reliefs.mjs` after adding or redrawing one)
 - `DropCap.astro` - Those decorative first letters you see in posts
 - `IndexFinder.astro` - Search and tag filtering for the blog and recipe indexes
 - `QuoteOfTheDay.astro` - The homepage quote; every new quote opens another tansy flower
