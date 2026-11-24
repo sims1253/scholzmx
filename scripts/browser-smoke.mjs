@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { globSync } from 'node:fs';
+import { globSync, readFileSync } from 'node:fs';
 import puppeteer from 'puppeteer';
 import { site } from './address-check.mjs';
 
@@ -109,28 +109,43 @@ try {
   // free, and its frame is three lines tall less the gap at its foot. The homepage sets
   // its bio smaller and closer in a short window, so a short and a tall window are tried,
   // and one with its leading loose enough that the frame stops at the fourth line instead.
-  for (const { height, leading } of [
-    { height: 844 },
-    { height: 1300 },
-    { height: 844, leading: '2em' },
+  // A post opens in the other face, with a top of its own, so a post is measured too.
+  const opening = (path) => readFileSync(`dist${path}index.html`, 'utf8');
+  const postWithInitial = blogPaths.find(
+    (path) => opening(path).includes('class="dropcap') && !opening(path).includes('dropcap--word')
+  );
+  // A paragraph that opens with a one-letter word ("I always...") is a case of its own.
+  const postWithOneLetterWord = blogPaths.find((path) => opening(path).includes('dropcap--word'));
+  assert.ok(postWithInitial, 'No post opens with an initial');
+  assert.ok(postWithOneLetterWord, 'No post opens with a one-letter word');
+  // Where the top of the frame lies below the top of the first line: half a line, plus
+  // half the difference of ascent and descent, less the height of the capitals; and how
+  // wide a space is in that face.
+  const alegreya = { slope: 0.3355, cap: 0.646, space: 0.198 };
+  const etBook = { slope: 0.2937, cap: 0.653, space: 0.2446 };
+  for (const { height, leading, path = '/', face } of [
+    { height: 844, face: alegreya },
+    { height: 1300, face: alegreya },
+    { height: 844, leading: '2em', face: alegreya },
+    { height: 844, path: postWithInitial, face: etBook },
+    { height: 844, path: postWithOneLetterWord, face: etBook },
   ]) {
     await page.setViewport({ width: 1440, height });
-    await page.goto(`${baseURL}/`, { waitUntil: 'networkidle0' });
+    await page.goto(`${baseURL}${path}`, { waitUntil: 'networkidle0' });
     if (leading) {
       await page.addStyleTag({
         content: `.about p:has(> .dropcap) { line-height: ${leading} !important; }`,
       });
     }
-    const initial = await page.evaluate(() => {
+    const initial = await page.evaluate((face) => {
       const element = document.querySelector('.dropcap');
       const paragraph = element.parentElement;
       const style = getComputedStyle(paragraph);
       const pitch = Number.parseFloat(style.lineHeight);
       const size = Number.parseFloat(style.fontSize);
       const gap = 0.6 * size;
-      // How far the top of the frame lies below the top of the first line (Alegreya:
-      // capitals 0.646, ascent 1.016, descent 0.345).
-      const top = 0.5 * pitch + (0.3355 - 0.646) * size;
+      const top = 0.5 * pitch + (face.slope - face.cap) * size;
+      const space = face.space * size;
       const box = paragraph.getBoundingClientRect();
       const frame = element.getBoundingClientRect();
       const words = [...paragraph.childNodes].find(
@@ -156,12 +171,15 @@ try {
         fourthLine: box.top + 3 * pitch,
         fromFrame: firstWord.getClientRects()[0].left - frame.right,
         gap,
+        space,
+        oneLetter: element.classList.contains('dropcap--word'),
         beside: [1, 2, 3].map(atLeftEdge),
         fourth: atLeftEdge(4),
       };
-    });
+    }, face);
     const close = (a, b) => Math.abs(a - b) <= 1;
-    const where = `${height}px${leading ? ` with ${leading} leading` : ''}`;
+    const place = path === '/' ? `${height}px` : `a post, ${path}`;
+    const where = `${place}${leading ? ` with ${leading} leading` : ''}`;
     assert.ok(
       close(initial.side, initial.threeLines),
       `Initial height at ${where}: ${initial.side}, three lines less the larger of the gap and the top ${initial.threeLines}`
@@ -175,8 +193,12 @@ try {
       initial.foot <= initial.fourthLine + 1,
       `Initial reaches into the fourth line at ${where}: ${initial.foot} over ${initial.fourthLine}`
     );
+    // A paragraph that opens with a one-letter word keeps that word's space in some
+    // engines and loses it in others, and its first line is pulled back by the space's
+    // width either way. So its words may stand that much nearer the frame, and no nearer.
+    const nearest = initial.oneLetter ? initial.gap - initial.space : initial.gap;
     assert.ok(
-      close(initial.fromFrame, initial.gap),
+      initial.fromFrame >= nearest - 1 && initial.fromFrame <= initial.gap + 1,
       `Words beside the initial at ${where}: ${initial.fromFrame} from it, gap ${initial.gap}`
     );
     assert.deepEqual(
