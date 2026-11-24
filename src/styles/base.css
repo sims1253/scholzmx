@@ -192,11 +192,13 @@
   /* Typography token switching: serious vs personal contexts (fonts only) */
   .serious-content {
     --font-body: var(--font-body-serious);
+    --baseline-drop: var(--baseline-drop-serious);
     --measure-prose: var(--measure-prose-serious);
   }
 
   .personal-content {
     --font-body: var(--font-body-personal);
+    --baseline-drop: var(--baseline-drop-personal);
     --measure-prose: var(--measure-prose-personal);
   }
 

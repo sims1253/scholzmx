@@ -1,8 +1,9 @@
 /* Paper and print: what the page is made of.
 
-   Rag paper under every page, prints mounted as plates, and a sprig for a section
-   break. Everything here is static and costs no request beyond two small SVG masks:
-   the paper is a few hundred bytes of SVG noise in this file, the rest box shadows. */
+   Rag paper under every page, the surfaces of the sheets, cards and tape that lie on it,
+   prints mounted as plates, and a sprig for a section break. Everything here is static
+   and costs no request beyond two small SVG masks: each surface is a few hundred bytes
+   of SVG noise in this file, the rest box shadows. */
 @layer components {
   /* Rag paper: a fine tooth of neutral grey, so it darkens the day's paper and lightens
      the torchlit paper by the same faint amount; far too faint to cost text any
@@ -24,6 +25,45 @@
     :root:not([data-theme='light']) body {
       --paper-tooth: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 .2 0 0 0 -.07'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)'/%3E%3C/svg%3E");
     }
+  }
+
+  /* The things that lie on the page have a surface too, all from the one family: noise
+     the browser draws once per tile. Each is dark grain of varying strength and nothing
+     else, so it darkens whatever it lies on by a share of that colour: plainly on the
+     day's light paper, and by the same share (so far less to the eye) on the dark paper
+     of torchlight. One drawing serves both lights, and none is strong enough to cost
+     the words on it any contrast. Dark paper so treated would look smooth beside the
+     page's own tooth, so by torchlight a sheet also catches a little light on its
+     grain (--sheet-glint): a second drawing, laid on only then.
+
+     - Writing paper: a fine grain, and the faint streaks of a laid sheet.
+     - Card stock (catalogue cards, manila tags, divider tabs): a coarser mottle with
+       brown flecks of fibre in it.
+     - Tape: the creases across a strip torn off the roll.
+     - Foxing: the brown bloom and specks of paper that has been kept a long time. */
+  :root {
+    --sheet-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='f' x='0' y='0' width='100%' height='100%'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .18 0 0 0 -.062' result='a'/%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.09 .3' numOctaves='1' seed='9' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .32 0 0 -.2'/%3E%3CfeComposite in2='a' operator='arithmetic' k2='1' k3='1'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23f)'/%3E%3C/svg%3E");
+    --stock-fibre: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='f' x='0' y='0' width='100%' height='100%'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .24 0 0 0 -.085' result='a'/%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.2 .34' numOctaves='1' seed='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .18 0 0 0 0 .05 0 1.5 0 0 -1.02'/%3E%3CfeComposite in2='a' operator='arithmetic' k2='1' k3='1'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23f)'/%3E%3C/svg%3E");
+    --sheet-glint-torch: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='f' x='0' y='0' width='100%' height='100%'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' seed='6' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .96 0 0 0 0 .88 .2 0 0 0 -.075'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23f)'/%3E%3C/svg%3E");
+    --sheet-glint: var(--by-day, none) var(--by-torch, var(--sheet-glint-torch));
+    --tape-crease: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='32'%3E%3Cfilter id='f' x='0' y='0' width='100%' height='100%'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.3 .02' numOctaves='2' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .21 0 0 0 -.07'/%3E%3C/filter%3E%3Crect width='128' height='32' filter='url(%23f)'/%3E%3C/svg%3E");
+    --foxing: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='f' x='0' y='0' width='100%' height='100%'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.02' numOctaves='3' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .18 0 0 0 0 .05 .8 0 0 0 -.47' result='a'/%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.12' numOctaves='1' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .18 0 0 0 0 .05 0 1.5 0 0 -1.06'/%3E%3CfeComposite in2='a' operator='arithmetic' k2='1' k3='1'/%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23f)'/%3E%3C/svg%3E");
+
+    /* A strip of tape, over whatever colour it is: its creases, light caught along the
+       upper edge, and the ends darker where they were torn and pressed down. */
+    --tape-surface:
+      var(--tape-crease),
+      linear-gradient(
+        color-mix(in srgb, var(--paper-sheet) 45%, transparent),
+        transparent 30% 75%,
+        color-mix(in srgb, var(--color-ink-dark) 7%, transparent)
+      ),
+      linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--color-ink-dark) 9%, transparent),
+        transparent 9% 91%,
+        color-mix(in srgb, var(--color-ink-dark) 9%, transparent)
+      );
   }
 
   /* A print is a sheet held by two strips (prose.css). On the sheet the picture sits
