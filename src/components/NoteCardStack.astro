@@ -82,9 +82,13 @@ const tabStarts = (index: number) => {
 };
 
 // The shelf deals its critters along itself: a card that draws one has its place among the
-// cards that do. A card with a photo taped to its corner takes no corner mark.
+// cards that do. It must reckon each card as the card will draw it: a photo takes the
+// corner only where it is taped into it (a thumb), not where it runs across the top.
 const critterDeal = critterPlaces(
-  items.map((it) => ({ seed: `stack/${it.id}`, cornerTaken: Boolean(it.hero) })),
+  items.map((it) => ({
+    seed: `stack/${it.id}`,
+    cornerTaken: media === 'thumb' && Boolean(it.hero),
+  })),
   { material }
 );
 
