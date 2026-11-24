@@ -59,11 +59,16 @@ try {
         node.replaceWith(words);
       }
       const top = card.getBoundingClientRect().top;
-      const off = [...content.querySelectorAll('.line-mark')].map((mark) => {
-        const baseline = mark.getBoundingClientRect().bottom - top;
+      const baselines = [...content.querySelectorAll('.line-mark')].map(
+        (mark) => mark.getBoundingClientRect().bottom - top
+      );
+      const off = baselines.map((baseline) => {
         const distance = (((baseline + 1 - firstRule) % period) + period) % period;
         return Math.abs(distance > period / 2 ? distance - period : distance);
       });
+      // The last line is written on the sheet: its baseline lies above the face's foot, a
+      // pixel of border above the sheet's. Its boxes say nothing of where it is painted.
+      const foot = card.offsetHeight - 1 - Math.max(0, ...baselines);
       const height = card.offsetHeight;
       const remainder = ((height % pitch) + pitch) % pitch;
       // How much of its words the face cuts off. It keeps stains to the sheet, so it is also
@@ -79,6 +84,7 @@ try {
         title: content.querySelector('.sc-title')?.textContent.trim().slice(0, 30),
         lines: off.length,
         off: Math.round(Math.max(0, ...off) * 100) / 100,
+        foot: Math.round(foot * 100) / 100,
         heightOff: Math.round(Math.min(remainder, pitch - remainder) * 100) / 100,
         overflow: Math.round(Math.max(overflow, clamped) * 100) / 100,
       };
@@ -175,7 +181,8 @@ try {
       assert.ok(
         (!['/blog/', '/recipes/', '/research/'].includes(path) || lined.length > 0) &&
           lined.every(
-            (sheet) => sheet.off <= 0.75 && sheet.heightOff <= 0.6 && sheet.overflow <= 0
+            (sheet) =>
+              sheet.off <= 0.75 && sheet.heightOff <= 0.6 && sheet.overflow <= 0 && sheet.foot > 0
           ),
         `Writing off its lines on ${path} at ${width}px: ${JSON.stringify(lined)}`
       );
