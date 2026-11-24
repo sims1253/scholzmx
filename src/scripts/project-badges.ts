@@ -14,7 +14,8 @@ function initProjectBadges(): void {
     tag.addEventListener('pointermove', (event) => {
       if (event.pointerType === 'touch') return;
       // Where the pointer stands from the badge's corner, in lengths of the badge. Half is
-      // its middle; it may lie outside it, over the rest of the tag.
+      // its middle; it may lie outside it, over the rest of the tag. The badge's own box
+      // stands still while the badge turns inside it, so this stays true as it turns.
       const box = badge.getBoundingClientRect();
       const x = (event.clientX - box.left) / box.width;
       const y = (event.clientY - box.top) / box.height;

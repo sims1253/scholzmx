@@ -9,23 +9,32 @@ const browser = await puppeteer.launch({
   args: ['--no-sandbox'],
 });
 // Each project's badge as laid out, without its set or its turn: whether it is a regular
-// hexagon with its point up, whether its picture covers its face and keeps its own
-// proportions, and whether any paper is left behind it. Runs in the page.
+// hexagon with its point up and is cut to that hexagon, whether its picture is sized to
+// cover its face and keeps its own proportions, and whether any paper is left behind it.
+// (The picture's box is measured, transparent margins included: that its art runs under
+// the rim is a matter of each picture's scale in src/data/projects.ts.) Runs in the page.
 function badgeState(badges) {
   return badges.map((badge) => {
+    const rim = badge.querySelector('.project-badge-rim');
     const face = badge.querySelector('.project-badge-face');
     const picture = badge.querySelector('img');
     // The picture is enlarged on purpose; read by how much from its transform.
     const scale = new DOMMatrix(getComputedStyle(picture).transform).a;
     const round = badge.classList.contains('project-badge--round');
+    const cut = getComputedStyle(rim).clipPath;
+    // A filter written wrong is dropped whole, and leaves no shadow at all.
+    const shadow = getComputedStyle(badge.querySelector('.project-badge-turn')).filter;
+    const points = /^polygon\((.+)\)$/.exec(cut)?.[1].split(',') ?? [];
+    const head = (points[0] ?? '').trim().split(/\s+/).map(Number.parseFloat);
     return {
       round,
       // A regular hexagon with its point up is as wide as the root of three over two of
-      // its height.
+      // its height, and is cut to a hexagon of six points, the first of them at its head.
       regular: Math.abs(badge.offsetWidth / badge.offsetHeight - 0.866) < 0.01,
-      // A hexagonal picture reaches past its face both ways; a round one, set as the
-      // medallion, along its width.
-      fills: round
+      cut: points.length === 6 && head[0] === 50 && head[1] === 0,
+      // A hexagonal picture's box reaches past its face both ways; a round one's, set as
+      // the medallion, along its width.
+      covers: round
         ? picture.offsetWidth * scale >= face.offsetWidth
         : picture.offsetWidth * scale >= face.offsetWidth &&
           picture.offsetHeight * scale >= face.offsetHeight,
@@ -34,6 +43,7 @@ function badgeState(badges) {
         Math.abs(
           picture.offsetWidth / picture.offsetHeight - picture.naturalWidth / picture.naturalHeight
         ) < 0.01,
+      shadow: shadow.startsWith('drop-shadow('),
       // No sheet of paper behind it: its rim is a gradient, not a colour.
       pasted:
         badge.classList.contains('pasted') ||
@@ -137,12 +147,29 @@ try {
         `Horizontal overflow: ${path} at ${width}px`
       );
       if (path === '/projects/') {
-        // A project's mark is a badge: cut to one regular hexagon, its picture running
-        // under the rim in its own proportions, with no paper behind it.
+        // A project's mark is a badge: cut to one regular hexagon, its picture sized to
+        // its face in its own proportions, with no paper behind it. The pictures are lazy:
+        // their files must be in before their proportions can be read.
+        await page.$$eval('.project-badge img', (pictures) =>
+          Promise.all(
+            pictures.map(async (picture) => {
+              picture.loading = 'eager';
+              await picture.decode();
+            })
+          )
+        );
         const badges = await page.$$eval('.project-badge', badgeState);
         assert.ok(
           badges.length > 0 &&
-            badges.every((badge) => badge.regular && badge.fills && badge.true && !badge.pasted),
+            badges.every(
+              (badge) =>
+                badge.regular &&
+                badge.cut &&
+                badge.shadow &&
+                badge.covers &&
+                badge.true &&
+                !badge.pasted
+            ),
           `Badges off their cut on ${path} at ${width}px: ${JSON.stringify(badges)}`
         );
         // As a mouse crosses a tag, its badge turns toward it and its light moves; left
@@ -153,7 +180,7 @@ try {
         const state = () =>
           badge.evaluate((element) => [
             element.style.getPropertyValue('--light-x'),
-            getComputedStyle(element).transform,
+            getComputedStyle(element.querySelector('.project-badge-turn')).transform,
           ]);
         const atRest = await state();
         // The middle of the tag: a point near a corner may lie past its clipped edge. A
