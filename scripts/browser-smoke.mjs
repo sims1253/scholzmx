@@ -67,17 +67,16 @@ try {
       const TOOTH = "baseFrequency='.7'";
       const MOTTLE = "baseFrequency='.012'";
       const toothed = (sheet) => {
-        const at = sheet.images.findIndex((image) => image.includes(TOOTH));
-        return at !== -1 && sheet.sizes[at] === '256px 256px';
+        const teeth = sheet.images.flatMap((image, at) =>
+          image.includes(TOOTH) ? [[image, sheet.sizes[at]]] : []
+        );
+        return teeth.length === 1 && teeth[0][1] === '256px 256px';
       };
       assert.ok(
         paper.every(
           (card) =>
             toothed(card.top) &&
-            card.top.sizes.filter((size) => size === '256px 256px').length === 1 &&
-            (!card.under ||
-              (toothed(card.under) &&
-                card.under.sizes.filter((size) => size === '256px 256px').length === 1)) &&
+            (!card.under || toothed(card.under)) &&
             [...card.top.images, ...(card.under?.images ?? [])].every(
               (image) => !/^url\(["']?(https?:|\/)/.test(image)
             ) &&

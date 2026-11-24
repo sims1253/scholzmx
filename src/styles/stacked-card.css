@@ -390,7 +390,11 @@
 
   /* No two sheets came from the same pad. Small mixes keep every text colour at AA. */
   .sc-card[data-tint='cream'] {
-    --sc-sheet: color-mix(in srgb, var(--sc-base) 91%, var(--color-tansy));
+    /* By torchlight less tansy: the bright yellow lightens the dark paper, and pale ink on
+       it loses contrast, most of all over its ruling and its tooth. At four parts the words
+       keep 4.6:1 even on the darkest and lightest one percent of the sheet. */
+    --sc-sheet: var(--by-day, color-mix(in srgb, var(--sc-base) 91%, var(--color-tansy)))
+      var(--by-torch, color-mix(in srgb, var(--sc-base) 96%, var(--color-tansy)));
   }
 
   /* A manila tag is cream already; more tansy would wash out its muted ink by torchlight */
@@ -420,7 +424,10 @@
         --by-torch,
         url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .91 0 0 0 0 .32 0 0 0 0 .06 .35 0 0 0 -.19'/%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23m)'/%3E%3C/svg%3E")
       );
-    --sc-sheet: color-mix(in srgb, var(--sc-base) 91%, var(--color-ochre));
+    /* Aged by its unevenness rather than all over: four parts of ochre in the sheet, where
+       there were nine. Its patches and its foxing age it, and its words keep their
+       contrast over the tooth and the mottle. */
+    --sc-sheet: color-mix(in srgb, var(--sc-base) 96%, var(--color-ochre));
     --sc-age:
       var(--sc-mottle) 0 0 / 320px 320px repeat,
       radial-gradient(
