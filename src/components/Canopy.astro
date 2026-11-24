@@ -65,6 +65,7 @@ const shade = ({ sheet, fade }: Piece) =>
       if (gone !== still) canopy.toggleAttribute('data-still', (still = gone));
     };
     addEventListener('scroll', watch, { passive: true });
+    addEventListener('resize', watch, { passive: true });
     watch();
   }
 </script>
