@@ -4,7 +4,12 @@ import janusLogo from '../assets/images/projects/janus-logo.webp';
 import huerdLogo from '../assets/images/projects/huerd-logo.png';
 import hrvesterLogo from '../assets/images/projects/hrvester-logo.png';
 
-/** Software I have built, in the order it should be shown: newest first. */
+/** Software I have built, in the order it should be shown: newest first.
+ *
+ * A project's banner is the badge on its tag: a hexagonal mark with its point up. A round
+ * picture (`round: true`) is set as the medallion of one. The pictures carry transparent
+ * margins of their own, so each is enlarged (`scale`) until its art runs under the badge's
+ * rim: the cut goes through the art, and none of the badge shows beside it. */
 export const projects = [
   {
     title: 'ry — Static Checker for R',
@@ -13,6 +18,8 @@ export const projects = [
     year: 2026,
     status: 'Active',
     banner: ryLogo,
+    round: true,
+    scale: 1.08,
     tech: ['Rust', 'R'],
     links: [
       { type: 'GitHub', url: 'https://github.com/sims1253/ry' },
@@ -26,6 +33,7 @@ export const projects = [
     year: 2026,
     status: 'Active',
     banner: starlingLogo,
+    scale: 1.12,
     tech: ['C++', 'ggml', 'TypeScript'],
     links: [
       { type: 'GitHub', url: 'https://github.com/sims1253/starling' },
@@ -39,6 +47,7 @@ export const projects = [
     year: 2026,
     status: 'Active',
     banner: janusLogo,
+    scale: 1.1,
     tech: ['Python', 'PDF'],
     links: [
       { type: 'GitHub', url: 'https://github.com/sims1253/nebu/tree/main/janus' },
@@ -51,6 +60,7 @@ export const projects = [
     year: 2024,
     status: 'Active',
     banner: huerdLogo,
+    scale: 1.04,
     tech: ['R', 'OKLAB', 'nloptr'],
     links: [
       { type: 'GitHub', url: 'https://github.com/sims1253/huerd' },
@@ -63,6 +73,7 @@ export const projects = [
     year: 2024,
     status: 'Active',
     banner: hrvesterLogo,
+    scale: 1.04,
     tech: ['R', 'Signal Processing'],
     links: [
       { type: 'GitHub', url: 'https://github.com/sims1253/hrvester' },

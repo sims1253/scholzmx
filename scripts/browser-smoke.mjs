@@ -8,6 +8,40 @@ const browser = await puppeteer.launch({
   headless: true,
   args: ['--no-sandbox'],
 });
+// Each project's badge as laid out, without its set or its turn: whether it is a regular
+// hexagon with its point up, whether its picture covers its face and keeps its own
+// proportions, and whether any paper is left behind it. Runs in the page.
+function badgeState(badges) {
+  return badges.map((badge) => {
+    const face = badge.querySelector('.project-badge-face');
+    const picture = badge.querySelector('img');
+    // The picture is enlarged on purpose; read by how much from its transform.
+    const scale = new DOMMatrix(getComputedStyle(picture).transform).a;
+    const round = badge.classList.contains('project-badge--round');
+    return {
+      round,
+      // A regular hexagon with its point up is as wide as the root of three over two of
+      // its height.
+      regular: Math.abs(badge.offsetWidth / badge.offsetHeight - 0.866) < 0.01,
+      // A hexagonal picture reaches past its face both ways; a round one, set as the
+      // medallion, along its width.
+      fills: round
+        ? picture.offsetWidth * scale >= face.offsetWidth
+        : picture.offsetWidth * scale >= face.offsetWidth &&
+          picture.offsetHeight * scale >= face.offsetHeight,
+      // Stretched to its face, a picture would lose the proportions of its file.
+      true:
+        Math.abs(
+          picture.offsetWidth / picture.offsetHeight - picture.naturalWidth / picture.naturalHeight
+        ) < 0.01,
+      // No sheet of paper behind it: its rim is a gradient, not a colour.
+      pasted:
+        badge.classList.contains('pasted') ||
+        getComputedStyle(badge).backgroundColor !== 'rgba(0, 0, 0, 0)',
+    };
+  });
+}
+
 const errors = [];
 try {
   const page = await browser.newPage();
@@ -102,6 +136,57 @@ try {
         false,
         `Horizontal overflow: ${path} at ${width}px`
       );
+      if (path === '/projects/') {
+        // A project's mark is a badge: cut to one regular hexagon, its picture running
+        // under the rim in its own proportions, with no paper behind it.
+        const badges = await page.$$eval('.project-badge', badgeState);
+        assert.ok(
+          badges.length > 0 &&
+            badges.every((badge) => badge.regular && badge.fills && badge.true && !badge.pasted),
+          `Badges off their cut on ${path} at ${width}px: ${JSON.stringify(badges)}`
+        );
+        // As a mouse crosses a tag, its badge turns toward it and its light moves; left
+        // alone, both come to rest.
+        const badge = await page.$('.project-badge');
+        const tag = await badge.evaluateHandle((element) => element.closest('.sc-card'));
+        const box = await tag.asElement().boundingBox();
+        const state = () =>
+          badge.evaluate((element) => [
+            element.style.getPropertyValue('--light-x'),
+            getComputedStyle(element).transform,
+          ]);
+        const atRest = await state();
+        // The middle of the tag: a point near a corner may lie past its clipped edge. A
+        // badge takes a moment to turn.
+        const settle = () => new Promise((resolve) => setTimeout(resolve, 350));
+        await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, { steps: 4 });
+        await settle();
+        const lit = await state();
+        assert.notEqual(lit[0], atRest[0], `The light does not move on ${path} at ${width}px`);
+        assert.notEqual(lit[1], atRest[1], `A badge does not turn on ${path} at ${width}px`);
+        await page.mouse.move(2, 2, { steps: 4 });
+        await settle();
+        assert.deepEqual(
+          await state(),
+          ['', atRest[1]],
+          `A badge does not come to rest on ${path} at ${width}px`
+        );
+        // Under reduced motion it keeps its set, and only its light moves.
+        await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        const settled = await state();
+        await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, { steps: 4 });
+        await settle();
+        const still = await state();
+        assert.notEqual(still[0], '', 'The light does not move under reduced motion');
+        assert.equal(
+          still[1],
+          settled[1],
+          `A badge turns under reduced motion on ${path} at ${width}px`
+        );
+        await page.mouse.move(2, 2, { steps: 4 });
+        await page.emulateMediaFeatures([]);
+      }
     }
   }
 
