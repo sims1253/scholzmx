@@ -766,19 +766,6 @@
     stroke-linejoin: round;
   }
 
-  .sc-mark .ink {
-    stroke-width: 1.3;
-  }
-
-  .sc-mark .thin {
-    stroke-width: 0.8;
-  }
-
-  .sc-mark .fill {
-    fill: currentcolor;
-    stroke: none;
-  }
-
   .sc-mark-corner {
     right: 0.5rem;
     bottom: 0.45rem;
@@ -845,30 +832,99 @@
     stroke-width: 1;
   }
 
-  /* A tansy flower, pressed and taped on, hanging over the edge */
-  .sc-mark-tansy {
-    right: -0.7rem;
-    bottom: -0.55rem;
-    width: 2.5rem;
-    height: 2.95rem;
-    transform: rotate(calc(var(--mark-turn) / 2));
-  }
+  /* ===== Ink and wash =====
 
-  .sc-mark-tansy .moss {
-    stroke: var(--color-moss);
+     The flowers and the critters are noted down as a naturalist would: a fine pen line
+     of iron-gall ink, a wash of colour beneath it that lets the sheet show through, and
+     a stipple or short strokes where the fur or the wing is. At the size they sit on a
+     card the stipple reads as texture. */
+
+  .sc-mark .ink {
     stroke-width: 1.3;
   }
 
-  .sc-mark-tansy .flower {
-    fill: var(--color-tansy);
-    stroke: var(--color-ochre);
-    stroke-width: 0.6;
+  .sc-mark .thin {
+    stroke-width: 0.8;
   }
 
-  .sc-mark-tansy .flower-eye {
-    fill: var(--color-ochre);
+  .sc-mark .fill {
+    fill: currentcolor;
     stroke: none;
-    opacity: 0.55;
+  }
+
+  /* A pen line round a wash */
+  .sc-mark .fur,
+  .sc-mark .head,
+  .sc-mark .body,
+  .sc-mark .shell,
+  .sc-mark .foot,
+  .sc-mark .ear,
+  .sc-mark .button,
+  .sc-mark .leaf,
+  .sc-mark .wing-paper,
+  .sc-mark .thorax {
+    stroke: var(--color-ink-dark);
+    stroke-width: 0.65;
+  }
+
+  /* A wash with no line round it */
+  .sc-mark .fur-shade,
+  .sc-mark .fur-strokes,
+  .sc-mark .foot-shade,
+  .sc-mark .shell-shine,
+  .sc-mark .shell-dots,
+  .sc-mark .body-mark,
+  .sc-mark .abdomen-rings,
+  .sc-mark .eye-light,
+  .sc-mark .ear-in,
+  .sc-mark .button-eye,
+  .sc-mark .button-dot,
+  .sc-mark .whorl,
+  .sc-mark .band {
+    stroke: none;
+  }
+
+  /* ===== Flowers and mice ===== */
+
+  /* A sprig of tansy, pressed and taped on, hanging over the edge: a stalk, two of its
+     deeply toothed leaves, and a flat head of yellow buttons. */
+  .sc-mark-tansy {
+    right: -0.7rem;
+    bottom: -0.55rem;
+    width: 2.7rem;
+    height: 3.4rem;
+    transform: rotate(calc(var(--mark-turn) / 3));
+  }
+
+  .sc-mark-tansy .stem {
+    stroke: var(--color-moss);
+    stroke-width: 1.25;
+  }
+
+  .sc-mark-tansy .leaf {
+    fill: color-mix(in srgb, var(--color-moss) 76%, var(--sc-sheet));
+  }
+
+  .sc-mark-tansy .leaf-rib {
+    stroke: color-mix(in srgb, var(--color-moss) 70%, var(--color-ink-dark));
+    stroke-width: 0.5;
+  }
+
+  .sc-mark-tansy .button {
+    fill: var(--color-tansy);
+    stroke: var(--color-ochre);
+    stroke-width: 0.55;
+  }
+
+  /* Each button is a head of florets: a darker eye and a few dots */
+  .sc-mark-tansy .button-eye {
+    fill: var(--color-ochre);
+    opacity: 0.4;
+  }
+
+  .sc-mark-tansy .button-dot {
+    fill: var(--color-ochre);
+    opacity: 0.7;
   }
 
   .sc-mark-tansy .tape {
@@ -881,37 +937,92 @@
   .sc-mark-mouse {
     right: 0.75rem;
     bottom: 0.2rem;
-    width: 2.6rem;
-    height: 1.95rem;
+    width: 2.7rem;
+    height: 2.05rem;
     color: var(--color-ink-dark);
     transform: scaleX(-1);
   }
 
   .sc-mark-mouse .fur {
-    fill: color-mix(in srgb, var(--color-ink-light) 35%, var(--sc-sheet));
-    stroke-width: 1.2;
+    fill: color-mix(in srgb, var(--color-ink-light) 40%, var(--sc-sheet));
+  }
+
+  /* The back and the belly in shadow, so the body is round */
+  .sc-mark-mouse .fur-shade {
+    fill: color-mix(in srgb, var(--color-ink-light) 26%, transparent);
+  }
+
+  .sc-mark-mouse .fur-strokes {
+    stroke: color-mix(in srgb, var(--color-ink-dark) 55%, transparent);
+    stroke-width: 0.5;
   }
 
   .sc-mark-mouse .ear {
-    fill: color-mix(in srgb, var(--color-clay) 30%, var(--sc-sheet));
-    stroke-width: 1.1;
+    fill: color-mix(in srgb, var(--color-clay) 46%, var(--sc-sheet));
+    stroke-width: 0.75;
+  }
+
+  .sc-mark-mouse .ear-in {
+    fill: color-mix(in srgb, var(--color-clay) 62%, transparent);
+  }
+
+  .sc-mark-mouse .nose {
+    fill: var(--color-clay);
+    stroke: var(--color-ink-dark);
+    stroke-width: 0.4;
+  }
+
+  .sc-mark-mouse .eye {
+    fill: var(--color-ink-plate);
+    stroke: none;
+  }
+
+  .sc-mark-mouse .eye-light {
+    fill: var(--sc-sheet);
+  }
+
+  .sc-mark-mouse .whisker {
+    stroke: var(--color-ink-light);
+    stroke-width: 0.45;
   }
 
   .sc-mark-mouse .tail {
-    stroke-width: 1;
+    stroke: var(--color-ink-dark);
+    stroke-width: 0.95;
+  }
+
+  .sc-mark-mouse .foot {
+    fill: none;
+    stroke: var(--color-ink-dark);
+    stroke-width: 1.1;
+  }
+
+  /* Paws take the fur's wash */
+  .sc-mark-mouse .paw,
+  .sc-mark-mouse .foot-far {
+    fill: color-mix(in srgb, var(--color-ink-light) 40%, var(--sc-sheet));
+    stroke: var(--color-ink-dark);
+    stroke-width: 0.6;
   }
 
   .sc-mark-mouse .scrap {
     fill: var(--sc-sheet);
-    stroke-width: 0.7;
+    stroke: var(--color-ink-dark);
+    stroke-width: 0.6;
   }
 
-  /* Critters walking the top edge itself, clear of the title below */
+  /* ===== Critters ===== */
+
+  /* Critters walk the top edge itself, clear of the title below: they straddle it, and
+     reach no more than 0.4rem onto the sheet. */
   .sc-mark-edge {
     top: -0.3rem;
     left: var(--mark-along, 40%);
     z-index: 5;
     color: var(--color-ink-dark);
+    /* A critter keeps its feet: it takes only a third of the turn the marks on the
+       sheet are given. */
+    transform: rotate(calc(var(--mark-turn) / 12));
   }
 
   /* A divider tab stands behind the first card of a run; the critters walk past it */
@@ -919,10 +1030,46 @@
     left: max(var(--mark-along, 40%), 10.5rem);
   }
 
+  /* Those with a front and a back face right, or left by their variant */
+  .sc-mark:is(
+    .sc-mark-ants,
+    .sc-mark-inchworm,
+    .sc-mark-ladybird,
+    .sc-mark-snail,
+    .sc-mark-beetle,
+    .sc-mark-cricket
+  ) {
+    transform: scaleX(var(--mark-way, 1)) rotate(calc(var(--mark-turn) / 12));
+  }
+
+  .sc-mark[data-variant='2']:is(
+      .sc-mark-inchworm,
+      .sc-mark-ladybird,
+      .sc-mark-snail,
+      .sc-mark-beetle,
+      .sc-mark-cricket
+    ) {
+    --mark-way: -1;
+  }
+
+  .sc-mark .legs,
+  .sc-mark .feelers,
+  .sc-mark .palps,
+  .sc-mark .abdomen,
+  .sc-mark .thread {
+    stroke-width: 0.7;
+  }
+
+  /* A drop of light in an eye */
+  .sc-mark .eye-light {
+    fill: var(--sc-sheet);
+    opacity: 0.9;
+  }
+
+  /* Ants in a line, the last with a crumb */
   .sc-mark-ants {
     width: 3.4rem;
     height: 0.65rem;
-    transform: rotate(calc(var(--mark-turn) / 14));
   }
 
   .sc-mark-ants .crumb {
@@ -937,14 +1084,10 @@
     width: 1.8rem;
     height: 1.05rem;
     color: var(--color-moss);
-    transform: scaleX(var(--worm-way, 1));
-  }
-
-  [data-variant='2'].sc-mark-inchworm {
-    --worm-way: -1;
   }
 
   .sc-mark-inchworm .worm {
+    stroke: currentcolor;
     stroke-width: 3.4;
   }
 
@@ -955,17 +1098,596 @@
     stroke-linecap: butt;
   }
 
+  .sc-mark-inchworm .worm-head {
+    fill: currentcolor;
+    stroke: none;
+  }
+
+  .sc-mark-inchworm .worm-feet {
+    stroke: currentcolor;
+    stroke-width: 1.6;
+  }
+
+  /* A ladybird, seen from above on its way along the edge */
   .sc-mark-ladybird {
-    width: 0.85rem;
-    height: 0.85rem;
-    color: var(--sc-shade);
-    transform: rotate(calc(var(--mark-turn) + 90deg));
+    top: -0.62rem;
+    width: 1.32rem;
+    height: 1rem;
   }
 
   .sc-mark-ladybird .shell {
-    fill: #b8322a;
-    stroke: var(--sc-shade);
+    fill: #c0392b;
+  }
+
+  .sc-mark-ladybird .shell-split {
+    stroke: var(--color-ink-dark);
     stroke-width: 0.6;
+  }
+
+  .sc-mark-ladybird .shell-shine {
+    stroke: color-mix(in srgb, white 55%, transparent);
+    stroke-width: 0.7;
+  }
+
+  .sc-mark-ladybird .spot {
+    fill: var(--color-ink-dark);
+    stroke: none;
+  }
+
+  .sc-mark-ladybird .head {
+    fill: var(--color-ink-dark);
+  }
+
+  /* A bumblebee hovering over the edge, its wings a blur */
+  .sc-mark-bee {
+    top: -0.95rem;
+    width: 1.62rem;
+    height: 1.33rem;
+  }
+
+  .sc-mark-bee .fur {
+    fill: color-mix(in srgb, var(--color-tansy) 68%, var(--sc-sheet));
+  }
+
+  .sc-mark-bee .fur-shade {
+    fill: color-mix(in srgb, var(--color-ochre) 34%, transparent);
+  }
+
+  .sc-mark-bee .fur-strokes {
+    stroke: var(--color-ochre);
+    stroke-width: 0.5;
+  }
+
+  .sc-mark-bee .stripe {
+    fill: none;
+    stroke: var(--color-ink-dark);
+    stroke-width: 1.5;
+  }
+
+  .sc-mark-bee .bee-head {
+    fill: var(--color-ink-dark);
+    stroke: none;
+  }
+
+  .sc-mark-bee .wing-glass {
+    fill: color-mix(in srgb, var(--color-sage) 46%, transparent);
+    stroke: var(--color-ink-dark);
+    stroke-width: 0.5;
+    stroke-opacity: 0.55;
+  }
+
+  .sc-mark-bee .wing-vein {
+    stroke: var(--color-ink-dark);
+    stroke-width: 0.4;
+    stroke-opacity: 0.4;
+  }
+
+  .sc-mark-bee .legs {
+    fill: none;
+    stroke: var(--color-ink-dark);
+  }
+
+  /* Wings of a fly and a butterfly are glass and paper */
+  .sc-mark .wing-vein {
+    stroke: var(--color-ink-dark);
+    stroke-width: 0.45;
+    stroke-opacity: 0.6;
+  }
+
+  /* A butterfly perched on the edge, opening and closing its wings */
+  .sc-mark-butterfly {
+    top: -0.82rem;
+    width: 1.86rem;
+    height: 1.2rem;
+  }
+
+  .sc-mark-butterfly .wing-paper {
+    fill: color-mix(in srgb, var(--color-tansy) 62%, var(--sc-sheet));
+  }
+
+  .sc-mark-butterfly .eyespot {
+    fill: var(--color-ink-dark);
+    stroke: var(--color-tansy);
+    stroke-width: 0.5;
+  }
+
+  .sc-mark-butterfly .body,
+  .sc-mark-butterfly .feelers {
+    fill: var(--color-ink-dark);
+    stroke: var(--color-ink-dark);
+    stroke-width: 0.5;
+  }
+
+  /* A damselfly's cousin with four glass wings, resting on the edge */
+  .sc-mark-dragonfly {
+    top: -0.76rem;
+    width: 2.2rem;
+    height: 1.14rem;
+  }
+
+  .sc-mark-dragonfly .wing-glass {
+    fill: color-mix(in srgb, var(--color-iron) 16%, transparent);
+    stroke: var(--color-ink-dark);
+    stroke-width: 0.45;
+    stroke-opacity: 0.5;
+  }
+
+  .sc-mark-dragonfly .eye {
+    fill: var(--color-verdigris);
+    stroke: var(--color-ink-dark);
+    stroke-width: 0.5;
+  }
+
+  .sc-mark-dragonfly .thorax,
+  .sc-mark-dragonfly .abdomen {
+    fill: color-mix(in srgb, var(--color-ink-dark) 80%, var(--color-verdigris));
+  }
+
+  .sc-mark-dragonfly .abdomen-rings {
+    stroke: var(--sc-sheet);
+    stroke-width: 0.45;
+    stroke-opacity: 0.7;
+  }
+
+  .sc-mark-dragonfly .legs {
+    fill: none;
+    stroke: var(--color-ink-dark);
+  }
+
+  /* A spider let itself down on a thread, and swings */
+  .sc-mark-spider {
+    top: -1.28rem;
+    width: 1rem;
+    height: 1.66rem;
+  }
+
+  .sc-mark-spider .thread {
+    stroke: color-mix(in srgb, var(--color-ink-light) 70%, transparent);
+  }
+
+  .sc-mark-spider .body {
+    fill: color-mix(in srgb, var(--color-ochre) 48%, var(--sc-sheet));
+  }
+
+  .sc-mark-spider .body-mark {
+    stroke: var(--color-ochre);
+    stroke-width: 0.7;
+    stroke-opacity: 0.8;
+    fill: none;
+  }
+
+  /* A banded snail out on the edge after rain */
+  .sc-mark-snail {
+    top: -0.84rem;
+    width: 1.75rem;
+    height: 1.22rem;
+  }
+
+  .sc-mark-snail .foot {
+    fill: color-mix(in srgb, var(--color-moss) 34%, var(--sc-sheet));
+  }
+
+  .sc-mark-snail .foot-shade {
+    fill: color-mix(in srgb, var(--color-moss) 24%, transparent);
+  }
+
+  .sc-mark-snail .shell {
+    fill: color-mix(in srgb, var(--color-tansy) 72%, var(--sc-sheet));
+    stroke-width: 0.7;
+  }
+
+  .sc-mark-snail .band {
+    stroke: color-mix(in srgb, var(--color-clay) 70%, var(--color-ochre));
+    stroke-width: 1.1;
+    stroke-opacity: 0.75;
+    fill: none;
+  }
+
+  .sc-mark-snail .whorl {
+    stroke: var(--color-ink-dark);
+    stroke-width: 0.55;
+    stroke-opacity: 0.7;
+    fill: none;
+  }
+
+  .sc-mark-snail .shell-shine {
+    stroke: color-mix(in srgb, white 60%, transparent);
+    stroke-width: 0.8;
+  }
+
+  .sc-mark-snail .eye-dot {
+    fill: var(--color-ink-dark);
+    stroke: none;
+  }
+
+  /* A rose chafer in green metal, walking */
+  .sc-mark-beetle {
+    top: -0.65rem;
+    width: 1.5rem;
+    height: 1.03rem;
+  }
+
+  .sc-mark-beetle .shell {
+    fill: color-mix(in srgb, var(--color-verdigris) 66%, var(--color-moss));
+  }
+
+  .sc-mark-beetle .shell-split {
+    stroke: var(--color-ink-dark);
+    stroke-width: 0.55;
+  }
+
+  .sc-mark-beetle .shell-shine {
+    stroke: color-mix(in srgb, white 62%, transparent);
+    stroke-width: 0.9;
+  }
+
+  .sc-mark-beetle .shell-dots {
+    stroke: var(--color-ink-dark);
+    stroke-width: 0.9;
+    stroke-linecap: round;
+  }
+
+  .sc-mark-beetle .head {
+    fill: color-mix(in srgb, var(--color-moss) 70%, var(--color-ink-dark));
+  }
+
+  .sc-mark-beetle .legs {
+    fill: none;
+    stroke: var(--color-ink-dark);
+  }
+
+  /* A cricket with its antennae back along the edge */
+  .sc-mark-cricket {
+    top: -0.86rem;
+    width: 1.9rem;
+    height: 1.24rem;
+  }
+
+  .sc-mark-cricket .body {
+    fill: color-mix(in srgb, var(--color-moss) 62%, var(--sc-sheet));
+  }
+
+  .sc-mark-cricket .body-tail {
+    fill: none;
+    stroke: var(--color-ink-dark);
+    stroke-width: 0.55;
+  }
+
+  .sc-mark-cricket .wing {
+    fill: none;
+    stroke: var(--color-ink-dark);
+    stroke-width: 0.5;
+    stroke-opacity: 0.7;
+  }
+
+  .sc-mark-cricket .head {
+    fill: color-mix(in srgb, var(--color-moss) 72%, var(--color-ink-dark));
+  }
+
+  /* The folded thigh is a wash; the shin below it a line */
+  .sc-mark-cricket .hind-leg {
+    fill: color-mix(in srgb, var(--color-moss) 62%, var(--sc-sheet));
+    stroke: var(--color-ink-dark);
+    stroke-width: 0.65;
+  }
+
+  .sc-mark-cricket .hind-shin {
+    fill: none;
+    stroke: var(--color-ink-dark);
+    stroke-width: 0.8;
+  }
+
+  /* ===== What the critters do ===== */
+
+  /* Each moves a little, on its own loop, and never far. The body moves as a whole on
+     the mark itself (translate and rotate, which the compositor can do alone); a leg or
+     a wing moves inside the drawing. All of it stops under prefers-reduced-motion
+     (base.css). */
+
+  .sc-mark-edge,
+  .sc-mark-mouse {
+    will-change: translate, rotate, scale;
+  }
+
+  /* Only while the card is on screen (src/scripts/card-critters.ts). */
+  .sc-card[data-still] .sc-mark,
+  .sc-card[data-still] .sc-mark * {
+    animation-play-state: paused;
+  }
+
+  /* Two sets of legs take it in turns */
+  .sc-mark .legs,
+  .sc-mark .feelers,
+  .sc-mark .wing,
+  .sc-mark .mouse-body,
+  .sc-mark .tail {
+    transform-box: fill-box;
+  }
+
+  .sc-mark .legs {
+    transform-origin: 50% 0;
+  }
+
+  .sc-mark-ants {
+    animation: sc-march 1.9s ease-in-out infinite alternate;
+  }
+
+  .sc-mark-ants .legs {
+    animation: sc-scuttle 0.19s ease-in-out infinite alternate;
+  }
+
+  .sc-mark-ants .legs-b {
+    animation-direction: alternate-reverse;
+  }
+
+  .sc-mark-inchworm {
+    animation: sc-inch 5.6s ease-in-out infinite alternate;
+  }
+
+  .sc-mark-ladybird {
+    animation: sc-march 3.4s ease-in-out infinite alternate;
+  }
+
+  .sc-mark-ladybird .legs {
+    animation: sc-scuttle 0.3s ease-in-out infinite alternate;
+  }
+
+  .sc-mark-ladybird .legs-b {
+    animation-direction: alternate-reverse;
+  }
+
+  .sc-mark-bee {
+    animation: sc-hover 2.8s ease-in-out infinite alternate;
+  }
+
+  .sc-mark-bee .wing {
+    transform-origin: 30% 100%;
+    animation: sc-flap 0.1s linear infinite alternate;
+  }
+
+  .sc-mark-butterfly {
+    animation: sc-lightly 3.6s ease-in-out infinite alternate;
+  }
+
+  .sc-mark-butterfly .wing {
+    animation: sc-open-and-shut 3.6s ease-in-out infinite alternate;
+  }
+
+  .sc-mark-butterfly .wing-left {
+    transform-origin: 100% 50%;
+  }
+
+  .sc-mark-butterfly .wing-right {
+    transform-origin: 0 50%;
+  }
+
+  .sc-mark-dragonfly {
+    animation: sc-lightly 2.2s ease-in-out infinite alternate;
+  }
+
+  .sc-mark-spider {
+    transform-origin: 50% 0;
+    animation: sc-swing 3.4s ease-in-out infinite alternate;
+  }
+
+  .sc-mark-spider .legs {
+    animation: sc-scuttle 1.7s ease-in-out infinite alternate;
+  }
+
+  .sc-mark-snail {
+    animation: sc-glide 9s linear infinite alternate;
+  }
+
+  .sc-mark-snail .feelers {
+    transform-origin: 0 100%;
+    animation: sc-twitch 4.2s ease-in-out infinite alternate;
+  }
+
+  .sc-mark-beetle {
+    animation: sc-run-and-rest 3.8s ease-in-out infinite alternate;
+  }
+
+  .sc-mark-beetle .legs {
+    animation: sc-scuttle 0.22s ease-in-out infinite alternate;
+  }
+
+  .sc-mark-beetle .legs-b {
+    animation-direction: alternate-reverse;
+  }
+
+  .sc-mark-cricket .feelers {
+    transform-origin: 100% 100%;
+    animation: sc-twitch 3.2s ease-in-out infinite alternate;
+  }
+
+  /* The mouse nibbles: its head goes up and down a little, and its tail wanders */
+  .sc-mark-mouse .mouse-body {
+    transform-origin: 85% 80%;
+    animation: sc-nibble 0.64s ease-in-out infinite alternate;
+  }
+
+  .sc-mark-mouse .tail {
+    transform-origin: 0 0;
+    animation: sc-wander 2.6s ease-in-out infinite alternate;
+  }
+
+  @keyframes sc-march {
+    from {
+      translate: -0.09rem 0;
+    }
+
+    to {
+      translate: 0.09rem 0;
+    }
+  }
+
+  @keyframes sc-scuttle {
+    from {
+      transform: rotate(-8deg);
+    }
+
+    to {
+      transform: rotate(8deg);
+    }
+  }
+
+  /* Hunch, reach, hunch, reach */
+  @keyframes sc-inch {
+    0%,
+    55%,
+    100% {
+      translate: 0 0;
+      scale: 1 1;
+    }
+
+    30%,
+    80% {
+      translate: 0.05rem 0;
+      scale: 0.78 1.05;
+    }
+
+    42% {
+      translate: 0.3rem 0;
+      scale: 1 1;
+    }
+
+    92% {
+      translate: 0.3rem 0;
+    }
+  }
+
+  @keyframes sc-hover {
+    from {
+      translate: 0.05rem 0.06rem;
+      rotate: -3deg;
+    }
+
+    to {
+      translate: -0.04rem -0.1rem;
+      rotate: 3deg;
+    }
+  }
+
+  @keyframes sc-flap {
+    from {
+      transform: rotate(-18deg);
+    }
+
+    to {
+      transform: rotate(14deg);
+    }
+  }
+
+  @keyframes sc-lightly {
+    from {
+      translate: 0 0.03rem;
+    }
+
+    to {
+      translate: 0 -0.04rem;
+    }
+  }
+
+  /* Wings fold up over the back, and open flat again */
+  @keyframes sc-open-and-shut {
+    0%,
+    100% {
+      transform: scale(1 1);
+    }
+
+    45%,
+    60% {
+      transform: scale(0.2 1);
+    }
+  }
+
+  @keyframes sc-swing {
+    from {
+      rotate: -5deg;
+    }
+
+    to {
+      rotate: 5deg;
+    }
+  }
+
+  @keyframes sc-glide {
+    from {
+      translate: 0 0;
+    }
+
+    to {
+      translate: 0.45rem 0;
+    }
+  }
+
+  @keyframes sc-twitch {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+
+    12%,
+    22% {
+      transform: rotate(-7deg);
+    }
+
+    17% {
+      transform: rotate(3deg);
+    }
+  }
+
+  /* A short run, then a rest, then back */
+  @keyframes sc-run-and-rest {
+    0%,
+    100% {
+      translate: 0 0;
+    }
+
+    30%,
+    70% {
+      translate: 0.22rem 0;
+    }
+  }
+
+  @keyframes sc-nibble {
+    from {
+      transform: rotate(-1.6deg);
+    }
+
+    to {
+      transform: rotate(1.6deg);
+    }
+  }
+
+  @keyframes sc-wander {
+    from {
+      transform: rotate(-5deg);
+    }
+
+    to {
+      transform: rotate(5deg);
+    }
   }
 
   /* ===== Materials: one per shelf, each one printed detail on the same sheet ===== */

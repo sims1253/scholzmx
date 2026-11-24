@@ -3,6 +3,11 @@
  * One mark on a card, drawn in the footer ledge's doodle hand: iron-gall strokes,
  * a little moss and tansy. Every mark is decoration and hidden from assistive tech.
  * StackedCard places it; src/lib/cardDressing.ts decides which one a card gets.
+ *
+ * The critters are drawn as a naturalist would note them down: a fine pen line, a wash
+ * of colour beneath it, and a stipple where the fur or the wing is. At the size they sit
+ * on a card the stipple reads as texture. What moves in each (a leg, a wing, the whole
+ * body) is its own group, so the stylesheet can set it going (src/styles/stacked-card.css).
  */
 import type { Mark } from '../lib/cardDressing';
 
@@ -12,6 +17,28 @@ interface Props {
 
 const { kind, home, turn, along, variant } = Astro.props.mark;
 const style = `--mark-turn: ${turn}deg; --mark-along: ${along}%`;
+
+// A tansy leaf, from the stalk (0, 0) along +x for `length`: a midrib with narrow lobes
+// down both sides that sweep forward toward the tip, as on a fern. The leaf is longest a
+// third of the way up, and narrows to its point.
+function lobedLeaf(length: number, lobes: number) {
+  const step = length / (lobes + 0.5);
+  const top: string[] = [];
+  for (let i = 0; i < lobes; i++) {
+    const x = step * (i + 0.75);
+    const reach = length * 0.3 * Math.sin(((i + 0.9) / (lobes + 0.6)) * Math.PI);
+    // The sinus between two lobes is shallow, so the leaf holds together under its teeth.
+    top.push(`L${x.toFixed(1)},${(-reach * 0.2).toFixed(1)}`);
+    top.push(`L${(x + reach * 0.95).toFixed(1)},${(-reach).toFixed(1)}`);
+  }
+  top.push(`L${length.toFixed(1)},0`);
+  const bottom = top
+    .map((command) =>
+      command.replace(/,(|-)([\d.]+)$/, (_, sign, y) => `,${sign === '-' ? '' : '-'}${y}`)
+    )
+    .reverse();
+  return `M0,0${top.join('')}${bottom.join('')}Z`;
+}
 ---
 
 <span
@@ -57,68 +84,383 @@ const style = `--mark-turn: ${turn}deg; --mark-along: ${along}%`;
       d="M2 12c4-3 8 3 12 0s8 3 12 0 8 3 12 0M2 19c4-3 8 3 12 0s8 3 12 0 8 3 12 0M2 26c4-3 8 3 12 0s8 3 12 0 8 3 12 0"
     />
   </svg>}
-  {kind === 'tansy' && <svg viewBox="0 0 44 52">
-    <path class="moss" d="M8 50C14 38 20 28 24 16" />
-    <path
-      class="moss"
-      d="M14 40c-4-1-8-4-9-8M17 33c-4 0-8-2-10-6M14 40c3-3 5-6 5-10M19 30c3-2 5-5 5-9"
-    />
-    <path class="moss thin" d="M7 34l2-1M8 29l2 0M17 37l1-2M21 27l1-2" />
-    {[
-      [24, 13],
-      [30, 10],
-      [28, 17],
-      [34, 15],
-      [21, 8],
-      [27, 4],
-    ].map(([cx, cy]) => <g>
-      <circle class="flower" cx={cx} cy={cy} r="3.4" />
-      <circle class="flower-eye" cx={cx} cy={cy} r="1.1" />
-    </g>)}
-    <rect class="tape" x="3" y="36" width="20" height="7" transform="rotate(-28 13 40)" />
-  </svg>}
+  {kind === 'tansy' &&
+    (() => {
+      // A sprig pressed on the corner: a stalk, two of tansy's deeply toothed leaves, and
+      // a flat head of yellow buttons with a smaller one beside it.
+      const buttons = [
+        [30.6, 7, 3.3],
+        [24.2, 8.4, 3],
+        [35.8, 12.2, 3],
+        [28, 13.4, 3.4],
+        [21.8, 14.2, 2.6],
+        [33, 18.4, 3.1],
+        [26.6, 19.8, 2.7],
+      ];
+      const buds = [
+        [41.2, 5.6, 1.9],
+        [43, 9.6, 1.7],
+        [40.2, 11.8, 1.5],
+      ];
+      return <svg viewBox="0 0 46 58">
+        <path class="stem" d="M9.5 57C14 46 18 33.5 26 19.6" />
+        <path class="stem" d="M22.6 27.4C26.6 20.6 32.4 13.6 40.6 8.8" />
+        <g transform="translate(15 41.4) rotate(166)">
+          <path class="leaf" d={lobedLeaf(16.5, 9)} />
+          <path class="leaf-rib" d="M0,0C5,-0.3 10.6,-0.3 16,0" />
+        </g>
+        <g transform="translate(19.4 33) rotate(-30)">
+          <path class="leaf" d={lobedLeaf(13.5, 8)} />
+          <path class="leaf-rib" d="M0,0C4.4,-0.2 8.8,-0.2 13,0" />
+        </g>
+        {buttons.map(([cx, cy, r]) => <g>
+          <circle class="button" cx={cx} cy={cy} r={r} />
+          <circle class="button-eye" cx={cx} cy={cy} r={Number(r) * 0.42} />
+          <circle
+            class="button-dot"
+            cx={Number(cx) - Number(r) * 0.5}
+            cy={Number(cy) + Number(r) * 0.3}
+            r="0.36"
+          />
+          <circle
+            class="button-dot"
+            cx={Number(cx) + Number(r) * 0.52}
+            cy={Number(cy) - Number(r) * 0.42}
+            r="0.36"
+          />
+          <circle
+            class="button-dot"
+            cx={Number(cx) + Number(r) * 0.2}
+            cy={Number(cy) + Number(r) * 0.62}
+            r="0.36"
+          />
+        </g>)}
+        {buds.map(([cx, cy, r]) => (
+          <circle class="button" cx={cx} cy={cy} r={r} />
+        ))}
+        <rect class="tape" x="3" y="39" width="20" height="7" transform="rotate(-36 13 42.5)" />
+      </svg>;
+    })()}
   {kind === 'pencil' && <svg viewBox="0 0 44 30">
     <path class="pencil" d="M10 16c0-3 3-4 5-2s0 6-4 6-7-4-6-8 6-7 10-5 6 7 3 11" />
     <path class="pencil" d="M24 17l4 6c3-8 7-14 13-19" />
     <path class="pencil thin" d="M25 18l3 4" />
   </svg>}
-  {kind === 'mouse' && <svg viewBox="0 0 48 36">
-    <path class="tail" d="M37 29c6 1 9-2 8-6-1-3-4-3-5-1" />
-    <path class="fur" d="M15 24c0-7 6-12 13-12 6 0 10 5 10 11 0 5-4 8-9 8H19c-3 0-4-3-4-7Z" />
-    <path class="fur" d="M17 21c-2-4-7-5-11-2l-4 4 5 2c4 1 8 0 10-4Z" />
-    <circle class="ear" cx="16" cy="15" r="3.6" />
-    <circle class="fill" cx="8.5" cy="20" r="0.9" />
-    <circle class="fill" cx="2.3" cy="23" r="0.9" />
-    <path class="thin" d="M3 22l-3-2M3 23.5l-3 1" />
-    <path class="ink" d="M21 31l-1 3M30 31l1 3" />
-    <path class="scrap" d="M7 27l5-2 2 4-5 1Z" />
-    <path class="thin" d="M11 27c1 1 2 1 4 0" />
+  {kind === 'mouse' && <svg viewBox="0 0 52 38">
+    {/* A field mouse at the corner, the piece it has nibbled off held in its paws. It is
+        drawn looking left; the stylesheet turns it to look into the corner. */}
+    <path
+      class="tail"
+      d="M41.4 26.4c4.2 1.4 7.2 4.6 6.8 8.2-.3 3.2-3.8 4.4-5.6 2.2-1.4-1.8-.2-4 2-3.6"
+    />
+    <circle class="ear" cx="18.2" cy="13.4" r="4.3" />
+    <circle class="ear-in" cx="18.6" cy="13.6" r="2.5" />
+    <ellipse class="foot-far" cx="31.6" cy="33" rx="3.3" ry="1.15" />
+    <g class="mouse-body">
+      <path
+        class="fur"
+        d="M3.6 24.4C6.5 19.6 11 16.4 16 15.6c4-5.1 10.5-7.2 16.5-5.4 7 2.1 11.5 7.9 10.7 14.2-.6 4.8-4 8-8.6 8.2l-10.6.2c-2.5 0-4.4-1.2-5.4-3-3.6-1.2-9.1-2.8-13.4-4.2-2.2-.7-3-1.9-1.6-1.2Z"
+      />
+      <path
+        class="fur-shade"
+        d="M24.6 32.8c5.2-.1 9.4-.4 12.4-1.4-1.6 1.3-3.8 1.6-6 1.6l-6.4-.2Z"
+      />
+      <path
+        class="fur-shade"
+        d="M38 11.4c3.2 2.7 5.1 6.6 4.5 10.7-.4 2.8-1.7 5.1-3.9 6.5 1.5-2.4 2.1-5.4 1.5-8.6-.6-3.4-2.5-6.4-5.3-8.6Z"
+      />
+      <path
+        class="fur-strokes"
+        d="M23.4 12.2l.6 2.4M27.6 10.6l0 2.6M32 10.4l-.4 2.5M36.2 11.6l-.9 2.4M39.8 14l-1.5 2M42.4 17.6l-2 1.2M25.6 16.4l.5 2M30.4 16.2l-.1 2M35.2 17.4l-.9 1.8M19 19.6l1.4 1.8M21.6 23.8l1.8 1.2"
+      />
+      <circle class="nose" cx="4.1" cy="24.5" r="1" />
+      <circle class="eye" cx="12.2" cy="21.2" r="1.3" />
+      <circle class="eye-light" cx="11.8" cy="20.8" r="0.42" />
+      <path class="whisker" d="M5.4 24.6L1 23.6M5.4 25.5L1.2 27M6 26.3L2.8 29.2" />
+      <path class="foot" d="M25 32.8l0 3M30.6 32.8l.3 3" />
+      <path
+        class="scrap"
+        d="M12.4 27.6l2.6-1.3 1.2.8 1.4-1 1.3.9 1.5-.9 2.4 4.6-1.5.9-1.3-.9-1.4 1-1.3-.9-1.6 1Z"
+      />
+      <ellipse
+        class="paw"
+        cx="17.4"
+        cy="29.6"
+        rx="1.5"
+        ry="1.1"
+        transform="rotate(-24 17.4 29.6)"
+      />
+      <ellipse class="paw" cx="14.2" cy="30.6" rx="1.3" ry="1" transform="rotate(-24 14.2 30.6)" />
+    </g>
   </svg>}
   {kind === 'ants' && <svg viewBox="0 0 64 12">
     {[4, 22, 41].map((x, i) => <g transform={`translate(${x} 0)`}>
-      <path class="thin" d="M2 9l-1 3M4 9l0 3M6 9l1 3M2 6l-1-3M4 6l0-3M6 6l1-3" />
-      <circle class="fill" cx="1.6" cy="7.5" r="1.7" />
-      <circle class="fill" cx="4.4" cy="7.5" r="1.1" />
-      <ellipse class="fill" cx="8" cy="7.5" rx="2.3" ry="1.6" />
-      <path class="thin" d="M10 6.5l2.5-2.5M10 8.5l2.5 2" />
-      {i === 2 && <path class="crumb" d="M12 2l5-1 1 4-4 2Z" />}
+      <g class="legs legs-a">
+        <path class="thin" d="M5 6.6L3.4 2.6M4.4 7.4L1.2 6M5.8 7.6L3.4 11.4" />
+      </g>
+      <g class="legs legs-b">
+        <path class="thin" d="M6.2 6.6L6.8 2.4M7 7.4L9.8 6.2M6.4 7.6L8.8 11.2" />
+      </g>
+      <ellipse class="fill" cx="2.4" cy="7.7" rx="2.5" ry="1.65" />
+      <circle class="fill" cx="5.6" cy="7.5" r="1.05" />
+      <circle class="fill" cx="9.1" cy="7.5" r="1.55" />
+      <path class="thin feelers" d="M10 6.3L12.2 3.6M10.4 7.2L13.4 6.3" />
+      {i === 2 && <path class="crumb" d="M13.2 1.4l5-1 1 4-4 2Z" />}
     </g>)}
   </svg>}
   {kind === 'inchworm' && <svg viewBox="0 0 34 20">
     <path class="worm" d="M4 18c0-9 5-14 11-14s10 5 11 13" />
     <path class="rings" d="M4 18c0-9 5-14 11-14s10 5 11 13" />
-    <circle class="fill" cx="27.5" cy="16.8" r="2.5" />
-    <circle cx="28.4" cy="16.2" r="0.7" fill="var(--sc-sheet)" />
-    <path class="thin" d="M28 14.5l1-3M29.5 15l3-2M3 19.5l-1.5 0.5M6 19.5l1.5 0.5" />
+    <g class="worm-head">
+      <circle class="worm-head" cx="27.5" cy="16.8" r="2.5" />
+      <circle class="eye-light" cx="28.4" cy="16.2" r="0.7" />
+      <path class="feelers" d="M28 14.5l1-3M29.5 15l3-2" />
+    </g>
+    <path class="worm-feet" d="M3 19.5l-1.5 0.5M6 19.5l1.5 0.5" />
   </svg>}
-  {kind === 'ladybird' && <svg viewBox="0 0 20 20">
-    <path class="thin" d="M5 7L2 5M4 11H1M5 15l-3 2M15 7l3-2M16 11h3M15 15l3 2" />
-    <circle class="fill" cx="10" cy="4.5" r="2.6" />
-    <path class="ink" d="M8.5 2.5L7 0M11.5 2.5L13 0" />
-    <ellipse class="shell" cx="10" cy="11.5" rx="5.6" ry="6.4" />
-    <path class="ink" d="M10 5.5v12.4" />
-    <circle class="fill" cx="7.5" cy="10" r="1.1" />
-    <circle class="fill" cx="12.6" cy="12.6" r="1.1" />
-    <circle class="fill" cx="7.8" cy="14.5" r="0.9" />
+  {kind === 'ladybird' && <svg viewBox="0 0 26 20">
+    <g class="legs legs-a">
+      <path class="thin" d="M7 7.6L4.6 4.8M6 11.6L3 12M8.4 14.6L6.4 17.4" />
+    </g>
+    <g class="legs legs-b">
+      <path class="thin" d="M11.6 6.6L11 3.4M15 7.4L17.6 5M15.6 13.4L18 15.8M12 14.8L11.8 18" />
+    </g>
+    <path class="thin feelers" d="M22.6 8.4L25 6.6M23 10.2L26 10" />
+    <ellipse class="shell" cx="11" cy="10.4" rx="9" ry="7" />
+    <path class="shell-split" d="M18.6 10.6L2.6 10.6" />
+    <path class="shell-shine" d="M6.4 6.2c2.2-1.6 5.2-2 7.8-1.2" />
+    <circle class="spot" cx="6.2" cy="7.6" r="1.25" />
+    <circle class="spot" cx="11.4" cy="6.4" r="1.35" />
+    <circle class="spot" cx="15.4" cy="7.8" r="1.05" />
+    <circle class="spot" cx="6.6" cy="13.6" r="1.2" />
+    <circle class="spot" cx="11.8" cy="14.6" r="1.3" />
+    <circle class="spot" cx="15.8" cy="13" r="1" />
+    <path class="head" d="M19 7.2c2.2 0 3.8 1.4 4 3.2-.2 1.8-1.8 3.2-4 3.2z" />
+    <circle class="eye-light" cx="21.2" cy="9.4" r="0.55" />
+    <circle class="eye-light" cx="21.2" cy="11.6" r="0.55" />
+  </svg>}
+  {kind === 'bee' && <svg viewBox="0 0 34 28">
+    <g class="bee-body">
+      <g class="wing wing-far">
+        <ellipse
+          class="wing-glass"
+          cx="17.6"
+          cy="8.4"
+          rx="6.6"
+          ry="3.1"
+          transform="rotate(-24 17.6 8.4)"
+        />
+      </g>
+      <ellipse class="fur" cx="15" cy="18.6" rx="10.4" ry="6.6" />
+      <path
+        class="fur-shade"
+        d="M7.4 22.6c2.6 1.9 6.4 2.6 9.8 1.8 2.8-.7 5.2-2.4 6.6-4.8-1.2 4.2-5 7-9.6 6.8-2.8-.1-5.3-1.5-6.8-3.8Z"
+      />
+      <path
+        class="stripe"
+        d="M11.2 12.8c.6 3.6.4 7.4-.8 10.8M17.2 12.2c.7 3.9.5 8-.8 11.8M23 13.6c.6 3.2.3 6.7-.9 9.6"
+      />
+      <g class="fuzz">
+        <path
+          class="fur-strokes"
+          d="M8.4 14.6l-.9 1.3M12 13l-.5 1.5M15.4 12.2l-.2 1.5M19.2 12.4l.3 1.5M22.8 13.4l.6 1.4M25.6 15.4l1 1.2M7 19.6l-1.4.4M8 23.4l-1.2.9M11.6 25.6l-.6 1.4M16 26l0 1.5M20.4 25.2l.6 1.4M24 22.8l1.3.9"
+        />
+      </g>
+      <g class="wing wing-near">
+        <ellipse
+          class="wing-glass"
+          cx="16.4"
+          cy="7.8"
+          rx="7.6"
+          ry="3.3"
+          transform="rotate(-30 16.4 7.8)"
+        />
+        <path class="wing-vein" d="M9.8 11.4L21.6 3.6M12.4 10.2c2.4-.6 5-.8 7.4-.4" />
+      </g>
+      <circle class="bee-head" cx="27.4" cy="17.6" r="3.5" />
+      <circle class="eye-light" cx="28.4" cy="16.6" r="0.55" />
+      <path class="feelers" d="M28.6 14.4c.4-1.6 1.4-2.8 2.8-3.4M30.2 15.4c1-.8 2.2-1.1 3.2-.9" />
+      <path
+        class="legs"
+        d="M10.4 24.4l-1.6 2.6M14.6 25.2l-.4 2.8M19.2 24.8l.8 2.8M23.4 23.2l1.8 2.2"
+      />
+    </g>
+  </svg>}
+  {kind === 'butterfly' && <svg viewBox="0 0 40 26">
+    <g class="wing wing-left">
+      <path
+        class="wing-paper"
+        d="M18.6 13.2c-3.4-1.4-6.8-5.4-8.2-9.4-.5-1.4-2.2-1.6-3.4-.8-3.6 2.6-5.6 7-4.6 11 .8 3.2 3.4 5.6 6.6 5.8 2.6.2 5.4-1 7.4-2.8z"
+      />
+      <path
+        class="wing-paper"
+        d="M18.4 14.4c-2.8.2-6.2 1.8-8 4-1.6 2-1.4 4.8.4 6.2 1.8 1.4 4.6 1 6.2-.8 1.4-1.6 2.2-3.8 2.6-6z"
+      />
+      <path class="wing-vein" d="M18 13.6L6 5.6M18 13.8L5.4 12.6M18.2 14.6L8 22.6" />
+      <circle class="eyespot" cx="7.6" cy="9.4" r="1.7" />
+      <circle class="eyespot" cx="8.6" cy="20.6" r="1.2" />
+    </g>
+    <g class="wing wing-right">
+      <path
+        class="wing-paper"
+        d="M21.4 13.2c3.4-1.4 6.8-5.4 8.2-9.4.5-1.4 2.2-1.6 3.4-.8 3.6 2.6 5.6 7 4.6 11-.8 3.2-3.4 5.6-6.6 5.8-2.6.2-5.4-1-7.4-2.8z"
+      />
+      <path
+        class="wing-paper"
+        d="M21.6 14.4c2.8.2 6.2 1.8 8 4 1.6 2 1.4 4.8-.4 6.2-1.8 1.4-4.6 1-6.2-.8-1.4-1.6-2.2-3.8-2.6-6z"
+      />
+      <path class="wing-vein" d="M22 13.6L34 5.6M22 13.8L34.6 12.6M21.8 14.6L32 22.6" />
+      <circle class="eyespot" cx="32.4" cy="9.4" r="1.7" />
+      <circle class="eyespot" cx="31.4" cy="20.6" r="1.2" />
+    </g>
+    <ellipse class="body" cx="20" cy="13.6" rx="1.2" ry="6" />
+    <circle class="body" cx="20" cy="6.8" r="1.4" />
+    <path class="feelers" d="M19.6 5.8c-1-1.6-2.2-2.8-3.8-3.4M20.4 5.8c1-1.6 2.2-2.8 3.8-3.4" />
+    <circle class="feelers" cx="15.8" cy="2.4" r="0.5" />
+    <circle class="feelers" cx="24.2" cy="2.4" r="0.5" />
+  </svg>}
+  {kind === 'dragonfly' && <svg viewBox="0 0 50 26">
+    {/* Four wings of glass held out flat, a short body between them, and the long tail
+        along the edge. */}
+    <g class="wing wing-left">
+      <ellipse
+        class="wing-glass"
+        cx="12.4"
+        cy="8.2"
+        rx="10.6"
+        ry="3"
+        transform="rotate(-14 12.4 8.2)"
+      />
+      <ellipse
+        class="wing-glass"
+        cx="12.8"
+        cy="17.2"
+        rx="10"
+        ry="2.8"
+        transform="rotate(12 12.8 17.2)"
+      />
+      <path class="wing-vein" d="M22.2 10.8L2.8 6M22.6 15.2L3.2 19.4" />
+    </g>
+    <g class="wing wing-right">
+      <ellipse class="wing-glass" cx="30" cy="8.2" rx="10.6" ry="3" transform="rotate(14 30 8.2)" />
+      <ellipse
+        class="wing-glass"
+        cx="29.6"
+        cy="17.2"
+        rx="10"
+        ry="2.8"
+        transform="rotate(-12 29.6 17.2)"
+      />
+      <path class="wing-vein" d="M20.2 10.8L39.6 6M19.8 15.2L39.2 19.4" />
+    </g>
+    <circle class="eye" cx="21.2" cy="13.2" rx="2.7" ry="2.5" />
+    <path class="thorax" d="M23.4 11.4c1.8.4 3.2 1 4.2 1.8-1 .8-2.4 1.4-4.2 1.8z" />
+    <path class="abdomen" d="M27.4 12.4c6-.5 12.6-.3 20.8.8-8.2 1.1-14.8 1.3-20.8.8z" />
+    <path
+      class="abdomen-rings"
+      d="M30 12.3l.2 1.9M33.2 12.2l.2 1.9M36.4 12.2l.2 2M39.6 12.3l.2 1.8M42.8 12.4l.2 1.6M45.8 12.6l.2 1.4"
+    />
+    <path class="legs" d="M23.8 14.6l-1.4 2.6M25.8 14.8l.2 2.8M28 14.6l1.6 2.4" />
+  </svg>}
+  {kind === 'spider' && <svg viewBox="0 0 24 40">
+    <path class="thread" d="M12.6 0c-.4 8-.8 16-1 24" />
+    <g class="spider-body">
+      <g class="legs legs-a">
+        <path
+          class="thin"
+          d="M8.6 27.6L3 24.2L1 19.6M8.8 29.6L3 28.6L.6 30.6M9.4 31.4L5.4 34.2L4.6 37.6"
+        />
+      </g>
+      <g class="legs legs-b">
+        <path
+          class="thin"
+          d="M15.4 27.6L21 24.2L23 19.6M15.2 29.6L21 28.6L23.4 30.6M14.6 31.4L18.6 34.2L19.4 37.6"
+        />
+      </g>
+      <ellipse class="body" cx="11.8" cy="31" rx="5.4" ry="5.8" />
+      <path class="body-mark" d="M9.4 28.4c1.4 1.6 3.4 1.6 4.8 0M8.8 31.4c1.8 2 4.2 2 6 0" />
+      <circle class="head" cx="11.8" cy="24.6" r="3.2" />
+      <circle class="eye-light" cx="10.6" cy="24" r="0.5" />
+      <circle class="eye-light" cx="13" cy="24" r="0.5" />
+    </g>
+  </svg>}
+  {kind === 'snail' && <svg viewBox="0 0 40 28">
+    <path
+      class="foot"
+      d="M3.4 24.6c-.9-.4-1.3-1.4-.6-2.3.9-1.2 2.8-1.6 4.6-1.4l22.6.2c2.6-.1 5-.8 6.8-2.4 1.1 1.2 1.7 2.8 1.3 4.4-.6 2.1-3 3-5.6 3.1l-24.6.2c-1.8 0-3.4-.6-4.5-1.8Z"
+    />
+    <path
+      class="foot-shade"
+      d="M5 25.6c6 .6 14.6.6 22.6.2 3.4-.2 6.4-.6 8.8-1.6-1 2.2-3.4 3-6 3l-22.6.2c-1.2 0-2-.7-2.8-1.8Z"
+    />
+    <g class="feelers">
+      <path class="thin" d="M30.2 20.2c1-3.6 2.2-6.8 4-9.6M34.4 20.2c2.4-2.6 4.2-5 5.2-7.2" />
+      <circle class="eye-dot" cx="34.4" cy="10.2" r="1.05" />
+      <circle class="eye-dot" cx="39.8" cy="12.6" r="0.85" />
+    </g>
+    <path class="feelers" d="M28.2 21.2c-1.2-1.2-2.2-2.6-2.8-4" />
+    <g class="shell">
+      <circle class="shell" cx="16" cy="14.2" r="11.4" />
+      <path
+        class="band"
+        d="M7.2 7.4c1.6 4.6 1.4 9.8-.6 14.2M13 4.2c-1.4 6.6-.4 13.6 3 19.4M22.6 4.8c2.4 5.8 2.6 12.6.6 18.6M27 9.2c1 3.2 1.2 6.8.4 10"
+      />
+      <path
+        class="whorl"
+        d="M16 14.2c.4-2.4 3.2-2.6 4-.2.9 3-2 5.6-5 4.8-4-1-5.2-6-2.6-9.2 3.2-4 9.6-3.8 12.6.2 2.2 3.8.8 8.8-3 10.8"
+      />
+      <path class="shell-shine" d="M9 8.6c1.4-2 3.6-3.4 6-3.8" />
+    </g>
+  </svg>}
+  {kind === 'beetle' && <svg viewBox="0 0 32 22">
+    <g class="legs legs-a">
+      <path
+        class="thin"
+        d="M8 8.2L5.4 4.8L2.6 4M6.6 12.2L3.2 12.4L1.2 14.6M8.4 15.8L6.2 18.8L3.4 19.6"
+      />
+    </g>
+    <g class="legs legs-b">
+      <path class="thin" d="M12.6 6.6L12.2 3.2M15.8 15.6L15.4 19M20 14.6L22.6 17.2L25.6 17.6" />
+    </g>
+    <path class="thin feelers" d="M27.6 8.2L30.2 6.4L31.6 6.8M27.8 10L30.8 10.2L31.8 11.2" />
+    <ellipse class="shell" cx="13" cy="11" rx="10.4" ry="7.4" />
+    <path class="shell-split" d="M22.2 11.2L3 11.2" />
+    <path class="shell-shine" d="M6.6 7c2.6-2 6.2-2.6 9.4-1.6" />
+    <path
+      class="shell-dots"
+      d="M8 8.6l.2 0M12.6 7.4l.2 0M17 8.6l.2 0M7.6 13.6l.2 0M12.4 15l.2 0M17 13.8l.2 0"
+    />
+    <ellipse class="head" cx="25.4" cy="11" rx="2.8" ry="2.3" />
+    <path class="legs" d="M26.6 13.2l.6 2.4" />
+  </svg>}
+  {kind === 'cricket' && <svg viewBox="0 0 46 30">
+    {/* Looking left: a long-horned cricket with its folded thigh standing up behind. */}
+    <g class="hind">
+      <path
+        class="hind-leg"
+        d="M22.6 19.4c2.2-5.2 5.8-9.2 10-11.2 1.6-.8 3.2.6 2.6 2.2-1.5 4.2-5 7.8-9.8 10Z"
+      />
+      <path class="hind-shin" d="M34.4 9.6c2 3.6 3.2 8 3.4 13.2" />
+      <path class="hind-shin" d="M37.8 22.8l2.4 3" />
+    </g>
+    <g class="legs legs-a">
+      <path class="thin" d="M14.6 21.4L12.6 24.4L11.8 27.6M18 21.8L17.6 25.2L16.4 28" />
+    </g>
+    <g class="legs legs-b">
+      <path class="thin" d="M21.2 21.6L22 25L21.4 28.2" />
+    </g>
+    <path class="feelers" d="M8 13C5.4 10.8 3.2 7.6 2 4M10 12.2C9 9 8.8 5.4 9.4 2" />
+    <path
+      class="body"
+      d="M6.6 15.4c2.4-3.4 6.8-5.2 11.4-4.6l9.6 1.8c2.6.6 4 2.8 3.2 5-.8 2.4-3.6 3.8-7 3.6l-12.2-.4c-3.6-.2-6-2.6-5-5.4Z"
+    />
+    <path
+      class="wing"
+      d="M19 12.2c4.8.4 9.4 2 12.8 4.8M17.4 15c4.6.4 9 1.6 12.6 3.6M16.4 18c3.8.2 7.4.8 10.8 2.2"
+    />
+    <circle class="head" cx="8.8" cy="14.8" r="3.5" />
+    <circle class="eye-light" cx="7.9" cy="13.8" r="0.55" />
+    <path class="palps" d="M6.2 17.6c-1 .6-1.8 1.4-2.2 2.4" />
+    <path class="body-tail" d="M30.4 15.2c2.6.6 4.8 2 6.4 4M30.8 18.6c2 .6 3.8 1.8 5 3.6" />
   </svg>}
 </span>

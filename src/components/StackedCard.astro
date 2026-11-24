@@ -123,3 +123,8 @@ const cardStyle = `--rot-c: ${dress.tilt.face}deg; --rot-a: ${dress.tilt.a}deg; 
     {mark && !inPaper && <CardMark mark={mark} />}
   </article>
 </div>
+
+<script>
+  // A critter moves only while its card is on screen.
+  import '../scripts/card-critters';
+</script>

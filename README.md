@@ -34,7 +34,7 @@ Built with [Astro](https://astro.build) because it lets me write content in Quar
 Margin notes come from `> margin:` blockquotes in Markdown and are placed by `src/scripts/margin-notes.ts`.
 
 ### The Doodad System
-Random decorative elements that make cards feel more organic. Seeded tilts and offsets, paper stacks, tape, doodles and coffee rings make every card a little different. See `DOODAD_GUIDE.md` for the technical details.
+Random decorative elements that make cards feel more organic. Seeded tilts and offsets, paper stacks, tape, doodles and coffee rings make every card a little different, and a critter (ants, a bee, a butterfly, a spider on its thread, a snail, a mouse at the corner) moves a little while its card is on screen. See `DOODAD_GUIDE.md` for the technical details.
 
 ### The Canopy
 The leaf shadows are SVG masks drawn by `scripts/draw-canopy.mjs`: a soft, high layer and a crisp, low one whose grape and kiwi leaves show their real outlines. The script is seeded, so `node scripts/draw-canopy.mjs` reproduces `public/grotto/canopy-high.svg` and `canopy-low.svg`. CSS supplies the colour, so the same leaves cast green shade by day and stand in front of the torch at night. The motion is transform-only and stops under `prefers-reduced-motion`.

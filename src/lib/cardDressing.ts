@@ -35,7 +35,17 @@ export type Fastener =
   { kind: 'tape'; strips: TapeStrip[] } | { kind: 'pin' | 'clip' | 'staple' | 'none' };
 
 export type CornerMark = 'ring' | 'blot' | 'thumb' | 'stamp' | 'tansy' | 'pencil' | 'mouse';
-export type EdgeMark = 'ants' | 'inchworm' | 'ladybird';
+export type EdgeMark =
+  | 'ants'
+  | 'inchworm'
+  | 'ladybird'
+  | 'bee'
+  | 'butterfly'
+  | 'dragonfly'
+  | 'spider'
+  | 'snail'
+  | 'beetle'
+  | 'cricket';
 export type MarkKind = CornerMark | EdgeMark;
 
 export interface Mark {
@@ -89,48 +99,67 @@ const isCorner = (kind: MarkKind | 'none'): kind is CornerMark =>
 /** Choices with their weights, drawn with one roll */
 type Weights<K> = readonly (readonly [K, number])[];
 
-/** What turns up on each shelf. A cup ring is likelier on a recipe card. */
+/** What turns up on each shelf. A cup ring is likelier on a recipe card, a library's date
+ * stamp only on a catalogue card, and things with wings where there is something to eat. */
 const MARK_WEIGHTS: Record<Material, Weights<MarkKind | 'none'>> = {
   paper: [
-    ['ring', 12],
-    ['blot', 10],
-    ['thumb', 7],
-    ['tansy', 11],
-    ['pencil', 8],
-    ['mouse', 9],
-    ['ants', 7],
-    ['inchworm', 9],
-    ['ladybird', 7],
-    ['none', 16],
-  ],
-  recipe: [
-    ['ring', 18],
-    ['thumb', 12],
-    ['blot', 7],
-    ['tansy', 10],
-    ['mouse', 14],
-    ['ants', 11],
-    ['ladybird', 7],
-    ['none', 21],
-  ],
-  index: [
-    ['stamp', 30],
-    ['ring', 10],
-    ['pencil', 16],
-    ['thumb', 8],
-    ['ants', 8],
-    ['ladybird', 4],
-    ['none', 24],
-  ],
-  tag: [
     ['ring', 10],
     ['blot', 8],
+    ['thumb', 6],
     ['tansy', 10],
-    ['mouse', 10],
-    ['inchworm', 13],
-    ['ants', 10],
-    ['ladybird', 8],
-    ['none', 31],
+    ['pencil', 6],
+    ['mouse', 9],
+    ['ants', 6],
+    ['inchworm', 6],
+    ['ladybird', 5],
+    ['bee', 6],
+    ['butterfly', 5],
+    ['dragonfly', 4],
+    ['spider', 5],
+    ['snail', 5],
+    ['beetle', 5],
+    ['cricket', 5],
+    ['none', 14],
+  ],
+  recipe: [
+    ['ring', 16],
+    ['thumb', 10],
+    ['blot', 6],
+    ['tansy', 9],
+    ['mouse', 13],
+    ['ants', 7],
+    ['inchworm', 5],
+    ['ladybird', 5],
+    ['bee', 6],
+    ['butterfly', 5],
+    ['snail', 6],
+    ['beetle', 4],
+    ['none', 18],
+  ],
+  index: [
+    ['stamp', 28],
+    ['ring', 9],
+    ['pencil', 14],
+    ['thumb', 7],
+    ['ants', 7],
+    ['ladybird', 4],
+    ['spider', 4],
+    ['beetle', 4],
+    ['none', 20],
+  ],
+  tag: [
+    ['ring', 9],
+    ['blot', 7],
+    ['tansy', 9],
+    ['mouse', 9],
+    ['inchworm', 9],
+    ['ants', 8],
+    ['ladybird', 6],
+    ['bee', 6],
+    ['dragonfly', 6],
+    ['cricket', 6],
+    ['snail', 5],
+    ['none', 25],
   ],
 };
 

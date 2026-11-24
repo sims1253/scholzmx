@@ -26,6 +26,42 @@ try {
       const response = await page.goto(`${baseURL}${path}`, { waitUntil: 'networkidle0' });
       assert.equal(response.status(), 200, path);
       assert.ok(await page.title(), `Missing title: ${path}`);
+      if (path === '/research/' || path === '/projects/') {
+        // The critters on these shelves move, and only while their card is on screen: a
+        // card the script has marked still has nothing running.
+        const critters = () =>
+          page.$$eval('.sc-mark-edge, .sc-mark-mouse', (marks) =>
+            marks.map((mark) => ({
+              still: mark.closest('.sc-card').hasAttribute('data-still'),
+              running: mark
+                .getAnimations({ subtree: true })
+                .filter((animation) => animation.playState === 'running').length,
+            }))
+          );
+        const consistent = (list) =>
+          list.every((critter) => (critter.still ? critter.running === 0 : critter.running > 0));
+        const atTop = await critters();
+        assert.ok(
+          atTop.length > 0 && consistent(atTop) && atTop.some((critter) => critter.running > 0),
+          `Critters moving on ${path} at ${width}px: ${JSON.stringify(atTop)}`
+        );
+        // The page scrolls smoothly, so jump: the cards leave the screen at once.
+        await page.evaluate(() =>
+          window.scrollTo({
+            top: document.documentElement.scrollHeight,
+            behavior: 'instant',
+          })
+        );
+        await new Promise((resolve) => setTimeout(resolve, 400));
+        const below = await critters();
+        // On a phone the cards stack, so the first ones have left the screen for good.
+        const stacked = width === 390;
+        assert.ok(
+          consistent(below) && (!stacked || below.some((critter) => critter.still)),
+          `Critters still once scrolled past on ${path} at ${width}px: ${JSON.stringify(below)}`
+        );
+        await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+      }
       if (path === '/' && width === 1440) {
         const client = await page.createCDPSession();
         const { root } = await client.send('DOM.getDocument');
