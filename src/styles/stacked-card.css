@@ -426,9 +426,11 @@
         url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .91 0 0 0 0 .32 0 0 0 0 .06 .35 0 0 0 -.19'/%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23m)'/%3E%3C/svg%3E")
       );
     /* Aged by its unevenness rather than all over: four parts of ochre in the sheet, where
-       there were nine. Its patches and its foxing age it, and its words keep their
-       contrast over the tooth and the mottle. */
-    --sc-sheet: color-mix(in srgb, var(--sc-base) 96%, var(--color-ochre));
+       there were nine, and three by torchlight, where every part lightens the dark paper
+       under pale ink. Its patches and its foxing age it, and its words keep their contrast
+       over the tooth and the mottle. */
+    --sc-sheet: var(--by-day, color-mix(in srgb, var(--sc-base) 96%, var(--color-ochre)))
+      var(--by-torch, color-mix(in srgb, var(--sc-base) 97%, var(--color-ochre)));
     --sc-age:
       var(--sc-mottle) 0 0 / 320px 320px repeat,
       radial-gradient(
