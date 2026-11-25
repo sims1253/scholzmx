@@ -218,15 +218,9 @@ const warmFonts = [
       });
     </script>
 
-    {/* The canopy's far leaves are the largest thing painted on every page. CSS masks
+    {/* The canopy's leaves are the largest thing painted on every page. CSS masks
         are fetched in CORS mode, so the preload is too, or it would download twice. */}
-    <link
-      rel="preload"
-      href="/grotto/canopy-high.svg"
-      as="image"
-      fetchpriority="high"
-      crossorigin
-    />
+    <link rel="preload" href="/grotto/canopy.svg" as="image" fetchpriority="high" crossorigin />
 
     <meta name="theme-color" content="#f2f1e8" />
     <meta name="color-scheme" content="light dark" />
