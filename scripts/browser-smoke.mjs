@@ -85,28 +85,31 @@ function reachOf(marks) {
 }
 
 // What moves in each critter (the "What the critters do" section of stacked-card.css):
-// whether its body, which is the mark itself, and `part`, a selector inside its drawing
-// where one moves. The test holds it, so that a loop deleted from the stylesheet is missed
-// here and not.
+// whether its body, which is the mark itself; and `part`, a selector inside its drawing
+// where one moves, with `of`, how many parts it finds there, so that one part of a group
+// cannot fall out unmissed. The test lists these targets itself, apart from the stylesheet,
+// so that it can detect a loop removed from the stylesheet. The counts are of the drawings
+// on the bench page, which draws every critter (#89).
 const MOVES = {
-  ants: { body: true, part: '.legs' },
+  ants: { body: true, part: '.legs', of: 6 },
   inchworm: { body: true },
-  ladybird: { body: true, part: '.legs' },
-  bee: { body: true, part: '.wing' },
-  butterfly: { body: true, part: '.wing' },
+  ladybird: { body: true, part: '.legs', of: 2 },
+  bee: { body: true, part: '.wing', of: 2 },
+  butterfly: { body: true, part: '.wing', of: 2 },
   dragonfly: { body: true },
-  spider: { body: true, part: '.legs' },
-  snail: { body: true, part: '.feelers' },
-  beetle: { body: true, part: '.legs' },
-  cricket: { part: '.feelers' },
-  mouse: { part: '.mouse-body, .tail' },
+  spider: { body: true, part: '.legs', of: 2 },
+  snail: { body: true, part: '.feelers', of: 2 },
+  beetle: { body: true, part: '.legs', of: 3 },
+  cricket: { part: '.feelers', of: 1 },
+  mouse: { part: '.mouse-body, .tail', of: 2 },
 };
 
 // Each critter on a page, and its card. `stiff` counts its animations that never change
 // what their target paints: a loop written so that it does nothing. `idle` counts what
 // should move (MOVES) that nothing animates: a body without its loop, a part without one,
-// and a part the drawing no longer has. `lost` counts animations the card has that its copy
-// does not. Runs in the page.
+// and parts of a group gone missing. `stray` counts animations on anything but the body and
+// the parts the table names: a part that moves and that the table does not know. `lost`
+// counts animations the card has that its copy does not. Runs in the page.
 function critterState(marks, moves) {
   const cards = [...document.querySelectorAll('.sc-card')];
   const pose = (element) => {
@@ -145,9 +148,15 @@ function critterState(marks, moves) {
     const parts = expected?.part ? [...copy.querySelectorAll(expected.part)] : [];
     const idle = expected
       ? Number(expected.body === true && !animated.has(copy)) +
-        Number(expected.part !== undefined && parts.length === 0) +
+        Math.abs(parts.length - (expected.of ?? 0)) +
         parts.filter((element) => !animated.has(element)).length
       : 1;
+    const stray = expected
+      ? copyAnimations.filter(
+          (animation) =>
+            animation.effect.target !== copy && !parts.includes(animation.effect.target)
+        ).length
+      : 0;
     const lost = mark.getAnimations({ subtree: true }).length - copyAnimations.length;
     copy.remove();
     return {
@@ -158,6 +167,7 @@ function critterState(marks, moves) {
       running,
       stiff,
       idle,
+      stray,
       lost,
       // The observer's margin is a percentage: above and below the window a share of its
       // height, either side a share of its width (card-critters.ts). A card wholly above
@@ -193,6 +203,7 @@ async function checkCritters(page, path, width) {
       (critter) =>
         critter.stiff === 0 &&
         critter.idle === 0 &&
+        critter.stray === 0 &&
         critter.lost === 0 &&
         (critter.still ? critter.running === 0 : critter.running > 0)
     ) &&
