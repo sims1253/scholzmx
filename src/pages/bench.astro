@@ -24,8 +24,8 @@ const kinds = [
 
 // For each, a card that draws it. A card's seed settles its mark, so seeds are tried until
 // one dresses a card with it: on the first shelf that gives it a weight, and on plain paper
-// where such a seed exists, so that nothing else is at stake on the bench. A mark that
-// none of 20,000 seeds on a shelf draws stops the build.
+// where such a seed exists, so that nothing else is at stake on the bench. The build stops
+// only when 20,000 seeds on every shelf that weights the mark draw none of it.
 const cards: { kind: MarkKind; seed: string; material: Material }[] = kinds.map((kind) => {
   // SAFETY: MARK_WEIGHTS is a record keyed by Material, so each of its keys is a Material.
   for (const material of Object.keys(MARK_WEIGHTS) as Material[]) {
