@@ -7,20 +7,25 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import StackedCard from '../components/StackedCard.astro';
 import { dressCard, MARK_WEIGHTS, type Material, type MarkKind } from '../lib/cardDressing';
 
-// Every mark that has a weight on some shelf, in the order the shelves list them.
+// An entry of the table for a mark that some shelf gives a weight above zero.
+const marked = (
+  entry: readonly [MarkKind | 'none', number]
+): entry is readonly [MarkKind, number] => entry[0] !== 'none' && entry[1] > 0;
+
+// Every such mark, in the order the shelves list them.
 const kinds = [
   ...new Set(
     Object.values(MARK_WEIGHTS)
       .flat()
+      .filter(marked)
       .map(([kind]) => kind)
-      .filter((kind) => kind !== 'none')
   ),
 ];
 
 // For each, a card that draws it. A card's seed settles its mark, so seeds are tried until
 // one dresses a card with it: on the first shelf that gives it a weight, and on plain paper
-// where such a seed exists, so that nothing else is at stake on the bench. A mark no seed
-// draws stops the build.
+// where such a seed exists, so that nothing else is at stake on the bench. A mark that
+// none of 20,000 seeds on a shelf draws stops the build.
 const cards: { kind: MarkKind; seed: string; material: Material }[] = kinds.map((kind) => {
   // SAFETY: MARK_WEIGHTS is a record keyed by Material, so each of its keys is a Material.
   for (const material of Object.keys(MARK_WEIGHTS) as Material[]) {
@@ -36,7 +41,9 @@ const cards: { kind: MarkKind; seed: string; material: Material }[] = kinds.map(
     }
     if (any) return { kind, seed: any, material };
   }
-  throw new Error(`No card draws the mark "${kind}": it needs a drawing in CardMark.astro`);
+  throw new Error(
+    `No seed of 20,000 on each shelf that gives the mark "${kind}" a weight drew it: its weight may be too small for the search`
+  );
 });
 ---
 

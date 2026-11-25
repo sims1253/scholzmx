@@ -32,7 +32,7 @@ export default defineConfig({
   },
   integrations: [
     // The bench page (src/pages/bench.astro) is for the test suite, so the sitemap leaves it out.
-    sitemap({ filter: (page) => !new URL(page).pathname.startsWith('/bench') }),
+    sitemap({ filter: (page) => !/^\/bench\/?$/.test(new URL(page).pathname) }),
     pagefind(),
     mathFont(),
   ],
