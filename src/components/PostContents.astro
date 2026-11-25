@@ -43,14 +43,19 @@ const sections = Astro.props.headings.filter((heading) => heading.depth === 2);
     const inMargin = () => getComputedStyle(contents).position === 'fixed';
 
     // The section being read is the last one whose heading has passed the upper third
-    // of the window. The observed band reaches far above the window, so it means "above
-    // that line", and a heading crosses it even when the reader jumps past it. When the
-    // list scrolls inside itself, it brings the current title into view.
+    // of the window, so a heading counts even when the reader jumps past it. When the
+    // list scrolls inside itself, it brings the current title into view. The headings
+    // are measured as the page scrolls and not watched by an IntersectionObserver: while
+    // an observer is watching anything at all, Chrome wakes the main thread on every
+    // frame of a running animation, and the canopy's leaves would stop being free.
+    let current: number | undefined;
     const markCurrent = () => {
       const line = window.innerHeight * 0.35;
-      const current = headings.findLastIndex(
+      const reached = headings.findLastIndex(
         (heading) => heading !== null && heading.getBoundingClientRect().top <= line
       );
+      if (reached === current) return;
+      current = reached;
       links.forEach((link, index) => {
         if (index === current) link.setAttribute('aria-current', 'location');
         else link.removeAttribute('aria-current');
@@ -63,8 +68,6 @@ const sections = Astro.props.headings.filter((heading) => heading.depth === 2);
         }
       }
     };
-    const observer = new IntersectionObserver(markCurrent, { rootMargin: '100000px 0px -65% 0px' });
-    headings.forEach((heading) => heading && observer.observe(heading));
 
     // The rail stands still in the window, so it fades out where it stands once the end
     // of the text rises above its foot, before it could lie over the footer.
@@ -80,9 +83,13 @@ const sections = Astro.props.headings.filter((heading) => heading.depth === 2);
     const onScroll = () => {
       if (!pending) {
         pending = true;
-        requestAnimationFrame(fadeAtEnd);
+        requestAnimationFrame(() => {
+          markCurrent();
+          fadeAtEnd();
+        });
       }
     };
+    markCurrent();
     fadeAtEnd();
     window.addEventListener('scroll', onScroll, { passive: true });
 
