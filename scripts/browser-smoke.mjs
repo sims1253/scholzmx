@@ -46,8 +46,11 @@ function tileOf(image) {
 // it. The last row of the matrix is the grain's strength.
 function matrixOf(tile) {
   const cut = / values='([^']*)'/.exec(tile ?? '');
-  const matrix = cut?.[1].split(' ').map(Number);
-  return matrix?.length === 20 ? { matrix, rest: tile.replace(cut[0], '') } : null;
+  // Trimmed first: an empty entry would count as a zero, since Number('') is 0.
+  const matrix = cut?.[1].trim().split(/\s+/).map(Number);
+  return matrix?.length === 20 && matrix.every(Number.isFinite)
+    ? { matrix, rest: tile.replace(cut[0], '') }
+    : null;
 }
 
 // Whether one tile is another at half the strength: the same tile in every other part.
