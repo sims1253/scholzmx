@@ -30,7 +30,12 @@ export default defineConfig({
     // Redirect old blog listing page to new one
     '/post/': '/blog/',
   },
-  integrations: [sitemap(), pagefind(), mathFont()],
+  integrations: [
+    // The bench page (src/pages/bench.astro) is for the test suite, so the sitemap leaves it out.
+    sitemap({ filter: (page) => !new URL(page).pathname.startsWith('/bench') }),
+    pagefind(),
+    mathFont(),
+  ],
   // Enable automatic image optimization
   image: {
     service: {

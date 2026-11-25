@@ -16,6 +16,9 @@ import { createSeededRng } from '../scripts/seeded';
 
 export type Material = 'paper' | 'index' | 'tag' | 'recipe';
 
+// The bench page (src/pages/bench.astro) draws a card for every mark, so it reads the table.
+export { MARK_WEIGHTS };
+
 export type Tint = 'plain' | 'cream' | 'sage' | 'aged' | 'grey';
 export type Ruling = 'plain' | 'margin' | 'ruled' | 'squared' | 'binder';
 export type Edge = 'cut' | 'torn' | 'deckle';

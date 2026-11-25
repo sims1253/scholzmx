@@ -1,0 +1,99 @@
+---
+// A bench for the test suite: one card for every mark a card can draw, so that whatever the
+// suite checks of a card's marks it checks on each of them, and not only on those the
+// listings happen to draw. It is not for visitors: no menu leads here, the sitemap leaves it
+// out, and it asks search engines not to index it.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import StackedCard from '../components/StackedCard.astro';
+import { dressCard, MARK_WEIGHTS, type Material, type MarkKind } from '../lib/cardDressing';
+
+// Every mark that has a weight on some shelf, in the order the shelves list them.
+const kinds = [
+  ...new Set(
+    Object.values(MARK_WEIGHTS)
+      .flat()
+      .map(([kind]) => kind)
+      .filter((kind) => kind !== 'none')
+  ),
+];
+
+// For each, a card that draws it. A card's seed settles its mark, so seeds are tried until
+// one dresses a card with it: on the first shelf that gives it a weight, and on plain paper
+// where such a seed exists, so that nothing else is at stake on the bench. A mark no seed
+// draws stops the build.
+const cards: { kind: MarkKind; seed: string; material: Material }[] = kinds.map((kind) => {
+  // SAFETY: MARK_WEIGHTS is a record keyed by Material, so each of its keys is a Material.
+  for (const material of Object.keys(MARK_WEIGHTS) as Material[]) {
+    const drawn = MARK_WEIGHTS[material].some(([mark, weight]) => mark === kind && weight > 0);
+    if (!drawn) continue;
+    let any: string | undefined;
+    for (let attempt = 0; attempt < 20_000; attempt += 1) {
+      const seed = `bench/${kind}/${attempt}`;
+      const dressing = dressCard(seed, { material });
+      if (dressing.mark?.kind !== kind) continue;
+      if (dressing.ruling === 'plain') return { kind, seed, material };
+      any ??= seed;
+    }
+    if (any) return { kind, seed: any, material };
+  }
+  throw new Error(`No card draws the mark "${kind}": it needs a drawing in CardMark.astro`);
+});
+---
+
+<BaseLayout
+  title="Every mark"
+  description="One card for every mark a card can draw: a bench for the test suite."
+  layout="cards"
+>
+  <meta name="robots" content="noindex" slot="head" />
+  <div class="bench">
+    <header class="page-header">
+      <h1 class="page-title">Every mark</h1>
+      <p class="page-lede">
+        One card for every mark a card can draw. This page is a bench for the test suite; no menu
+        leads here.
+      </p>
+    </header>
+    <div class="bench-cards sc-desk">
+      {cards.map(({ kind, seed, material }) => <div class="bench-cell">
+        <p class="bench-name">{kind}</p>
+        <StackedCard seed={seed} material={material} title={kind} subtitle="A bench card" />
+      </div>)}
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  /* The header and the cards share one centred column, as the project board does. */
+  .bench {
+    width: 100%;
+    max-width: 60rem;
+    margin-inline: auto;
+  }
+
+  /* A desk of small cards: as many columns as fit. */
+  .bench-cards {
+    --desk-min: 16rem;
+    padding-block: 1rem 4rem;
+  }
+  /* A card's tape, or a sheet under it, may overhang its cell. The listings leave room for
+     it in the page's own margin; on a phone there is none to spare, so the bench keeps its own. */
+  @media (max-width: 40rem) {
+    .bench-cards {
+      padding-inline: 1.5rem;
+    }
+  }
+
+  .bench-cell {
+    display: grid;
+    gap: 1.25rem;
+    align-content: start;
+    min-width: 0;
+  }
+  .bench-name {
+    margin: 0;
+    font-size: var(--text-sm);
+    font-style: italic;
+    color: var(--color-text-muted);
+  }
+</style>

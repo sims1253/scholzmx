@@ -16,9 +16,11 @@ try {
   page.on('response', (response) => {
     if (response.status() >= 400) errors.push(`${response.status()} ${response.url()}`);
   });
+  // The posts, and the bench that draws a card for every mark (src/pages/bench.astro).
   const blogPaths = [...globSync('**/index.html', { cwd: 'dist/blog' })]
     .filter((path) => path !== 'index.html')
-    .map((path) => `/blog/${path.replace(/index\.html$/, '')}`);
+    .map((path) => `/blog/${path.replace(/index\.html$/, '')}`)
+    .concat('/bench/');
   const paths = ['/', '/blog/', '/recipes/', '/research/', '/projects/', ...blogPaths];
   for (const width of [1440, 1280, 390]) {
     await page.setViewport({ width, height: 844 });

@@ -4,6 +4,11 @@ Every listing card is a sheet of paper lying on a desk, and no two sheets are th
 `src/lib/cardDressing.ts` decides, from the card's seed, how a sheet lies and what has
 happened to it. The same seed always gives the same card, so nothing flickers on load.
 
+Every mark a card can draw is drawn on one page, `/bench/` (`src/pages/bench.astro`): a bench
+for the test suite, which no menu leads to and the sitemap leaves out. `bun run test:browser`
+visits it, so whatever the suite checks of a card's marks it checks on every mark, and not only
+on those the listings happen to draw.
+
 ## What varies
 
 - **Where it lies:** tilt, a shift off its grid cell, which neighbour it lies on. The
