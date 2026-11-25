@@ -26,6 +26,12 @@
     }
   }
 
+  /* Half the torchlit tooth, for paper laid on the desk that carries pale ink (the sheets
+     of the listing cards, stacked-card.css): light grain under pale ink costs most. */
+  body {
+    --paper-tooth-faint: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 .1 0 0 0 -.035'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
   /* A print is a sheet held by two strips (prose.css). On the sheet the picture sits
      like an engraving: a hairline keyline round it and, a little further out, the
      pressed rectangle a printer's plate leaves in the paper. The mark is three shadows
