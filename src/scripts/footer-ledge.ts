@@ -68,21 +68,40 @@ function init(): void {
   };
   placeSnail();
 
-  const observer = new IntersectionObserver(
-    (entries) => {
-      if (!entries.some((entry) => entry.isIntersecting)) return;
-      lantern?.classList.add('is-fluttering');
-      if (!snail) return;
-      // At the far end the snail starts over from the left, without crawling back.
-      const wrap = progress + SNAIL_STEP > 1;
-      progress = wrap ? 0 : progress + SNAIL_STEP;
-      rememberSnail(progress);
-      snail.classList.toggle('is-crawling', !wrap);
-      placeSnail();
-    },
-    { threshold: 0.4 }
-  );
-  observer.observe(ledge);
+  const arrive = () => {
+    lantern?.classList.add('is-fluttering');
+    if (!snail) return;
+    // At the far end the snail starts over from the left, without crawling back.
+    const wrap = progress + SNAIL_STEP > 1;
+    progress = wrap ? 0 : progress + SNAIL_STEP;
+    rememberSnail(progress);
+    snail.classList.toggle('is-crawling', !wrap);
+    placeSnail();
+  };
+
+  // The ledge has come into view when two fifths of it are in the window. A scroll
+  // listener keeps watch and not an IntersectionObserver: while an observer is watching
+  // anything at all, Chrome wakes the main thread on every frame of a running animation
+  // to see whether the answer has changed, and the canopy's leaves at the top of the
+  // page would stop being free. This measures once per scrolled frame and no more.
+  let inView = false;
+  let pending = false;
+  const look = () => {
+    pending = false;
+    const { top, bottom, height } = ledge.getBoundingClientRect();
+    const shown = Math.min(bottom, window.innerHeight) - Math.max(top, 0);
+    const now = height > 0 && shown >= height * 0.4;
+    if (now && !inView) arrive();
+    inView = now;
+  };
+  const watch = () => {
+    if (pending) return;
+    pending = true;
+    requestAnimationFrame(look);
+  };
+  window.addEventListener('scroll', watch, { passive: true });
+  window.addEventListener('resize', watch, { passive: true });
+  watch();
 }
 
 init();
