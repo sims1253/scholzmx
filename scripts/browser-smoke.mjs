@@ -87,9 +87,13 @@ function ruledAlignmentOf(cards) {
     );
     const positions = faceStyle.backgroundPosition.split(',');
     const ruleLayer = images.findIndex((image, at) => {
-      const y = Number.parseFloat(positions[at]?.trim().split(/\s+/)[1] ?? '0');
+      const yStr = positions[at]?.trim().split(/\s+/)[1] ?? '';
+      const y = Number.parseFloat(yStr);
       return (
-        (image.includes('linear-gradient') || image.includes('radial-gradient')) && y > 10 && y < 70
+        yStr.endsWith('px') &&
+        (image.includes('linear-gradient') || image.includes('radial-gradient')) &&
+        y > 10 &&
+        y < 70
       );
     });
     if (ruleLayer === -1) {
