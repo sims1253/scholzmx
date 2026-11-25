@@ -107,9 +107,9 @@ const MOVES = {
 // Each critter on a page, and its card. `stiff` counts its animations that never change
 // what their target paints: a loop written so that it does nothing. `idle` counts what
 // should move (MOVES) that nothing animates: a body without its loop, a part without one,
-// and parts of a group gone missing. `stray` counts animations on anything but the body and
-// the parts the table names: a part that moves and that the table does not know. `lost`
-// counts animations the card has that its copy does not. Runs in the page.
+// and parts of a group gone missing. `stray` counts animations on anything but a body the
+// table says moves and the parts it names: a part that moves and that the table does not
+// know. `lost` counts animations the card has that its copy does not. Runs in the page.
 function critterState(marks, moves) {
   const cards = [...document.querySelectorAll('.sc-card')];
   const pose = (element) => {
@@ -152,10 +152,10 @@ function critterState(marks, moves) {
         parts.filter((element) => !animated.has(element)).length
       : 1;
     const stray = expected
-      ? copyAnimations.filter(
-          (animation) =>
-            animation.effect.target !== copy && !parts.includes(animation.effect.target)
-        ).length
+      ? copyAnimations.filter((animation) => {
+          const target = animation.effect.target;
+          return target === copy ? expected.body !== true : !parts.includes(target);
+        }).length
       : 0;
     const lost = mark.getAnimations({ subtree: true }).length - copyAnimations.length;
     copy.remove();
