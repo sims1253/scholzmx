@@ -39,14 +39,14 @@ const linkLabel = (kind: string) => (kind === 'pdf' || kind === 'doi' ? kind.toU
         material="index"
         headingLevel={2}
       >
-        <p class="pub-call" slot="media">
+        <p class="pub-call sc-line" slot="media">
           <span class="pub-year">{pub.year}</span>
           <span>{kindOf(pub.type)}</span>
         </p>
-        <p class="pub-authors">
+        <p class="pub-authors sc-line">
           <Series items={pub.authors.map((text) => ({ text, strong: text === SELF }))} />
         </p>
-        <p class="pub-venue">{pub.venue}</p>
+        <p class="pub-venue sc-line">{pub.venue}</p>
         <div class="sc-meta">
           <div class="sc-tags">
             {Object.entries(pub.links).map(([kind, url]) => <a class="sc-chip" href={url}>
@@ -78,15 +78,16 @@ const linkLabel = (kind: string) => (kind === 'pdf' || kind === 'doi' ? kind.toU
   }
 
   /* The heading line of a catalogue card: the year as call number, the kind of work
-     at the right, and the card's printed clay rule beneath. */
+     at the right. It is the sheet's first line (.sc-line in stacked-card.css), and the
+     card's printed clay rule is the line it sits above. The kind of work sets the line;
+     the larger year is set solid, so it sits on the same line without opening it. */
   .pub-call {
+    --baseline-drop: var(--baseline-drop-personal);
+
     display: flex;
     justify-content: space-between;
     align-items: baseline;
     gap: var(--space-sm);
-    margin: 0 0 var(--space-xs);
-    padding-bottom: 0.2rem;
-    border-bottom: 1px solid color-mix(in srgb, var(--color-clay) 45%, transparent);
     font-family: var(--font-body-personal);
     font-size: var(--text-sm);
     font-style: italic;
@@ -97,12 +98,12 @@ const linkLabel = (kind: string) => (kind === 'pdf' || kind === 'doi' ? kind.toU
     font-family: var(--font-heading);
     font-size: var(--text-lg);
     font-style: normal;
+    line-height: 1;
     font-variant-numeric: oldstyle-nums;
     color: var(--sc-moss);
   }
 
   .pub-authors {
-    margin: 0.2rem 0 0;
     font-size: var(--text-sm);
     color: var(--color-text-secondary);
   }
@@ -113,7 +114,6 @@ const linkLabel = (kind: string) => (kind === 'pdf' || kind === 'doi' ? kind.toU
   }
 
   .pub-venue {
-    margin: 0;
     font-size: var(--text-sm);
     font-style: italic;
     color: var(--color-text-muted);

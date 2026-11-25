@@ -65,6 +65,79 @@ function halfStrength(one, other) {
   );
 }
 
+// How ruled, binder, squared and dotted sheets place their words above their lines or
+// dots: every word's baseline sits a couple of pixels above its rule or dot row, never
+// cut by it and never drifting off pitch. Runs in the page.
+function ruledAlignmentOf(cards) {
+  const style = document.createElement('style');
+  style.textContent =
+    '* { transition: none !important; animation: none !important } .line-mark { display: inline-block; width: 0; height: 0 }';
+  document.head.append(style);
+  const results = cards.map((card) => {
+    card.style.setProperty('--sc-turn', '0deg');
+    card.style.setProperty('--sc-lift', '0px');
+    const content = card.querySelector('.sc-content');
+    const face = card.querySelector('.sc-face');
+    const pitch = Number.parseFloat(
+      getComputedStyle(content.querySelector('.sc-title') || content).lineHeight
+    );
+    const faceStyle = getComputedStyle(face);
+    const images = faceStyle.backgroundImage.split(
+      /,\s*(?=(?:url\("|(?:repeating-)?(?:linear|radial|conic)-gradient\(|none\b))/
+    );
+    const positions = faceStyle.backgroundPosition.split(',');
+    const ruleLayer = images.findIndex((image, at) => {
+      const y = Number.parseFloat(positions[at]?.trim().split(/\s+/)[1] ?? '0');
+      return (
+        (image.includes('linear-gradient') || image.includes('radial-gradient')) && y > 10 && y < 70
+      );
+    });
+    if (ruleLayer === -1) {
+      throw new Error(`${card.dataset.ruling}: rule layer not found`);
+    }
+    const ruleTop = Number.parseFloat(positions[ruleLayer].trim().split(/\s+/)[1]);
+    const period =
+      card.dataset.ruling === 'squared' || card.dataset.ruling === 'dotted' ? pitch / 2 : pitch;
+    const texts = [];
+    const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT);
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) texts.push(node);
+    for (const node of texts) {
+      if (!/\S/.test(node.data)) continue;
+      const frag = document.createDocumentFragment();
+      node.data.split(/(\s+)/).forEach((part, index) => {
+        if (index % 2) frag.append(part);
+        else if (part) {
+          frag.append(part);
+          const mark = document.createElement('i');
+          mark.className = 'line-mark';
+          frag.append(mark);
+        }
+      });
+      node.replaceWith(frag);
+    }
+    const faceTop = face.getBoundingClientRect().top + 1;
+    const baselines = [...content.querySelectorAll('.line-mark')].map(
+      (mark) => mark.getBoundingClientRect().bottom - faceTop
+    );
+    const gaps = baselines.map((baseline) => {
+      const rel = (((ruleTop - baseline) % period) + period) % period;
+      return rel > period / 2 ? rel - period : rel;
+    });
+    const minGap = Math.min(...gaps);
+    const maxGap = Math.max(...gaps);
+    return {
+      ruling: card.dataset.ruling,
+      title: content.querySelector('.sc-title')?.textContent?.trim().slice(0, 28),
+      minGap: Math.round(minGap * 100) / 100,
+      maxGap: Math.round(maxGap * 100) / 100,
+      spread: Math.round((maxGap - minGap) * 100) / 100,
+      overflow: Math.round((content.offsetHeight - face.clientHeight) * 100) / 100,
+    };
+  });
+  style.remove();
+  return results;
+}
+
 const baseURL = process.env.SITE_TEST_URL || 'http://127.0.0.1:4321';
 const browser = await puppeteer.launch({
   headless: true,
@@ -238,6 +311,25 @@ try {
         await page.evaluate(() => document.documentElement.scrollWidth > innerWidth),
         false,
         `Horizontal overflow: ${path} at ${width}px`
+      );
+      assert.equal(
+        await page.$$eval('.sc-mark-ants', (elements) => elements.length),
+        0,
+        `Ants mark should not render on ${path} at ${width}px`
+      );
+      // Every ruled, binder, squared and dotted sheet (outside top-strip hero cards whose
+      // 8/3 image height scales continuously with width) keeps its baselines a couple of
+      // pixels above its lines or dots with tight consistency and no clipping.
+      const lined = await page.$$eval(
+        '.sc-card:is([data-ruling="ruled"], [data-ruling="binder"], [data-ruling="squared"], [data-ruling="dotted"]):not(:has(.sc-media:not(.nc-thumb)))',
+        ruledAlignmentOf
+      );
+      assert.ok(
+        lined.every(
+          (sheet) =>
+            sheet.minGap >= 1.5 && sheet.maxGap <= 4.8 && sheet.spread <= 1.2 && sheet.overflow <= 0
+        ),
+        `Writing misaligned on ${path} at ${width}px: ${JSON.stringify(lined)}`
       );
     }
   }

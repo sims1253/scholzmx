@@ -81,14 +81,6 @@ const tansyStalks = tansyHeads
 const tansyLeaves =
   fern(13.5, 49, -152, 12) + fern(18, 41.5, -6, 12.5) + fern(22, 34.5, -168, 9, 4);
 
-/** Ants as their place along the trail; the one in front sets off first */
-const TRAILS: Record<1 | 2 | 3, { x: number; load?: 'crumb' | 'leaf' }[]> = {
-  1: [{ x: 2 }, { x: 19 }, { x: 42, load: 'crumb' }],
-  2: [{ x: 6 }, { x: 31, load: 'leaf' }],
-  3: [{ x: -2 }, { x: 17 }, { x: 38 }, { x: 57 }],
-};
-const trail = TRAILS[variant];
-
 /** Ladybird spots as [cx, cy, r] */
 const SPOTS: Record<1 | 2 | 3, [number, number, number][]> = {
   1: [
@@ -227,28 +219,6 @@ const SPOTS: Record<1 | 2 | 3, [number, number, number][]> = {
     <path class="scrap" d="M5 27l5.5-2.2 2.2 4.5-5.7 2.2Z" />
     <path class="thin" d="M9.5 27.3c1.2.9 2.6.9 3.8 0" />
   </svg>}
-  {kind === 'ants' &&
-    trail.map(({ x, load }, i) => <span
-      class="roam ant"
-      style={`left: ${n(x * 0.53) / 10}rem; --lag: ${n((trail.length - 1 - i) * 0.7)}s`}
-    >
-      <svg viewBox="0 0 14 12">
-        <path
-          class="thin"
-          d="M2 9l-1.2 3M4.2 9l.3 3M6.5 9l1.5 2.8M2 6L.8 3M4.2 6l.3-3M6.5 6L8 3.2"
-        />
-        <circle class="fill" cx="1.6" cy="7.5" r="1.8" />
-        <circle class="fill" cx="4.5" cy="7.5" r="1.1" />
-        <ellipse class="fill" cx="8" cy="7.5" rx="2.3" ry="1.6" />
-        {load === 'crumb' && <path class="crumb" d="M12 2l5-1 1 4-4 2Z" />}
-        {load === 'leaf' && (
-          <path class="leaf-bit" d="M11.5 5c0-3.5 3-5.5 7.5-5 0 4-3 6.5-7.5 5Z" />
-        )}
-      </svg>
-      <svg class="feel" viewBox="0 0 14 12">
-        <path class="thin" d="M10 6.5c1-.5 2-1.5 2.5-3M10 8.5c1 .3 2 1 2.8 2" />
-      </svg>
-    </span>)}
   {kind === 'inchworm' && <span class="roam">
     <svg class="arch" viewBox="0 0 34 20">
       <path class="worm" d="M4 18c0-9 5-14 11-14s10 5 11 13" />

@@ -40,6 +40,14 @@
   --dropcap-color-background: var(--color-moss);
   --dropcap-color-foreground: var(--color-ink-dark);
 
+  /* How far below the middle of its line a face's baseline lies, in em: half of ascent
+     less descent. A line of any height centres the two, so this is what it takes to
+     set text of both faces, at any size, on one set of ruled lines (stacked-card.css).
+     --baseline-drop follows the body face (base.css). */
+  --baseline-drop-personal: 0.3368; /* Alegreya: (1.02 - 0.3464) / 2 */
+  --baseline-drop-serious: 0.2948; /* ET Book: (0.8991 - 0.3096) / 2 */
+  --baseline-drop: var(--baseline-drop-personal);
+
   /* Typography spacing */
   --spacing-line-height: 1.6;
 }

@@ -18,7 +18,7 @@ import { createSeededRng } from '../scripts/seeded';
 export type Material = 'paper' | 'index' | 'tag' | 'recipe';
 
 export type Tint = 'plain' | 'cream' | 'sage' | 'aged' | 'grey';
-export type Ruling = 'plain' | 'margin' | 'ruled' | 'squared' | 'binder';
+export type Ruling = 'plain' | 'margin' | 'ruled' | 'squared' | 'dotted' | 'binder';
 export type Edge = 'cut' | 'torn' | 'deckle';
 export type Fold = 'tr' | 'bl' | 'br';
 
@@ -36,7 +36,7 @@ export type Fastener =
   { kind: 'tape'; strips: TapeStrip[] } | { kind: 'pin' | 'clip' | 'staple' | 'none' };
 
 export type CornerMark = 'ring' | 'blot' | 'thumb' | 'stamp' | 'tansy' | 'pencil' | 'mouse';
-export type EdgeMark = 'ants' | 'inchworm' | 'ladybird' | 'snail' | 'bee' | 'beetle' | 'moth';
+export type EdgeMark = 'inchworm' | 'ladybird' | 'snail' | 'bee' | 'beetle' | 'moth';
 export type MarkKind = CornerMark | EdgeMark;
 
 export interface Mark {
@@ -100,12 +100,11 @@ const MARK_WEIGHTS: Record<Material, Weights<MarkKind | 'none'>> = {
     ['tansy', 10],
     ['pencil', 8],
     ['mouse', 8],
-    ['ants', 5],
-    ['inchworm', 5],
-    ['ladybird', 5],
-    ['snail', 5],
-    ['bee', 4],
-    ['beetle', 4],
+    ['inchworm', 7],
+    ['snail', 7],
+    ['ladybird', 6],
+    ['bee', 5],
+    ['beetle', 5],
     ['moth', 4],
     ['none', 14],
   ],
@@ -115,32 +114,31 @@ const MARK_WEIGHTS: Record<Material, Weights<MarkKind | 'none'>> = {
     ['blot', 6],
     ['tansy', 9],
     ['mouse', 13],
-    ['ants', 8],
+    ['snail', 8],
+    ['inchworm', 5],
     ['ladybird', 5],
     ['bee', 6],
-    ['snail', 4],
-    ['none', 19],
+    ['none', 18],
   ],
   index: [
     ['stamp', 30],
     ['ring', 10],
     ['pencil', 16],
     ['thumb', 8],
-    ['ants', 4],
-    ['ladybird', 3],
-    ['beetle', 4],
-    ['moth', 5],
-    ['none', 20],
+    ['ladybird', 4],
+    ['beetle', 5],
+    ['moth', 6],
+    ['snail', 2],
+    ['none', 19],
   ],
   tag: [
     ['ring', 9],
     ['blot', 7],
     ['tansy', 9],
     ['mouse', 9],
-    ['inchworm', 6],
-    ['ants', 6],
+    ['inchworm', 9],
+    ['snail', 9],
     ['ladybird', 5],
-    ['snail', 6],
     ['beetle', 6],
     ['bee', 4],
     ['moth', 4],
@@ -175,11 +173,12 @@ const FASTENER_WEIGHTS: Record<Material, Weights<FastenerChoice>> = {
 
 const RULING_WEIGHTS: Record<Material, Weights<Ruling>> = {
   paper: [
-    ['plain', 22],
-    ['margin', 22],
-    ['ruled', 22],
-    ['squared', 17],
-    ['binder', 17],
+    ['plain', 18],
+    ['margin', 18],
+    ['ruled', 20],
+    ['squared', 15],
+    ['dotted', 14],
+    ['binder', 15],
   ],
   recipe: [
     ['plain', 55],

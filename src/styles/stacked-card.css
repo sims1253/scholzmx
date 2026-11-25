@@ -24,6 +24,10 @@
     --desk-row-gap: 2.5rem;
     --desk-col-gap: 2.25rem;
     --desk-scatter: 1;
+
+    /* The lines every sheet is written on lie this far apart (see "The words"). It is
+       one length for the whole desk, since the sheets in a row share their height. */
+    --sc-pitch: 1.5rem;
   }
 
   @media (max-width: 40rem) {
@@ -70,6 +74,9 @@
     --sc-base: var(--paper-sheet);
     --sc-sheet: var(--sc-base);
     --sc-sheet-back: color-mix(in srgb, var(--sc-sheet) 92%, var(--color-ink-dark));
+    /* Start the desk tooth at a different spot on each card, so adjacent sheets never
+       repeat the exact same grain. */
+    --sc-tooth-at: calc(var(--place-x, 0rem) * 90) calc(var(--place-y, 0rem) * 130);
     --sc-lift: 0px;
     --sc-turn: var(--rot-c, 0deg);
     /* Moss ink a shade nearer the body ink, so it keeps AA on every tint */
@@ -81,6 +88,7 @@
     flex: 1;
     flex-direction: column;
     margin-bottom: calc(var(--short, 0rem) * var(--desk-scatter));
+    margin-bottom: round(nearest, calc(var(--short, 0rem) * var(--desk-scatter)), var(--sc-pitch));
     transform: translateY(calc(var(--sc-lift) * -1)) rotate(var(--sc-turn));
     transition: transform 0.24s var(--sc-ease);
   }
@@ -114,12 +122,14 @@
     border-radius: 2px;
     /* Each layer carries its own place and size: the ruling may be one layer or two. The
        tooth is the desk's own (src/styles/paper.css), so a sheet is the paper it lies on,
-       and its ruling lies in that tooth as printed ink would. */
+       and its ruling lies in that tooth as printed ink would. Card stock may add a faint
+       surface via --sc-stock. */
     background:
       var(--sc-print, none),
       var(--sc-age, none),
       var(--sc-rule, none),
-      var(--sc-tooth) 0 0 / 256px 256px repeat,
+      var(--sc-stock, none) var(--sc-tooth-at) / 256px 256px repeat,
+      var(--sc-tooth) var(--sc-tooth-at) / 256px 256px repeat,
       var(--sc-sheet);
     border: 1px solid var(--sc-edge);
     box-shadow: var(--shadow-md);
@@ -199,6 +209,29 @@
 
   /* ===== The words ===== */
 
+  /* Every sheet is written on lines, whether its ruling shows them or not. The lines lie
+     one --sc-pitch apart. Each block of words has lines exactly that tall, and blocks
+     follow one another with no gap or with whole lines skipped, so every line of words
+     is a line of the sheet. A larger size (the title) keeps the same lines and simply
+     fills more of them, as handwriting does.
+
+     Where a baseline falls in its line depends on face and size: a line centres the
+     face's ascent and descent, which leaves the baseline --baseline-drop em below the
+     middle of the line (tokens.typography.css). Each block is moved by the difference,
+     so that every baseline lies --sc-sit below the top of its line, a couple of pixels
+     (--sc-rule-gap) above the ruling (see "The paper") so the rule never cuts through
+     the bottoms of rounded letters. A block that sets its own face sets --baseline-drop
+     beside it.
+
+     On one line there is one size that sets the line's height: anything else on it
+     (a larger year, a link in another face) is set solid, so it cannot push the line
+     open. Pages put .sc-line on their own blocks of words. */
+  .sc-card {
+    --sc-sit: calc(var(--sc-pitch) * 0.62);
+    --sc-rule-gap: 0.16rem;
+    --sc-pad-top: calc(var(--space-sm) + 4px);
+  }
+
   .sc-content {
     position: relative;
     z-index: 1;
@@ -206,16 +239,23 @@
     flex: 1;
     flex-direction: column;
     min-width: 0;
-    padding: calc(var(--space-sm) + 4px) var(--space-md) var(--space-sm);
+    padding: var(--sc-pad-top) var(--space-md) var(--space-sm);
   }
 
-  .sc-title {
-    margin: 0 0 0.15rem;
-    padding-top: 2px;
+  .sc-card .sc-title,
+  .sc-card .sc-subtitle,
+  .sc-card .sc-line {
+    margin-block: calc(var(--sc-sit) - var(--sc-pitch) / 2 - var(--baseline-drop) * 1em)
+      calc(var(--sc-pitch) / 2 + var(--baseline-drop) * 1em - var(--sc-sit));
+    line-height: var(--sc-pitch);
+  }
+
+  .sc-card .sc-title {
+    --baseline-drop: var(--baseline-drop-personal);
+
     font-family: var(--font-heading);
     font-style: normal;
     font-size: var(--text-lg);
-    line-height: 1.25;
     color: var(--color-walnut);
     text-wrap: balance;
   }
@@ -245,56 +285,66 @@
     color: var(--color-link-hover);
   }
 
-  .sc-subtitle {
-    margin: 0;
+  .sc-card .sc-subtitle {
     color: var(--color-ink-light);
     font-size: var(--text-sm);
   }
 
-  /* The footer line (dates, tags, links) settles on the sheet's bottom edge, so cards
-     in one row end on one line. */
-  .sc-meta {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0.1rem 0.9rem;
+  /* The footer line (dates, tags, links) skips a line and settles on the last line of
+     the sheet, so cards in one row end on one line. That works because every sheet in
+     a row is a whole number of lines long: each block above is, the footer's own room
+     is (even where a mark or a print asks it for more), and so is the --short a sheet
+     stops above the foot of its row.
+
+     Its words run on as one line of text and wrap where they must. Its auto margin is
+     taken, so it is moved onto its baseline by an offset instead of a pair of margins. */
+  .sc-card .sc-meta {
+    position: relative;
+    top: calc(var(--sc-sit) - var(--sc-pitch) / 2 - var(--baseline-drop) * 1em);
+    align-content: end;
+    min-height: calc(var(--sc-pitch) * 2);
     margin-top: auto;
-    padding-top: var(--space-xs);
+    padding-top: var(--sc-pitch);
+    font-size: var(--text-xs);
+    line-height: var(--sc-pitch);
   }
 
-  /* Date and tags run on as one line where they fit */
-  .sc-meta > .sc-tags {
-    display: contents;
+  .sc-card .sc-meta > p {
+    display: inline;
+    margin: 0 0.9rem 0 0;
+    line-height: 1;
   }
 
   /* The date as the post gives it: a sentence in the annotating hand, not a form field. */
   .sc-dates {
-    margin: 0;
     font-family: var(--font-body-personal);
     font-size: var(--text-xs);
     font-style: italic;
-    line-height: 1.4;
     color: var(--color-text-muted);
     font-variant-numeric: oldstyle-nums;
   }
 
-  /* Tags read like entries in a book's index */
+  /* Tags read like entries in a book's index, and run on after the date */
   .sc-tags {
-    display: flex;
-    flex-wrap: wrap;
-    margin-top: 0.35rem;
-    gap: 0.1rem 0.9rem;
+    display: contents;
   }
 
   .sc-chip {
     position: relative;
     z-index: 3;
+    display: inline-block;
+    margin-right: 0.9rem;
     font-size: var(--text-xs);
+    line-height: 1;
     color: var(--color-link);
     text-decoration: underline;
     text-decoration-color: color-mix(in srgb, currentcolor 35%, transparent);
     text-decoration-thickness: 1px;
     text-underline-offset: 0.18em;
+  }
+
+  .sc-tags > .sc-chip:last-child {
+    margin-right: 0;
   }
 
   .sc-chip:hover {
@@ -363,8 +413,9 @@
   }
 
   .sc-card:has(.nc-thumb) .sc-meta {
-    /* the print, its tape and a little air above */
-    min-height: calc(var(--sc-thumb) * 0.75 + 1.4rem);
+    /* the print, its tape and a little air above, in whole lines */
+    min-height: calc(var(--sc-pitch) * 5);
+    min-height: round(up, calc(var(--sc-thumb) * 0.75 + 1.4rem), var(--sc-pitch));
     padding-right: calc(var(--sc-thumb) + var(--space-sm));
   }
 
@@ -376,8 +427,8 @@
     z-index: 1;
     width: 2.2rem;
     height: 0.85rem;
-    background: var(--tape-strip);
-    opacity: 0.88;
+    background: var(--tape-surface), var(--tape-strip);
+    opacity: 0.85;
     box-shadow: 0 1px 1px color-mix(in srgb, var(--color-ink-dark) 12%, transparent);
     transform: translateX(-50%) rotate(calc(var(--rot-a, -1deg) * 2));
   }
@@ -388,83 +439,87 @@
 
   /* ===== The paper: tint, ruling, edge, dog-ear ===== */
 
-  /* No two sheets came from the same pad. Small mixes keep every text colour at AA. */
+  /* No two sheets came from the same pad. Small mixes keep every text colour at AA, and
+     by torchlight each tint stays the same day paper seen in warm candlelight rather
+     than shifting to cool grey or glowing orange. */
   .sc-card[data-tint='cream'] {
-    /* By torchlight less tansy: the bright yellow lightens the dark paper, and pale ink on
-       it loses contrast, most of all over its ruling and its tooth. At four parts the words
-       of the squared cream card keep 4.6:1 against the paper right behind them, at its
-       darkest and lightest one percent. */
     --sc-sheet: var(--by-day, color-mix(in srgb, var(--sc-base) 91%, var(--color-tansy)))
       var(--by-torch, color-mix(in srgb, var(--sc-base) 96%, var(--color-tansy)));
   }
 
   /* A manila tag is cream already; more tansy would wash out its muted ink by torchlight */
   .sc-card[data-material='tag'][data-tint='cream'] {
-    --sc-sheet: color-mix(in srgb, var(--sc-base) 94%, var(--color-ochre));
+    --sc-sheet: var(--by-day, color-mix(in srgb, var(--sc-base) 94%, var(--color-ochre)))
+      var(--by-torch, color-mix(in srgb, var(--sc-base) 96%, #a87528));
   }
 
   .sc-card[data-tint='sage'] {
-    --sc-sheet: color-mix(in srgb, var(--sc-base) 86%, var(--color-sage));
+    --sc-sheet: var(--by-day, color-mix(in srgb, var(--sc-base) 86%, var(--color-sage)))
+      var(--by-torch, color-mix(in srgb, var(--sc-base) 89%, var(--color-sage)));
   }
 
+  /* By torchlight grey rag paper catches warm flame rather than turning cool blue-grey. */
   .sc-card[data-tint='grey'] {
-    --sc-sheet: color-mix(in srgb, var(--sc-base) 92%, var(--color-iron));
+    --sc-sheet: var(--by-day, color-mix(in srgb, var(--sc-base) 92%, var(--color-iron)))
+      var(--by-torch, color-mix(in srgb, var(--sc-base) 92%, #7d7669));
   }
 
-  /* The mottle of a sheet left long in the light: broad, soft patches of the foxing's own
-     ochre, a shade deeper than the rest of the sheet, over half of it at most, so that the
-     sheet keeps its colour. (The noise's alpha is one everywhere: its red channel is what
-     varies, and only where that runs above its middle does a patch show.) By torchlight the
-     patches are the ember of the ochre, and fainter. */
+  /* The mottle of a sheet left long in the light: broad, soft patches of warm ochre
+     over half of it at most, so that the sheet keeps its colour. By torchlight both the
+     mottle and the foxing stay warm antique sepia rather than glowing ember orange. */
   .sc-card[data-tint='aged'] {
+    --sc-fox-ink: var(--by-day, var(--color-ochre)) var(--by-torch, #8c5c26);
     --sc-mottle: var(
         --by-day,
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .23 0 0 0 0 .1 0 0 0 0 0 .55 0 0 0 -.3'/%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23m)'/%3E%3C/svg%3E")
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .23 0 0 0 0 .1 0 0 0 0 0 .48 0 0 0 -.26'/%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23m)'/%3E%3C/svg%3E")
       )
       var(
         --by-torch,
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .91 0 0 0 0 .32 0 0 0 0 .06 .35 0 0 0 -.19'/%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23m)'/%3E%3C/svg%3E")
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .48 0 0 0 0 .3 0 0 0 0 .12 .24 0 0 0 -.13'/%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23m)'/%3E%3C/svg%3E")
       );
-    /* Aged by its unevenness rather than all over: four parts of ochre in the sheet, where
-       there were nine, and three by torchlight, where every part lightens the dark paper
-       under pale ink. Its patches and its foxing age it, and its words keep their contrast
-       over the tooth and the mottle. */
+    /* Aged by its unevenness rather than all over: four parts of warm ochre in the sheet,
+       and warm toasted sepia by torchlight so its words keep their contrast over the tooth
+       and the mottle. */
     --sc-sheet: var(--by-day, color-mix(in srgb, var(--sc-base) 96%, var(--color-ochre)))
-      var(--by-torch, color-mix(in srgb, var(--sc-base) 97%, var(--color-ochre)));
+      var(--by-torch, color-mix(in srgb, var(--sc-base) 96%, #9b6a2c));
     --sc-age:
       var(--sc-mottle) 0 0 / 320px 320px repeat,
       radial-gradient(
         circle at 82% 22%,
-        color-mix(in srgb, var(--color-ochre) 14%, transparent) 0 0.2rem,
+        color-mix(in srgb, var(--sc-fox-ink) 14%, transparent) 0 0.2rem,
         transparent 0.35rem
       ),
       radial-gradient(
         circle at 12% 70%,
-        color-mix(in srgb, var(--color-ochre) 10%, transparent) 0 0.15rem,
+        color-mix(in srgb, var(--sc-fox-ink) 10%, transparent) 0 0.15rem,
         transparent 0.3rem
       ),
       radial-gradient(
         ellipse at 100% 100%,
-        color-mix(in srgb, var(--color-ochre) 10%, transparent),
+        color-mix(in srgb, var(--sc-fox-ink) 10%, transparent),
         transparent 60%
       );
   }
 
+  /* The ruling sits just below the words' baselines (see "The words"): the first rule
+     lies --sc-rule-gap under the first baseline, the rest one pitch apart below it.
+     The head of the sheet above the first line is left blank, as on a pad. */
   .sc-card {
     /* The tooth of a sheet is the desk's own (src/styles/paper.css): by day at the desk's
-       strength; by torchlight, where light grain under pale ink costs most, the desk's faint
-       tile, half of it. */
+       strength; by torchlight, where light grain under pale ink costs most, the desk's
+       warmed faint tile, half of it. */
     --sc-tooth: var(--by-day, var(--paper-tooth, none))
       var(--by-torch, var(--paper-tooth-faint, none));
     --sc-ruled-ink: color-mix(in srgb, var(--color-iron) 11%, transparent);
     --sc-margin-ink: color-mix(in srgb, var(--color-clay) 24%, transparent);
     --sc-margin-line: linear-gradient(var(--sc-margin-ink), var(--sc-margin-ink))
       calc(var(--space-md) - 0.6rem) 0 / 1px 100% no-repeat;
+    --sc-rule-top: calc(var(--sc-pad-top) + var(--sc-sit) + var(--sc-rule-gap));
     --sc-ruled-lines: repeating-linear-gradient(
-        transparent 0 calc(1.6rem - 1px),
-        var(--sc-ruled-ink) calc(1.6rem - 1px) 1.6rem
+        var(--sc-ruled-ink) 0 1px,
+        transparent 1px var(--sc-pitch)
       )
-      0 0.9rem / 100% 100% no-repeat;
+      0 var(--sc-rule-top) / 100% 100% no-repeat;
   }
 
   .sc-card[data-ruling='margin'] {
@@ -480,18 +535,25 @@
     --sc-rule: var(--sc-ruled-lines);
   }
 
-  /* Squared paper from a maths pad */
+  /* Squared paper from a maths pad: two squares to a line of words, so every baseline
+     rests cleanly just above a line of the grid, and the squares run to all four edges. */
   .sc-card[data-ruling='squared'] {
+    --sc-square: calc(var(--sc-pitch) / 2);
     --sc-rule:
-      repeating-linear-gradient(
-        90deg,
-        transparent 0 calc(0.7rem - 1px),
-        color-mix(in srgb, var(--color-iron) 11%, transparent) calc(0.7rem - 1px) 0.7rem
-      ),
-      repeating-linear-gradient(
-        transparent 0 calc(0.7rem - 1px),
-        color-mix(in srgb, var(--color-iron) 11%, transparent) calc(0.7rem - 1px) 0.7rem
-      );
+      linear-gradient(90deg, var(--sc-ruled-ink) 1px, transparent 1px) var(--space-md) 0 /
+        var(--sc-square) var(--sc-square),
+      linear-gradient(var(--sc-ruled-ink) 1px, transparent 1px) 0 var(--sc-rule-top) /
+        var(--sc-square) var(--sc-square);
+  }
+
+  /* Dot-grid paper from a field notebook: two dot rows to a line of words, with each
+     baseline resting cleanly just above its row of dots and the first dot column aligned
+     to the left edge of the text. */
+  .sc-card[data-ruling='dotted'] {
+    --sc-square: calc(var(--sc-pitch) / 2);
+    --sc-dot-ink: color-mix(in srgb, var(--color-iron) 26%, transparent);
+    --sc-rule: radial-gradient(circle at 0.5px 0.5px, var(--sc-dot-ink) 1px, transparent 1.15px)
+      calc(var(--space-md) - 0.5px) var(--sc-rule-top) / var(--sc-square) var(--sc-square);
   }
 
   /* Torn from a ring binder: three punched holes down the left, ruled, and the words
@@ -632,15 +694,16 @@
   /* ===== What holds it down ===== */
 
   /* Tape: strips of different stock, laid at different angles, torn off the roll by
-     hand so no two ends match. */
+     hand so no two ends match. Every stock has the same quiet creased surface (paper.css)
+     over its own colour. */
   .sc-tape {
     position: absolute;
     top: -0.5rem;
     z-index: 4;
     width: var(--tape-len, 3.2rem);
     height: 1.05rem;
-    background: var(--tape-strip);
-    opacity: 0.88;
+    background: var(--tape-surface), var(--tape-tone, var(--tape-strip));
+    opacity: 0.85;
     box-shadow: 0 1px 1px color-mix(in srgb, var(--color-ink-dark) 12%, transparent);
     transform: rotate(var(--tape-turn, 0deg));
   }
@@ -696,33 +759,37 @@
   }
 
   .sc-tape[data-tone='masking'] {
-    background: color-mix(in srgb, var(--color-tansy) 28%, var(--paper-sheet));
+    --tape-tone: color-mix(in srgb, var(--color-tansy) 28%, var(--paper-sheet));
+
     opacity: 0.9;
   }
 
   .sc-tape[data-tone='washi'] {
-    background:
+    --tape-tone:
       repeating-linear-gradient(
         -45deg,
         transparent 0 0.3rem,
         color-mix(in srgb, var(--paper-sheet) 45%, transparent) 0.3rem 0.5rem
       ),
       color-mix(in srgb, var(--color-clay) 30%, var(--paper-sheet));
+
     opacity: 0.78;
   }
 
   .sc-tape[data-tone='moss'] {
-    background: color-mix(in srgb, var(--color-moss) 32%, var(--paper-sheet));
+    --tape-tone: color-mix(in srgb, var(--color-moss) 32%, var(--paper-sheet));
+
     opacity: 0.82;
   }
 
   /* Clear tape: barely there, a dull sheen and a dirty edge */
   .sc-tape[data-tone='clear'] {
-    background: linear-gradient(
+    --tape-tone: linear-gradient(
       color-mix(in srgb, var(--color-ink-dark) 16%, transparent),
       color-mix(in srgb, var(--color-ink-dark) 6%, transparent) 30% 80%,
       color-mix(in srgb, var(--color-ink-dark) 14%, transparent)
     );
+
     opacity: 1;
     box-shadow: none;
   }
@@ -779,9 +846,9 @@
   /* ===== Marks: what has happened to the sheet since ===== */
 
   /* Each mark keeps to a home the card keeps clear: the bottom-right corner, beside
-     the footer line (which makes room for it), or the strip along the top edge. */
+     the footer line (which already keeps two lines' height), or the strip along the
+     top edge. */
   .sc-card[data-zone] .sc-meta {
-    min-height: 2.4rem;
     padding-right: 3.6rem;
   }
 
@@ -834,7 +901,7 @@
   .ring-stain {
     position: absolute;
     inset: 0;
-    background-color: var(--color-ochre);
+    background-color: var(--by-day, var(--color-ochre)) var(--by-torch, #8f5c28);
     mask: url('/grotto/coffee-ring-1.svg') center / contain no-repeat;
     opacity: 0.55;
   }
@@ -1064,34 +1131,6 @@
   .sc-mark-bee,
   .sc-mark-beetle {
     transform: scaleX(var(--mark-way, 1));
-  }
-
-  /* A trail of ants, seen from above, one of them with a crumb of tansy or a leaf */
-  .sc-mark-ants {
-    width: 3.4rem;
-    height: 0.64rem;
-    transform: rotate(calc(var(--mark-turn) / 14));
-  }
-
-  .sc-mark-ants .ant {
-    position: absolute;
-    width: 0.74rem;
-  }
-
-  .sc-mark-ants .feel {
-    transform-origin: 71% 62%;
-  }
-
-  .sc-mark-ants .crumb {
-    fill: var(--color-tansy);
-    stroke: var(--color-ochre);
-    stroke-width: 0.5;
-  }
-
-  .sc-mark-ants .leaf-bit {
-    fill: color-mix(in srgb, var(--color-moss) 75%, var(--sc-sheet));
-    stroke: var(--color-moss);
-    stroke-width: 0.5;
   }
 
   /* An inchworm measuring the top edge. Its arch and its head are two layers, so it
@@ -1371,19 +1410,6 @@
     .sc-mark .feel {
       animation-name: mark-twitch;
       animation-duration: 11s;
-    }
-
-    .sc-mark-ants .ant {
-      --amble: 1.3rem;
-
-      animation-name: mark-amble;
-      animation-duration: 38s;
-      animation-delay: calc(var(--mark-wait, 0s) + var(--lag, 0s));
-    }
-
-    .sc-mark-ants .feel {
-      animation-duration: 7s;
-      animation-delay: calc(var(--mark-wait, 0s) + var(--lag, 0s) * 2);
     }
 
     .sc-mark-beetle .roam {
@@ -1833,8 +1859,18 @@
 
   /* ===== Materials: one per shelf, each one printed detail on the same sheet ===== */
 
-  /* Library catalogue card (research): the page prints a clay rule under the heading
-     line; the card has the hole for the drawer's rod punched through at the bottom. */
+  /* Library catalogue card (research): a clay rule is printed across the card under its
+     heading line, which is the sheet's first line; the card has the hole for the
+     drawer's rod punched through at the bottom. */
+  .sc-card[data-material='index'] {
+    --sc-stock: var(--stock-grain);
+    --sc-print: linear-gradient(
+        color-mix(in srgb, var(--color-clay) 45%, transparent),
+        color-mix(in srgb, var(--color-clay) 45%, transparent)
+      )
+      0 var(--sc-rule-top) / 100% 1px no-repeat;
+  }
+
   /* The footer line keeps to the left half, clear of the hole at the centre. */
   .sc-card[data-material='index'] .sc-meta {
     padding-right: calc(50% + 0.6rem);
@@ -1854,10 +1890,13 @@
   }
 
   /* Workshop tag (projects): manila card, clipped corners, a reinforced eyelet and its
-     string. The clipped face cannot carry a box shadow, so the tag casts a drop shadow. */
+     string. Kept clean without heavy fibre blotches or darkened edges so the glossy
+     sticker stays the focus. By torchlight it warms rather than turning bright mustard. */
   .sc-card[data-material='tag'] {
-    --sc-base: color-mix(in srgb, var(--paper-sheet) 84%, var(--color-tansy));
+    --sc-base: var(--by-day, color-mix(in srgb, var(--paper-sheet) 84%, var(--color-tansy)))
+      var(--by-torch, color-mix(in srgb, var(--paper-sheet) 91%, var(--color-tansy)));
     --sc-notch: 1.5rem;
+    --sc-stock: var(--stock-grain);
 
     filter: drop-shadow(0 1px 1px color-mix(in srgb, var(--sc-shade) 16%, transparent))
       drop-shadow(0 8px 10px color-mix(in srgb, var(--sc-shade) 16%, transparent));
@@ -1889,8 +1928,10 @@
     padding-left: calc(var(--space-md) + 1.6rem);
   }
 
-  /* The eyelet: a ring of card stock around a hole the page shows through */
+  /* The eyelet: a ring of kraft card stock around a hole the page shows through */
   .sc-card[data-material='tag'] .sc-face::after {
+    --sc-eyelet: var(--by-day, var(--color-ochre)) var(--by-torch, #96662d);
+
     content: '';
     position: absolute;
     top: 50%;
@@ -1901,9 +1942,9 @@
     background: radial-gradient(
       circle,
       var(--color-background) 0 0.3rem,
-      color-mix(in srgb, var(--color-ochre) 30%, var(--sc-sheet)) 0.3rem 100%
+      color-mix(in srgb, var(--sc-eyelet) 30%, var(--sc-sheet)) 0.3rem 100%
     );
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-ochre) 25%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sc-eyelet) 25%, transparent);
     transform: translate(-50%, -50%);
   }
 
