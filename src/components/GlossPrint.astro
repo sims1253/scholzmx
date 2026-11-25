@@ -26,7 +26,9 @@ interface Props {
 const { image, relief, width = 160, turn = '0deg', loading = 'lazy' } = Astro.props;
 
 // The sheen is cut to the sticker by the picture's own alpha: the same two files the
-// <img> chooses between, so the mask costs no download of its own.
+// <img> chooses between. A mask is always fetched in CORS mode, so the <img> asks in
+// that mode too (`crossorigin`): otherwise the browser treats the two as different
+// requests and fetches every picture twice.
 const [small, large] = await Promise.all([
   getImage({ src: image, width }),
   getImage({ src: image, width: width * 2 }),
@@ -49,6 +51,7 @@ const fit = Math.min(1, image.width / image.height);
     height={small.attributes.height}
     loading={loading}
     decoding="async"
+    crossorigin="anonymous"
   />
   <i class="gloss-sheen" aria-hidden="true"></i>
 </div>
