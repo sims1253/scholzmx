@@ -84,27 +84,29 @@ function reachOf(marks) {
   });
 }
 
-// What moves in each critter besides its body (the "What the critters do" section of
-// stacked-card.css): a selector inside its drawing, or null where only the body moves.
-// The test holds it, so that a loop deleted from the stylesheet is missed here and not.
+// What moves in each critter (the "What the critters do" section of stacked-card.css):
+// whether its body, which is the mark itself, and `part`, a selector inside its drawing
+// where one moves. The test holds it, so that a loop deleted from the stylesheet is missed
+// here and not.
 const MOVES = {
-  ants: '.legs',
-  inchworm: null,
-  ladybird: '.legs',
-  bee: '.wing',
-  butterfly: '.wing',
-  dragonfly: null,
-  spider: '.legs',
-  snail: '.feelers',
-  beetle: '.legs',
-  cricket: '.feelers',
-  mouse: '.mouse-body, .tail',
+  ants: { body: true, part: '.legs' },
+  inchworm: { body: true },
+  ladybird: { body: true, part: '.legs' },
+  bee: { body: true, part: '.wing' },
+  butterfly: { body: true, part: '.wing' },
+  dragonfly: { body: true },
+  spider: { body: true, part: '.legs' },
+  snail: { body: true, part: '.feelers' },
+  beetle: { body: true, part: '.legs' },
+  cricket: { part: '.feelers' },
+  mouse: { part: '.mouse-body, .tail' },
 };
 
 // Each critter on a page, and its card. `stiff` counts its animations that never change
-// what their target paints: a loop written so that it does nothing. `idle` counts the parts
-// that should move (MOVES) that nothing animates. `lost` counts animations the card has that
-// its copy does not. Runs in the page.
+// what their target paints: a loop written so that it does nothing. `idle` counts what
+// should move (MOVES) that nothing animates: a body without its loop, a part without one,
+// and a part the drawing no longer has. `lost` counts animations the card has that its copy
+// does not. Runs in the page.
 function critterState(marks, moves) {
   const cards = [...document.querySelectorAll('.sc-card')];
   const pose = (element) => {
@@ -139,8 +141,13 @@ function critterState(marks, moves) {
     const kind = card.dataset.mark;
     const animated = new Set(copyAnimations.map((animation) => animation.effect.target));
     // A critter the table does not know is one nobody said what moves in.
-    const parts = kind in moves && moves[kind] ? [...copy.querySelectorAll(moves[kind])] : [];
-    const idle = kind in moves ? parts.filter((element) => !animated.has(element)).length : 1;
+    const expected = moves[kind];
+    const parts = expected?.part ? [...copy.querySelectorAll(expected.part)] : [];
+    const idle = expected
+      ? Number(expected.body === true && !animated.has(copy)) +
+        Number(expected.part !== undefined && parts.length === 0) +
+        parts.filter((element) => !animated.has(element)).length
+      : 1;
     const lost = mark.getAnimations({ subtree: true }).length - copyAnimations.length;
     copy.remove();
     return {
@@ -164,6 +171,9 @@ function critterState(marks, moves) {
 // only while their card is on screen, and a shelf deals them so that cards near each other
 // never share one.
 async function checkCritters(page, path, width) {
+  // The research and project shelves always draw critters; elsewhere they are the luck of
+  // the seeds.
+  const mustDraw = ['/research/', '/projects/'].includes(path);
   const critters = () => page.$$eval('.sc-mark-edge, .sc-mark-mouse', critterState, MOVES);
   const atTop = await critters();
   // A critter keeps to the strip above the title, the tansy and the mouse to the room the
@@ -175,6 +185,7 @@ async function checkCritters(page, path, width) {
     ),
     `A mark leaves its room on ${path} at ${width}px: ${JSON.stringify(reach)}`
   );
+  assert.ok(!mustDraw || atTop.length > 0, `No critter drawn on ${path} at ${width}px`);
   if (!atTop.length) return;
 
   assert.ok(
@@ -185,8 +196,7 @@ async function checkCritters(page, path, width) {
         critter.lost === 0 &&
         (critter.still ? critter.running === 0 : critter.running > 0)
     ) &&
-      (atTop.some((critter) => critter.running > 0) ||
-        !['/research/', '/projects/'].includes(path)),
+      (atTop.some((critter) => critter.running > 0) || !mustDraw),
     `Critters moving, every part of each, on ${path} at ${width}px: ${JSON.stringify(atTop)}`
   );
 
@@ -205,14 +215,16 @@ async function checkCritters(page, path, width) {
 
   // On a phone the cards stack, so the ones at the top can be scrolled to any distance above
   // the window. What the rest below takes for granted is tried first: the observer's reach,
-  // a fifth of the window's height. A card a little inside it is still watched and moving,
-  // one a little beyond it is at rest. The first card that moves stands for all.
+  // a fifth of the window's height. A card a little beyond it is at rest, and one a little
+  // inside it is watched and moving. It is tried from the far side first, so that each step
+  // passes only on a change from the state the step before established, and never on what
+  // was true before the observer saw the scroll. The first card that moves stands for all.
   if (width !== 390) return;
   const first = atTop.findIndex((critter) => critter.running > 0);
   if (first !== -1) {
     for (const { inside, moving } of [
-      { inside: true, moving: true },
       { inside: false, moving: false },
+      { inside: true, moving: true },
     ]) {
       const reached = await page.evaluate(
         ([index, inside]) => {
@@ -230,10 +242,7 @@ async function checkCritters(page, path, width) {
       );
       // A page too short to bring its card so far above the window cannot show it.
       if (!reached) {
-        assert.ok(
-          !['/research/', '/projects/'].includes(path),
-          `No critter can be brought to the observer's reach on ${path}`
-        );
+        assert.ok(!mustDraw, `No critter can be brought to the observer's reach on ${path}`);
         break;
       }
       for (let waited = 0; ; waited += 50) {
@@ -258,7 +267,7 @@ async function checkCritters(page, path, width) {
   for (let waited = 0; ; waited += 50) {
     below = await critters();
     const left = below.filter((critter, i) => atTop[i].running > 0 && critter.gone);
-    const canLeave = left.length > 0 || !['/research/', '/projects/'].includes(path);
+    const canLeave = left.length > 0 || !mustDraw;
     if (canLeave && left.every((critter) => critter.still && !critter.running)) {
       break;
     }
