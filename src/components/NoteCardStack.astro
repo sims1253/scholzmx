@@ -175,9 +175,10 @@ const inWords = (isoDay: string) =>
     padding-inline: 0;
   }
 
-  /* The first card of a year (or letter) leaves room for its divider tab. */
+  /* The first card of a year (or letter) leaves room for its divider tab: one line of
+     the sheets, so the card still ends on a line with the others in its row. */
   :global(.index-page) .nc-item:has(.nc-tab) {
-    padding-top: 1.1rem;
+    padding-top: var(--sc-pitch);
   }
 
   /* A card-box divider: its tab stands up behind the first card of the year (or
@@ -192,7 +193,9 @@ const inWords = (isoDay: string) =>
     border: 1px solid var(--sc-edge);
     border-bottom: 0;
     border-radius: 3px 3px 0 0;
-    background: color-mix(in srgb, var(--sc-sheet-back) 70%, var(--color-sage));
+    background:
+      var(--stock-grain) 0 0 / 256px 256px repeat,
+      color-mix(in srgb, var(--sc-sheet-back) 70%, var(--color-sage));
     font-family: var(--font-heading);
     font-size: var(--text-md);
     font-weight: 400;

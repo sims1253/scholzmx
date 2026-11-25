@@ -651,20 +651,6 @@ const { href, name, caption, sceneMs } = { ...ROOMS[kind], ...overrides };
   const touch = matchMedia('(hover: none)');
   const TAKES = 2;
 
-  const awake = new IntersectionObserver((entries) => {
-    for (const entry of entries) entry.target.classList.toggle('is-awake', entry.isIntersecting);
-  });
-  const arriving = new IntersectionObserver(
-    (entries) => {
-      for (const entry of entries) {
-        if (!entry.isIntersecting || !(entry.target instanceof HTMLElement)) continue;
-        arriving.unobserve(entry.target);
-        play(entry.target);
-      }
-    },
-    { threshold: 0.6 }
-  );
-
   const busy = new WeakSet<HTMLElement>();
 
   function play(niche: HTMLElement) {
@@ -682,15 +668,43 @@ const { href, name, caption, sceneMs } = { ...ROOMS[kind], ...overrides };
     }, Number(niche.dataset.scene));
   }
 
-  for (const niche of document.querySelectorAll<HTMLElement>('.niche')) {
-    awake.observe(niche);
+  const niches = [...document.querySelectorAll<HTMLElement>('.niche')];
+  for (const niche of niches) {
     if (!niche.dataset.scene) continue;
     niche.addEventListener('pointerenter', (event) => {
       if (event.pointerType !== 'touch') play(niche);
     });
     niche.addEventListener('focusin', () => play(niche));
-    if (touch.matches) arriving.observe(niche);
   }
+
+  // A niche is awake while any of it is in the window, and has arrived once three fifths
+  // of it are. A scroll listener keeps watch and not an IntersectionObserver: while an
+  // observer is watching anything at all, Chrome wakes the main thread on every frame of
+  // a running animation to see whether the answer has changed, and the canopy's leaves
+  // over the page would stop being free. All niches are measured before any is changed.
+  const arriving = new Set(touch.matches ? niches.filter((niche) => niche.dataset.scene) : []);
+  let pending = false;
+  const look = () => {
+    pending = false;
+    const shares = niches.map((niche) => {
+      const { top, bottom, height } = niche.getBoundingClientRect();
+      const shown = Math.min(bottom, window.innerHeight) - Math.max(top, 0);
+      return height > 0 ? shown / height : 0;
+    });
+    niches.forEach((niche, index) => {
+      const share = shares[index] ?? 0;
+      niche.classList.toggle('is-awake', share > 0);
+      if (share >= 0.6 && arriving.delete(niche)) play(niche);
+    });
+  };
+  const watch = () => {
+    if (pending) return;
+    pending = true;
+    requestAnimationFrame(look);
+  };
+  window.addEventListener('scroll', watch, { passive: true });
+  window.addEventListener('resize', watch, { passive: true });
+  watch();
 </script>
 
 <style>

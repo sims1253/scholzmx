@@ -10,14 +10,15 @@
  * - `corner` marks sit in the bottom-right corner, beside the footer line, which makes
  *   room for them (`.sc-card[data-zone]`). A card whose corner holds a taped photo gets
  *   no corner mark.
- * - `edge` marks walk along the top edge, in the strip above the title.
+ * - `edge` marks walk along the top edge, in the strip above the title. A critter may
+ *   stir (stacked-card.css), but it starts from its seeded place and comes back to it.
  */
 import { createSeededRng } from '../scripts/seeded';
 
 export type Material = 'paper' | 'index' | 'tag' | 'recipe';
 
 export type Tint = 'plain' | 'cream' | 'sage' | 'aged' | 'grey';
-export type Ruling = 'plain' | 'margin' | 'ruled' | 'squared' | 'binder';
+export type Ruling = 'plain' | 'margin' | 'ruled' | 'squared' | 'dotted' | 'binder';
 export type Edge = 'cut' | 'torn' | 'deckle';
 export type Fold = 'tr' | 'bl' | 'br';
 
@@ -35,7 +36,7 @@ export type Fastener =
   { kind: 'tape'; strips: TapeStrip[] } | { kind: 'pin' | 'clip' | 'staple' | 'none' };
 
 export type CornerMark = 'ring' | 'blot' | 'thumb' | 'stamp' | 'tansy' | 'pencil' | 'mouse';
-export type EdgeMark = 'ants' | 'inchworm' | 'ladybird';
+export type EdgeMark = 'inchworm' | 'ladybird' | 'snail' | 'bee' | 'beetle' | 'moth';
 export type MarkKind = CornerMark | EdgeMark;
 
 export interface Mark {
@@ -43,7 +44,8 @@ export interface Mark {
   home: 'corner' | 'edge';
   turn: number; // degrees
   along: number; // edge marks: where along the top edge, in % of the width
-  variant: 1 | 2 | 3;
+  variant: 1 | 2 | 3; // another drawing of the same kind: its colours, its number, its way
+  wait: number; // critters: seconds it sits still before it first stirs
 }
 
 export interface Dressing {
@@ -92,45 +94,55 @@ type Weights<K> = readonly (readonly [K, number])[];
 /** What turns up on each shelf. A cup ring is likelier on a recipe card. */
 const MARK_WEIGHTS: Record<Material, Weights<MarkKind | 'none'>> = {
   paper: [
-    ['ring', 12],
-    ['blot', 10],
-    ['thumb', 7],
-    ['tansy', 11],
+    ['ring', 11],
+    ['blot', 9],
+    ['thumb', 6],
+    ['tansy', 10],
     ['pencil', 8],
-    ['mouse', 9],
-    ['ants', 7],
-    ['inchworm', 9],
-    ['ladybird', 7],
-    ['none', 16],
+    ['mouse', 8],
+    ['inchworm', 7],
+    ['snail', 7],
+    ['ladybird', 6],
+    ['bee', 5],
+    ['beetle', 5],
+    ['moth', 4],
+    ['none', 14],
   ],
   recipe: [
     ['ring', 18],
     ['thumb', 12],
-    ['blot', 7],
-    ['tansy', 10],
-    ['mouse', 14],
-    ['ants', 11],
-    ['ladybird', 7],
-    ['none', 21],
+    ['blot', 6],
+    ['tansy', 9],
+    ['mouse', 13],
+    ['snail', 8],
+    ['inchworm', 5],
+    ['ladybird', 5],
+    ['bee', 6],
+    ['none', 18],
   ],
   index: [
     ['stamp', 30],
     ['ring', 10],
     ['pencil', 16],
     ['thumb', 8],
-    ['ants', 8],
     ['ladybird', 4],
-    ['none', 24],
+    ['beetle', 5],
+    ['moth', 6],
+    ['snail', 2],
+    ['none', 19],
   ],
   tag: [
-    ['ring', 10],
-    ['blot', 8],
-    ['tansy', 10],
-    ['mouse', 10],
-    ['inchworm', 13],
-    ['ants', 10],
-    ['ladybird', 8],
-    ['none', 31],
+    ['ring', 9],
+    ['blot', 7],
+    ['tansy', 9],
+    ['mouse', 9],
+    ['inchworm', 9],
+    ['snail', 9],
+    ['ladybird', 5],
+    ['beetle', 6],
+    ['bee', 4],
+    ['moth', 4],
+    ['none', 29],
   ],
 };
 
@@ -161,11 +173,12 @@ const FASTENER_WEIGHTS: Record<Material, Weights<FastenerChoice>> = {
 
 const RULING_WEIGHTS: Record<Material, Weights<Ruling>> = {
   paper: [
-    ['plain', 22],
-    ['margin', 22],
-    ['ruled', 22],
-    ['squared', 17],
-    ['binder', 17],
+    ['plain', 18],
+    ['margin', 18],
+    ['ruled', 20],
+    ['squared', 15],
+    ['dotted', 14],
+    ['binder', 15],
   ],
   recipe: [
     ['plain', 55],
@@ -307,7 +320,8 @@ export function dressCard(seed: string, options: DressOptions = {}): Dressing {
         home: isCorner(kind) ? 'corner' : 'edge',
         turn: Math.round(marking.between(-40, 40)),
         along,
-        variant: oneOf(marking, 1, 2, 3),
+        variant: ([1, 2, 3] as const)[Math.floor(marking.random() * 3)] ?? 1,
+        wait: round(marking.between(1.5, 9), 1),
       };
     }
   }

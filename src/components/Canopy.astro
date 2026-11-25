@@ -3,30 +3,74 @@
  * The vine canopy over the top of every page.
  *
  * By day it casts leaf shadows that move in the wind; after dark the same leaves stand
- * in front of a torch. The leaves are SVG masks drawn by scripts/draw-canopy.mjs, so
- * their colour comes from --canopy-shade and the effect costs a few cached images and
- * compositor-only animation: transform, translate and rotate, nothing that repaints.
+ * in front of a torch. It is light thrown through a real branch, so nothing moves as one
+ * sheet: boughs far from the page, boughs halfway and twigs close to it each swing on
+ * their own hinge in their own time, and single leaves flutter on the twigs.
+ *
+ * scripts/draw-canopy.mjs draws the pieces into one SVG mask and writes where each one
+ * hangs to src/data/canopy.json, so the colour comes from --canopy-shade and the effect
+ * costs one cached image and compositor-only animation: transform, translate, rotate and
+ * scale, nothing that repaints.
  */
+import canopy from '../data/canopy.json';
+
+type Piece = (typeof canopy.depths)[number]['boughs'][number]['leaves'][number];
+
+// How much of the stage a screen shows depends on its shape, and a bough out of sight
+// would still cost a layer and its animations. So a bough that starts further from the
+// middle than these shares of the stage's width is hung only where it can be seen: see
+// the media queries at the end.
+const reaches = (reach: number) =>
+  reach > 0.26 ? 'canopy-hinge--outer' : reach > 0.13 ? 'canopy-hinge--side' : '';
+
+const hinge = ({ box, hinge, period, phase }: Piece) =>
+  `left:${box[0]}%;top:${box[1]}%;width:${box[2]}%;height:${box[3]}%;` +
+  `transform-origin:${hinge[0]}% ${hinge[1]}%;--t:${period}s;--p:${phase}`;
+
+// Two masks, cut together: the piece's cell of the sheet, and the canopy's fade.
+const shade = ({ sheet, fade }: Piece) =>
+  `mask-size:${sheet[0]}% ${sheet[1]}%,100% ${fade[0]}%;` +
+  `mask-position:${sheet[2]}% ${sheet[3]}%,0 ${fade[1]}%`;
 ---
 
 <div class="canopy" aria-hidden="true" data-canopy>
-  <div class="canopy-leaves canopy-leaves--high"></div>
-  <div class="canopy-leaves canopy-leaves--low"></div>
+  <div class="canopy-stage" style={`aspect-ratio:${canopy.stage.ratio}`}>
+    {canopy.depths.map((depth) => <div class={`canopy-depth canopy-depth--${depth.name}`}>
+      {depth.boughs.map((bough) => <div
+        class:list={['canopy-hinge', reaches(bough.reach)]}
+        style={`${hinge(bough)};--x:${bough.across}`}
+      >
+        <i class="canopy-shade" style={shade(bough)} />
+        {bough.leaves.map((leaf) => <div
+          class="canopy-hinge canopy-hinge--leaf"
+          style={hinge(leaf)}
+        >
+          <i class="canopy-shade" style={shade(leaf)} />
+        </div>)}
+      </div>)}
+    </div>)}
+  </div>
 </div>
 
 <script>
-  // Nothing sways while the canopy is scrolled out of view.
-  const canopy = document.querySelector('[data-canopy]');
-  if (canopy && 'IntersectionObserver' in window) {
-    new IntersectionObserver(([entry]) => {
-      canopy.toggleAttribute('data-still', !entry?.isIntersecting);
-    }).observe(canopy);
+  // Nothing sways while the canopy is scrolled out of view. A scroll listener keeps
+  // watch and not an IntersectionObserver: while an observer is watching anything at
+  // all, Chrome wakes the main thread on every frame of a running animation to see
+  // whether the answer has changed, and the wind would stop being free.
+  const canopy = document.querySelector<HTMLElement>('[data-canopy]');
+  if (canopy) {
+    let still = false;
+    const watch = () => {
+      const gone = window.scrollY > canopy.offsetHeight;
+      if (gone !== still) canopy.toggleAttribute('data-still', (still = gone));
+    };
+    addEventListener('scroll', watch, { passive: true });
+    addEventListener('resize', watch, { passive: true });
+    watch();
   }
 </script>
 
 <style>
-  /* Two masked leaf layers, each carrying the canopy's fade in its own mask. A masked
-     parent around them would be composited again on every frame of the sway. */
   .canopy {
     --canopy-fade: linear-gradient(to bottom, #000 28%, transparent 96%);
 
@@ -49,58 +93,316 @@
     animation: var(--canopy-flicker);
   }
 
-  /* One slow sway per layer, eased like a branch: no stacked gusts, whose sudden
-     changes of direction read as stutter on layers this large. Leaves hang from the top,
-     so the rotation moves the lower ones furthest. */
-  .canopy-leaves {
+  /* The stage is as tall as the canopy and far wider, centred on the page: the leaves
+     keep their size whatever the screen's shape, and a wider screen sees more of them.
+     It starts above the page so that the vines come in from out of sight. By torchlight
+     the whole stage shifts a little about the torch's corner as the flame moves. */
+  .canopy-stage {
     position: absolute;
-    inset: -3rem -7rem 0;
-    background-color: var(--canopy-shade);
-    mask:
-      url('/grotto/canopy-high.svg') top center / cover no-repeat,
-      var(--canopy-fade);
-    mask-composite: intersect;
-    transform-origin: 50% 0;
+    inset: -3rem auto 0 50%;
+    translate: -50% 0;
+    transform-origin: calc(50% + 40vw) 3rem;
+    animation: var(--canopy-quiver);
+  }
+
+  .canopy-depth {
+    position: absolute;
+    inset: 0;
+  }
+
+  /* A hinge is what moves, and it carries no mask: the masked shade inside it is painted
+     once and then only carried along. A mask on the moving element itself, or on a
+     parent around moving children, would be composited again on every frame.
+
+     A breeze moves through the vines as one wave from left to right: the shared drift
+     and gust share periods across the canopy and lag smoothly by horizontal place (--x),
+     with a small personal lag (--p) so boughs follow through naturally rather than as a
+     rigid sheet. Each hinge also keeps a slower swing at its own time (--t). --canopy-air
+     stretches the time after dark, when the air is still. */
+  .canopy-hinge {
+    --ease: cubic-bezier(0.37, 0, 0.63, 1);
+    --time: calc(var(--t) * var(--canopy-air));
+    --wave: calc(var(--x) * 2.4s + var(--p) * 0.55s);
+
+    position: absolute;
     will-change: transform;
+    animation:
+      canopy-swing-near var(--time) var(--ease) calc(var(--wave) - 10s) infinite alternate,
+      canopy-drift calc(14s * var(--canopy-air)) var(--ease) calc(var(--wave) - 10s) infinite
+        alternate,
+      canopy-gust-near calc(17s * var(--canopy-air)) var(--ease) calc(var(--x) * 2.5s - 7.5s)
+        infinite;
   }
 
-  /* The high canopy is far away and heavy: it moves least. */
-  .canopy-leaves--high {
-    animation: sway-high 19s cubic-bezier(0.37, 0, 0.63, 1) infinite alternate;
+  /* Far from the page a bough is heavy and slow; close to it a twig is light and travels
+     further. The gust leans everything the same way, the light things most. */
+  .canopy-depth--far > .canopy-hinge {
+    animation-name: canopy-swing-far, canopy-drift, canopy-gust-far;
   }
 
-  /* The crisp, near leaves move more than the far ones. */
-  .canopy-leaves--low {
-    mask:
-      url('/grotto/canopy-low.svg') top center / cover no-repeat,
-      var(--canopy-fade);
+  .canopy-depth--mid > .canopy-hinge {
+    animation-name: canopy-swing-mid, canopy-drift, canopy-gust-mid;
+  }
+
+  /* A leaf on its stalk: it gently ripples and turns its face in the light as its twig
+     carries it, rather than twitching on its own. */
+  .canopy-hinge--leaf {
+    animation:
+      canopy-flutter var(--time) var(--ease) calc(var(--time) * var(--p) * -1.4) infinite alternate,
+      canopy-turn calc(var(--time) * 0.78) var(--ease) calc(var(--time) * var(--p) * -1.1) infinite
+        alternate,
+      canopy-gust-leaf calc(17s * var(--canopy-air)) var(--ease) calc(var(--x) * 2.5s - 7.5s)
+        infinite;
+  }
+
+  .canopy-shade {
+    position: absolute;
+    inset: 0;
+    background-color: var(--canopy-shade);
+    mask-image: url('/grotto/canopy.svg'), var(--canopy-fade);
+    mask-repeat: no-repeat;
     mask-composite: intersect;
-    animation: sway-low 11s cubic-bezier(0.37, 0, 0.63, 1) -3s infinite alternate;
   }
 
   /* Out of view, the wind stops (see the script above). */
   .canopy[data-still]::before,
-  .canopy[data-still] .canopy-leaves {
+  .canopy[data-still] .canopy-stage,
+  .canopy[data-still] .canopy-hinge {
     animation-play-state: paused;
   }
 
-  @keyframes sway-high {
+  /* One set of keyframes for each depth: how far a piece travels is the depth's, how
+     long it takes is the piece's own. */
+  @keyframes canopy-swing-far {
     from {
-      transform: translate3d(-0.4%, 0, 0) rotate(-0.25deg);
+      rotate: -0.9deg;
     }
 
     to {
-      transform: translate3d(0.4%, 0.2%, 0) rotate(0.25deg);
+      rotate: 0.9deg;
     }
   }
 
-  @keyframes sway-low {
+  @keyframes canopy-swing-mid {
     from {
-      transform: translate3d(0.6%, 0, 0) rotate(0.6deg);
+      rotate: -1.6deg;
     }
 
     to {
-      transform: translate3d(-0.6%, 0.4%, 0) rotate(-0.6deg);
+      rotate: 1.6deg;
+    }
+  }
+
+  @keyframes canopy-swing-near {
+    from {
+      rotate: -2.4deg;
+    }
+
+    to {
+      rotate: 2.4deg;
+    }
+  }
+
+  @keyframes canopy-drift {
+    from {
+      translate: -0.65rem 0;
+    }
+
+    to {
+      translate: 0.65rem 0.2rem;
+    }
+  }
+
+  /* A breeze sweeps across the vines together: a gentle swell, then a broader lean
+     downwind, a partial rebound, a second soft catch, and back to rest. */
+  @keyframes canopy-gust-far {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+
+    22% {
+      transform: rotate(-0.45deg);
+    }
+
+    40% {
+      transform: rotate(-0.1deg);
+    }
+
+    64% {
+      transform: rotate(-1.2deg);
+    }
+
+    76% {
+      transform: rotate(-0.45deg);
+    }
+
+    86% {
+      transform: rotate(-0.75deg);
+    }
+  }
+
+  @keyframes canopy-gust-mid {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+
+    22% {
+      transform: rotate(-0.85deg);
+    }
+
+    40% {
+      transform: rotate(-0.2deg);
+    }
+
+    64% {
+      transform: rotate(-2.3deg);
+    }
+
+    76% {
+      transform: rotate(-0.9deg);
+    }
+
+    86% {
+      transform: rotate(-1.45deg);
+    }
+  }
+
+  @keyframes canopy-gust-near {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+
+    22% {
+      transform: rotate(-1.3deg);
+    }
+
+    40% {
+      transform: rotate(-0.3deg);
+    }
+
+    64% {
+      transform: rotate(-3.4deg);
+    }
+
+    76% {
+      transform: rotate(-1.3deg);
+    }
+
+    86% {
+      transform: rotate(-2.15deg);
+    }
+  }
+
+  @keyframes canopy-gust-leaf {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+
+    22% {
+      transform: rotate(-2.6deg);
+    }
+
+    40% {
+      transform: rotate(-0.6deg);
+    }
+
+    64% {
+      transform: rotate(-7.5deg);
+    }
+
+    76% {
+      transform: rotate(-2.8deg);
+    }
+
+    86% {
+      transform: rotate(-4.6deg);
+    }
+  }
+
+  @keyframes canopy-flutter {
+    0%,
+    68%,
+    100% {
+      rotate: 0deg;
+    }
+
+    12% {
+      rotate: 3.2deg;
+    }
+
+    26% {
+      rotate: -2.1deg;
+    }
+
+    40% {
+      rotate: 1.4deg;
+    }
+
+    54% {
+      rotate: -0.8deg;
+    }
+  }
+
+  @keyframes canopy-turn {
+    from {
+      scale: 1 1;
+    }
+
+    to {
+      scale: 0.88 1;
+    }
+  }
+
+  /* The far boughs fall a little behind as the page scrolls, as things further away do.
+     The browser ties this to the scroll position itself; where it cannot, nothing lags. */
+  @supports (animation-timeline: scroll()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .canopy-depth--far,
+      .canopy-depth--mid {
+        animation: canopy-lag-far linear both;
+        animation-timeline: scroll(root);
+        animation-range: 0 100vh;
+      }
+
+      .canopy-depth--mid {
+        animation-name: canopy-lag-mid;
+      }
+    }
+  }
+
+  @keyframes canopy-lag-far {
+    to {
+      translate: 0 2.4rem;
+    }
+  }
+
+  @keyframes canopy-lag-mid {
+    to {
+      translate: 0 1.1rem;
+    }
+  }
+
+  /* The stage is as tall as the canopy, so the share of it a screen shows follows from
+     the screen's shape. Up to about 16:10 the outer boughs are out of sight, unless the
+     screen is so tall that the canopy stops growing with it. An upright phone sees only
+     the middle. */
+  .canopy-hinge--outer {
+    display: none;
+  }
+
+  @media (min-aspect-ratio: 5 / 3), (min-width: 1900px) {
+    .canopy-hinge--outer {
+      display: block;
+    }
+  }
+
+  @media (max-width: 600px) and (max-aspect-ratio: 3 / 4) {
+    .canopy-hinge--side {
+      display: none;
     }
   }
 
@@ -112,7 +414,8 @@
 
   @media (prefers-reduced-motion: reduce) {
     .canopy::before,
-    .canopy-leaves {
+    .canopy-stage,
+    .canopy-hinge {
       animation: none;
     }
   }

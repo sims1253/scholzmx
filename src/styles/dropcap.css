@@ -9,14 +9,22 @@
      the ornament behind it (::before). One box draws both, so they always register.
 
    The initial is a square three lines tall: its top on the capitals of the first line,
-   its bottom on the baseline of the third. Both follow from the text face, in units of
-   the paragraph's font size (1rem in .prose):
+   its bottom on the baseline of the third. The paragraph decides how large that is, so
+   the box is measured in the paragraph's own line height and font size (lh and em),
+   whatever a page sets them to; a size fixed for one line height overshoots a tighter
+   paragraph and pushes its fourth line aside too. Two metrics of the text face, in em,
+   complete the sum:
 
-     size       = 2 line-heights + cap height
-     margin-top = first baseline - cap height, from the paragraph's top
+     --cap-height  the height of its capitals
+     --cap-rise    from the middle of a line down to its baseline
 
-   Alegreya at line-height 1.6: capitals 0.646, first baseline 1.135.
-   ET Book at line-height 1.55: capitals 0.653, first baseline 1.068. */
+     size       = 2 line heights + cap height
+     margin-top = half a line height - (cap height - rise): the first line's capitals
+     margin-end = half a line height - rise: the room the third line's baseline leaves
+                  above the fourth line, so the initial has the same air beside it as
+                  beneath it
+
+   Alegreya: capitals 0.646, rise 0.335. ET Book: capitals 0.653, rise 0.293. */
 
 /* The line height too, as a paragraph may set it as a length, which the letter would
    inherit as it stands and so make the first line taller. */
@@ -42,38 +50,41 @@ p:has(> .dropcap--word) * {
 }
 
 .dropcap {
+  --initial: calc(2lh + var(--cap-height) * 1em);
+
   float: left;
   display: inline-block;
-  vertical-align: top;
-  shape-outside: margin-box;
+  margin-top: calc(0.5lh - (var(--cap-height) - var(--cap-rise)) * 1em);
+  margin-right: calc(0.5lh - var(--cap-rise) * 1em);
   user-select: none;
   position: relative;
-  font-weight: 600;
+  font-weight: 500;
+}
 
-  /* Modern shape optimization for better text wrapping */
-  shape-margin: clamp(0.02em, 0.5vw, 0.05em);
+/* Both layers are set at the initial's size; lh and em in a font size are the box's
+   own, which are the paragraph's. The letter gives the box its size. */
+.dropcap::before,
+.dropcap::after {
+  font-size: var(--initial);
+  line-height: 1;
 }
 
 .dropcap::after {
   content: attr(data-first-letter);
+  display: inline-block;
+  vertical-align: top;
 }
 
 /* Personal variant - set beside Alegreya (welcome, recipes, notes) */
 .dropcap--personal {
-  font-size: 3.846rem; /* 2 x 1.6 + 0.646 */
-  line-height: 1;
-  margin-right: 0.06em;
-  margin-top: 0.127em; /* (1.135 - 0.646) / 3.846 */
-  font-weight: 500;
+  --cap-height: 0.646;
+  --cap-rise: 0.335;
 }
 
 /* Serious variant - set beside ET Book (blog) */
 .dropcap--serious {
-  font-size: 3.753rem; /* 2 x 1.55 + 0.653 */
-  line-height: 1;
-  margin-right: 0.06em;
-  margin-top: 0.111em; /* (1.068 - 0.653) / 3.753 */
-  font-weight: 500;
+  --cap-height: 0.653;
+  --cap-rise: 0.293;
 }
 
 /* Simple */
@@ -133,14 +144,6 @@ p:has(> .dropcap--word) * {
 }
 .dropcap--sage::before {
   color: var(--color-sage);
-}
-
-/* Responsive shape adjustments for very small screens */
-@media (max-width: 400px) {
-  .dropcap {
-    /* Disable complex shape wrapping on very small screens for better performance */
-    shape-outside: none;
-  }
 }
 
 /* An opening quotation mark before the initial hangs in the margin beside it. */

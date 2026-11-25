@@ -25,6 +25,7 @@ Built with [Astro](https://astro.build) because it lets me write content in Quar
 - `Canopy.astro` - The vine canopy over every page: leaf shadows that sway and follow the sun by day, a flickering torch after dark
 - `LightSwitch.astro` - The light switch at the end of the navigation: a candle stub in a jam jar on a nail, and the spider that lives beside it
 - `StackedCard.astro` / `NoteCardStack.astro` - The note cards on the listing pages, with the doodad system (more on that below)
+- `GlossPrint.astro` - The glossy stickers on the project tags, lit by a normal map made from each logo (`node scripts/make-print-reliefs.mjs` after adding or redrawing one)
 - `DropCap.astro` - Those decorative first letters you see in posts
 - `IndexFinder.astro` - Search and tag filtering for the blog and recipe indexes
 - `QuoteOfTheDay.astro` - The homepage quote; every new quote opens another tansy flower
@@ -37,7 +38,7 @@ Margin notes come from `> margin:` blockquotes in Markdown and are placed by `sr
 Random decorative elements that make cards feel more organic. Seeded tilts and offsets, paper stacks, tape, doodles and coffee rings make every card a little different. See `DOODAD_GUIDE.md` for the technical details.
 
 ### The Canopy
-The leaf shadows are SVG masks drawn by `scripts/draw-canopy.mjs`: a soft, high layer and a crisp, low one whose grape and kiwi leaves show their real outlines. The script is seeded, so `node scripts/draw-canopy.mjs` reproduces `public/grotto/canopy-high.svg` and `canopy-low.svg`. CSS supplies the colour, so the same leaves cast green shade by day and stand in front of the torch at night. The motion is transform-only and stops under `prefers-reduced-motion`.
+The leaf shadows are SVG masks drawn by `scripts/draw-canopy.mjs` in pieces that move one by one, like a branch in a breeze: soft boughs far from the page, boughs halfway, and crisp twigs close to it whose grape and kiwi leaves show their real outlines and flutter on their stalks. The script is seeded, so `node scripts/draw-canopy.mjs` reproduces `public/grotto/canopy.svg`, which holds every piece, and `src/data/canopy.json`, which says where each one hangs. CSS supplies the colour, so the same leaves cast green shade by day and stand in front of the torch at night. The motion is transform-only and stops under `prefers-reduced-motion`.
 
 The light follows the visitor's clock. A small script in the page head sets the sun before first paint: by day the shadows lean away from it, long and cool in the morning, short and sharp at noon, long and gold towards evening. From 21:00 to 6:00 torchlight comes on by itself. The candle in the header (`LightSwitch.astro`) overrides the clock until the next dawn or dusk; people whose system prefers dark get torchlight all day.
 

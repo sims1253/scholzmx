@@ -3,6 +3,145 @@ import { globSync } from 'node:fs';
 import puppeteer from 'puppeteer';
 import { site } from './address-check.mjs';
 
+// What each card is papered with, as the browser computed it: for the sheet on top and for
+// the one under it, the image of every layer of background and that layer's size. A data
+// URI holds commas of its own, so layers are split where a new one begins. Runs in the page.
+function paperOf(cards) {
+  const layers = (style) => ({
+    images: style.backgroundImage.split(
+      /,\s*(?=(?:url\("|(?:repeating-)?(?:linear|radial|conic)-gradient\(|none\b))/
+    ),
+    sizes: style.backgroundSize.split(', '),
+  });
+  return cards.map((card) => {
+    return {
+      tint: card.dataset.tint,
+      top: layers(getComputedStyle(card.querySelector('.sc-face'))),
+      // A card that is one sheet has only a shadow under it, not paper.
+      under: card.dataset.layers === '1' ? null : layers(getComputedStyle(card, '::before')),
+    };
+  });
+}
+
+// The desk's own tiles of noise, as the browser holds them in the theme at hand: the tooth
+// it is papered with, and its faint tile. Runs in the page.
+function deskOf() {
+  const style = getComputedStyle(document.body);
+  return { tooth: style.backgroundImage, faint: style.getPropertyValue('--paper-tooth-faint') };
+}
+
+// A tile of noise as text: the SVG of its data URI, decoded, its whitespace made one. Two
+// tiles are the same when all of them is, not only their frequency and their matrix.
+function tileOf(image) {
+  const data = /url\((["']?)(data:image\/svg\+xml,[\s\S]*?)\1\)/.exec(image ?? '');
+  if (!data) return null;
+  try {
+    return decodeURIComponent(data[2]).replace(/\s+/g, ' ');
+  } catch {
+    return null;
+  }
+}
+
+// A tile's matrix, the twenty numbers that turn its noise into grain, and the tile without
+// it. The last row of the matrix is the grain's strength.
+function matrixOf(tile) {
+  const cut = / values='([^']*)'/.exec(tile ?? '');
+  // Trimmed first: an empty entry would count as a zero, since Number('') is 0.
+  const matrix = cut?.[1].trim().split(/\s+/).map(Number);
+  return matrix?.length === 20 && matrix.every(Number.isFinite)
+    ? { matrix, rest: tile.replace(cut[0], '') }
+    : null;
+}
+
+// Whether one tile is another at half the strength: the same tile in every other part.
+function halfStrength(one, other) {
+  const a = matrixOf(one);
+  const b = matrixOf(other);
+  return (
+    !!a &&
+    !!b &&
+    a.rest === b.rest &&
+    a.matrix.every((value, at) => Math.abs(value - b.matrix[at] * (at >= 15 ? 0.5 : 1)) < 1e-9)
+  );
+}
+
+// How ruled, binder, squared and dotted sheets place their words above their lines or
+// dots: every word's baseline sits a couple of pixels above its rule or dot row, never
+// cut by it and never drifting off pitch. Runs in the page.
+function ruledAlignmentOf(cards) {
+  const style = document.createElement('style');
+  style.textContent =
+    '* { transition: none !important; animation: none !important } .line-mark { display: inline-block; width: 0; height: 0 }';
+  document.head.append(style);
+  const results = cards.map((card) => {
+    card.style.setProperty('--sc-turn', '0deg');
+    card.style.setProperty('--sc-lift', '0px');
+    const content = card.querySelector('.sc-content');
+    const face = card.querySelector('.sc-face');
+    const pitch = Number.parseFloat(
+      getComputedStyle(content.querySelector('.sc-title') || content).lineHeight
+    );
+    const faceStyle = getComputedStyle(face);
+    const images = faceStyle.backgroundImage.split(
+      /,\s*(?=(?:url\("|(?:repeating-)?(?:linear|radial|conic)-gradient\(|none\b))/
+    );
+    const positions = faceStyle.backgroundPosition.split(',');
+    const ruleLayer = images.findIndex((image, at) => {
+      const yStr = positions[at]?.trim().split(/\s+/)[1] ?? '';
+      const y = Number.parseFloat(yStr);
+      return (
+        yStr.endsWith('px') &&
+        (image.includes('linear-gradient') || image.includes('radial-gradient')) &&
+        y > 10 &&
+        y < 70
+      );
+    });
+    if (ruleLayer === -1) {
+      throw new Error(`${card.dataset.ruling}: rule layer not found`);
+    }
+    const ruleTop = Number.parseFloat(positions[ruleLayer].trim().split(/\s+/)[1]);
+    const period =
+      card.dataset.ruling === 'squared' || card.dataset.ruling === 'dotted' ? pitch / 2 : pitch;
+    const texts = [];
+    const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT);
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) texts.push(node);
+    for (const node of texts) {
+      if (!/\S/.test(node.data)) continue;
+      const frag = document.createDocumentFragment();
+      node.data.split(/(\s+)/).forEach((part, index) => {
+        if (index % 2) frag.append(part);
+        else if (part) {
+          frag.append(part);
+          const mark = document.createElement('i');
+          mark.className = 'line-mark';
+          frag.append(mark);
+        }
+      });
+      node.replaceWith(frag);
+    }
+    const faceTop = face.getBoundingClientRect().top + 1;
+    const baselines = [...content.querySelectorAll('.line-mark')].map(
+      (mark) => mark.getBoundingClientRect().bottom - faceTop
+    );
+    const gaps = baselines.map((baseline) => {
+      const rel = (((ruleTop - baseline) % period) + period) % period;
+      return rel > period / 2 ? rel - period : rel;
+    });
+    const minGap = Math.min(...gaps);
+    const maxGap = Math.max(...gaps);
+    return {
+      ruling: card.dataset.ruling,
+      title: content.querySelector('.sc-title')?.textContent?.trim().slice(0, 28),
+      minGap: Math.round(minGap * 100) / 100,
+      maxGap: Math.round(maxGap * 100) / 100,
+      spread: Math.round((maxGap - minGap) * 100) / 100,
+      overflow: Math.round((content.offsetHeight - face.clientHeight) * 100) / 100,
+    };
+  });
+  style.remove();
+  return results;
+}
+
 const baseURL = process.env.SITE_TEST_URL || 'http://127.0.0.1:4321';
 const browser = await puppeteer.launch({
   headless: true,
@@ -40,6 +179,81 @@ try {
         assert.equal(button.description?.value, 'Activate to display another quote.');
         await client.detach();
       }
+      // A sheet is the desk's own rag paper, in either theme: it carries the desk's tooth,
+      // one layer of it and no other, at its own size, whatever else is printed on the
+      // sheet; an aged one its mottle too; and so does the sheet under it. None of it is
+      // fetched. Both themes are tried by choice: left to the clock, a run by day would
+      // never see a broken torchlit sheet, nor one by torchlight a broken day sheet.
+      const TOOTH = "baseFrequency='.7'";
+      const MOTTLE = "baseFrequency='.012'";
+      const toothOf = (sheet) => {
+        const teeth = sheet.images.flatMap((image, at) =>
+          image.includes(TOOTH) ? [[tileOf(image), sheet.sizes[at]]] : []
+        );
+        return teeth.length === 1 ? teeth[0] : null;
+      };
+      const fetched = (card) =>
+        [...card.top.images, ...(card.under?.images ?? [])].filter((image) =>
+          /^url\(["']?(https?:|\/)/.test(image)
+        );
+      const mottleOf = (card) => {
+        const at = card.top.images.findIndex((image) => image.includes(MOTTLE));
+        return at === -1 ? null : card.top.sizes[at];
+      };
+      const papered = (card, tooth) => {
+        const teeth = (card.under ? [card.top, card.under] : [card.top]).map(toothOf);
+        return (
+          teeth.every((own) => own && own[0] === tooth && own[1] === '256px 256px') &&
+          fetched(card).length === 0 &&
+          (card.tint !== 'aged' || mottleOf(card) === '320px 320px')
+        );
+      };
+      // A card as the check reads it, for when it is off.
+      const told = (card, tooth) => ({
+        tint: card.tint,
+        teeth: (card.under ? [card.top, card.under] : [card.top]).map((sheet) => {
+          const own = toothOf(sheet);
+          return own && `${own[0] === tooth ? "the desk's tile" : 'another tile'} at ${own[1]}`;
+        }),
+        mottle: card.tint === 'aged' ? mottleOf(card) : undefined,
+        fetched: fetched(card),
+      });
+      const was = await page.$eval('html', (element) => element.getAttribute('data-theme'));
+      for (const theme of ['light', 'dark']) {
+        await page.$eval(
+          'html',
+          (element, theme) => element.setAttribute('data-theme', theme),
+          theme
+        );
+        const desk = await page.$eval('body', deskOf);
+        const paper = await page.$$eval('.sc-card', paperOf);
+        const whole = tileOf(desk.tooth);
+        const faint = tileOf(desk.faint);
+        assert.ok(
+          whole && faint,
+          `A tile of the desk's noise is missing on ${path} at ${width}px, ${theme} by choice: ${JSON.stringify({ whole, faint })}`
+        );
+        // The faint tile is the desk's torchlit one at half the strength.
+        assert.ok(
+          theme === 'light' || halfStrength(faint, whole),
+          `The desk's faint tile is not its torchlit one at half the strength on ${path} at ${width}px: ${JSON.stringify({ whole, faint })}`
+        );
+        // The tooth a sheet carries is the desk's own: its tile by day, its faint one by
+        // torchlight.
+        const tooth = theme === 'dark' ? faint : whole;
+        assert.ok(
+          paper.every((card) => papered(card, tooth)),
+          `A sheet off the desk's paper on ${path} at ${width}px, ${theme} by choice: ${JSON.stringify(paper.map((card) => told(card, tooth)))}`
+        );
+      }
+      await page.$eval(
+        'html',
+        (element, was) => {
+          if (was === null) element.removeAttribute('data-theme');
+          else element.setAttribute('data-theme', was);
+        },
+        was
+      );
       if (path === '/') {
         const portraits = await page.$eval('.image-frame.clickable', async (frame) => {
           const bounds = frame.getBoundingClientRect();
@@ -101,6 +315,25 @@ try {
         await page.evaluate(() => document.documentElement.scrollWidth > innerWidth),
         false,
         `Horizontal overflow: ${path} at ${width}px`
+      );
+      assert.equal(
+        await page.$$eval('.sc-mark-ants', (elements) => elements.length),
+        0,
+        `Ants mark should not render on ${path} at ${width}px`
+      );
+      // Every ruled, binder, squared and dotted sheet (outside top-strip hero cards whose
+      // 8/3 image height scales continuously with width) keeps its baselines a couple of
+      // pixels above its lines or dots with tight consistency and no clipping.
+      const lined = await page.$$eval(
+        '.sc-card:is([data-ruling="ruled"], [data-ruling="binder"], [data-ruling="squared"], [data-ruling="dotted"]):not(:has(.sc-media:not(.nc-thumb)))',
+        ruledAlignmentOf
+      );
+      assert.ok(
+        lined.every(
+          (sheet) =>
+            sheet.minGap >= 2.0 && sheet.maxGap <= 4.3 && sheet.spread <= 1.2 && sheet.overflow <= 0
+        ),
+        `Writing misaligned on ${path} at ${width}px: ${JSON.stringify(lined)}`
       );
     }
   }

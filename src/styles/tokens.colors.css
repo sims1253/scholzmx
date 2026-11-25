@@ -121,4 +121,8 @@
       )
     );
   --canopy-flicker: var(--by-day, none) var(--by-torch, torch-flicker 5.3s linear infinite);
+  /* The flame also moves, and every shadow it throws moves with it */
+  --canopy-quiver: var(--by-day, none) var(--by-torch, torch-quiver 5.3s linear infinite);
+  /* How long the wind takes over its movements: the night air is stiller */
+  --canopy-air: var(--by-day, 1) var(--by-torch, 1.3);
 }
