@@ -127,8 +127,8 @@ const shade = ({ sheet, fade }: Piece) =>
     position: absolute;
     will-change: transform;
     animation:
-      canopy-swing-near var(--time) var(--ease) calc(var(--wave) * -1 - 3s) infinite alternate,
-      canopy-drift calc(14s * var(--canopy-air)) var(--ease) calc(var(--wave) * -1 - 2s) infinite
+      canopy-swing-near var(--time) var(--ease) calc(var(--wave) - 10s) infinite alternate,
+      canopy-drift calc(14s * var(--canopy-air)) var(--ease) calc(var(--wave) - 10s) infinite
         alternate,
       canopy-gust-near calc(17s * var(--canopy-air)) var(--ease) calc(var(--x) * 2.5s - 7.5s)
         infinite;

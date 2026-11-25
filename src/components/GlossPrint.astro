@@ -307,16 +307,37 @@ const fit = Math.min(1, image.width / image.height);
     frame ||= requestAnimationFrame(step);
   };
 
-  // Reduced motion turned on mid-visit: back to the still sheen. Turned off: observing
-  // a sticker again reports where it is, so the ones in view get their lamps.
+  // Visibility within 200px of the viewport, measured on passive scroll and resize
+  // instead of an IntersectionObserver: while an observer is watching anything at all,
+  // Chrome wakes the main thread on every frame of the canopy's animation above.
+  let lookFrame = 0;
+  const look = () => {
+    lookFrame = 0;
+    const edge = 200;
+    const height = window.innerHeight;
+    let relight = false;
+    for (const print of prints) {
+      const box = print.sticker.getBoundingClientRect();
+      print.seen = box.bottom >= -edge && box.top <= height + edge;
+      kindle(print);
+      // A lamp kept from before reduced motion was turned on and off again.
+      if (woken && print.seen && print.draw) relight = true;
+    }
+    if (relight && !still.matches && !frame) step();
+  };
+  const watch = () => {
+    lookFrame ||= requestAnimationFrame(look);
+  };
+
+  // Reduced motion turned on mid-visit: back to the still sheen. Turned off: check
+  // which stickers are in view so they get their lamps back.
   still.addEventListener('change', () => {
     if (!still.matches) {
-      for (const { sticker } of prints) {
-        watcher.unobserve(sticker);
-        watcher.observe(sticker);
-      }
+      watch();
       return;
     }
+    cancelAnimationFrame(lookFrame);
+    lookFrame = 0;
     cancelAnimationFrame(frame);
     frame = 0;
     for (const { sticker } of prints) {
@@ -326,21 +347,7 @@ const fit = Math.min(1, image.width / image.height);
     }
   });
 
-  const watcher = new IntersectionObserver(
-    (entries) => {
-      for (const entry of entries) {
-        const print = prints.find(({ sticker }) => sticker === entry.target)!;
-        print.seen = entry.isIntersecting;
-        kindle(print);
-        // A lamp kept from before reduced motion was turned on and off again.
-        if (woken && print.seen && print.draw) wake();
-      }
-    },
-    { rootMargin: '200px' }
-  );
-
   for (const print of prints) {
-    watcher.observe(print.sticker);
     // The pointer anywhere on the card is the lamp: near the sticker the light sits
     // under it, far along the card it has run off the sticker's edge.
     print.card.addEventListener('pointermove', (event) => {
@@ -359,5 +366,14 @@ const fit = Math.min(1, image.width / image.height);
       wake();
     });
   }
-  addEventListener('scroll', wake, { passive: true });
+  look();
+  addEventListener(
+    'scroll',
+    () => {
+      if (!still.matches) woken = true;
+      watch();
+    },
+    { passive: true }
+  );
+  addEventListener('resize', watch, { passive: true });
 </script>

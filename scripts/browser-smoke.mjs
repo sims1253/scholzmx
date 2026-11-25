@@ -327,7 +327,7 @@ try {
       assert.ok(
         lined.every(
           (sheet) =>
-            sheet.minGap >= 1.5 && sheet.maxGap <= 4.8 && sheet.spread <= 1.2 && sheet.overflow <= 0
+            sheet.minGap >= 2.0 && sheet.maxGap <= 4.3 && sheet.spread <= 1.2 && sheet.overflow <= 0
         ),
         `Writing misaligned on ${path} at ${width}px: ${JSON.stringify(lined)}`
       );
