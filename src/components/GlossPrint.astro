@@ -326,6 +326,7 @@ const fit = Math.min(1, image.width / image.height);
     if (relight && !still.matches && !frame) step();
   };
   const watch = () => {
+    if (still.matches) return;
     lookFrame ||= requestAnimationFrame(look);
   };
 
@@ -366,11 +367,12 @@ const fit = Math.min(1, image.width / image.height);
       wake();
     });
   }
-  look();
+  if (!still.matches) look();
   addEventListener(
     'scroll',
     () => {
-      if (!still.matches) woken = true;
+      if (still.matches) return;
+      woken = true;
       watch();
     },
     { passive: true }
