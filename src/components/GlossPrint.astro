@@ -1,0 +1,363 @@
+---
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+/**
+ * GlossPrint: a die-cut vinyl sticker, stuck flat on whatever it is given to. The picture
+ * is the object: its own outline casts the shadow and nothing lies behind it, so it must
+ * come with a clear ground.
+ *
+ * It is glossy. At rest a still sheen lies across it (CSS alone, so it is there without
+ * JavaScript and under reduced motion). Once the reader scrolls or brings the pointer
+ * over the card it sits on, the script below lights it by its relief instead: a normal
+ * map made from the picture by scripts/make-print-reliefs.mjs.
+ *
+ * - `relief` is that map's URL (import it with `?url`, so the file is fetched only when
+ *   the sticker is about to be lit).
+ * - `turn` is the angle it was stuck on at; pass a seeded value.
+ */
+interface Props {
+  image: ImageMetadata;
+  relief: string;
+  width?: number;
+  turn?: string;
+  loading?: 'eager' | 'lazy';
+}
+
+const { image, relief, width = 160, turn = '0deg', loading = 'lazy' } = Astro.props;
+
+// The sheen is cut to the sticker by the picture's own alpha: the same two files the
+// <img> chooses between. A mask is always fetched in CORS mode, so the <img> asks in
+// that mode too (`crossorigin`): otherwise the browser treats the two as different
+// requests and fetches every picture twice.
+const [small, large] = await Promise.all([
+  getImage({ src: image, width }),
+  getImage({ src: image, width: width * 2 }),
+]);
+const mask = `image-set(url('${small.src}') 1x, url('${large.src}') 2x)`;
+// A tall sticker is as tall as the others are wide, not taller.
+const fit = Math.min(1, image.width / image.height);
+---
+
+<div
+  class="gloss-print"
+  data-relief={relief}
+  style={`--gloss-turn: ${turn}; --gloss-fit: ${fit.toFixed(3)}; --gloss-mask: ${mask}`}
+>
+  <img
+    src={small.src}
+    srcset={`${small.src} 1x, ${large.src} 2x`}
+    alt=""
+    width={small.attributes.width}
+    height={small.attributes.height}
+    loading={loading}
+    decoding="async"
+    crossorigin="anonymous"
+  />
+  <i class="gloss-sheen" aria-hidden="true"></i>
+</div>
+
+<style>
+  .gloss-print {
+    /* Daylight from the window is white; the torch is warm and nearer. */
+    --gloss-shine: var(--by-day, rgb(255 255 255 / 0.62)) var(--by-torch, rgb(255 208 140 / 0.4));
+    --gloss-glow: var(--by-day, rgb(255 255 255 / 0.16)) var(--by-torch, rgb(255 208 140 / 0.1));
+    --gloss-warm: var(--by-day, none) var(--by-torch, sepia(1) saturate(1.7) brightness(0.92));
+    /* A shadow stays dark by torchlight, so it is not mixed from the ink colour. */
+    --gloss-shade: var(--by-day, rgb(29 35 24 / 0.46)) var(--by-torch, rgb(0 0 0 / 0.6));
+    --gloss-shade-soft: var(--by-day, rgb(29 35 24 / 0.16)) var(--by-torch, rgb(0 0 0 / 0.3));
+
+    position: relative;
+    display: block;
+    width: calc(100% * var(--gloss-fit, 1));
+    margin-inline: auto;
+    /* A sticker is thin: its shadow is tight under the cut edge, with only a breath of
+       soft shadow beyond. The filter follows the picture's outline. */
+    filter: drop-shadow(0 0.5px 0.5px var(--gloss-shade))
+      drop-shadow(0 2px 2.5px var(--gloss-shade-soft));
+    transform: perspective(26rem) rotateX(var(--gloss-tilt-x, 0deg))
+      rotateY(var(--gloss-tilt-y, 0deg)) rotate(var(--gloss-turn));
+  }
+
+  .gloss-print img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 0;
+    filter: var(--print-dim);
+  }
+
+  /* Both lights lie over the picture and take no clicks: the card under it is a link. */
+  .gloss-sheen,
+  .gloss-print :global(.gloss-light) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+  }
+
+  /* The resting sheen: the window's streak across the upper left, and a faint glow
+     where the light comes from. */
+  .gloss-sheen {
+    background:
+      linear-gradient(
+        118deg,
+        transparent 16%,
+        var(--gloss-shine) 27%,
+        var(--gloss-glow) 33%,
+        transparent 34%,
+        transparent 38%,
+        var(--gloss-glow) 39%,
+        transparent 47%
+      ),
+      radial-gradient(120% 90% at 20% 0%, var(--gloss-glow), transparent 60%);
+    mask: var(--gloss-mask) center / 100% 100% no-repeat;
+  }
+
+  /* The lit relief is drawn in white and black; torchlight warms the white. */
+  .gloss-print :global(.gloss-light) {
+    opacity: 0;
+    filter: var(--gloss-warm);
+  }
+
+  .gloss-print[data-lit] :global(.gloss-light) {
+    opacity: 1;
+  }
+
+  .gloss-print[data-lit] .gloss-sheen {
+    opacity: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gloss-print {
+      transform: rotate(var(--gloss-turn));
+    }
+  }
+</style>
+
+<script>
+  // Lights each sticker by its relief. One small WebGL canvas per sticker, drawn only
+  // when its light has somewhere to go: the pointer moved over its card, or the page
+  // scrolled while it was in view. Nothing runs at rest, off screen or under reduced
+  // motion, and until the reader does one of those the CSS sheen is all there is, so
+  // nothing changes on load.
+  const still = matchMedia('(prefers-reduced-motion: reduce)');
+
+  const VERTEX = `
+    attribute vec2 corner;
+    varying vec2 at;
+    void main() {
+      at = vec2(corner.x, -corner.y) * 0.5 + 0.5;
+      gl_Position = vec4(corner, 0.0, 1.0);
+    }`;
+
+  // A tight highlight inside a wide soft one, as lacquer over print gives, and a little
+  // shade on the slopes that face away. Drawn premultiplied: white for light, black
+  // for shade, clear elsewhere and outside the sticker.
+  const FRAGMENT = `
+    precision mediump float;
+    uniform sampler2D relief;
+    uniform vec3 light;
+    varying vec2 at;
+    void main() {
+      vec4 texel = texture2D(relief, at);
+      vec3 normal = normalize(vec3(texel.rg * 2.0 - 1.0, texel.b));
+      vec3 toLight = normalize(light - vec3(at, 0.0));
+      float facing = max(dot(normal, normalize(toLight + vec3(0.0, 0.0, 1.0))), 0.0);
+      float shine = pow(facing, 110.0) * 0.6 + pow(facing, 22.0) * 0.14;
+      float shade = clamp(-dot(normal.xy, toLight.xy) * 0.55, 0.0, 0.3);
+      gl_FragColor = vec4(vec3(shine), min(shine + shade, 1.0)) * texel.a;
+    }`;
+
+  interface Print {
+    sticker: HTMLElement;
+    card: HTMLElement;
+    seen: boolean;
+    held: boolean;
+    at: [number, number];
+    to: [number, number];
+    tilt: [number, number];
+    draw?: (x: number, y: number) => void;
+  }
+
+  // With no pointer on it, the light lies where the sticker is in the window: it slides
+  // down and across as the tag scrolls past, as it would on a print turned in the hand.
+  const rest = (print: Print): [number, number] => {
+    const box = print.sticker.getBoundingClientRect();
+    const passed = Math.min(1, Math.max(0, (box.top + box.height / 2) / window.innerHeight));
+    return [0.62 - passed * 0.5, 0.5 - passed * 0.42];
+  };
+
+  const lamp = (sticker: HTMLElement, map: HTMLImageElement) => {
+    const canvas = document.createElement('canvas');
+    canvas.width = map.naturalWidth;
+    canvas.height = map.naturalHeight;
+    canvas.className = 'gloss-light';
+    canvas.setAttribute('aria-hidden', 'true');
+    const gl = canvas.getContext('webgl', { premultipliedAlpha: true, antialias: false });
+    if (!gl) return;
+    const program = gl.createProgram();
+    for (const [kind, source] of [
+      [gl.VERTEX_SHADER, VERTEX],
+      [gl.FRAGMENT_SHADER, FRAGMENT],
+    ] as const) {
+      const shader = gl.createShader(kind)!;
+      gl.shaderSource(shader, source);
+      gl.compileShader(shader);
+      gl.attachShader(program, shader);
+    }
+    gl.linkProgram(program);
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return;
+    gl.useProgram(program);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+    const corner = gl.getAttribLocation(program, 'corner');
+    gl.enableVertexAttribArray(corner);
+    gl.vertexAttribPointer(corner, 2, gl.FLOAT, false, 0, 0);
+
+    gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
+    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, map);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+    const light = gl.getUniformLocation(program, 'light');
+    sticker.append(canvas);
+    return (x: number, y: number) => {
+      gl.uniform3f(light, x, y, 0.5);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    };
+  };
+
+  const prints: Print[] = [...document.querySelectorAll<HTMLElement>('.gloss-print')].map(
+    (sticker) => ({
+      sticker,
+      card: sticker.closest<HTMLElement>('article') ?? sticker,
+      seen: false,
+      held: false,
+      at: [0.3, 0.2],
+      to: [0.3, 0.2],
+      tilt: [0, 0],
+    })
+  );
+
+  let frame = 0;
+  let woken = false;
+
+  const step = () => {
+    frame = 0;
+    let moving = false;
+    for (const print of prints) {
+      if (!print.seen || !print.draw) continue;
+      if (!print.held) print.to = rest(print);
+      const lean: [number, number] = print.held
+        ? [(0.5 - print.to[1]) * 7, (print.to[0] - 0.5) * 7]
+        : [0, 0];
+      for (const axis of [0, 1] as const) {
+        print.at[axis] += (print.to[axis] - print.at[axis]) * 0.16;
+        print.tilt[axis] += (lean[axis] - print.tilt[axis]) * 0.16;
+        if (Math.abs(print.to[axis] - print.at[axis]) > 0.002) moving = true;
+        if (Math.abs(lean[axis] - print.tilt[axis]) > 0.02) moving = true;
+      }
+      print.draw(print.at[0], print.at[1]);
+      print.sticker.style.setProperty('--gloss-tilt-x', `${print.tilt[0].toFixed(2)}deg`);
+      print.sticker.style.setProperty('--gloss-tilt-y', `${print.tilt[1].toFixed(2)}deg`);
+      print.sticker.dataset.lit = '';
+    }
+    if (moving) frame = requestAnimationFrame(step);
+  };
+
+  // Fetches a sticker's relief and makes its lamp: only once the reader has scrolled or
+  // moved the pointer, so a page that is merely opened loads no relief at all.
+  const kindle = (print: Print) => {
+    const relief = print.sticker.dataset.relief;
+    if (!woken || !print.seen || print.draw || still.matches || !relief) return;
+    const map = new Image();
+    map.src = relief;
+    delete print.sticker.dataset.relief;
+    void map
+      .decode()
+      .then(() => {
+        print.draw = lamp(print.sticker, map);
+        // A browser may take the canvas's context back (a tab left in the
+        // background on a phone): the still sheen returns.
+        print.sticker.querySelector('canvas')?.addEventListener('webglcontextlost', () => {
+          print.draw = undefined;
+          delete print.sticker.dataset.lit;
+          print.sticker.style.removeProperty('--gloss-tilt-x');
+          print.sticker.style.removeProperty('--gloss-tilt-y');
+        });
+        print.at = rest(print);
+        wake();
+      })
+      .catch(() => {
+        // No relief, no lamp: the still sheen stays.
+      });
+  };
+
+  const wake = () => {
+    if (still.matches) return;
+    if (!woken) {
+      woken = true;
+      prints.forEach(kindle);
+    }
+    frame ||= requestAnimationFrame(step);
+  };
+
+  // Reduced motion turned on mid-visit: back to the still sheen. Turned off: observing
+  // a sticker again reports where it is, so the ones in view get their lamps.
+  still.addEventListener('change', () => {
+    if (!still.matches) {
+      for (const { sticker } of prints) {
+        watcher.unobserve(sticker);
+        watcher.observe(sticker);
+      }
+      return;
+    }
+    cancelAnimationFrame(frame);
+    frame = 0;
+    for (const { sticker } of prints) {
+      delete sticker.dataset.lit;
+      sticker.style.removeProperty('--gloss-tilt-x');
+      sticker.style.removeProperty('--gloss-tilt-y');
+    }
+  });
+
+  const watcher = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        const print = prints.find(({ sticker }) => sticker === entry.target)!;
+        print.seen = entry.isIntersecting;
+        kindle(print);
+        // A lamp kept from before reduced motion was turned on and off again.
+        if (woken && print.seen && print.draw) wake();
+      }
+    },
+    { rootMargin: '200px' }
+  );
+
+  for (const print of prints) {
+    watcher.observe(print.sticker);
+    // The pointer anywhere on the card is the lamp: near the sticker the light sits
+    // under it, far along the card it has run off the sticker's edge.
+    print.card.addEventListener('pointermove', (event) => {
+      if (event.pointerType === 'touch') return;
+      const box = print.sticker.getBoundingClientRect();
+      const reach = (distance: number) => 0.5 + (0.75 * distance) / (0.6 + Math.abs(distance));
+      print.held = true;
+      print.to = [
+        reach((event.clientX - box.left) / box.width - 0.5),
+        reach((event.clientY - box.top) / box.height - 0.5),
+      ];
+      wake();
+    });
+    print.card.addEventListener('pointerleave', () => {
+      print.held = false;
+      wake();
+    });
+  }
+  addEventListener('scroll', wake, { passive: true });
+</script>
