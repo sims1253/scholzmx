@@ -89,7 +89,6 @@ const sections = Astro.props.headings.filter((heading) => heading.depth === 2);
         });
       }
     };
-    markCurrent();
     fadeAtEnd();
     window.addEventListener('scroll', onScroll, { passive: true });
 
@@ -107,6 +106,8 @@ const sections = Astro.props.headings.filter((heading) => heading.depth === 2);
       }
       onScroll();
     };
+    // This also takes the first measure of the current section, once the rail is open:
+    // a closed list cannot bring the current title into view.
     fitToMargin();
     window.addEventListener('resize', fitToMargin, { passive: true });
   }
