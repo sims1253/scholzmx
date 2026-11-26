@@ -62,7 +62,7 @@
      pressed rectangle a printer's plate leaves in the paper. The mark is three shadows
      on the picture itself: a band of the sheet's own colour, with a dark and a light
      copy peeping out from under it on the sides away from and towards the light. */
-  .prose p:has(> img:only-child) img,
+  .prose > p:has(> img:only-child) img,
   .prose figure:has(img) img {
     outline: 1px solid var(--plate-keyline);
     outline-offset: 2px;

@@ -8,8 +8,9 @@ const recipes = (await getCollection('recipes', ({ data }) => !data.draft)).sort
   a.data.title.localeCompare(b.data.title)
 );
 
-// A recipe box: alphabetical, each initial's divider tab above its first card.
+// A recipe box: alphabetical, with divider tabs once the box holds more than a handful.
 const initialOf = (recipe: (typeof recipes)[number]) => recipe.data.title[0]!.toUpperCase();
+const showTabs = recipes.length >= 6;
 const tags = [...new Set(recipes.flatMap((recipe) => recipe.data.tags ?? []))].sort((a, b) =>
   a.localeCompare(b)
 );
@@ -35,15 +36,16 @@ const tags = [...new Set(recipes.flatMap((recipe) => recipe.data.tags ?? []))].s
     <NoteCardStack
       media="thumb"
       material="recipe"
-      headingLevel={3}
+      headingLevel={showTabs ? 3 : 2}
       tagBase="/recipes"
       items={recipes.map((recipe) => ({
         id: recipe.id,
         title: recipe.data.title,
         subtitle: recipe.data.description,
+        meta: [recipe.data.servings, recipe.data.time].filter(Boolean).join(' · '),
         href: `/recipes/${recipe.id}`,
         tags: recipe.data.tags ?? [],
-        tab: initialOf(recipe),
+        tab: showTabs ? initialOf(recipe) : undefined,
         hero: recipe.data.heroImage
           ? {
               kind: 'asset' as const,

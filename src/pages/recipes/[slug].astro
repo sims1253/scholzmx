@@ -159,6 +159,10 @@ const tagLinks = tags.map((text) => ({ text, href: `/recipes?tag=${encodeURIComp
       0 14px 28px -16px color-mix(in srgb, var(--color-ink-dark) 40%, transparent);
   }
 
+  .recipe-hero :global(img) {
+    filter: var(--print-dim);
+  }
+
   .recipe-body :global(strong) {
     font-weight: 700;
     color: var(--color-text-primary);

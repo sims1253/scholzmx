@@ -130,10 +130,10 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
           <label><input type="radio" name="rc-scale" value="1" checked />As written</label>
           <label><input type="radio" name="rc-scale" value="2" />Double</label>
         </fieldset>
-        <fieldset class="rc-choice">
-          <legend>Table</legend>
-          <label><input type="radio" name="rc-view" value="steps" checked />Hide</label>
-          <label><input type="radio" name="rc-view" value="table" />Show</label>
+        <fieldset class="rc-choice rc-view-choice">
+          <legend>View</legend>
+          <label><input type="radio" name="rc-view" value="table" />Table</label>
+          <label><input type="radio" name="rc-view" value="steps" checked />Steps</label>
         </fieldset>
         <button type="button" class="rc-start" data-rc-start>Start cooking</button>
       </div>
@@ -145,7 +145,10 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
         <table class="rc-table">
           <caption id="rc-caption">
             <span class="rc-legend">
-              <span class="rc-read">Read left to right: each step combines the rows it spans.</span>
+              <span class="rc-read"
+                >Read left to right: each step combines the rows it spans. Select a step for
+                details.</span
+              >
               <span class="rc-key"><span class="rc-swatch"></span>Hands on</span>
               <span class="rc-key"><span class="rc-swatch rc-swatch--wait"></span>Hands off</span>
               {meanwhile.length > 0 && <span class="rc-key">
@@ -156,8 +159,13 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
           {(getReady || meanwhile.length > 0) && <thead>
             <tr>
               <td class="rc-corner" data-stage={getReady ? 0 : undefined}>
-                {getReady && <span class="rc-num">1</span>}
-                {getReady && 'Get ready'}
+                {getReady && <button
+                  type="button"
+                  class="rc-cell-btn rc-cell-btn--corner"
+                  aria-expanded="false"
+                >
+                  <span class="rc-num">1</span>Get ready
+                </button>}
               </td>
               {columnTasks.map((tasks) => <td class="rc-above">
                 {tasks.length > 0 && <span class="rc-slip">
@@ -207,9 +215,13 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
                     rowspan={entry.cell.rowSpan > 1 ? entry.cell.rowSpan : undefined}
                     data-stage={entry.cell.index + offset}
                   >
-                    <span class="rc-num">{number(entry.cell.index)}</span>
-                    <span class="rc-do">{entry.cell.step.do}</span>
-                    {when(entry.cell.step) && <span class="rc-when">{when(entry.cell.step)}</span>}
+                    <button type="button" class="rc-cell-btn" aria-expanded="false">
+                      <span class="rc-num">{number(entry.cell.index)}</span>
+                      <span class="rc-do">{entry.cell.step.do}</span>
+                      {when(entry.cell.step) && <span class="rc-when"
+                        >{when(entry.cell.step)}</span
+                      >}
+                    </button>
                   </td>
                 )
               )}
@@ -222,6 +234,19 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
             </tr>
           </tfoot>}
         </table>
+      </div>
+      <div class="rc-peek" data-rc-peek hidden>
+        <div class="rc-peek-head">
+          <p class="rc-peek-title">
+            <span class="rc-peek-count" data-rc-peek-count></span>
+            <span class="rc-peek-do" data-rc-peek-do></span>
+          </p>
+          <button type="button" class="rc-link" data-rc-peek-close>Close</button>
+        </div>
+        <div class="rc-peek-uses" data-rc-peek-uses></div>
+        <p class="rc-peek-detail" data-rc-peek-detail></p>
+        <p class="rc-peek-when" data-rc-peek-when hidden></p>
+        <p class="rc-peek-meanwhile" data-rc-peek-meanwhile hidden></p>
       </div>
     </div>
 
@@ -368,6 +393,8 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
      shrinks to what it holds, so a small recipe is a small card. */
   .recipe-card {
     --card-width: min(72rem, 100cqi - 2 * var(--space-md));
+    --rc-tooth: var(--by-day, var(--paper-tooth, none))
+      var(--by-torch, var(--paper-tooth-faint, none));
     --rc-rule: color-mix(in srgb, var(--color-ink-dark) 16%, var(--paper-sheet));
     /* Hands-off time is hatched, as in a timing chart: you can walk away. */
     --rc-shade: repeating-linear-gradient(
@@ -386,7 +413,9 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     max-width: 100%;
     margin-inline: auto;
     padding: var(--space-lg) var(--space-lg) var(--space-md);
-    background: var(--paper-sheet);
+    background:
+      var(--rc-tooth) 0 0 / 256px 256px repeat,
+      var(--paper-sheet);
     border: 1px solid color-mix(in srgb, var(--color-ink-dark) 10%, transparent);
     box-shadow:
       0 1px 2px color-mix(in srgb, var(--color-ink-dark) 12%, transparent),
@@ -435,6 +464,7 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
   .rc-choice legend,
   .rc-gather-title,
   .rc-cook-count,
+  .rc-peek-count,
   .rc-slip-label,
   .rc-clock-label,
   .rc-corner {
@@ -548,9 +578,10 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     outline-offset: 4px;
   }
 
-  /* As wide as its steps need, up to the card */
+  /* At least the card's width so short recipes balance cleanly; wide ones grow to fit. */
   .rc-table {
     inline-size: auto;
+    min-width: 100%;
     margin: 0;
     border-collapse: collapse;
     font-size: var(--text-sm);
@@ -658,15 +689,154 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     font-weight: inherit;
   }
 
-  .rc-step {
+  .rc-table .rc-step {
+    position: relative;
     min-width: 4.5rem;
+    padding: 0;
     background: var(--wash-sage);
     text-align: center;
   }
 
   /* Hands-off time sits in the shade: you can walk away. */
-  .rc-wait {
+  .rc-table .rc-wait {
     background: var(--rc-shade), var(--wash-sage);
+  }
+
+  .rc-table .rc-step:hover:not(.is-current) {
+    background: color-mix(in srgb, var(--color-tansy) 14%, var(--wash-sage));
+  }
+
+  .rc-table .rc-wait:hover:not(.is-current) {
+    background: var(--rc-shade), color-mix(in srgb, var(--color-tansy) 14%, var(--wash-sage));
+  }
+
+  .rc-cell-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 0.3rem 0.5rem;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    line-height: inherit;
+    text-align: inherit;
+    cursor: pointer;
+  }
+
+  /* Cover the full rowspan cell so clicking anywhere in the column opens its detail. */
+  .rc-table .rc-step .rc-cell-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .rc-cell-btn--corner {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: flex-start;
+    width: auto;
+    padding: 0.1rem 0.35rem 0.2rem 0.15rem;
+    border-radius: 2px;
+  }
+
+  .rc-cell-btn--corner:hover {
+    background: color-mix(in srgb, var(--color-tansy) 16%, transparent);
+  }
+
+  .rc-table .rc-step .rc-cell-btn:focus-visible {
+    outline: none;
+  }
+
+  .rc-table .rc-step:has(.rc-cell-btn:focus-visible),
+  .rc-cell-btn--corner:focus-visible {
+    outline: 2px solid var(--color-walnut);
+    outline-offset: -2px;
+  }
+
+  .rc-table .rc-step.is-peeked:not(.is-current),
+  .rc-corner.is-peeked:not(.is-current) {
+    outline: 2px solid var(--color-moss);
+    outline-offset: -2px;
+  }
+
+  .rc-table .rc-step.is-peeked:not(.is-current) {
+    background: color-mix(in srgb, var(--color-tansy) 18%, var(--wash-sage));
+  }
+
+  .rc-table .rc-wait.is-peeked:not(.is-current) {
+    background: var(--rc-shade), color-mix(in srgb, var(--color-tansy) 18%, var(--wash-sage));
+  }
+
+  /* Quiet detail slip below the table when a reader selects a step. */
+  .rc-peek {
+    margin-top: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--rc-rule);
+    border-left: 3px solid var(--color-moss);
+    background: color-mix(in srgb, var(--wash-sage) 45%, var(--paper-sheet));
+  }
+
+  .rc-peek[hidden] {
+    display: none;
+  }
+
+  .rc-peek-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-md);
+  }
+
+  .rc-peek-title {
+    margin: 0;
+    line-height: 1.25;
+  }
+
+  .rc-peek-count {
+    margin-right: 0.5rem;
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+  }
+
+  .rc-peek-do {
+    font-family: var(--font-heading);
+    font-size: var(--text-lg);
+  }
+
+  .rc-peek-uses .rc-uses {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 1rem;
+    margin: 0.25rem 0 0;
+  }
+
+  .rc-peek-uses .rc-uses li {
+    display: inline;
+  }
+
+  .rc-peek-uses .rc-uses-qty:not(:empty) {
+    margin-right: 0.3em;
+  }
+
+  .rc-peek-detail {
+    max-width: 44rem;
+    margin: 0.35rem 0 0;
+  }
+
+  .rc-peek-when,
+  .rc-peek-meanwhile {
+    margin: 0.25rem 0 0;
+    font-size: var(--text-sm);
+    font-style: italic;
+    color: var(--color-text-muted);
+  }
+
+  .rc-peek-meanwhile {
+    color: var(--color-ochre);
   }
 
   /* Step numbers match the step list and cooking mode. */
@@ -991,30 +1161,24 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     color: var(--color-ochre);
   }
 
-  /* The step list is the recipe and is always there. The table is an overview that sits
-     above it: the inline script after the card opens it where it fits, and the Table
-     control puts it away or brings it back. */
-  .recipe-card:not([data-view]) .rc-table-frame {
+  /* Without JavaScript the step list stays: it is the complete recipe. With JavaScript
+     the Table and Steps views trade places so the recipe is never shown twice at once. */
+  .recipe-card:not([data-view]) .rc-table-frame,
+  .recipe-card[data-view='steps'] .rc-table-frame {
     display: none;
   }
 
-  /* Put away, the table still lends the sheet its width (the sheet is as wide as what
-     it holds), so switching views does not move the sheet. */
-  .recipe-card[data-view='steps'] .rc-table-frame {
-    height: 0;
-    overflow: hidden;
-    visibility: hidden;
-  }
-
   .recipe-card[data-view='table'] .rc-steps-view {
-    margin-top: var(--space-xl);
-    padding-top: var(--space-lg);
-    border-top: 1px solid var(--rc-rule);
+    display: none;
   }
 
   @media (max-width: 48rem) {
     .rc-sheet {
       padding: var(--space-md) var(--space-sm);
+    }
+
+    .rc-view-choice {
+      display: none;
     }
 
     .rc-start {
@@ -1110,7 +1274,9 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
     max-width: 72rem;
     margin: 0 auto;
     padding: var(--space-sm) var(--space-md);
-    background: var(--paper-sheet);
+    background:
+      var(--rc-tooth) 0 0 / 256px 256px repeat,
+      var(--paper-sheet);
     border: 1px solid color-mix(in srgb, var(--color-ink-dark) 12%, transparent);
     border-top: 3px solid color-mix(in srgb, var(--color-tansy) 45%, var(--paper-sheet));
     box-shadow: 0 -12px 30px -14px color-mix(in srgb, var(--color-ink-dark) 45%, transparent);
@@ -1326,6 +1492,7 @@ const takenCol = (id: string) => grid.cells[grid.takenAt.get(id) ?? 0]?.col ?? 0
   @media print {
     .rc-controls,
     .rc-cook,
+    .rc-peek,
     .rc-steps-view,
     .rc-more {
       display: none !important;
