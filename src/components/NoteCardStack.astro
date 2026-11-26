@@ -10,6 +10,8 @@ interface CardItem {
   href?: string;
   writtenDate?: string;
   updatedDate?: string;
+  /** Short footer annotation (e.g. servings & time on recipes), set in the same hand as dates. */
+  meta?: string;
   tags?: string[];
   hero?:
     | {
@@ -124,12 +126,16 @@ const inWords = (isoDay: string) =>
         />
       </div>}
       <div class="sc-meta">
-        {it.writtenDate && <p class="sc-dates">
-          <time datetime={it.writtenDate}>{inWords(it.writtenDate)}</time
-          >{it.updatedDate && it.updatedDate !== it.writtenDate && (
-            <>, tended <time datetime={it.updatedDate}>{inWords(it.updatedDate)}</time></>
-          )}
-        </p>}
+        {it.writtenDate ? (
+          <p class="sc-dates">
+            <time datetime={it.writtenDate}>{inWords(it.writtenDate)}</time
+            >{it.updatedDate && it.updatedDate !== it.writtenDate && (
+              <>, tended <time datetime={it.updatedDate}>{inWords(it.updatedDate)}</time></>
+            )}
+          </p>
+        ) : it.meta ? (
+          <p class="sc-dates">{it.meta}</p>
+        ) : null}
         <div class="sc-tags">
           {it.tags?.map((tag) => <a
             class="sc-chip"

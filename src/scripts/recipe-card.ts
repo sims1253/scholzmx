@@ -69,9 +69,51 @@ function initRecipeCard(card: HTMLElement): void {
   const announce = part('[data-rc-announce]');
   const back = part<HTMLButtonElement>('[data-rc-back]');
   const next = part<HTMLButtonElement>('[data-rc-next]');
+  const peek = card.querySelector<HTMLElement>('[data-rc-peek]');
+  const peekCount = peek?.querySelector<HTMLElement>('[data-rc-peek-count]');
+  const peekTitle = peek?.querySelector<HTMLElement>('[data-rc-peek-do]');
+  const peekUses = peek?.querySelector<HTMLElement>('[data-rc-peek-uses]');
+  const peekDetail = peek?.querySelector<HTMLElement>('[data-rc-peek-detail]');
+  const peekWhen = peek?.querySelector<HTMLElement>('[data-rc-peek-when]');
+  const peekMeanwhile = peek?.querySelector<HTMLElement>('[data-rc-peek-meanwhile]');
   const storageKey = `recipe-step:${location.pathname}`;
 
-  // ===== Scaling and view =====
+  // ===== Scaling, view and step detail =====
+
+  let peeked = -1;
+
+  const setPeek = (stage: number) => {
+    peeked = stage >= 0 && stage < stages.length ? stage : -1;
+    for (const cell of cells) {
+      const selected = Number(cell.dataset.stage) === peeked;
+      cell.classList.toggle('is-peeked', selected);
+      cell
+        .querySelector<HTMLButtonElement>('.rc-cell-btn')
+        ?.setAttribute('aria-expanded', String(selected));
+    }
+    if (!peek) return;
+    if (peeked < 0) {
+      peek.hidden = true;
+      return;
+    }
+    const item = stages[peeked];
+    if (peekCount) peekCount.textContent = `Step ${peeked + 1} of ${stages.length}`;
+    if (peekTitle) peekTitle.textContent = textOf(item?.querySelector('.rc-steps-do'));
+    const list = item?.querySelector('.rc-uses');
+    peekUses?.replaceChildren(...(list ? [list.cloneNode(true)] : []));
+    if (peekDetail) peekDetail.textContent = textOf(item?.querySelector('.rc-steps-detail'));
+    if (peekWhen) {
+      const time = textOf(item?.querySelector('.rc-steps-when'));
+      peekWhen.hidden = !time;
+      peekWhen.textContent = time;
+    }
+    if (peekMeanwhile) {
+      const task = textOf(item?.querySelector('.rc-steps-meanwhile'));
+      peekMeanwhile.hidden = !task;
+      peekMeanwhile.textContent = task;
+    }
+    peek.hidden = false;
+  };
 
   const scale = (factor: number) => {
     for (const quantity of card.querySelectorAll<HTMLElement>('.rc-qty[data-amount]')) {
@@ -85,6 +127,9 @@ function initRecipeCard(card: HTMLElement): void {
     for (const written of card.querySelectorAll<HTMLElement>('[data-hide-doubled]')) {
       written.hidden = factor === 2;
     }
+    if (peeked >= 0) setPeek(peeked);
+    if (current >= 0 && detail)
+      detail.textContent = textOf(stages[current]?.querySelector('.rc-steps-detail'));
   };
 
   // While part of the table hides to the right, the frame fades its edge and says so.
@@ -100,6 +145,7 @@ function initRecipeCard(card: HTMLElement): void {
     card.dataset.view = view;
     const radio = card.querySelector<HTMLInputElement>(`input[name="rc-view"][value="${view}"]`);
     if (radio) radio.checked = true;
+    if (view !== 'table') setPeek(-1);
   };
   // The card arrives with its view already chosen (RecipeCard.astro's inline script).
   setView(card.dataset.view ?? 'steps');
@@ -166,6 +212,7 @@ function initRecipeCard(card: HTMLElement): void {
     document.documentElement.style.setProperty('--rc-bar', `${bar.offsetHeight}px`);
   };
   new ResizeObserver(placeBar).observe(bar);
+  new ResizeObserver(placeBar).observe(sheet);
   window.addEventListener('resize', placeBar);
 
   const renderTimers = () => {
@@ -288,6 +335,7 @@ function initRecipeCard(card: HTMLElement): void {
   };
 
   const start = (stage = 0) => {
+    setPeek(-1);
     card.classList.add('is-cooking');
     document.documentElement.classList.add('rc-cooking');
     bar.hidden = false;
@@ -325,16 +373,24 @@ function initRecipeCard(card: HTMLElement): void {
   );
   timerButton?.addEventListener('click', startTimer);
 
+  peek?.querySelector('[data-rc-peek-close]')?.addEventListener('click', () => setPeek(-1));
+
   for (const cell of cells) {
     cell.addEventListener('click', () => {
-      if (current >= 0) show(Number(cell.dataset.stage));
+      const stage = Number(cell.dataset.stage);
+      if (current >= 0) show(stage);
+      else setPeek(peeked === stage ? -1 : stage);
     });
   }
 
   document.addEventListener('keydown', (event) => {
-    if (current < 0 || event.altKey || event.ctrlKey || event.metaKey) return;
+    if (event.altKey || event.ctrlKey || event.metaKey) return;
     if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement)
       return;
+    if (current < 0) {
+      if (event.key === 'Escape' && peeked >= 0) setPeek(-1);
+      return;
+    }
     if (event.key === 'ArrowRight') show(current + 1);
     if (event.key === 'ArrowLeft') show(current - 1);
     if (event.key === 'Escape') stop();

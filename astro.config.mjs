@@ -33,6 +33,7 @@ export default defineConfig({
   integrations: [sitemap(), pagefind(), mathFont()],
   // Enable automatic image optimization
   image: {
+    layout: 'constrained',
     service: {
       entrypoint: 'astro/assets/services/sharp',
       config: {

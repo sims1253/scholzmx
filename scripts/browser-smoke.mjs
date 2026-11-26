@@ -379,8 +379,9 @@ try {
     );
   }
 
-  // A recipe opens with the table where the table fits, and with the steps alone elsewhere.
-  // The steps are the recipe: they show in both views.
+  // A recipe opens on the table where the table fits, and on the steps elsewhere, without
+  // duplicating both views at once. Selecting a table cell reveals its step details, and
+  // switching to Steps shows the full list.
   for (const [width, view] of [
     [1440, 'table'],
     [390, 'steps'],
@@ -390,6 +391,7 @@ try {
     const opened = await page.$eval('[data-recipe-card]', (card) => ({
       view: card.dataset.view,
       checked: card.querySelector('input[name="rc-view"]:checked')?.value,
+      table: card.querySelector('.rc-table-frame').getClientRects().length > 0,
       steps: card.querySelector('.rc-steps-view').getClientRects().length > 0,
       hidden:
         card.querySelector('.rc-table-wrap').scrollWidth -
@@ -397,10 +399,46 @@ try {
     }));
     assert.equal(opened.view, view, `Recipe view at ${width}px`);
     assert.equal(opened.checked, view, `Recipe view control at ${width}px`);
-    if (view === 'table') assert.ok(opened.hidden <= 1, 'The opening table must not scroll');
-    assert.ok(opened.steps, `The step list must show at ${width}px`);
+    if (view === 'table') {
+      assert.ok(opened.table, `Table must show at ${width}px`);
+      assert.ok(!opened.steps, `Steps must stay hidden in table view at ${width}px`);
+      assert.ok(opened.hidden <= 1, 'The opening table must not scroll');
+      await page.click('.rc-step[data-stage="1"] .rc-cell-btn');
+      const peek = await page.$eval('[data-rc-peek]', (panel) => ({
+        visible: !panel.hidden,
+        detail: panel.querySelector('[data-rc-peek-detail]')?.textContent?.trim(),
+      }));
+      assert.ok(peek.visible && peek.detail, 'Selecting a table cell should reveal step details');
+      await page.click('label:has(input[name="rc-view"][value="steps"])');
+      const switched = await page.$eval('[data-recipe-card]', (card) => ({
+        view: card.dataset.view,
+        table: card.querySelector('.rc-table-frame').getClientRects().length > 0,
+        steps: card.querySelector('.rc-steps-view').getClientRects().length > 0,
+      }));
+      assert.equal(switched.view, 'steps');
+      assert.ok(
+        !switched.table && switched.steps,
+        'Switching to Steps must trade places with Table'
+      );
+    } else {
+      assert.ok(!opened.table, `Table must stay hidden at ${width}px`);
+      assert.ok(opened.steps, `The step list must show at ${width}px`);
+    }
   }
+  await page.setViewport({ width: 1440, height: 844 });
+  await page.goto(`${baseURL}/recipes/pour-over-coffee/`, { waitUntil: 'networkidle0' });
+  const coffee = await page.$eval('[data-recipe-card]', (card) => ({
+    view: card.dataset.view,
+    tableWidth: card.querySelector('.rc-table').getBoundingClientRect().width,
+    wrapWidth: card.querySelector('.rc-table-wrap').getBoundingClientRect().width,
+  }));
+  assert.equal(coffee.view, 'table');
+  assert.ok(
+    coffee.wrapWidth - coffee.tableWidth <= 2,
+    `Short recipe table should fill its card (${coffee.tableWidth} vs ${coffee.wrapWidth})`
+  );
   // Force lazy images to load before checking their decoded dimensions.
+  await page.goto(`${baseURL}/recipes/hokkaido-dinner-rolls/`, { waitUntil: 'networkidle0' });
   await page.$$eval('img', async (images) => {
     for (const image of images) {
       image.loading = 'eager';
