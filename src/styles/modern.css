@@ -65,6 +65,7 @@ html {
   /* Subtle, accessible scrollbars (scoped to actual scrollable containers, not *) */
   html,
   pre,
+  .math-display,
   .post-contents nav,
   .rc-table-wrap {
     scrollbar-width: thin;
@@ -73,6 +74,7 @@ html {
   @supports selector(::-webkit-scrollbar) {
     html::-webkit-scrollbar,
     pre::-webkit-scrollbar,
+    .math-display::-webkit-scrollbar,
     .post-contents nav::-webkit-scrollbar,
     .rc-table-wrap::-webkit-scrollbar {
       width: 10px;
@@ -80,6 +82,7 @@ html {
     }
     html::-webkit-scrollbar-thumb,
     pre::-webkit-scrollbar-thumb,
+    .math-display::-webkit-scrollbar-thumb,
     .post-contents nav::-webkit-scrollbar-thumb,
     .rc-table-wrap::-webkit-scrollbar-thumb {
       background-color: color-mix(in srgb, var(--color-walnut) 45%, transparent);
@@ -89,6 +92,7 @@ html {
     }
     html::-webkit-scrollbar-track,
     pre::-webkit-scrollbar-track,
+    .math-display::-webkit-scrollbar-track,
     .post-contents nav::-webkit-scrollbar-track,
     .rc-table-wrap::-webkit-scrollbar-track {
       background: transparent;

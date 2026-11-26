@@ -276,8 +276,9 @@ const fit = Math.min(1, image.width / image.height);
   // Initialize at most one sticker WebGL context per frame so first scroll stays smooth.
   const drainInits = () => {
     initFrame = 0;
+    if (still.matches) return;
     const next = initQueue.shift();
-    if (!next || still.matches) return;
+    if (!next) return;
     const { print, map } = next;
     if (!print.draw) {
       print.draw = lamp(print, map);
@@ -365,7 +366,7 @@ const fit = Math.min(1, image.width / image.height);
       .decode()
       .then(() => {
         initQueue.push({ print, map });
-        initFrame ||= requestAnimationFrame(drainInits);
+        if (!still.matches) initFrame ||= requestAnimationFrame(drainInits);
       })
       .catch(() => {
         print.loading = false;
@@ -420,6 +421,7 @@ const fit = Math.min(1, image.width / image.height);
 
   still.addEventListener('change', () => {
     if (!still.matches) {
+      if (initQueue.length > 0) initFrame ||= requestAnimationFrame(drainInits);
       watch();
       return;
     }
