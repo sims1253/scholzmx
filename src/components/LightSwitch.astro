@@ -23,53 +23,103 @@
   title="Light the candle"
   type="button"
 >
-  <svg viewBox="0 0 28 44" aria-hidden="true">
-    <defs>
-      <radialGradient id="light-switch-glow">
-        <stop class="glow-core" offset="0"></stop>
-        <stop class="glow-edge" offset="1"></stop>
-      </radialGradient>
-      <clipPath id="light-switch-silk">
-        <rect x="18" y="-5" width="14" height="52"></rect>
-      </clipPath>
-    </defs>
+  <span class="switch-stage" aria-hidden="true">
+    <span class="switch-layer glow">
+      <svg class="glow-flicker" viewBox="0 0 28 44">
+        <defs>
+          <radialGradient id="light-switch-glow">
+            <stop class="glow-core" offset="0"></stop>
+            <stop class="glow-edge" offset="1"></stop>
+          </radialGradient>
+        </defs>
+        <circle cx="13" cy="28" r="16" fill="url(#light-switch-glow)"></circle>
+      </svg>
+    </span>
 
-    <g class="glow">
-      <circle class="glow-flicker" cx="13" cy="28" r="16" fill="url(#light-switch-glow)"></circle>
-    </g>
+    <svg class="switch-base" viewBox="0 0 28 44">
+      <defs>
+        <clipPath id="light-switch-silk">
+          <rect x="18" y="-5" width="14" height="52"></rect>
+        </clipPath>
+      </defs>
 
-    <!-- The nail, bent up at its tip, with a little rust shadow under it -->
-    <path class="ink" d="M7.6 2.2v4"></path>
-    <path class="ink" d="M7.8 4.2h7c1 0 1.5-.7 1.7-2"></path>
-    <path class="hatch" d="M9 7l1.4-1.2M11.4 7l1.4-1.2"></path>
+      <!-- The nail, bent up at its tip, with a little rust shadow under it -->
+      <path class="ink" d="M7.6 2.2v4"></path>
+      <path class="ink" d="M7.8 4.2h7c1 0 1.5-.7 1.7-2"></path>
+      <path class="hatch" d="M9 7l1.4-1.2M11.4 7l1.4-1.2"></path>
 
-    <g class="jar">
-      <!-- The wire bail, hooked over the nail and twisted round the jar's neck -->
-      <path class="ink-thin wire" d="M13 4.6c-.9.5-1.2 1.3-.8 2"></path>
-      <path
-        class="ink wire"
-        d="M12.4 6.4C9.2 9 6.8 12.4 6 17.6M12.6 6.4c3.2 2.6 6 6 7.4 11.2"
-      ></path>
+      <g class="jar">
+        <!-- The wire bail, hooked over the nail and twisted round the jar's neck -->
+        <path class="ink-thin wire" d="M13 4.6c-.9.5-1.2 1.3-.8 2"></path>
+        <path
+          class="ink wire"
+          d="M12.4 6.4C9.2 9 6.8 12.4 6 17.6M12.6 6.4c3.2 2.6 6 6 7.4 11.2"
+        ></path>
 
-      <!-- The glass: paper by day, amber by torchlight -->
-      <path
-        class="glass"
-        d="M6.6 19.6c-1.5 1-2.2 2.6-2.2 5v11.4c0 2.4 1.4 3.8 3.6 3.8h10c2.2 0 3.6-1.4 3.6-3.8V24.6c0-2.4-.7-4-2.2-5Z"
-      ></path>
-      <path
-        class="glass-warm"
-        d="M6.6 19.6c-1.5 1-2.2 2.6-2.2 5v11.4c0 2.4 1.4 3.8 3.6 3.8h10c2.2 0 3.6-1.4 3.6-3.8V24.6c0-2.4-.7-4-2.2-5Z"
-      ></path>
+        <!-- The glass: paper by day, amber by torchlight -->
+        <path
+          class="glass"
+          d="M6.6 19.6c-1.5 1-2.2 2.6-2.2 5v11.4c0 2.4 1.4 3.8 3.6 3.8h10c2.2 0 3.6-1.4 3.6-3.8V24.6c0-2.4-.7-4-2.2-5Z"
+        ></path>
+        <path
+          class="glass-warm"
+          d="M6.6 19.6c-1.5 1-2.2 2.6-2.2 5v11.4c0 2.4 1.4 3.8 3.6 3.8h10c2.2 0 3.6-1.4 3.6-3.8V24.6c0-2.4-.7-4-2.2-5Z"
+        ></path>
 
-      <!-- The candle stub, a drip down its side, and its wick -->
-      <path class="wax" d="M10.4 39.6v-6.9c0-.9 5.2-.9 5.2 0v6.9Z"></path>
-      <path class="ink" d="M10.4 39.6v-6.9c0-.9 5.2-.9 5.2 0v6.9"></path>
-      <path class="ink-thin" d="M10.4 32.7c0 .9 5.2.9 5.2 0M15.6 33.4c.5 1 .4 2.1 0 2.8"></path>
-      <path class="ink wick" d="M13 32.8c0-.9.4-1.4.1-2.4"></path>
+        <!-- The candle stub, a drip down its side, and its wick -->
+        <path class="wax" d="M10.4 39.6v-6.9c0-.9 5.2-.9 5.2 0v6.9Z"></path>
+        <path class="ink" d="M10.4 39.6v-6.9c0-.9 5.2-.9 5.2 0v6.9"></path>
+        <path class="ink-thin" d="M10.4 32.7c0 .9 5.2.9 5.2 0M15.6 33.4c.5 1 .4 2.1 0 2.8"></path>
+        <path class="ink wick" d="M13 32.8c0-.9.4-1.4.1-2.4"></path>
 
-      <!-- The flame: a wide outer lick and a bright core -->
-      <g class="flame">
-        <g class="flame-dance">
+        <path
+          class="ink-thin spark"
+          d="M11 29l-1.4-.9M15 29l1.4-.9M13 28v-1.6M11.5 31.4l-1.3.4"
+        ></path>
+
+        <!-- The jar: lip, screw thread, body, the wire round its neck, a highlight, shade -->
+        <path class="ink" d="M5.4 17.4h15.2"></path>
+        <path class="ink-thin" d="M6 18.8h14"></path>
+        <path
+          class="ink"
+          d="M6.6 19.6c-1.5 1-2.2 2.6-2.2 5v11.4c0 2.4 1.4 3.8 3.6 3.8h10c2.2 0 3.6-1.4 3.6-3.8V24.6c0-2.4-.7-4-2.2-5"
+        ></path>
+        <path class="ink-thin wire" d="M5.2 18.2c5 1.5 10.6 1.5 15.6 0"></path>
+        <path class="ink-thin shine" d="M18.6 23.4c.6 2.6.6 6 .2 9"></path>
+        <path class="hatch" d="M5.4 35.6l1.6-1.6M5.6 38.4l2.6-2.6M8 39.4l1.6-1.6"></path>
+
+        <!-- Soot when it is blown out -->
+        <g class="soot">
+          <path class="ink-thin wisp" d="M13 29.6c-1.2-1.6.8-2.6-.2-4.4s1-2.8 0-4.6"></path>
+          <circle class="puff puff-1" cx="13" cy="20" r="2"></circle>
+          <circle class="puff puff-2" cx="11.2" cy="16.4" r="2.6"></circle>
+          <circle class="puff puff-3" cx="14" cy="12.8" r="3"></circle>
+        </g>
+      </g>
+
+      <!-- The spider on its thread from the vines above -->
+      <g clip-path="url(#light-switch-silk)">
+        <g class="spider">
+          <path class="ink-thin silk" d="M0 -1.6V-60"></path>
+          <g class="legs">
+            <path
+              class="ink-thin leg"
+              d="M-1.2-.8c-1.2-1.1-2.3-1.1-3.1-.2M-1.5.3c-1.4-.4-2.5-.1-3.3.9M-1.4 1.3c-1.2.5-2 1.2-2.4 2.3M-.9 2.2c-.6.8-.9 1.7-.8 2.7M1.2-.8c1.2-1.1 2.3-1.1 3.1-.2M1.5.3c1.4-.4 2.5-.1 3.3.9M1.4 1.3c1.2.5 2 1.2 2.4 2.3M.9 2.2c.6.8.9 1.7.8 2.7"
+            ></path>
+          </g>
+          <circle class="ink-fill" cx="0" cy=".8" r="1.9"></circle>
+          <circle class="ink-fill" cx="0" cy="-1.4" r="1.1"></circle>
+          <circle class="eye" cx="-.4" cy="-1.6" r=".32"></circle>
+          <circle class="eye" cx=".4" cy="-1.6" r=".32"></circle>
+          <path class="ink-thin startle" d="M-3.4-3.4l-1.1-1.1M0-4.2v-1.6M3.4-3.4l1.1-1.1"></path>
+        </g>
+      </g>
+    </svg>
+
+    <!-- The flame sits in its own stacked svg layer so flame-dance runs on the compositor. -->
+    <span class="switch-layer jar-flame-swing">
+      <span class="switch-layer flame">
+        <svg class="flame-dance" viewBox="0 0 28 44">
           <path
             class="flame-outer"
             d="M13 30.6c-2-.5-2.8-2.4-1.9-4.4.5-1.2 1.4-2.3 1.9-4.4.6 1.7 2 3.1 2.2 4.8.2 2-1 3.6-2.2 4Z"
@@ -78,51 +128,10 @@
             class="flame-core"
             d="M13 30c-.8-.4-1-1.3-.5-2.3.3-.6.5-1.1.5-1.9.4.9.9 1.6.9 2.4 0 .9-.4 1.6-.9 1.8Z"
           ></path>
-        </g>
-      </g>
-      <path
-        class="ink-thin spark"
-        d="M11 29l-1.4-.9M15 29l1.4-.9M13 28v-1.6M11.5 31.4l-1.3.4"
-      ></path>
-
-      <!-- The jar: lip, screw thread, body, the wire round its neck, a highlight, shade -->
-      <path class="ink" d="M5.4 17.4h15.2"></path>
-      <path class="ink-thin" d="M6 18.8h14"></path>
-      <path
-        class="ink"
-        d="M6.6 19.6c-1.5 1-2.2 2.6-2.2 5v11.4c0 2.4 1.4 3.8 3.6 3.8h10c2.2 0 3.6-1.4 3.6-3.8V24.6c0-2.4-.7-4-2.2-5"
-      ></path>
-      <path class="ink-thin wire" d="M5.2 18.2c5 1.5 10.6 1.5 15.6 0"></path>
-      <path class="ink-thin shine" d="M18.6 23.4c.6 2.6.6 6 .2 9"></path>
-      <path class="hatch" d="M5.4 35.6l1.6-1.6M5.6 38.4l2.6-2.6M8 39.4l1.6-1.6"></path>
-
-      <!-- Soot when it is blown out -->
-      <g class="soot">
-        <path class="ink-thin wisp" d="M13 29.6c-1.2-1.6.8-2.6-.2-4.4s1-2.8 0-4.6"></path>
-        <circle class="puff puff-1" cx="13" cy="20" r="2"></circle>
-        <circle class="puff puff-2" cx="11.2" cy="16.4" r="2.6"></circle>
-        <circle class="puff puff-3" cx="14" cy="12.8" r="3"></circle>
-      </g>
-    </g>
-
-    <!-- The spider on its thread from the vines above -->
-    <g clip-path="url(#light-switch-silk)">
-      <g class="spider">
-        <path class="ink-thin silk" d="M0 -1.6V-60"></path>
-        <g class="legs">
-          <path
-            class="ink-thin leg"
-            d="M-1.2-.8c-1.2-1.1-2.3-1.1-3.1-.2M-1.5.3c-1.4-.4-2.5-.1-3.3.9M-1.4 1.3c-1.2.5-2 1.2-2.4 2.3M-.9 2.2c-.6.8-.9 1.7-.8 2.7M1.2-.8c1.2-1.1 2.3-1.1 3.1-.2M1.5.3c1.4-.4 2.5-.1 3.3.9M1.4 1.3c1.2.5 2 1.2 2.4 2.3M.9 2.2c.6.8.9 1.7.8 2.7"
-          ></path>
-        </g>
-        <circle class="ink-fill" cx="0" cy=".8" r="1.9"></circle>
-        <circle class="ink-fill" cx="0" cy="-1.4" r="1.1"></circle>
-        <circle class="eye" cx="-.4" cy="-1.6" r=".32"></circle>
-        <circle class="eye" cx=".4" cy="-1.6" r=".32"></circle>
-        <path class="ink-thin startle" d="M-3.4-3.4l-1.1-1.1M0-4.2v-1.6M3.4-3.4l1.1-1.1"></path>
-      </g>
-    </g>
-  </svg>
+        </svg>
+      </span>
+    </span>
+  </span>
 </button>
 
 <style>
@@ -161,13 +170,42 @@
   }
 
   /* The nail sits above the words' cap height and the jar hangs level with them. */
-  svg {
+  .switch-stage {
+    position: relative;
+    display: block;
     width: 1.4em;
     height: 2.2em;
     margin-top: -0.3em;
-    overflow: visible;
     /* Kept out of the page's cross-fade, so the flame and the spider play crisply. */
     view-transition-name: light-switch;
+  }
+
+  .switch-stage svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .switch-layer {
+    position: absolute;
+    inset: 0;
+    display: block;
+    pointer-events: none;
+  }
+
+  .switch-base {
+    position: relative;
+    z-index: 1;
+  }
+
+  .glow {
+    z-index: 0;
+  }
+
+  .jar-flame-swing {
+    z-index: 2;
+    transform-origin: 46.43% 10.45%;
   }
 
   /* One hand with the footer ledge */
@@ -224,21 +262,21 @@
     opacity: 0.9;
   }
 
-  /* The flame and its glow, both warm and both flickering, like the page's torchlight */
+  /* The flame and its glow sit in their own stacked svg boxes so continuous dark-mode
+     flicker runs strictly on the compositor with zero main-thread layout or paint. */
   .flame {
-    transform-box: view-box;
-    transform-origin: 13px 30.6px;
+    transform-origin: 46.43% 69.55%;
     transform: scale(var(--lit));
-    filter: drop-shadow(0 0 2px rgb(255 150 60 / 0.75));
   }
 
   .flame-dance {
-    transform-box: view-box;
-    transform-origin: 13px 30.6px;
+    transform-origin: 46.43% 69.55%;
+    will-change: transform;
     animation: var(--dance);
   }
 
   .glow-flicker {
+    will-change: opacity;
     animation: var(--flicker);
   }
 
@@ -311,7 +349,8 @@
     transform-origin: 13px 4.6px;
   }
 
-  .light-switch:hover .jar {
+  .light-switch:hover .jar,
+  .light-switch:hover .jar-flame-swing {
     animation: swing 1.1s ease-in-out;
   }
 

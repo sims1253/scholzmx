@@ -40,7 +40,7 @@ const sections = Astro.props.headings.filter((heading) => heading.depth === 2);
     const headings = links.map((link) =>
       document.getElementById(decodeURIComponent(link.hash.slice(1)))
     );
-    const inMargin = () => getComputedStyle(contents).position === 'fixed';
+    let inMargin = getComputedStyle(contents).position === 'fixed';
 
     // The section being read is the last one whose heading has passed the upper third
     // of the window, so a heading counts even when the reader jumps past it. When the
@@ -61,7 +61,7 @@ const sections = Astro.props.headings.filter((heading) => heading.depth === 2);
         else link.removeAttribute('aria-current');
       });
       const link = links[current];
-      if (link && inMargin() && list.scrollHeight > list.clientHeight) {
+      if (link && inMargin && list.scrollHeight > list.clientHeight) {
         const top = link.offsetTop - list.offsetTop;
         if (top < list.scrollTop || top + link.offsetHeight > list.scrollTop + list.clientHeight) {
           list.scrollTop = top - (list.clientHeight - link.offsetHeight) / 2;
@@ -73,12 +73,16 @@ const sections = Astro.props.headings.filter((heading) => heading.depth === 2);
     // of the text rises above its foot, before it could lie over the footer.
     const reading = contents.parentElement;
     let pending = false;
+    let wasPast = false;
     const fadeAtEnd = () => {
       pending = false;
       if (!reading) return;
       const past =
         reading.getBoundingClientRect().bottom < list.getBoundingClientRect().bottom + 24;
-      contents.toggleAttribute('data-past', past);
+      if (past !== wasPast) {
+        wasPast = past;
+        contents.toggleAttribute('data-past', past);
+      }
     };
     const onScroll = () => {
       if (!pending) {
@@ -96,11 +100,11 @@ const sections = Astro.props.headings.filter((heading) => heading.depth === 2);
     // technology too; it closes again only if this opened it.
     let openedForRail = false;
     const fitToMargin = () => {
-      const margin = inMargin();
-      if (margin && !contents.open) {
+      inMargin = getComputedStyle(contents).position === 'fixed';
+      if (inMargin && !contents.open) {
         contents.open = true;
         openedForRail = true;
-      } else if (!margin && openedForRail) {
+      } else if (!inMargin && openedForRail) {
         contents.open = false;
         openedForRail = false;
       }

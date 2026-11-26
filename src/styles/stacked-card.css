@@ -175,6 +175,7 @@
   .sc-layer-c,
   .sc-layer-d {
     inset: -1px;
+    background: var(--sc-sheet-back);
     z-index: -3;
   }
 
@@ -577,27 +578,51 @@
     padding-left: calc(var(--space-md) + 1rem);
   }
 
-  /* A torn, deckled, folded or nibbled sheet has no straight box to cast a box shadow;
-     the card casts a drop shadow of its true outline instead. */
-  .sc-card:is([data-edge='torn'], [data-edge='deckle'], [data-fold], [data-mark='mouse']) {
-    filter: drop-shadow(0 1px 1px color-mix(in srgb, var(--sc-shade) 18%, transparent))
-      drop-shadow(0 6px 8px color-mix(in srgb, var(--sc-shade) 14%, transparent));
-    transition:
-      transform 0.24s var(--sc-ease),
-      filter 0.24s var(--sc-ease);
+  /* A torn, deckled, folded or nibbled sheet masks or clips .sc-face, so a dedicated
+     unclipped shadow layer behind it casts its paper shadow via box-shadow instead of a
+     card-wide CSS drop-shadow filter (which would re-blur the whole card every frame
+     whenever the canopy sways behind it or a critter moves on top). */
+  .sc-shadow {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: 2px;
+    box-shadow: var(--shadow-md);
+    pointer-events: none;
+    transition: box-shadow 0.24s var(--sc-ease);
   }
 
-  .sc-card[data-linked]:is(
-      [data-edge='torn'],
-      [data-edge='deckle'],
-      [data-fold],
-      [data-mark='mouse']
-    ):hover,
-  .sc-card:is([data-edge='torn'], [data-edge='deckle'], [data-fold], [data-mark='mouse']):has(
-      .sc-title-link:focus-visible
-    ) {
-    filter: drop-shadow(0 2px 2px color-mix(in srgb, var(--sc-shade) 14%, transparent))
-      drop-shadow(0 16px 16px color-mix(in srgb, var(--sc-shade) 24%, transparent));
+  .sc-card[data-edge='torn'] .sc-shadow {
+    top: 5px;
+  }
+
+  .sc-card[data-edge='deckle'] .sc-shadow {
+    right: 4px;
+  }
+
+  .sc-card[data-fold='br'] .sc-shadow {
+    border-bottom-right-radius: calc(var(--fold) * 1.15);
+  }
+
+  .sc-card[data-fold='bl'] .sc-shadow {
+    border-bottom-left-radius: calc(var(--fold) * 1.15);
+  }
+
+  .sc-card[data-fold='tr'] .sc-shadow {
+    border-top-right-radius: calc(var(--fold) * 1.15);
+  }
+
+  .sc-card[data-mark='mouse'] .sc-shadow {
+    border-bottom-right-radius: 1.1rem;
+  }
+
+  .sc-card[data-linked]:hover .sc-shadow,
+  .sc-card[data-linked]:has(.sc-title-link:focus-visible) .sc-shadow {
+    box-shadow: var(--shadow-lift);
+  }
+
+  .sc-card[data-linked]:has(.sc-title-link:active) .sc-shadow {
+    box-shadow: var(--shadow-sm);
   }
 
   .sc-card:is([data-edge='torn'], [data-edge='deckle'], [data-fold], [data-mark='mouse']) .sc-face,
@@ -1397,9 +1422,10 @@
 
   /* The critters stir, a little: mostly they sit, and now and then one goes a few
      steps along the edge and comes back to where the seed put it. Each waits its own
-     --mark-wait first, so no two on a page move together. Only translate, rotate, scale
-     and opacity move, each on a layer of its own, so nothing is painted again; and
-     without motion every critter simply stays where it is. */
+     --mark-wait first, so no two on a page move together. Every keyframe uses pure
+     transform or opacity with literal lengths (no var() inside keyframes and no mixed
+     translate/rotate/scale), so Chromium runs all critters on the compositor with zero
+     main-thread style recalculations; under reduced motion every critter stays still. */
   @media (prefers-reduced-motion: no-preference) {
     .sc-mark .roam,
     .sc-mark .roam svg {
@@ -1413,8 +1439,6 @@
     }
 
     .sc-mark-beetle .roam {
-      --amble: 1.7rem;
-
       animation-name: mark-amble;
       animation-duration: 46s;
     }
@@ -1483,52 +1507,47 @@
   @keyframes mark-amble {
     0%,
     3% {
-      translate: 0;
-      scale: 1 1;
+      transform: translate3d(0, 0, 0) scale(1, 1);
     }
 
     10%,
     14% {
-      translate: calc(var(--amble) * 0.35);
+      transform: translate3d(0.6rem, 0, 0) scale(1, 1);
     }
 
     21%,
     24% {
-      translate: calc(var(--amble) * 0.7);
+      transform: translate3d(1.19rem, 0, 0) scale(1, 1);
     }
 
     30%,
     44% {
-      translate: var(--amble);
-      scale: 1 1;
+      transform: translate3d(1.7rem, 0, 0) scale(1, 1);
     }
 
     45.5%,
     48% {
-      translate: var(--amble);
-      scale: -1 1;
+      transform: translate3d(1.7rem, 0, 0) scale(-1, 1);
     }
 
     55%,
     59% {
-      translate: calc(var(--amble) * 0.6);
+      transform: translate3d(1.02rem, 0, 0) scale(-1, 1);
     }
 
     66%,
     69% {
-      translate: calc(var(--amble) * 0.25);
+      transform: translate3d(0.425rem, 0, 0) scale(-1, 1);
     }
 
     75%,
     95% {
-      translate: 0;
-      scale: -1 1;
+      transform: translate3d(0, 0, 0) scale(-1, 1);
     }
 
     96.5%,
     100% {
-      translate: 0;
-      scale: 1 1;
+      transform: translate3d(0, 0, 0) scale(1, 1);
     }
   }
 
@@ -1536,19 +1555,19 @@
     0%,
     7%,
     100% {
-      rotate: 0deg;
+      transform: rotate(0deg);
     }
 
     1.5% {
-      rotate: 13deg;
+      transform: rotate(13deg);
     }
 
     3.2% {
-      rotate: -10deg;
+      transform: rotate(-10deg);
     }
 
     5% {
-      rotate: 7deg;
+      transform: rotate(7deg);
     }
   }
 
@@ -1556,52 +1575,47 @@
   @keyframes ladybird-patrol {
     0%,
     5% {
-      translate: 0 0;
-      rotate: 0deg;
+      transform: translate3d(0, 0, 0) rotate(0deg);
     }
 
     8%,
     12% {
-      translate: 0 -0.22rem;
+      transform: translate3d(0, -0.22rem, 0) rotate(0deg);
     }
 
     15%,
     20% {
-      translate: 0 -0.48rem;
+      transform: translate3d(0, -0.48rem, 0) rotate(0deg);
     }
 
     23%,
     38% {
-      translate: 0 -0.72rem;
-      rotate: 0deg;
+      transform: translate3d(0, -0.72rem, 0) rotate(0deg);
     }
 
     44%,
     50% {
-      translate: 0 -0.72rem;
-      rotate: 180deg;
+      transform: translate3d(0, -0.72rem, 0) rotate(180deg);
     }
 
     53%,
     58% {
-      translate: 0 -0.44rem;
+      transform: translate3d(0, -0.44rem, 0) rotate(180deg);
     }
 
     61%,
     65% {
-      translate: 0 -0.2rem;
+      transform: translate3d(0, -0.2rem, 0) rotate(180deg);
     }
 
     68%,
     90% {
-      translate: 0 0;
-      rotate: 180deg;
+      transform: translate3d(0, 0, 0) rotate(180deg);
     }
 
     96%,
     100% {
-      translate: 0 0;
-      rotate: 360deg;
+      transform: translate3d(0, 0, 0) rotate(360deg);
     }
   }
 
@@ -1622,7 +1636,7 @@
     66%,
     70%,
     100% {
-      scale: 1 1;
+      transform: scale(1, 1);
     }
 
     8%,
@@ -1633,7 +1647,7 @@
     60%,
     64%,
     68% {
-      scale: 1.32 0.5;
+      transform: scale(1.32, 0.5);
     }
   }
 
@@ -1650,7 +1664,7 @@
     66%,
     70%,
     100% {
-      translate: 0;
+      transform: translate3d(0, 0, 0);
     }
 
     8%,
@@ -1661,101 +1675,91 @@
     60%,
     64%,
     68% {
-      translate: 0.37rem;
+      transform: translate3d(0.37rem, 0, 0);
     }
   }
 
   @keyframes inchworm-roam {
     0%,
     8% {
-      translate: 0;
-      scale: 1 1;
+      transform: translate3d(0, 0, 0) scale(1, 1);
     }
 
     10%,
     12% {
-      translate: 0.37rem;
+      transform: translate3d(0.37rem, 0, 0) scale(1, 1);
     }
 
     14%,
     16% {
-      translate: 0.74rem;
+      transform: translate3d(0.74rem, 0, 0) scale(1, 1);
     }
 
     18%,
     20% {
-      translate: 1.11rem;
+      transform: translate3d(1.11rem, 0, 0) scale(1, 1);
     }
 
     22%,
     44% {
-      translate: 1.48rem;
-      scale: 1 1;
+      transform: translate3d(1.48rem, 0, 0) scale(1, 1);
     }
 
     46%,
     56% {
-      translate: 1.48rem;
-      scale: -1 1;
+      transform: translate3d(1.48rem, 0, 0) scale(-1, 1);
     }
 
     58%,
     60% {
-      translate: 1.11rem;
+      transform: translate3d(1.11rem, 0, 0) scale(-1, 1);
     }
 
     62%,
     64% {
-      translate: 0.74rem;
+      transform: translate3d(0.74rem, 0, 0) scale(-1, 1);
     }
 
     66%,
     68% {
-      translate: 0.37rem;
+      transform: translate3d(0.37rem, 0, 0) scale(-1, 1);
     }
 
     70%,
     94% {
-      translate: 0;
-      scale: -1 1;
+      transform: translate3d(0, 0, 0) scale(-1, 1);
     }
 
     96%,
     100% {
-      translate: 0;
-      scale: 1 1;
+      transform: translate3d(0, 0, 0) scale(1, 1);
     }
   }
 
   @keyframes snail-creep {
     0%,
     4% {
-      translate: 0;
-      scale: 1 1;
+      transform: translate3d(0, 0, 0) scale(1, 1);
     }
 
     36%,
     46% {
-      translate: 1.2rem;
-      scale: 1 1;
+      transform: translate3d(1.2rem, 0, 0) scale(1, 1);
     }
 
     47%,
     50% {
-      translate: 1.2rem;
-      scale: -1 1;
+      transform: translate3d(1.2rem, 0, 0) scale(-1, 1);
     }
 
     82%,
     96% {
-      translate: 0;
-      scale: -1 1;
+      transform: translate3d(0, 0, 0) scale(-1, 1);
     }
 
     97%,
     100% {
-      translate: 0;
-      scale: 1 1;
+      transform: translate3d(0, 0, 0) scale(1, 1);
     }
   }
 
@@ -1765,12 +1769,12 @@
     62%,
     84%,
     100% {
-      scale: 1 1;
+      transform: scale(1, 1);
     }
 
     66%,
     76% {
-      scale: 0.8 0.4;
+      transform: scale(0.8, 0.4);
     }
   }
 
@@ -1778,39 +1782,32 @@
   @keyframes bee-hop {
     0%,
     36% {
-      translate: 0 0;
-      rotate: 0deg;
+      transform: translate3d(0, 0, 0) rotate(0deg);
     }
 
     40% {
-      translate: 0.06rem -0.3rem;
-      rotate: -10deg;
+      transform: translate3d(0.06rem, -0.3rem, 0) rotate(-10deg);
     }
 
     46% {
-      translate: 0.5rem -0.44rem;
-      rotate: -5deg;
+      transform: translate3d(0.5rem, -0.44rem, 0) rotate(-5deg);
     }
 
     52% {
-      translate: 0.75rem -0.26rem;
-      rotate: -12deg;
+      transform: translate3d(0.75rem, -0.26rem, 0) rotate(-12deg);
     }
 
     58% {
-      translate: 0.3rem -0.46rem;
-      rotate: -5deg;
+      transform: translate3d(0.3rem, -0.46rem, 0) rotate(-5deg);
     }
 
     63% {
-      translate: 0.03rem -0.22rem;
-      rotate: -8deg;
+      transform: translate3d(0.03rem, -0.22rem, 0) rotate(-8deg);
     }
 
     66%,
     100% {
-      translate: 0 0;
-      rotate: 0deg;
+      transform: translate3d(0, 0, 0) rotate(0deg);
     }
   }
 
@@ -1848,12 +1845,12 @@
     66%,
     74%,
     100% {
-      scale: 1 1;
+      transform: scale(1, 1);
     }
 
     62%,
     70% {
-      scale: 0.45 1;
+      transform: scale(0.45, 1);
     }
   }
 
@@ -1891,24 +1888,34 @@
 
   /* Workshop tag (projects): manila card, clipped corners, a reinforced eyelet and its
      string. Kept clean without heavy fibre blotches or darkened edges so the glossy
-     sticker stays the focus. By torchlight it warms rather than turning bright mustard. */
+     sticker stays the focus. By torchlight it warms rather than turning bright mustard.
+     Shadow lives on ::before via box-shadow instead of filter: drop-shadow on the card,
+     so the moving canopy behind it never re-blurs the whole card and its sticker. */
   .sc-card[data-material='tag'] {
     --sc-base: var(--by-day, color-mix(in srgb, var(--paper-sheet) 84%, var(--color-tansy)))
       var(--by-torch, color-mix(in srgb, var(--paper-sheet) 91%, var(--color-tansy)));
     --sc-notch: 1.5rem;
     --sc-stock: var(--stock-grain);
-
-    filter: drop-shadow(0 1px 1px color-mix(in srgb, var(--sc-shade) 16%, transparent))
-      drop-shadow(0 8px 10px color-mix(in srgb, var(--sc-shade) 16%, transparent));
-    transition:
-      transform 0.24s var(--sc-ease),
-      filter 0.24s var(--sc-ease);
   }
 
-  .sc-card[data-material='tag'][data-linked]:hover,
-  .sc-card[data-material='tag']:has(.sc-title-link:focus-visible) {
-    filter: drop-shadow(0 2px 2px color-mix(in srgb, var(--sc-shade) 12%, transparent))
-      drop-shadow(0 18px 18px color-mix(in srgb, var(--sc-shade) 24%, transparent));
+  .sc-card[data-material='tag'][data-layers='1']::before {
+    inset: 2px 0 0 var(--sc-notch);
+    border: 0;
+    border-radius: 2px;
+    background: transparent;
+    box-shadow: var(--shadow-md);
+    transform: none;
+    z-index: -1;
+    transition: box-shadow 0.24s var(--sc-ease);
+  }
+
+  .sc-card[data-material='tag'][data-linked]:hover::before,
+  .sc-card[data-material='tag'][data-linked]:has(.sc-title-link:focus-visible)::before {
+    box-shadow: var(--shadow-lift);
+  }
+
+  .sc-card[data-material='tag'][data-linked]:has(.sc-title-link:active)::before {
+    box-shadow: var(--shadow-sm);
   }
 
   .sc-card[data-material='tag'] .sc-face {
@@ -1966,10 +1973,6 @@
     z-index: 2;
   }
 
-  .sc-card[data-material='tag'][data-layers='1']::before {
-    display: none;
-  }
-
   /* Recipe card: the printed double band across the top */
   .sc-card[data-material='recipe'] {
     --sc-band: color-mix(in srgb, var(--color-clay) 45%, var(--sc-sheet));
@@ -1989,6 +1992,7 @@
     .sc-card::after,
     .sc-layer-c,
     .sc-layer-d,
+    .sc-shadow,
     .sc-face {
       transition: none;
     }

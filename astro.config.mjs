@@ -6,6 +6,7 @@ import rehypeTemml from './src/lib/markdown/rehype-temml.ts';
 import mathFont from './src/lib/markdown/math-font.ts';
 import { lightCodeTheme, darkCodeTheme } from './src/lib/shiki-themes.mjs';
 import rehypeInitial from './src/lib/markdown/rehype-initial.ts';
+import rehypeImageSizes from './src/lib/markdown/rehype-image-sizes.ts';
 import remarkMarginNotes from './src/lib/markdown/remark-margin-notes.ts';
 import { unified } from '@astrojs/markdown-remark';
 import pagefind from 'astro-pagefind';
@@ -34,6 +35,7 @@ export default defineConfig({
   // Enable automatic image optimization
   image: {
     layout: 'constrained',
+    breakpoints: [393, 640, 800, 1024, 1280],
     service: {
       entrypoint: 'astro/assets/services/sharp',
       config: {
@@ -51,6 +53,7 @@ export default defineConfig({
       remarkPlugins: [remarkMath, remarkMarginNotes],
       rehypePlugins: [
         rehypeTemml,
+        rehypeImageSizes,
         // Folders under src/content/ whose pages open with a drop-cap initial
         [rehypeInitial, { collections: { blog: 'serious', recipes: 'personal' } }],
       ],
