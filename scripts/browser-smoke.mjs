@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { globSync } from 'node:fs';
 import puppeteer from 'puppeteer';
+import sharp from 'sharp';
 import { site } from './address-check.mjs';
 
 // What each card is papered with, as the browser computed it: for the sheet on top and for
@@ -30,39 +31,60 @@ function deskOf() {
   return { tooth: style.backgroundImage, faint: style.getPropertyValue('--paper-tooth-faint') };
 }
 
-// A tile of noise as text: the SVG of its data URI, decoded, its whitespace made one. Two
-// tiles are the same when all of them is, not only their frequency and their matrix.
-function tileOf(image) {
-  const data = /url\((["']?)(data:image\/svg\+xml,[\s\S]*?)\1\)/.exec(image ?? '');
-  if (!data) return null;
+// Extract the pathname of a local `/grotto/...` grain tile from a CSS `url(...)`.
+function tilePathOf(image) {
+  const match = /url\((["']?)([^)"']+)\1\)/.exec(image ?? '');
+  if (!match) return null;
+  const raw = match[2];
+  if (raw.startsWith('data:')) return null;
   try {
-    return decodeURIComponent(data[2]).replace(/\s+/g, ' ');
+    return new URL(raw, 'http://local.test').pathname;
   } catch {
     return null;
   }
 }
 
-// A tile's matrix, the twenty numbers that turn its noise into grain, and the tile without
-// it. The last row of the matrix is the grain's strength.
-function matrixOf(tile) {
-  const cut = / values='([^']*)'/.exec(tile ?? '');
-  // Trimmed first: an empty entry would count as a zero, since Number('') is 0.
-  const matrix = cut?.[1].trim().split(/\s+/).map(Number);
-  return matrix?.length === 20 && matrix.every(Number.isFinite)
-    ? { matrix, rest: tile.replace(cut[0], '') }
-    : null;
+// Decode a served pre-rasterized grain tile losslessly so we can verify the faint
+// torchlit tile is the exact same tint at half the alpha strength without 8-bit
+// premultiplied canvas quantization noise.
+async function tileStatsOf(tilePath) {
+  const response = await fetch(`${baseURL}${tilePath}`);
+  assert.equal(response.status, 200, `Missing grain tile: ${tilePath}`);
+  const { data, info } = await sharp(Buffer.from(await response.arrayBuffer()))
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  let alphaSum = 0;
+  let rSum = 0;
+  let gSum = 0;
+  let bSum = 0;
+  let visible = 0;
+  for (let i = 0; i < data.length; i += 4) {
+    const a = data[i + 3];
+    alphaSum += a;
+    if (a > 0) {
+      rSum += data[i];
+      gSum += data[i + 1];
+      bSum += data[i + 2];
+      visible++;
+    }
+  }
+  const pixels = info.width * info.height;
+  return {
+    width: info.width,
+    height: info.height,
+    meanAlpha: alphaSum / pixels,
+    rgb: visible ? [rSum / visible, gSum / visible, bSum / visible] : [0, 0, 0],
+  };
 }
 
-// Whether one tile is another at half the strength: the same tile in every other part.
+// Whether one pre-rasterized tile is another at half the alpha strength with the same tint.
 function halfStrength(one, other) {
-  const a = matrixOf(one);
-  const b = matrixOf(other);
-  return (
-    !!a &&
-    !!b &&
-    a.rest === b.rest &&
-    a.matrix.every((value, at) => Math.abs(value - b.matrix[at] * (at >= 15 ? 0.5 : 1)) < 1e-9)
-  );
+  if (!one || !other || one.width !== other.width || one.height !== other.height) return false;
+  if (other.meanAlpha <= 0) return false;
+  const ratio = one.meanAlpha / other.meanAlpha;
+  const sameTint = one.rgb.every((channel, at) => Math.abs(channel - other.rgb[at]) <= 1);
+  return sameTint && Math.abs(ratio - 0.5) < 0.01;
 }
 
 // How ruled, binder, squared and dotted sheets place their words above their lines or
@@ -179,32 +201,34 @@ try {
         assert.equal(button.description?.value, 'Activate to display another quote.');
         await client.detach();
       }
-      // A sheet is the desk's own rag paper, in either theme: it carries the desk's tooth,
-      // one layer of it and no other, at its own size, whatever else is printed on the
-      // sheet; an aged one its mottle too; and so does the sheet under it. None of it is
-      // fetched. Both themes are tried by choice: left to the clock, a run by day would
-      // never see a broken torchlit sheet, nor one by torchlight a broken day sheet.
-      const TOOTH = "baseFrequency='.7'";
-      const MOTTLE = "baseFrequency='.012'";
+      // A sheet is the desk's own rag paper, in either theme: it carries the desk's
+      // pre-rasterized tooth tile, one layer of it and no other, at its own size, whatever
+      // else is printed on the sheet; an aged one its mottle too; and so does the sheet
+      // under it. None of it runs runtime SVG feTurbulence or fetches external assets.
+      const TOOTH = '/grotto/paper-tooth-';
+      const MOTTLE = '/grotto/paper-mottle-';
       const toothOf = (sheet) => {
-        const teeth = sheet.images.flatMap((image, at) =>
-          image.includes(TOOTH) ? [[tileOf(image), sheet.sizes[at]]] : []
-        );
+        const teeth = sheet.images.flatMap((image, at) => {
+          const tile = tilePathOf(image);
+          return tile?.startsWith(TOOTH) ? [[tile, sheet.sizes[at]]] : [];
+        });
         return teeth.length === 1 ? teeth[0] : null;
       };
-      const fetched = (card) =>
-        [...card.top.images, ...(card.under?.images ?? [])].filter((image) =>
-          /^url\(["']?(https?:|\/)/.test(image)
-        );
+      const unexpectedUrls = (card) =>
+        [...card.top.images, ...(card.under?.images ?? [])].filter((image) => {
+          if (image.includes('feTurbulence')) return true;
+          const tile = tilePathOf(image);
+          return tile !== null && !tile.startsWith('/grotto/');
+        });
       const mottleOf = (card) => {
-        const at = card.top.images.findIndex((image) => image.includes(MOTTLE));
+        const at = card.top.images.findIndex((image) => tilePathOf(image)?.startsWith(MOTTLE));
         return at === -1 ? null : card.top.sizes[at];
       };
       const papered = (card, tooth) => {
         const teeth = (card.under ? [card.top, card.under] : [card.top]).map(toothOf);
         return (
-          teeth.every((own) => own && own[0] === tooth && own[1] === '256px 256px') &&
-          fetched(card).length === 0 &&
+          teeth.every((own) => own && own[0] === tooth && own[1] === '128px 128px') &&
+          unexpectedUrls(card).length === 0 &&
           (card.tint !== 'aged' || mottleOf(card) === '320px 320px')
         );
       };
@@ -216,8 +240,9 @@ try {
           return own && `${own[0] === tooth ? "the desk's tile" : 'another tile'} at ${own[1]}`;
         }),
         mottle: card.tint === 'aged' ? mottleOf(card) : undefined,
-        fetched: fetched(card),
+        unexpected: unexpectedUrls(card),
       });
+      let checkedDarkHalfStrength = false;
       const was = await page.$eval('html', (element) => element.getAttribute('data-theme'));
       for (const theme of ['light', 'dark']) {
         await page.$eval(
@@ -227,17 +252,24 @@ try {
         );
         const desk = await page.$eval('body', deskOf);
         const paper = await page.$$eval('.sc-card', paperOf);
-        const whole = tileOf(desk.tooth);
-        const faint = tileOf(desk.faint);
+        const whole = tilePathOf(desk.tooth);
+        const faint = tilePathOf(desk.faint);
         assert.ok(
-          whole && faint,
-          `A tile of the desk's noise is missing on ${path} at ${width}px, ${theme} by choice: ${JSON.stringify({ whole, faint })}`
+          whole?.startsWith(TOOTH) && faint?.startsWith(TOOTH),
+          `A pre-rasterized tile of the desk's tooth is missing on ${path} at ${width}px, ${theme} by choice: ${JSON.stringify({ whole, faint })}`
         );
         // The faint tile is the desk's torchlit one at half the strength.
-        assert.ok(
-          theme === 'light' || halfStrength(faint, whole),
-          `The desk's faint tile is not its torchlit one at half the strength on ${path} at ${width}px: ${JSON.stringify({ whole, faint })}`
-        );
+        if (theme === 'dark' && !checkedDarkHalfStrength) {
+          const [wholeStats, faintStats] = await Promise.all([
+            tileStatsOf(whole),
+            tileStatsOf(faint),
+          ]);
+          assert.ok(
+            halfStrength(faintStats, wholeStats),
+            `The desk's faint tile is not its torchlit one at half the strength on ${path} at ${width}px: ${JSON.stringify({ wholeStats, faintStats })}`
+          );
+          checkedDarkHalfStrength = true;
+        }
         // The tooth a sheet carries is the desk's own: its tile by day, its faint one by
         // torchlight.
         const tooth = theme === 'dark' ? faint : whole;
@@ -355,7 +387,30 @@ try {
     ['/blog/', 'coala', '/blog/'],
     ['/recipes/', 'coffee', '/recipes/'],
   ]) {
+    const requested = [];
+    const track = (request) => requested.push(request.url());
+    page.on('request', track);
     await page.goto(`${baseURL}${path}`, { waitUntil: 'networkidle0' });
+    page.off('request', track);
+    assert.equal(
+      requested.filter((url) => /pagefind/i.test(url)).length,
+      0,
+      `Pagefind should stay unloaded until search is interacted with on ${path}: ${requested.filter((url) => /pagefind/i.test(url)).join(', ')}`
+    );
+    assert.equal(
+      await page.$eval('[data-search-options]', (el) => el.dataset.searchReady ?? ''),
+      '',
+      `Pagefind UI should not mount before interaction on ${path}`
+    );
+
+    // Open folded search disclosures as a visitor would, or focus the open placeholder.
+    const isOpen = await page.$eval('details.finder-search', (el) => el.open);
+    if (!isOpen) {
+      await page.click('details.finder-search > summary');
+    } else {
+      await page.focus('.pagefind-ui__search-input');
+    }
+    await page.waitForSelector('[data-search-options][data-search-ready="true"]');
     await page.waitForSelector('.pagefind-ui__search-input');
     // A first input event also covers paste, which does not emit keyup.
     await page.$eval(

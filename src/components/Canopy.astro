@@ -3,50 +3,34 @@
  * The vine canopy over the top of every page.
  *
  * By day it casts leaf shadows that move in the wind; after dark the same leaves stand
- * in front of a torch. It is light thrown through a real branch, so nothing moves as one
- * sheet: boughs far from the page, boughs halfway and twigs close to it each swing on
- * their own hinge in their own time, and single leaves flutter on the twigs.
+ * in front of a torch. Three parallax depth planes (far, mid and near) drift out of
+ * phase on their own hinges so the light shifts organically while keeping the canopy to
+ * three compositor layers.
  *
- * scripts/draw-canopy.mjs draws the pieces (with their downward fade baked in) into one
- * SVG mask and writes where each one hangs to src/data/canopy.json, so the colour comes
- * from --canopy-shade and each piece runs a single pure-transform animation on the
+ * scripts/draw-canopy.mjs draws the three planes (with their downward fade baked in)
+ * into one SVG mask and writes where each hangs to src/data/canopy.json, so the colour
+ * comes from --canopy-shade and each plane runs a single pure-transform animation on the
  * compositor thread.
  */
 import canopy from '../data/canopy.json';
 
-type Piece = (typeof canopy.depths)[number]['boughs'][number]['leaves'][number];
+type Plane = (typeof canopy.depths)[number];
 
-// How much of the stage a screen shows depends on its shape, and a bough out of sight
-// would still cost a layer and its animations. So a bough that starts further from the
-// middle than these shares of the stage's width is hung only where it can be seen: see
-// the media queries at the end.
-const reaches = (reach: number) =>
-  reach > 0.26 ? 'canopy-hinge--outer' : reach > 0.13 ? 'canopy-hinge--side' : '';
-
-const hinge = ({ box, hinge, period, phase }: Piece) =>
+const hinge = ({ box, hinge, period, phase }: Plane) =>
   `left:${box[0]}%;top:${box[1]}%;width:${box[2]}%;height:${box[3]}%;` +
   `transform-origin:${hinge[0]}% ${hinge[1]}%;--t:${period}s;--p:${phase}`;
 
-// Single mask selecting the piece's cell of the packed sprite (fade is baked into the SVG).
-const shade = ({ sheet }: Piece) =>
+// Single mask selecting the plane's strip of the packed sprite (fade is baked into the SVG).
+const shade = ({ sheet }: Plane) =>
   `mask-size:${sheet[0]}% ${sheet[1]}%;mask-position:${sheet[2]}% ${sheet[3]}%`;
 ---
 
 <div class="canopy" aria-hidden="true" data-canopy>
   <div class="canopy-stage" style={`aspect-ratio:${canopy.stage.ratio}`}>
-    {canopy.depths.map((depth) => <div class={`canopy-depth canopy-depth--${depth.name}`}>
-      {depth.boughs.map((bough) => <div
-        class:list={['canopy-hinge', reaches(bough.reach)]}
-        style={`${hinge(bough)};--x:${bough.across}`}
-      >
-        <i class="canopy-shade" style={shade(bough)} />
-        {bough.leaves.map((leaf) => <div
-          class="canopy-hinge canopy-hinge--leaf"
-          style={hinge(leaf)}
-        >
-          <i class="canopy-shade" style={shade(leaf)} />
-        </div>)}
-      </div>)}
+    {canopy.depths.map((plane) => <div class={`canopy-depth canopy-depth--${plane.name}`}>
+      <div class="canopy-hinge" style={hinge(plane)}>
+        <i class="canopy-shade" style={shade(plane)} />
+      </div>
     </div>)}
   </div>
 </div>
@@ -114,19 +98,17 @@ const shade = ({ sheet }: Piece) =>
     inset: 0;
   }
 
-  /* Each hinge runs one pure-transform animation combining sway, lateral drift and a
-     periodic gust, lagging smoothly left-to-right by --x with a small personal lag (--p).
-     Keeping one transform-only animation per hinge avoids mixing transform with rotate/
-     translate/scale and keeps every layer strictly on the compositor thread. */
+  /* Each depth plane runs one pure-transform animation combining sway, lateral drift and
+     a periodic gust, with its own pivot, period and phase so the three planes drift
+     against one another organically on the compositor thread. */
   .canopy-hinge {
     --ease: cubic-bezier(0.37, 0, 0.63, 1);
     --time: calc(var(--t) * var(--canopy-air));
-    --wave: calc(var(--x) * 2.4s + var(--p) * 0.55s);
 
     position: absolute;
     will-change: transform;
-    animation: canopy-breeze-near calc(var(--time) * 2.2) var(--ease) calc(var(--wave) - 10s)
-      infinite;
+    animation: canopy-breeze-near calc(var(--time) * 2) var(--ease)
+      calc(var(--time) * var(--p) * -1.8) infinite;
   }
 
   .canopy-depth--far > .canopy-hinge {
@@ -136,13 +118,7 @@ const shade = ({ sheet }: Piece) =>
 
   .canopy-depth--mid > .canopy-hinge {
     animation-name: canopy-breeze-mid;
-    animation-duration: calc(var(--time) * 1.6);
-  }
-
-  /* A leaf on its stalk: ripples and turns its face in the light as its twig carries it. */
-  .canopy-hinge--leaf {
-    animation: canopy-breeze-leaf calc(var(--time) * 3.1) var(--ease)
-      calc(var(--time) * var(--p) * -1.4) infinite;
+    animation-duration: calc(var(--time) * 1.5);
   }
 
   .canopy-shade {
@@ -160,113 +136,82 @@ const shade = ({ sheet }: Piece) =>
     animation-play-state: paused;
   }
 
-  /* One compound breeze cycle per depth: gentle counter-sway, drift, then a downwind
-     gust with a soft rebound and return to rest. */
+  /* One compound breeze cycle per depth plane: gentle counter-sway, drift, then a
+     downwind gust with a soft rebound and return to rest. */
   @keyframes canopy-breeze-far {
     0%,
     100% {
-      transform: translate3d(-0.45rem, 0, 0) rotate(0.75deg);
+      transform: translate3d(-0.5rem, 0, 0) rotate(0.35deg);
     }
 
     24% {
-      transform: translate3d(0.25rem, 0.08rem, 0) rotate(-0.85deg);
+      transform: translate3d(0.3rem, 0.1rem, 0) rotate(-0.4deg);
     }
 
-    46% {
-      transform: translate3d(0.5rem, 0.14rem, 0) rotate(0.35deg);
+    48% {
+      transform: translate3d(0.55rem, 0.16rem, 0) rotate(0.2deg);
     }
 
-    66% {
-      transform: translate3d(-0.2rem, 0.06rem, 0) rotate(-1.55deg);
+    68% {
+      transform: translate3d(-0.25rem, 0.08rem, 0) rotate(-0.65deg);
     }
 
-    82% {
-      transform: translate3d(-0.35rem, 0.02rem, 0) rotate(-0.5deg);
+    84% {
+      transform: translate3d(-0.4rem, 0.02rem, 0) rotate(-0.2deg);
     }
   }
 
   @keyframes canopy-breeze-mid {
     0%,
     100% {
-      transform: translate3d(-0.55rem, 0, 0) rotate(1.3deg);
+      transform: translate3d(-0.65rem, 0, 0) rotate(0.6deg);
     }
 
     24% {
-      transform: translate3d(0.3rem, 0.12rem, 0) rotate(-1.6deg);
+      transform: translate3d(0.4rem, 0.14rem, 0) rotate(-0.75deg);
     }
 
     46% {
-      transform: translate3d(0.55rem, 0.18rem, 0) rotate(0.6deg);
+      transform: translate3d(0.7rem, 0.2rem, 0) rotate(0.3deg);
     }
 
     66% {
-      transform: translate3d(-0.25rem, 0.08rem, 0) rotate(-2.8deg);
+      transform: translate3d(-0.3rem, 0.1rem, 0) rotate(-1.15deg);
     }
 
     82% {
-      transform: translate3d(-0.4rem, 0.03rem, 0) rotate(-0.85deg);
+      transform: translate3d(-0.45rem, 0.04rem, 0) rotate(-0.35deg);
     }
   }
 
   @keyframes canopy-breeze-near {
     0%,
     100% {
-      transform: translate3d(-0.6rem, 0, 0) rotate(2deg);
+      transform: translate3d(-0.8rem, 0, 0) rotate(0.85deg);
     }
 
     22% {
-      transform: translate3d(0.35rem, 0.14rem, 0) rotate(-2.3deg);
+      transform: translate3d(0.5rem, 0.18rem, 0) rotate(-1deg);
     }
 
     44% {
-      transform: translate3d(0.6rem, 0.2rem, 0) rotate(0.9deg);
+      transform: translate3d(0.85rem, 0.24rem, 0) rotate(0.45deg);
     }
 
     64% {
-      transform: translate3d(-0.3rem, 0.1rem, 0) rotate(-4.2deg);
+      transform: translate3d(-0.4rem, 0.12rem, 0) rotate(-1.6deg);
     }
 
     78% {
-      transform: translate3d(-0.15rem, 0.05rem, 0) rotate(-1.1deg);
+      transform: translate3d(-0.2rem, 0.06rem, 0) rotate(-0.45deg);
     }
 
     88% {
-      transform: translate3d(-0.45rem, 0.02rem, 0) rotate(-2.1deg);
+      transform: translate3d(-0.55rem, 0.03rem, 0) rotate(-0.85deg);
     }
   }
 
-  @keyframes canopy-breeze-leaf {
-    0%,
-    100% {
-      transform: rotate(0deg) scaleX(1);
-    }
-
-    14% {
-      transform: rotate(2.8deg) scaleX(0.93);
-    }
-
-    28% {
-      transform: rotate(-2deg) scaleX(0.97);
-    }
-
-    44% {
-      transform: rotate(1.1deg) scaleX(0.9);
-    }
-
-    64% {
-      transform: rotate(-6.8deg) scaleX(0.88);
-    }
-
-    78% {
-      transform: rotate(-2.2deg) scaleX(0.95);
-    }
-
-    88% {
-      transform: rotate(-3.8deg) scaleX(0.92);
-    }
-  }
-
-  /* The far boughs fall a little behind as the page scrolls, as things further away do.
+  /* The far planes fall a little behind as the page scrolls, as things further away do.
      The browser ties this to the scroll position itself; where it cannot, nothing lags. */
   @supports (animation-timeline: scroll()) {
     @media (prefers-reduced-motion: no-preference) {
@@ -292,26 +237,6 @@ const shade = ({ sheet }: Piece) =>
   @keyframes canopy-lag-mid {
     to {
       transform: translate3d(0, 1.1rem, 0);
-    }
-  }
-
-  /* The stage is as tall as the canopy, so the share of it a screen shows follows from
-     the screen's shape. Up to about 16:10 the outer boughs are out of sight, unless the
-     screen is so tall that the canopy stops growing with it. An upright phone sees only
-     the middle. */
-  .canopy-hinge--outer {
-    display: none;
-  }
-
-  @media (min-aspect-ratio: 5 / 3), (min-width: 1900px) {
-    .canopy-hinge--outer {
-      display: block;
-    }
-  }
-
-  @media (max-width: 600px) and (max-aspect-ratio: 3 / 4) {
-    .canopy-hinge--side {
-      display: none;
     }
   }
 

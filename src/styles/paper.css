@@ -1,44 +1,44 @@
 /* Paper and print: what the page is made of.
 
    Rag paper under every page, the subtle surfaces of the sheets, card stock and tape
-   that lie on it, prints mounted as plates, and a sprig for a section break. Everything
-   here is static and costs no request beyond two small SVG masks: each surface is a few
-   hundred bytes of SVG noise in this file, the rest box shadows. */
+   that lie on it, prints mounted as plates, and a sprig for a section break. The grain
+   tiles are pre-rasterized once into small lossless WebP files under public/grotto/ by
+   scripts/draw-paper-grains.mjs, so the browser tiles cached bitmaps instead of running
+   SVG <feTurbulence> filters on paint and scroll. */
 @layer components {
   /* Rag paper: a fine tooth of neutral grey by day, and warm candlelit amber by torchlight,
      so the paper stays the same rag sheet bathed in warm flame rather than turning dusty
-     grey at night. Far too faint to cost text any contrast. The noise is drawn once per
-     tile by the browser and stitched to repeat. */
+     grey at night. Far too faint to cost text any contrast. */
   body {
-    --paper-tooth: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 .4 0 0 0 -.14'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)'/%3E%3C/svg%3E");
+    --paper-tooth: url('/grotto/paper-tooth-day.webp');
 
     background-image: var(--paper-tooth);
-    background-size: 256px 256px;
+    background-size: 128px 128px;
   }
 
   /* By torchlight the same tooth at half strength, warmed to match the torch's amber
      light: light grain on dark paper shows far more than dark grain on light. */
   :root[data-theme='dark'] body {
-    --paper-tooth: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .78 0 0 0 0 .63 0 0 0 0 .44 .2 0 0 0 -.07'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)'/%3E%3C/svg%3E");
+    --paper-tooth: url('/grotto/paper-tooth-dark.webp');
   }
 
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme='light']) body {
-      --paper-tooth: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .78 0 0 0 0 .63 0 0 0 0 .44 .2 0 0 0 -.07'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)'/%3E%3C/svg%3E");
+      --paper-tooth: url('/grotto/paper-tooth-dark.webp');
     }
   }
 
   /* Half the torchlit tooth, for paper laid on the desk that carries pale ink (the sheets
      of the listing cards, stacked-card.css): light grain under pale ink costs most. */
   body {
-    --paper-tooth-faint: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .78 0 0 0 0 .63 0 0 0 0 .44 .1 0 0 0 -.035'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)'/%3E%3C/svg%3E");
+    --paper-tooth-faint: url('/grotto/paper-tooth-faint.webp');
   }
 
   /* Subtle tactile surfaces for card stock and tape, kept light so sheets stay crisp
      and readable rather than noisy. */
   :root {
-    --stock-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='f' x='0' y='0' width='100%' height='100%'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.5' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .25 0 0 0 0 .18 0 0 0 0 .08 .1 0 0 0 -.035'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23f)'/%3E%3C/svg%3E");
-    --tape-crease: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='32'%3E%3Cfilter id='f' x='0' y='0' width='100%' height='100%'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.28 .02' numOctaves='2' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .13 0 0 0 -.045'/%3E%3C/filter%3E%3Crect width='128' height='32' filter='url(%23f)'/%3E%3C/svg%3E");
+    --stock-grain: url('/grotto/stock-grain.webp');
+    --tape-crease: url('/grotto/tape-crease.webp');
 
     /* A strip of tape, over whatever colour it is: faint creases, a quiet highlight
        along its upper edge, and slightly darker torn ends where it was pressed down. */

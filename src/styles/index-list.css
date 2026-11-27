@@ -309,11 +309,21 @@
   max-width: 30rem;
 }
 
+.index-finder .pagefind-ui .pagefind-ui__form {
+  position: relative;
+}
+
 .index-finder .pagefind-ui .pagefind-ui__search-input {
-  padding-inline-start: 2.1em;
+  box-sizing: border-box;
+  width: 100%;
+  height: calc(64px * var(--pagefind-ui-scale));
+  padding: 0 2.5em 0 2.1em;
+  border-style: solid;
   border-width: 0 0 1px;
   border-color: var(--rule-ink);
+  border-radius: 0;
   background-color: transparent;
+  color: var(--color-text-primary);
   font-family: var(--font-body-personal);
   font-size: var(--text-md);
   font-weight: 400;

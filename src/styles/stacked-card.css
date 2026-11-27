@@ -128,8 +128,8 @@
       var(--sc-print, none),
       var(--sc-age, none),
       var(--sc-rule, none),
-      var(--sc-stock, none) var(--sc-tooth-at) / 256px 256px repeat,
-      var(--sc-tooth) var(--sc-tooth-at) / 256px 256px repeat,
+      var(--sc-stock, none) var(--sc-tooth-at) / 128px 128px repeat,
+      var(--sc-tooth) var(--sc-tooth-at) / 128px 128px repeat,
       var(--sc-sheet);
     border: 1px solid var(--sc-edge);
     box-shadow: var(--shadow-md);
@@ -156,7 +156,7 @@
     border-radius: 2px;
     /* The sheets under the top one are paper too, and carry no words. */
     background:
-      var(--sc-tooth) 0 0 / 256px 256px repeat,
+      var(--sc-tooth) 0 0 / 128px 128px repeat,
       var(--sc-sheet-back);
     border: 1px solid var(--sc-edge);
     box-shadow: var(--shadow-sm);
@@ -470,14 +470,8 @@
      mottle and the foxing stay warm antique sepia rather than glowing ember orange. */
   .sc-card[data-tint='aged'] {
     --sc-fox-ink: var(--by-day, var(--color-ochre)) var(--by-torch, #8c5c26);
-    --sc-mottle: var(
-        --by-day,
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .23 0 0 0 0 .1 0 0 0 0 0 .48 0 0 0 -.26'/%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23m)'/%3E%3C/svg%3E")
-      )
-      var(
-        --by-torch,
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .48 0 0 0 0 .3 0 0 0 0 .12 .24 0 0 0 -.13'/%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23m)'/%3E%3C/svg%3E")
-      );
+    --sc-mottle: var(--by-day, url('/grotto/paper-mottle-day.webp'))
+      var(--by-torch, url('/grotto/paper-mottle-dark.webp'));
     /* Aged by its unevenness rather than all over: four parts of warm ochre in the sheet,
        and warm toasted sepia by torchlight so its words keep their contrast over the tooth
        and the mottle. */

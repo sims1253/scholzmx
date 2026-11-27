@@ -2,12 +2,11 @@
 //
 //   node scripts/draw-canopy.mjs
 //
-// A branch in a breeze does not move as one sheet, so the canopy is drawn in pieces that
-// src/components/Canopy.astro hangs and moves one by one: boughs far from the page, boughs
-// halfway, twigs close to it, and single leaves that flutter on those twigs. The pieces
-// are packed into one SVG, public/grotto/canopy.svg, which is a mask: only its alpha
-// matters, CSS supplies the colour. Where each piece hangs, where it is hinged and where
-// it sits in the packed file goes to src/data/canopy.json.
+// The canopy is drawn as three parallax depth planes (far, mid and near) so the foliage
+// drifts organically in a breeze while keeping the compositor layer count to three. The
+// three planes are packed into one SVG, public/grotto/canopy.svg, which is a mask: only
+// its alpha matters, CSS supplies the colour. Where each plane hangs, where it is hinged
+// and where it sits in the packed file goes to src/data/canopy.json.
 //
 // The drawing is seeded, so rerunning it reproduces the committed files.
 import { writeFileSync, mkdirSync } from 'node:fs';
@@ -245,48 +244,44 @@ const depths = [
     blur: 9,
     opacity: 0.5,
     crisp: false,
-    // Slow and heavy. Three non-overlapping clusters (two outer + one wide centre garland)
-    // keep the soft depth wash without stacking six blurred layers over the same pixels.
-    period: [15, 21],
-    boughs: [
-      [
-        {
-          startX: -800,
-          droop: 245,
-          span: 780,
-          leafCount: 12,
-          leafSize: 106,
-          kinds: ['grape', 'kiwi'],
-        },
-      ],
-      [
-        {
-          startX: -80,
-          droop: 210,
-          span: 1560,
-          leafCount: 18,
-          leafSize: 100,
-          kinds: ['grape', 'grape', 'kiwi'],
-        },
-        {
-          startX: 140,
-          droop: 95,
-          span: 1360,
-          leafCount: 14,
-          leafSize: 88,
-          kinds: ['kiwi', 'grape'],
-        },
-      ],
-      [
-        {
-          startX: 1460,
-          droop: 235,
-          span: 740,
-          leafCount: 11,
-          leafSize: 106,
-          kinds: ['kiwi', 'grape'],
-        },
-      ],
+    // Slow and heavy background wash: one full-width depth plane keeps soft foliage
+    // parallax without stacking multiple blurred compositor layers.
+    hingeX: 0.38,
+    period: 18.5,
+    phase: 0.12,
+    vines: [
+      {
+        startX: -760,
+        droop: 245,
+        span: 760,
+        leafCount: 12,
+        leafSize: 106,
+        kinds: ['grape', 'kiwi'],
+      },
+      {
+        startX: -80,
+        droop: 210,
+        span: 1560,
+        leafCount: 18,
+        leafSize: 100,
+        kinds: ['grape', 'grape', 'kiwi'],
+      },
+      {
+        startX: 140,
+        droop: 95,
+        span: 1360,
+        leafCount: 14,
+        leafSize: 88,
+        kinds: ['kiwi', 'grape'],
+      },
+      {
+        startX: 1460,
+        droop: 235,
+        span: 700,
+        leafCount: 11,
+        leafSize: 106,
+        kinds: ['kiwi', 'grape'],
+      },
     ],
   },
   {
@@ -297,48 +292,42 @@ const depths = [
     crisp: true,
     // blur: 4 softens fine teeth, so 28 vertices read identically to 48 at far lower cost.
     points: 28,
-    period: [9, 13],
-    boughs: [
-      [
-        {
-          startX: -540,
-          droop: 295,
-          span: 470,
-          leafCount: 5,
-          leafSize: 96,
-          kinds: ['kiwi', 'grape'],
-        },
-      ],
-      [
-        {
-          startX: 160,
-          droop: 255,
-          span: 490,
-          leafCount: 6,
-          leafSize: 94,
-          kinds: ['grape', 'kiwi'],
-        },
-      ],
-      [
-        {
-          startX: 840,
-          droop: 295,
-          span: 470,
-          leafCount: 6,
-          leafSize: 96,
-          kinds: ['kiwi', 'grape', 'grape'],
-        },
-      ],
-      [
-        {
-          startX: 1680,
-          droop: 280,
-          span: 450,
-          leafCount: 5,
-          leafSize: 96,
-          kinds: ['grape', 'kiwi'],
-        },
-      ],
+    hingeX: 0.62,
+    period: 12.2,
+    phase: 0.58,
+    vines: [
+      {
+        startX: -540,
+        droop: 295,
+        span: 470,
+        leafCount: 5,
+        leafSize: 96,
+        kinds: ['kiwi', 'grape'],
+      },
+      {
+        startX: 160,
+        droop: 255,
+        span: 490,
+        leafCount: 6,
+        leafSize: 94,
+        kinds: ['grape', 'kiwi'],
+      },
+      {
+        startX: 840,
+        droop: 295,
+        span: 470,
+        leafCount: 6,
+        leafSize: 96,
+        kinds: ['kiwi', 'grape', 'grape'],
+      },
+      {
+        startX: 1680,
+        droop: 280,
+        span: 450,
+        leafCount: 5,
+        leafSize: 96,
+        kinds: ['grape', 'kiwi'],
+      },
     ],
   },
   {
@@ -349,142 +338,107 @@ const depths = [
     crisp: true,
     // 44 vertices keep toothed grape and kiwi silhouettes crisp while halving path size.
     points: 44,
-    // Light twigs answer the wind quickly.
-    period: [5.5, 8],
-    boughs: [
-      [
-        {
-          startX: -60,
-          droop: 350,
-          span: 520,
-          leafCount: 6,
-          leafSize: 92,
-          kinds: ['grape', 'kiwi'],
-          loose: 1,
-        },
-      ],
-      [
-        {
-          startX: 640,
-          droop: 150,
-          span: 390,
-          leafCount: 4,
-          leafSize: 74,
-          kinds: ['grape', 'kiwi'],
-          loose: 1,
-        },
-      ],
-      [
-        {
-          startX: 1180,
-          droop: 400,
-          span: 510,
-          leafCount: 7,
-          leafSize: 96,
-          kinds: ['kiwi', 'grape', 'kiwi'],
-          loose: 1,
-        },
-      ],
-      [
-        {
-          startX: 1920,
-          droop: 320,
-          span: -400,
-          leafCount: 5,
-          leafSize: 92,
-          kinds: ['grape', 'kiwi'],
-          loose: 0,
-        },
-      ],
-      [
-        {
-          startX: -340,
-          droop: 300,
-          span: -330,
-          leafCount: 4,
-          leafSize: 92,
-          kinds: ['kiwi', 'grape'],
-          loose: 0,
-        },
-      ],
+    // Light foreground twigs answer the wind more quickly and out of phase with far/mid.
+    hingeX: 0.48,
+    period: 7.4,
+    phase: 0.83,
+    vines: [
+      {
+        startX: -60,
+        droop: 350,
+        span: 520,
+        leafCount: 6,
+        leafSize: 92,
+        kinds: ['grape', 'kiwi'],
+      },
+      {
+        startX: 640,
+        droop: 150,
+        span: 390,
+        leafCount: 4,
+        leafSize: 74,
+        kinds: ['grape', 'kiwi'],
+      },
+      {
+        startX: 1180,
+        droop: 400,
+        span: 510,
+        leafCount: 7,
+        leafSize: 96,
+        kinds: ['kiwi', 'grape', 'kiwi'],
+      },
+      {
+        startX: 1920,
+        droop: 320,
+        span: -400,
+        leafCount: 5,
+        leafSize: 92,
+        kinds: ['grape', 'kiwi'],
+      },
+      {
+        startX: -340,
+        droop: 300,
+        span: -330,
+        leafCount: 4,
+        leafSize: 92,
+        kinds: ['kiwi', 'grape'],
+      },
     ],
   },
 ];
 
-// Draw every piece, then pack them side by side on shelves. Each cell is a piece's box
-// plus room for its blur, and a gap so that no neighbour bleeds into a mask.
+// Draw all three depth planes, then stack them vertically with a gap so no blur bleeds
+// between masks. Each plane spans the stage horizontally so only three compositor layers
+// animate on any viewport.
 const GAP = 6;
-const SHEET_WIDTH = 3000;
 const cells = [];
 const layout = depths.map((depth) => {
   const rand = rng(depth.seed);
   grain = depth.crisp ? 10 : 1;
   const pad = depth.blur * 3 + 4;
-  const cell = (body, bounds) => {
-    const x = Math.floor(bounds.x0 - pad);
-    const y = Math.floor(bounds.y0 - pad);
-    const made = {
-      depth,
-      body,
-      x,
-      y,
-      w: Math.ceil(bounds.x1 + pad) - x,
-      h: Math.ceil(bounds.y1 + pad) - y,
-    };
-    cells.push(made);
-    return made;
-  };
-  const boughs = depth.boughs.map((vines) => {
-    const drawn = vines.map((v) => vine(rand, v, depth));
-    const bounds = box();
-    for (const v of drawn) {
-      bounds.add(v.bounds.x0, v.bounds.y0);
-      bounds.add(v.bounds.x1, v.bounds.y1);
-    }
-    return {
-      cell: cell(drawn.map((v) => v.body).join(''), bounds),
-      // A bough swings about the place where it is tied to the beam.
-      hinge: drawn[0].hinge,
-      leaves: drawn
-        .flatMap((v) => v.leaves)
-        .map((l) => ({ cell: cell(l.body, l.bounds), hinge: l.hinge })),
-      // Every piece keeps its own time, so no two ever move together for long.
-      period: depth.period[0] + rand() * (depth.period[1] - depth.period[0]),
-      phase: rand(),
-    };
-  });
-  for (const bough of boughs) {
-    for (const leaf of bough.leaves) {
-      leaf.period = 3.4 + rand() * 2.2;
-      leaf.phase = rand();
-    }
+  const drawn = depth.vines.map((v) => vine(rand, v, depth));
+  const bounds = box();
+  for (const v of drawn) {
+    bounds.add(v.bounds.x0, v.bounds.y0);
+    bounds.add(v.bounds.x1, v.bounds.y1);
   }
-  return { name: depth.name, boughs };
+  // Clamp horizontally to the stage (+ blur pad) so off-stage tails do not bloat the SVG.
+  const x = Math.max(STAGE.x - Math.ceil(pad), Math.floor(bounds.x0 - pad));
+  const x1 = Math.min(STAGE.x + STAGE.w + Math.ceil(pad), Math.ceil(bounds.x1 + pad));
+  const y = Math.floor(bounds.y0 - pad);
+  const made = {
+    depth,
+    body: drawn.map((v) => v.body).join(''),
+    x,
+    y,
+    w: x1 - x,
+    h: Math.ceil(bounds.y1 + pad) - y,
+  };
+  cells.push(made);
+  return {
+    name: depth.name,
+    cell: made,
+    hinge: [STAGE.x + STAGE.w * depth.hingeX, -40],
+    period: depth.period,
+    phase: depth.phase,
+  };
 });
 
 let sheetW = 0;
 let sheetH = 0;
 {
-  let x = 0;
   let y = 0;
-  let shelf = 0;
-  for (const c of [...cells].sort((a, b) => b.h - a.h)) {
-    if (x && x + c.w > SHEET_WIDTH) {
-      x = 0;
-      y += shelf + GAP;
-      shelf = 0;
-    }
-    c.sx = x;
+  for (const c of cells) {
+    c.sx = 0;
     c.sy = y;
-    x += c.w + GAP;
-    shelf = Math.max(shelf, c.h);
-    sheetW = Math.max(sheetW, c.sx + c.w);
+    y += c.h + GAP;
+    sheetW = Math.max(sheetW, c.w);
     sheetH = Math.max(sheetH, c.sy + c.h);
   }
 }
 
 // Bake the canopy's downward fade (#000 28% -> transparent 96% of STAGE.h) right into
-// the SVG mask, so CSS applies one mask per piece with no mask-composite pass.
+// the SVG mask, so CSS applies one mask per plane with no mask-composite pass.
 const FADE_START = Math.round(STAGE.h * 0.28);
 const FADE_END = Math.round(STAGE.h * 0.96);
 const fadeDefs =
@@ -497,23 +451,29 @@ const fadeDefs =
 const filters = depths
   .map(
     (d) =>
-      `<filter id="${d.name}" x="-25%" y="-25%" width="150%" height="150%"><feGaussianBlur stdDeviation="${d.blur}"/></filter>`
+      `<filter id="${d.name}" x="-5%" y="-25%" width="110%" height="150%"><feGaussianBlur stdDeviation="${d.blur}"/></filter>`
+  )
+  .join('');
+const clips = cells
+  .map(
+    (c, i) =>
+      `<clipPath id="c${i}"><rect x="${c.sx}" y="${c.sy}" width="${c.w}" height="${c.h}"/></clipPath>`
   )
   .join('');
 const groups = cells
-  .map((c) => {
+  .map((c, i) => {
     const fadeAttr = c.y + c.h > FADE_START ? ' mask="url(#fm)"' : '';
-    return `<g transform="translate(${c.sx - c.x},${c.sy - c.y})"><g${fadeAttr}><g filter="url(#${c.depth.name})" opacity="${c.depth.opacity}">${c.body}</g></g></g>`;
+    return `<g clip-path="url(#c${i})"><g transform="translate(${c.sx - c.x},${c.sy - c.y})"><g${fadeAttr}><g filter="url(#${c.depth.name})" opacity="${c.depth.opacity}">${c.body}</g></g></g></g>`;
   })
   .join('');
-const sheet = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${sheetW} ${sheetH}" width="${sheetW}" height="${sheetH}" preserveAspectRatio="none"><defs>${fadeDefs}${filters}</defs>${groups}</svg>\n`;
+const sheet = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${sheetW} ${sheetH}" width="${sheetW}" height="${sheetH}" preserveAspectRatio="none"><defs>${fadeDefs}${filters}${clips}</defs>${groups}</svg>\n`;
 
-// Everything the component needs to hang a piece, as percentages: its box (of the stage
-// for a bough, of its bough for a leaf), its hinge within that box, and the CSS mask size
-// and position that show its cell of the sheet and nothing else.
+// Everything the component needs to hang a depth plane, as percentages: its box on the
+// stage, its hinge within that box, and the CSS mask size and position that select its
+// strip of the sheet.
 const pc = (n) => Math.round(n * 1e4) / 100;
-function hang(piece, frame) {
-  const c = piece.cell;
+function hang(plane, frame) {
+  const c = plane.cell;
   return {
     box: [
       pc((c.x - frame.x) / frame.w),
@@ -521,35 +481,23 @@ function hang(piece, frame) {
       pc(c.w / frame.w),
       pc(c.h / frame.h),
     ],
-    hinge: [pc((piece.hinge[0] - c.x) / c.w), pc((piece.hinge[1] - c.y) / c.h)],
+    hinge: [pc((plane.hinge[0] - c.x) / c.w), pc((plane.hinge[1] - c.y) / c.h)],
     sheet: [
       pc(sheetW / c.w),
       pc(sheetH / c.h),
-      pc(c.sx / (sheetW - c.w)),
-      pc(c.sy / (sheetH - c.h)),
+      sheetW === c.w ? 0 : pc(c.sx / (sheetW - c.w)),
+      sheetH === c.h ? 0 : pc(c.sy / (sheetH - c.h)),
     ],
-    period: Math.round(piece.period * 10) / 10,
-    phase: Math.round(piece.phase * 100) / 100,
+    period: Math.round(plane.period * 10) / 10,
+    phase: Math.round(plane.phase * 100) / 100,
   };
 }
 
-const middle = STAGE.x + STAGE.w / 2;
 const manifest = {
   stage: { ratio: `${STAGE.w} / ${STAGE.h}` },
-  depths: layout.map(({ name, boughs }) => ({
-    name,
-    boughs: boughs.map((bough) => {
-      const c = bough.cell;
-      return {
-        ...hang(bough, STAGE),
-        // Where across the stage the bough hangs, 0 to 1: a gust reaches it that late.
-        across: Math.round(((c.x + c.w / 2 - STAGE.x) / STAGE.w) * 100) / 100,
-        // How far from the middle of the page the bough starts, in stage widths. Narrow
-        // screens never see the outer boughs, so the component leaves them unhung there.
-        reach: Math.round((Math.max(0, c.x - middle, middle - (c.x + c.w)) / STAGE.w) * 100) / 100,
-        leaves: bough.leaves.map((leaf) => hang(leaf, c)),
-      };
-    }),
+  depths: layout.map((plane) => ({
+    name: plane.name,
+    ...hang(plane, STAGE),
   })),
 };
 
@@ -563,10 +511,5 @@ writeFileSync(
   await format(JSON.stringify(manifest), { ...(await resolveConfig(json)), filepath: json })
 );
 console.log(
-  `canopy.svg ${sheet.length} B, ${sheetW} x ${sheetH}, ${cells.length} pieces (${layout
-    .map(
-      (d) =>
-        `${d.name}: ${d.boughs.length} boughs, ${d.boughs.reduce((n, b) => n + b.leaves.length, 0)} leaves`
-    )
-    .join('; ')})`
+  `canopy.svg ${sheet.length} B, ${sheetW} x ${sheetH}, ${cells.length} depth planes (${layout.map((d) => `${d.name}: ${d.cell.w}x${d.cell.h}`).join('; ')})`
 );
