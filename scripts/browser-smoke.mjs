@@ -403,26 +403,80 @@ try {
       `Pagefind UI should not mount before interaction on ${path}`
     );
 
-    // Open folded search disclosures as a visitor would, or focus the open placeholder.
-    const isOpen = await page.$eval('details.finder-search', (el) => el.open);
-    if (!isOpen) {
-      await page.click('details.finder-search > summary');
+    // On /blog/, delay the lazy Pagefind chunk so we explicitly exercise typing into the
+    // placeholder input while the bundle loads and verify value, focus, selection, and
+    // results carry over cleanly onto the mounted Pagefind input.
+    if (path === '/blog/') {
+      let releaseChunk;
+      const heldChunk = new Promise((resolve) => {
+        releaseChunk = resolve;
+      });
+      let held = false;
+      await page.setRequestInterception(true);
+      const intercept = (request) => {
+        if (!held && /\/_astro\/.*\.js$/i.test(request.url())) {
+          held = true;
+          void heldChunk.then(() => request.continue());
+          return;
+        }
+        void request.continue();
+      };
+      page.on('request', intercept);
+      try {
+        const isOpen = await page.$eval('details.finder-search', (el) => el.open);
+        if (!isOpen) await page.click('details.finder-search > summary');
+        await page.waitForSelector('[data-search-placeholder]');
+        await page.$eval(
+          '[data-search-placeholder]',
+          (input, value) => {
+            input.focus();
+            input.value = value;
+            input.setSelectionRange(2, value.length);
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+          },
+          term
+        );
+        assert.ok(held, 'Expected lazy Pagefind UI chunk request during placeholder handoff');
+        releaseChunk();
+        await page.waitForSelector('[data-search-options][data-search-ready="true"]');
+        const handedOff = await page.$eval('.pagefind-ui__search-input', (input) => ({
+          value: input.value,
+          focused: document.activeElement === input,
+          selectionStart: input.selectionStart,
+          selectionEnd: input.selectionEnd,
+        }));
+        assert.deepEqual(
+          handedOff,
+          { value: term, focused: true, selectionStart: 2, selectionEnd: term.length },
+          `Placeholder search handoff lost state on ${path}: ${JSON.stringify(handedOff)}`
+        );
+      } finally {
+        releaseChunk();
+        page.off('request', intercept);
+        await page.setRequestInterception(false);
+      }
     } else {
-      await page.focus('.pagefind-ui__search-input');
-    }
-    await page.waitForSelector('[data-search-options][data-search-ready="true"]');
-    await page.waitForSelector('.pagefind-ui__search-input');
-    // A first input event also covers paste, which does not emit keyup.
-    await page.$eval(
-      '.pagefind-ui__search-input',
-      (input, value) => {
-        input.value = value;
-        input.dispatchEvent(new Event('input', { bubbles: true }));
-      },
-      term
-    );
-    if (path === '/recipes/') {
-      assert.equal(await page.$eval('.nc-item', (card) => card.style.display), 'none');
+      // Open folded search disclosures as a visitor would, or focus the open placeholder.
+      const isOpen = await page.$eval('details.finder-search', (el) => el.open);
+      if (!isOpen) {
+        await page.click('details.finder-search > summary');
+      } else {
+        await page.focus('.pagefind-ui__search-input');
+      }
+      await page.waitForSelector('[data-search-options][data-search-ready="true"]');
+      await page.waitForSelector('.pagefind-ui__search-input');
+      // A first input event also covers paste, which does not emit keyup.
+      await page.$eval(
+        '.pagefind-ui__search-input',
+        (input, value) => {
+          input.value = value;
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+        },
+        term
+      );
+      if (path === '/recipes/') {
+        assert.equal(await page.$eval('.nc-item', (card) => card.style.display), 'none');
+      }
     }
     await page.waitForSelector('.pagefind-ui__result-link');
     const links = await page.$$eval('.pagefind-ui__result-link', (elements) =>

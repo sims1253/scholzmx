@@ -30,46 +30,61 @@ const searchLabel = uiOptions.translations?.search_label ?? placeholder;
       data-search-placeholder
     />
   </div>
+  <p class="search-load-error" role="status" hidden data-search-error>
+    <span>Search could not be loaded.</span>
+    <button type="button" data-search-retry>Try again</button>
+  </p>
 </div>
 <script>
   for (const element of document.querySelectorAll<HTMLElement>('[data-search-options]')) {
     const placeholderInput = element.querySelector<HTMLInputElement>('[data-search-placeholder]');
+    const errorBox = element.querySelector<HTMLElement>('[data-search-error]');
+    const retryButton = element.querySelector<HTMLButtonElement>('[data-search-retry]');
     const details = element.closest<HTMLDetailsElement>('details');
 
     let loading: Promise<void> | null = null;
     const mount = (): Promise<void> => {
+      if (element.dataset.searchReady === 'true') return Promise.resolve();
       if (loading) return loading;
+      if (errorBox) errorBox.hidden = true;
+
       loading = (async () => {
-        const [{ PagefindUI }] = await Promise.all([
-          import('@pagefind/default-ui'),
-          import('@pagefind/default-ui/css/ui.css'),
-        ]);
-        const value = placeholderInput?.value ?? '';
-        const selectionStart = placeholderInput?.selectionStart ?? value.length;
-        const selectionEnd = placeholderInput?.selectionEnd ?? value.length;
-        const wasFocused = placeholderInput !== null && document.activeElement === placeholderInput;
+        try {
+          const [{ PagefindUI }] = await Promise.all([
+            import('@pagefind/default-ui'),
+            import('@pagefind/default-ui/css/ui.css'),
+          ]);
+          const value = placeholderInput?.value ?? '';
+          const selectionStart = placeholderInput?.selectionStart ?? value.length;
+          const selectionEnd = placeholderInput?.selectionEnd ?? value.length;
+          const wasFocused =
+            placeholderInput !== null && document.activeElement === placeholderInput;
 
-        // The options are serialized from this component's typed props in the build above.
-        const options = JSON.parse(element.dataset.searchOptions ?? '{}');
-        element.replaceChildren();
-        const ui = new PagefindUI({ ...options, element, bundlePath: '/pagefind/' });
-        if (options.filters) ui.triggerFilters(options.filters);
+          // The options are serialized from this component's typed props in the build above.
+          const options = JSON.parse(element.dataset.searchOptions ?? '{}');
+          element.replaceChildren();
+          const ui = new PagefindUI({ ...options, element, bundlePath: '/pagefind/' });
+          if (options.filters) ui.triggerFilters(options.filters);
 
-        const realInput = element.querySelector<HTMLInputElement>('.pagefind-ui__search-input');
-        if (realInput) {
-          if (wasFocused) realInput.focus();
-          if (value) {
-            realInput.value = value;
-            realInput.setSelectionRange(selectionStart, selectionEnd);
-            realInput.dispatchEvent(new Event('input', { bubbles: true }));
+          const realInput = element.querySelector<HTMLInputElement>('.pagefind-ui__search-input');
+          if (realInput) {
+            if (wasFocused) realInput.focus();
+            if (value) {
+              realInput.value = value;
+              realInput.setSelectionRange(selectionStart, selectionEnd);
+              realInput.dispatchEvent(new Event('input', { bubbles: true }));
+            }
           }
+          element.dataset.searchReady = 'true';
+        } catch {
+          loading = null;
+          if (errorBox) errorBox.hidden = false;
         }
-        element.dataset.searchReady = 'true';
       })();
       return loading;
     };
 
-    if (details && !details.open) {
+    if (details) {
       details.addEventListener('toggle', () => {
         if (details.open) void mount();
       });
@@ -77,8 +92,15 @@ const searchLabel = uiOptions.translations?.search_label ?? placeholder;
 
     if (placeholderInput) {
       for (const eventName of ['focus', 'pointerenter', 'input'] as const) {
-        placeholderInput.addEventListener(eventName, () => void mount(), { once: true });
+        placeholderInput.addEventListener(eventName, () => {
+          if (!loading && element.dataset.searchReady !== 'true') void mount();
+        });
       }
     }
+
+    retryButton?.addEventListener('click', () => {
+      placeholderInput?.focus();
+      void mount();
+    });
   }
 </script>
