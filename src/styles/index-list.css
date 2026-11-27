@@ -309,11 +309,21 @@
   max-width: 30rem;
 }
 
+.index-finder .pagefind-ui .pagefind-ui__form {
+  position: relative;
+}
+
 .index-finder .pagefind-ui .pagefind-ui__search-input {
-  padding-inline-start: 2.1em;
+  box-sizing: border-box;
+  width: 100%;
+  height: calc(64px * var(--pagefind-ui-scale));
+  padding: 0 2.5em 0 2.1em;
+  border-style: solid;
   border-width: 0 0 1px;
   border-color: var(--rule-ink);
+  border-radius: 0;
   background-color: transparent;
+  color: var(--color-text-primary);
   font-family: var(--font-body-personal);
   font-size: var(--text-md);
   font-weight: 400;
@@ -373,4 +383,32 @@
   font-style: italic;
   font-weight: 400;
   color: var(--color-text-muted);
+}
+
+.pagefind-ui .search-load-error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem 0.75rem;
+  margin: 0.5rem 0 0;
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  font-style: italic;
+  color: var(--color-text-muted);
+}
+
+.pagefind-ui .search-load-error[hidden] {
+  display: none;
+}
+
+.pagefind-ui .search-load-error button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-link);
+  font: inherit;
+  font-style: normal;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  cursor: pointer;
 }
