@@ -245,70 +245,47 @@ const depths = [
     blur: 9,
     opacity: 0.5,
     crisp: false,
-    // Slow and heavy.
+    // Slow and heavy. Three non-overlapping clusters (two outer + one wide centre garland)
+    // keep the soft depth wash without stacking six blurred layers over the same pixels.
     period: [15, 21],
     boughs: [
       [
         {
-          startX: -820,
-          droop: 250,
-          span: 640,
-          leafCount: 10,
-          leafSize: 104,
+          startX: -800,
+          droop: 245,
+          span: 780,
+          leafCount: 12,
+          leafSize: 106,
           kinds: ['grape', 'kiwi'],
         },
       ],
       [
         {
-          startX: -260,
-          droop: 220,
-          span: 760,
-          leafCount: 12,
-          leafSize: 108,
+          startX: -80,
+          droop: 210,
+          span: 1560,
+          leafCount: 18,
+          leafSize: 100,
           kinds: ['grape', 'grape', 'kiwi'],
         },
+        {
+          startX: 140,
+          droop: 95,
+          span: 1360,
+          leafCount: 14,
+          leafSize: 88,
+          kinds: ['kiwi', 'grape'],
+        },
       ],
       [
         {
-          startX: 330,
-          droop: 280,
-          span: 700,
+          startX: 1460,
+          droop: 235,
+          span: 740,
           leafCount: 11,
-          leafSize: 102,
+          leafSize: 106,
           kinds: ['kiwi', 'grape'],
         },
-      ],
-      [
-        {
-          startX: 880,
-          droop: 250,
-          span: 760,
-          leafCount: 12,
-          leafSize: 112,
-          kinds: ['grape', 'kiwi', 'grape'],
-        },
-      ],
-      [
-        {
-          startX: 1560,
-          droop: 230,
-          span: 700,
-          leafCount: 10,
-          leafSize: 104,
-          kinds: ['kiwi', 'grape'],
-        },
-      ],
-      // The garland along the beam.
-      [
-        {
-          startX: 60,
-          droop: 120,
-          span: 1500,
-          leafCount: 15,
-          leafSize: 92,
-          kinds: ['grape', 'kiwi'],
-        },
-        { startX: -120, droop: 40, span: 1800, leafCount: 14, leafSize: 84, kinds: ['grape'] },
       ],
     ],
   },
@@ -318,14 +295,15 @@ const depths = [
     blur: 4,
     opacity: 0.66,
     crisp: true,
-    points: 48,
+    // blur: 4 softens fine teeth, so 28 vertices read identically to 48 at far lower cost.
+    points: 28,
     period: [9, 13],
     boughs: [
       [
         {
-          startX: -560,
-          droop: 300,
-          span: 460,
+          startX: -540,
+          droop: 295,
+          span: 470,
           leafCount: 5,
           leafSize: 96,
           kinds: ['kiwi', 'grape'],
@@ -333,29 +311,29 @@ const depths = [
       ],
       [
         {
-          startX: 130,
-          droop: 250,
-          span: 470,
-          leafCount: 5,
-          leafSize: 92,
+          startX: 160,
+          droop: 255,
+          span: 490,
+          leafCount: 6,
+          leafSize: 94,
           kinds: ['grape', 'kiwi'],
         },
       ],
       [
         {
-          startX: 800,
-          droop: 300,
-          span: 430,
-          leafCount: 5,
+          startX: 840,
+          droop: 295,
+          span: 470,
+          leafCount: 6,
           leafSize: 96,
           kinds: ['kiwi', 'grape', 'grape'],
         },
       ],
       [
         {
-          startX: 1700,
+          startX: 1680,
           droop: 280,
-          span: 440,
+          span: 450,
           leafCount: 5,
           leafSize: 96,
           kinds: ['grape', 'kiwi'],
@@ -369,63 +347,64 @@ const depths = [
     blur: 1.6,
     opacity: 0.88,
     crisp: true,
-    points: 80,
+    // 44 vertices keep toothed grape and kiwi silhouettes crisp while halving path size.
+    points: 44,
     // Light twigs answer the wind quickly.
     period: [5.5, 8],
     boughs: [
       [
         {
-          startX: -80,
-          droop: 360,
+          startX: -60,
+          droop: 350,
           span: 520,
           leafCount: 6,
           leafSize: 92,
           kinds: ['grape', 'kiwi'],
-          loose: 2,
-        },
-      ],
-      [
-        {
-          startX: 1180,
-          droop: 420,
-          span: 520,
-          leafCount: 7,
-          leafSize: 96,
-          kinds: ['kiwi', 'grape', 'kiwi'],
-          loose: 2,
+          loose: 1,
         },
       ],
       [
         {
           startX: 640,
-          droop: 140,
-          span: 380,
+          droop: 150,
+          span: 390,
           leafCount: 4,
-          leafSize: 72,
-          kinds: ['grape', 'kiwi'],
-          loose: 2,
-        },
-      ],
-      [
-        {
-          startX: 1900,
-          droop: 330,
-          span: -420,
-          leafCount: 5,
-          leafSize: 92,
+          leafSize: 74,
           kinds: ['grape', 'kiwi'],
           loose: 1,
         },
       ],
       [
         {
-          startX: -330,
+          startX: 1180,
+          droop: 400,
+          span: 510,
+          leafCount: 7,
+          leafSize: 96,
+          kinds: ['kiwi', 'grape', 'kiwi'],
+          loose: 1,
+        },
+      ],
+      [
+        {
+          startX: 1920,
+          droop: 320,
+          span: -400,
+          leafCount: 5,
+          leafSize: 92,
+          kinds: ['grape', 'kiwi'],
+          loose: 0,
+        },
+      ],
+      [
+        {
+          startX: -340,
           droop: 300,
           span: -330,
           leafCount: 4,
           leafSize: 92,
           kinds: ['kiwi', 'grape'],
-          loose: 1,
+          loose: 0,
         },
       ],
     ],
@@ -504,6 +483,17 @@ let sheetH = 0;
   }
 }
 
+// Bake the canopy's downward fade (#000 28% -> transparent 96% of STAGE.h) right into
+// the SVG mask, so CSS applies one mask per piece with no mask-composite pass.
+const FADE_START = Math.round(STAGE.h * 0.28);
+const FADE_END = Math.round(STAGE.h * 0.96);
+const fadeDefs =
+  `<linearGradient id="fg" gradientUnits="userSpaceOnUse" x1="0" y1="${FADE_START}" x2="0" y2="${FADE_END}">` +
+  `<stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#000"/></linearGradient>` +
+  `<mask id="fm" maskUnits="userSpaceOnUse" x="-1400" y="-400" width="4800" height="${FADE_END + 600}">` +
+  `<rect x="-1400" y="-400" width="4800" height="${FADE_START + 400}" fill="#fff"/>` +
+  `<rect x="-1400" y="${FADE_START}" width="4800" height="${FADE_END - FADE_START}" fill="url(#fg)"/></mask>`;
+
 const filters = depths
   .map(
     (d) =>
@@ -511,12 +501,12 @@ const filters = depths
   )
   .join('');
 const groups = cells
-  .map(
-    (c) =>
-      `<g transform="translate(${c.sx - c.x},${c.sy - c.y})"><g filter="url(#${c.depth.name})" opacity="${c.depth.opacity}">${c.body}</g></g>`
-  )
+  .map((c) => {
+    const fadeAttr = c.y + c.h > FADE_START ? ' mask="url(#fm)"' : '';
+    return `<g transform="translate(${c.sx - c.x},${c.sy - c.y})"><g${fadeAttr}><g filter="url(#${c.depth.name})" opacity="${c.depth.opacity}">${c.body}</g></g></g>`;
+  })
   .join('');
-const sheet = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${sheetW} ${sheetH}" width="${sheetW}" height="${sheetH}" preserveAspectRatio="none">${filters}${groups}</svg>\n`;
+const sheet = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${sheetW} ${sheetH}" width="${sheetW}" height="${sheetH}" preserveAspectRatio="none"><defs>${fadeDefs}${filters}</defs>${groups}</svg>\n`;
 
 // Everything the component needs to hang a piece, as percentages: its box (of the stage
 // for a bough, of its bough for a leaf), its hinge within that box, and the CSS mask size
@@ -538,9 +528,6 @@ function hang(piece, frame) {
       pc(c.sx / (sheetW - c.w)),
       pc(c.sy / (sheetH - c.h)),
     ],
-    // The canopy fades out downwards. This is where the stage's top and height fall,
-    // seen from the piece: the size and position of a gradient as tall as the stage.
-    fade: [pc(STAGE.h / c.h), pc((STAGE.y - c.y) / (c.h - STAGE.h))],
     period: Math.round(piece.period * 10) / 10,
     phase: Math.round(piece.phase * 100) / 100,
   };

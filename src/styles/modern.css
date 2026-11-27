@@ -62,23 +62,39 @@ html {
     font-synthesis: none;
   }
 
-  /* Subtle, accessible scrollbars (Firefox + WebKit) */
-  * {
+  /* Subtle, accessible scrollbars (scoped to actual scrollable containers, not *) */
+  html,
+  pre,
+  .math-display,
+  .post-contents nav,
+  .rc-table-wrap {
     scrollbar-width: thin;
     scrollbar-color: color-mix(in srgb, var(--color-walnut) 40%, transparent) transparent;
   }
   @supports selector(::-webkit-scrollbar) {
-    *::-webkit-scrollbar {
+    html::-webkit-scrollbar,
+    pre::-webkit-scrollbar,
+    .math-display::-webkit-scrollbar,
+    .post-contents nav::-webkit-scrollbar,
+    .rc-table-wrap::-webkit-scrollbar {
       width: 10px;
       height: 10px;
     }
-    *::-webkit-scrollbar-thumb {
+    html::-webkit-scrollbar-thumb,
+    pre::-webkit-scrollbar-thumb,
+    .math-display::-webkit-scrollbar-thumb,
+    .post-contents nav::-webkit-scrollbar-thumb,
+    .rc-table-wrap::-webkit-scrollbar-thumb {
       background-color: color-mix(in srgb, var(--color-walnut) 45%, transparent);
       border-radius: 999px;
       border: 2px solid transparent;
       background-clip: content-box;
     }
-    *::-webkit-scrollbar-track {
+    html::-webkit-scrollbar-track,
+    pre::-webkit-scrollbar-track,
+    .math-display::-webkit-scrollbar-track,
+    .post-contents nav::-webkit-scrollbar-track,
+    .rc-table-wrap::-webkit-scrollbar-track {
       background: transparent;
     }
   }
